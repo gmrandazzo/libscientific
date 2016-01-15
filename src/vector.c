@@ -1,0 +1,672 @@
+#include "vector.h"
+#include "numeric.h"
+#include "memwrapper.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#include <ctype.h>
+
+/*strdup is not standard so add an exter or add this code:
+ 
+ char *strdup(const char *str)
+{
+    int n = strlen(str) + 1;
+    char *dup = malloc(n);
+    if(dup)
+    {
+        strcpy(dup, str);
+    }
+    return dup;
+}
+
+ */
+extern char *strdup(const char *s);
+
+void initStrVector(strvector** s){
+    (*s) = xmalloc(sizeof(strvector));
+    (*s)->data = NULL;
+    (*s)->size = 0;
+}
+
+void NewStrVector(strvector **s, size_t size_)
+{
+    size_t i;
+    (*s) = xmalloc(sizeof(strvector));
+    (*s)->size = size_;
+    (*s)->data = xmalloc(sizeof(char*)*size_);
+    for(i = 0; i < (*s)->size; i++){
+      (*s)->data[i] = xmalloc(sizeof(char)/**MAXCHARSIZE*/);
+//       memset((*s)->data[i], 0, MAXCHARSIZE);
+    }
+}
+
+void DelStrVector(strvector **s)
+{
+  size_t i;
+  for(i = 0; i < (*s)->size; i++)
+    xfree((*s)->data[i]);
+  xfree((*s)->data);
+  xfree((*s));
+}
+
+void setStr(strvector *s, size_t i, char *str)
+{
+  /*memcpy(s->data[i], str, strlen(str)+1);*/
+  //   strcpy(s->data[i], str);
+  xfree(s->data[i]);
+  s->data[i] = strdup(str);
+}
+
+char* getStr(strvector *s, size_t i)
+{
+  return s->data[i];
+}
+
+void StrVectorAppend(strvector **s, char *str)
+{
+  size_t i;
+  size_t size = (*s)->size+1;
+  strvector *tmp;
+  NewStrVector(&tmp, (*s)->size);
+  
+  for(i = 0; i < (*s)->size; i++){
+    setStr(tmp, i, getStr((*s), i));
+  }
+  
+  (*s)->data = xrealloc((*s)->data, sizeof(char*)*size);
+//   (*s)->data[(*s)->size] = xmalloc(sizeof(char)*MAXCHARSIZE);
+  (*s)->data[(*s)->size] = xmalloc(sizeof(char));
+  (*s)->size += 1;
+  
+  for(i = 0; i < tmp->size; i++){
+    setStr((*s), i, getStr(tmp, i));
+  }
+  
+  setStr((*s), (*s)->size-1, str);
+  
+  DelStrVector(&tmp);
+}
+
+void StrVectorAppendInt(strvector** s, int val)
+{
+  size_t size = (*s)->size+1;
+  (*s)->data = xrealloc((*s)->data, sizeof(char*)*size);
+  (*s)->size += 1;
+  /*(*s)->data[(*s)->size-1] = xmalloc(sizeof(char)*MAXCHARSIZE);
+  sprintf((*s)->data[(*s)->size-1], "%d", val);*/
+  char str[MAXCHARSIZE];
+  sprintf(str, "%d", val);
+  (*s)->data[(*s)->size-1] = strdup(str);
+}
+
+void StrVectorAppendDouble(strvector** s, double val)
+{
+  size_t size = (*s)->size+1;
+  (*s)->data = xrealloc((*s)->data, sizeof(char*)*size);
+  (*s)->size += 1;
+  /*(*s)->data[(*s)->size-1] = xmalloc(sizeof(char)*MAXCHARSIZE);
+  sprintf((*s)->data[(*s)->size-1], "%f", val);*/
+  char str[MAXCHARSIZE];
+  sprintf(str, "%f", val);
+  (*s)->data[(*s)->size-1] = strdup(str);
+}
+
+strvector *StrVectorExtend(strvector *s1, strvector *s2)
+{
+  size_t i;
+  strvector *sext;
+  NewStrVector(&sext, (*s1).size+(*s2).size);
+  for(i = 0; i < (*s1).size; i++) {
+      (*sext).data[i] = (*s1).data[i];
+  }
+  for(i = 0; i < (*s2).size; i++) {
+      (*sext).data[i+(*s1).size] = (*s2).data[i];
+  }
+  return sext;
+}
+
+void StrVectorResize(strvector **s, size_t size_)
+{
+  size_t i;
+  if((*s)->size > 0){
+    for(i = 0; i < (*s)->size; i++)
+      xfree((*s)->data[i]);
+    xfree((*s)->data);
+  }
+  
+  (*s)->size = size_;
+  (*s)->data = xmalloc(sizeof(char*)*size_);
+  for(i = 0; i < (*s)->size; i++){
+    (*s)->data[i] = xmalloc(sizeof(char)*256);
+    memset((*s)->data[i], 0, 256);
+  }
+}
+
+void PrintStrVector(strvector* s)
+{
+  if(s->size > 0){
+    size_t i;
+    for(i = 0; i < s->size; i++){
+      printf("[%u]: %s\n", (unsigned int)i, getStr(s, i));
+    }
+  }
+}
+
+char *Trim(char *s)
+{
+  char *ptr;
+  if(!s)
+    return NULL;   /* handle NULL string */
+  if(!*s)
+    return s;      /* handle empty string */
+  for(ptr = s + strlen(s) - 1; (ptr >= s) && isspace(*ptr); --ptr);
+  ptr[1] = '\0';
+  return s;
+}
+
+void SplitString(char *str, char *sep, strvector **tokens)
+{
+  char *tl=NULL;
+  /* Create a buffer of the correct length and copy the string into the buffer */
+  char   *buffer = strdup(str);
+  /* Tokenize */
+  for (tl = strtok(Trim(buffer), sep); tl; tl = strtok (NULL, sep)){
+    StrVectorAppend(tokens, tl);
+  }
+  xfree(buffer);
+}
+
+
+/* DVECTOR */
+void initDVector(dvector **d) {
+    (*d) = xmalloc(sizeof(dvector));
+    (*d)->data = NULL;
+    (*d)->size = 0;
+}
+
+void NewDVector(dvector **d, size_t size_)
+{
+    size_t i;
+    (*d) = xmalloc(sizeof(dvector));
+    (*d)->size = size_;
+    (*d)->data = xmalloc(sizeof(double)*size_);
+    for(i = 0; i < (*d)->size; i++)
+        (*d)->data[i] = +0.f;
+}
+
+void DelDVector(dvector **d )
+{
+    xfree((*d)->data);
+    xfree((*d));
+}
+
+void DVectorResize(dvector **d, size_t size_)
+{
+  size_t i;
+  if((*d)->size > 0){
+    xfree((*d)->data);
+  }
+  
+  (*d)->data = xmalloc(sizeof(double)*size_);
+  (*d)->size = size_;
+  for(i = 0; i < (*d)->size; i++){
+    (*d)->data[i] = +0.f;
+  }
+}
+
+void PrintDVector(dvector *v)
+{
+  if(v->size > 0){
+    size_t i;
+    for(i = 0; i < v->size; i++){
+      printf("[%u]: %.4f\n", (unsigned int)i, getDVectorValue(v, i)); 
+    }
+  }
+}
+
+void DVectorAppend(dvector **d, double val)
+{
+  size_t size = (*d)->size+1;
+  (*d)->data = xrealloc((*d)->data, sizeof(double)*size);
+  (*d)->size += 1;
+  (*d)->data[size-1] = val;
+}
+
+void DVectorCopy(dvector* dsrc, dvector** ddst)
+{
+  size_t i;
+  if((*ddst)->size == 0){
+    (*ddst)->size= dsrc->size;
+    (*ddst)->data = xmalloc(sizeof(double)*dsrc->size);
+    for(i = 0; i < (*ddst)->size; i++){
+      (*ddst)->data[i] = +0.f;
+    }
+  }
+  else{
+    (*ddst)->size = dsrc->size;
+    (*ddst)->data = xrealloc((*ddst)->data, sizeof(double)*dsrc->size);
+    for(i = 0; i < (*ddst)->size; i++){
+      setDVectorValue((*ddst), i, +0.f);
+    }
+  }
+
+  for(i = 0; i < (*ddst)->size; i++){
+    (*ddst)->data[i] = dsrc->data[i];
+  }
+}
+
+dvector *DVectorExtend(dvector *d1, dvector *d2)
+{
+  size_t i;
+  dvector *dext;
+  NewDVector(&dext, (*d1).size+(*d2).size);
+  for(i = 0; i < (*d1).size; i++) {
+      (*dext).data[i] = (*d1).data[i];
+  }
+  for(i = 0; i < (*d2).size; i++) {
+      (*dext).data[i+(*d1).size] = (*d2).data[i];
+  }
+  return dext;
+}
+
+
+void setDVectorValue(dvector *d, size_t id, double val)
+{
+  if(id < d->size)
+    (*d).data[id] = val;
+  else{
+    fprintf(stdout,"setDVectorValue Error: vector id %d out of range.\n", (int)id);
+    fflush(stdout);
+    abort();
+  }
+}
+
+double getDVectorValue(dvector *d, size_t id)
+{
+  if(id < d->size)
+    return d->data[id];
+  else{
+    fprintf(stdout,"getDVectorValue Error: vector id %d out of range\n.", (int)id);
+    fflush(stdout);
+    abort();
+  }
+}
+
+int DVectorHasValue(dvector* d, double val)
+{
+  size_t i;
+  for(i = 0; i < d->size; i++){
+    if(FLOAT_EQ(d->data[i], val, EPSILON)){
+      return 0;
+    }
+    else{
+      continue;
+    }
+  }
+  return 1;
+}
+
+void DVectorSet(dvector *v, double val)
+{
+  size_t i;
+  for(i = 0; i < (*v).size; i++){
+    (*v).data[i] = val;
+  }
+}
+
+double DVectorDVectorDotProd(dvector *v1, dvector *v2)
+{
+  /* v*t_v = Sum(v[i]*t_v[i])
+     the vors must have the same size */
+  size_t i;
+  double p  = +0.f;
+  for(i = 0; i < v1->size; i++)
+    p += v1->data[i]*v2->data[i];
+  return p;
+}
+
+double DvectorModule(dvector *v)
+{
+  size_t i;
+  double sum = +0.f;
+  for(i = 0; i < v->size; i++)
+    sum += v->data[i]*v->data[i]; 
+  return sqrt(sum);/* module of the for v */
+}
+
+void DVectNorm(dvector *v, dvector *nv)
+{
+  size_t i;
+  double mod;
+  
+  mod = DvectorModule(v);
+  
+  if((*nv).size != 0 && (*nv).size <= v->size){ /* store the normalized vor value to an other vor named n_v */
+    for(i = 0; i < v->size; i++){
+      nv->data[i] = v->data[i]/mod;
+    }
+  }
+  else{
+    fprintf(stdout,"DVectNorm Error! Problem while normalizing the vector!\n");
+    fflush(stdout);
+    abort();
+  }
+}
+
+void DVectorDVectorDiff(dvector* v1, dvector* v2, dvector **v3)
+{
+  size_t i;
+  if(v1->size == v2->size){
+    for(i = 0; i < v1->size; i++)
+      DVectorAppend(v3, getDVectorValue(v1, i)-getDVectorValue(v2, i));
+  }
+  else{
+    fprintf(stderr, "Error! Unable to compute DVectorDVectorDiff. Different Vector size.\n");
+    abort();
+  }
+}
+
+void DVectorDVectorSum(dvector* v1, dvector* v2, dvector** v3)
+{
+  size_t i;
+  if(v1->size == v2->size){
+    for(i = 0; i < v1->size; i++)
+      DVectorAppend(v3, getDVectorValue(v1, i)+getDVectorValue(v2, i));
+  }
+  else{
+    fprintf(stderr, "Error! Unable to compute DVectorDVectorDiff. Different Vector size.\n");
+    fflush(stderr);
+    abort();
+  }
+}
+
+void DVectorMinMax(dvector* v, double* min, double* max)
+{
+  if(v->size > 0){
+    size_t i;
+    if(min != NULL && max != NULL){
+      (*min) = (*max) = getDVectorValue(v, 0);
+    }
+    else{
+      if(min != NULL){
+        (*min) = getDVectorValue(v, 0);
+      }
+      
+      if(max != NULL){
+        (*max) = getDVectorValue(v, 0);
+      }
+    }
+    
+    for(i = 0; i < v->size; i++){
+      if(min != NULL){
+        if(getDVectorValue(v, i) < (*min)){
+          (*min) = getDVectorValue(v, i);
+        }
+      }
+      
+      if(max != NULL){
+        if(getDVectorValue(v, i) > (*max)){
+          (*max) = getDVectorValue(v, i);
+        }
+      }
+    }
+  }
+  else{
+    fprintf(stderr, "Error! Empty DVector\n");
+    fflush(stderr);
+    abort();
+  }
+}
+
+void DVectorMean(dvector* d, double* mean)
+{
+  size_t i;
+  (*mean) = +0.f;
+  for(i = 0; i < d->size; i++)
+    (*mean) += d->data[i];
+  (*mean) /= d->size;
+}
+
+
+void DVectorSDEV(dvector* d, double* sdev)
+{
+  size_t i;
+  double mean;
+  DVectorMean(d, &mean);
+  
+  (*sdev) = +0.f;
+  for(i = 0; i < d->size; i++)
+    (*sdev) += square(d->data[i] - mean);
+  (*sdev) /= d->size;
+  (*sdev) = sqrt((*sdev));
+}
+
+int floatcomp(const void* elem1, const void* elem2)
+{
+  if(*(const double*)elem1 < *(const double*)elem2){
+    return -1;
+  }
+  else{
+    return *(const double*)elem1 > *(const double*)elem2;
+  }
+}
+ 
+void DVectorSort(dvector* v)
+{
+  qsort(v->data, v->size, sizeof(v->data[0]), floatcomp);
+}
+
+/* INT VECTOR */
+void initIVector(ivector **d){
+  (*d) = xmalloc(sizeof(ivector));
+  (*d)->data = NULL;
+  (*d)->size = 0;
+}
+
+void NewIVector(ivector **d, size_t size_)
+{
+  long int i;
+  (*d) = xmalloc(sizeof(ivector));
+  (*d)->size = size_; 
+  (*d)->data = xmalloc(sizeof(int)*size_);
+  for(i = 0; i < (*d)->size; i++)
+    (*d)->data[i] = 0;
+}
+
+void DelIVector(ivector **d )
+{
+  xfree((*d)->data);
+  xfree((*d));
+}
+
+void IVectorAppend(ivector **d, int val)
+{
+  long int size = (*d)->size+1;
+  (*d)->data = xrealloc((*d)->data, sizeof(int)*size);
+  (*d)->size += 1;
+  (*d)->data[(*d)->size-1] = val;
+}
+
+ivector *IVectorExtend(ivector *d1, ivector *d2)
+{
+  int i;
+  ivector *dext;
+  NewIVector(&dext, (*d1).size+(*d2).size);
+  for(i = 0; i < (*d1).size; i++){
+    (*dext).data[i] = (*d1).data[i];
+  }
+  for(i = 0; i < (*d2).size; i++){
+    (*dext).data[i+(*d1).size] = (*d2).data[i];
+  }
+  return dext;
+}
+
+void setIVectorValue(ivector* d, size_t id, int val)
+{
+  if(id < d->size)
+    (*d).data[id] = val;
+  else{
+    fprintf(stdout,"setIVectorValue Error: vector id %d out of range.\n", (int)id);
+    fflush(stdout);
+  }
+}
+
+int getIVectorValue(ivector* d, size_t id)
+{
+  if(id < d->size)
+    return d->data[id];
+  else{
+    fprintf(stdout,"getIVectorValue Error: vector id %d out of range\n.", (int)id);
+    fflush(stdout);
+    abort();
+    return -99999;
+  }
+}
+
+int IVectorHasValue(ivector* d, int val)
+{
+  size_t i;
+  for(i = 0; i < d->size; i++){
+    if(d->data[i] == val){
+      return 0;
+    }
+    else{
+      continue;
+    }
+  }
+  return 1;
+}
+
+
+void IVectorSet(ivector* d, int val)
+{
+  size_t i;
+  for(i = 0; i < (*d).size; i++){
+    (*d).data[i] = val;
+  }
+}
+
+/* size_t VECTOR */
+
+void initUIVector(uivector **d){
+  (*d) = xmalloc(sizeof(uivector));
+  (*d)->data = NULL;
+  (*d)->size = 0;
+}
+
+void NewUIVector(uivector **d, size_t size_)
+{
+  size_t i;
+  (*d) = xmalloc(sizeof(uivector));
+  (*d)->size = size_; 
+  (*d)->data = xmalloc(sizeof(size_t)*size_);
+  for(i = 0; i < (*d)->size; i++)
+    (*d)->data[i] = 0;
+}
+
+void DelUIVector(uivector **d )
+{
+  xfree((*d)->data);
+  xfree((*d));
+}
+
+void UIVectorResize(uivector **d, size_t size_)
+{
+  size_t i;
+  if((*d)->size > 0){
+    xfree((*d)->data);
+  }
+  
+  (*d)->data = xmalloc(sizeof(size_t*)*size_);
+  (*d)->size = size_;
+  for(i = 0; i < (*d)->size; i++)
+    setUIVectorValue((*d), i, 0);
+}
+
+void PrintUIVector(uivector* v)
+
+{
+  if(v->size > 0){
+    size_t i;
+    for(i = 0; i < v->size; i++){
+      printf("[%u]: %u\n", (unsigned int)i, (unsigned int)getUIVectorValue(v, i));
+    }
+  }
+}
+
+void UIVectorAppend(uivector **d, size_t val)
+{
+  size_t size = (*d)->size+1;
+  (*d)->data = xrealloc((*d)->data, sizeof(size_t)*size);
+  (*d)->size += 1;
+  (*d)->data[(*d)->size-1] = val;
+}
+
+uivector *UIVectorExtend(uivector *d1, uivector *d2)
+{
+  size_t i;
+  uivector *dext;
+  NewUIVector(&dext, (*d1).size+(*d2).size);
+  for(i = 0; i < (*d1).size; i++){
+    (*dext).data[i] = (*d1).data[i];
+  }
+  for(i = 0; i < (*d2).size; i++){
+    (*dext).data[i+(*d1).size] = (*d2).data[i];
+  }
+  return dext;
+}
+
+void setUIVectorValue(uivector* d, size_t id, size_t val)
+{
+  if(id < d->size)
+    (*d).data[id] = val;
+  else{
+    fprintf(stdout,"setIVectorValue Error: vector id %d out of range.\n", (int)id);
+    fflush(stdout);
+  }
+}
+
+size_t getUIVectorValue(uivector* d, size_t id)
+{
+  if(id < d->size)
+    return d->data[id];
+  else{
+    fprintf(stdout,"getUIVectorValue Error: vector id %u out of range. Max range: %u\n.", (unsigned int)id, (unsigned int)d->size);
+    fflush(stdout);
+    abort();
+    return -99999;
+  }
+}
+
+int UIVectorHasValue(uivector* u, size_t id)
+{
+  size_t i;
+  for(i = 0; i < u->size; i++){
+    if(u->data[i] == id){
+      return 0;
+    }
+    else{
+      continue;
+    }
+  }
+  return 1;
+}
+
+void UIVectorSet(uivector* d, size_t val)
+{
+  size_t i;
+  for(i = 0; i < (*d).size; i++){
+    (*d).data[i] = val;
+  }
+}
+
+int intcmp(const void *v1, const void *v2)
+{
+  return (*(int *)v1 - *(int *)v2);
+}
+           
+void SortUIVector(uivector* d)
+{
+  qsort(d->data, d->size, sizeof(d->data[0]), intcmp);
+}

@@ -1,0 +1,6 @@
+mkdir build
+cd build
+cmake -DLIB_INSTALL_DIR=/usr/lib/  -DINCLUDE_INSTALL_DIR=/usr/include ..    # for 32 bit fedora
+cmake -DLIB_INSTALL_DIR=/usr/lib64/ -DINCLUDE_INSTALL_DIR=/usr/include ..  # for 64 bit fedora
+make
+make install

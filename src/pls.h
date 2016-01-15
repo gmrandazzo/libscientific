@@ -1,0 +1,159 @@
+#ifndef PLS_H
+#define PLS_H
+#include "matrix.h"
+#include "vector.h"
+#include "scientificinfo.h"
+
+#define PLSCONVERGENCE 1e-8
+
+typedef struct{
+  matrix *xscores;
+  matrix *xloadings;
+  matrix *xweights;
+  matrix *yscores;
+  matrix *yloadings;
+  dvector *b;
+  dvector *xvarexp;
+  dvector *xcolaverage;
+  dvector *xcolscaling;
+  dvector *ycolaverage;
+  dvector *ycolscaling;
+  matrix *r2y_model; /* each column correspond to an y dependent variable and each row correspond to a principal component*/
+  matrix *r2y_validation;
+  matrix *recalc_residuals;
+  matrix *q2y;
+  matrix *sdep; /* Standard Deviation over Prediction */
+  matrix *sdec; /* Standard Deviation over Recalculating */
+  matrix *bias;
+  matrix *recalculated_y;
+  matrix *predicted_y;
+  matrix *pred_residuals;
+  matrix *r2q2scrambling;
+  matrix *q2_sample_validation;
+  matrix *sdep_sample_validation;
+  matrix *q2_sample_validation_surface;
+  matrix *sdep_sample_validation_surface;
+} PLSMODEL;
+
+/*
+ * Description: Create a new PLSMODEL
+ */
+void NewPLSModel(PLSMODEL **m);
+
+/*
+ * Description: Delete a PLSMODEL
+ */
+void DelPLSModel(PLSMODEL **m);
+
+void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautoscaling, PLSMODEL *model, ssignal *s);
+
+/* Calculate betas coefficients from a pls model at nlv latent variables */
+void PLSBetasCoeff(PLSMODEL *model, size_t nlv, matrix **betas);
+
+void PLSScorePredictor(matrix *mx, PLSMODEL *model, size_t nlv, matrix **xscores);
+
+void PLSYPredictor(matrix *tscore, PLSMODEL *model, size_t nlv, matrix **y);
+
+void PLSRSquared(matrix *mx, matrix *my, PLSMODEL *model, size_t nlv, matrix** r2y, matrix **sdec);
+
+void PLSRSquared_SSErr_SSTot(matrix *mx, matrix *my, PLSMODEL *model, size_t nlv, dvector** xss_err, dvector **xss_tot, matrix** yss_err, matrix** yss_tot, matrix **pred_y);
+
+/*Description:
+ * Generate Random Models by putting randomly y and check if models have correlations...
+ */
+void PLSYScrambling(matrix *mx, matrix *my,
+                        size_t xautoscaling, size_t yautoscaling,
+                        size_t nlv, size_t block,
+                        size_t valtype, size_t rgcv_group, size_t rgcv_iterations,
+                        matrix **r2q2scrambling, size_t nthreads, ssignal *s);
+
+
+void PLSRandomGroupsCV(matrix *mx, matrix *my, size_t xautoscaling, size_t yautoscaling, size_t nlv, size_t group, size_t iterations, matrix **q2y, matrix **sdep, matrix **bias, matrix **predicted_y, matrix **pred_residuals, size_t nthreads, ssignal *s);
+
+void PLSLOOCV(matrix *mx, matrix *my,
+                        size_t xautoscaling, size_t yautoscaling,
+                        size_t nlv,
+                        matrix **q2y, matrix **sdep, matrix **bias, matrix **predicted_y, matrix **pred_residuals, size_t ntreads, ssignal *s); /* *loov_ are the loo validated coefficients used to plot predicted vs experimental. if is null is not calculated.*/
+
+/*Validata Sample Stability reducing or fixing the size to build a model*/
+void PLSStaticSampleValidator(matrix *mx, matrix *my, uivector *obj_class,
+                        size_t xautoscaling, size_t yautoscaling,
+                        size_t nlv, size_t sample_size, size_t niters,
+                        size_t rgcv_group, size_t rgcv_iterations, size_t nthreads,
+                        matrix **q2_distr, matrix **sdep_distr, uivector **bestid, ssignal *s);
+
+/*Validate Model Stability using a dinamic incremental sample*/
+void PLSDynamicSampleValidator(matrix *mx, matrix *my,
+                        size_t xautoscaling, size_t yautoscaling,
+                        size_t nlv, size_t niters,
+                        uivector *obj_class, size_t deltaobj, size_t maxobj,
+                        size_t rgcv_group, size_t rgcv_iterations, size_t nthreads,
+                        matrix **q2_surface, matrix **sdep_surface, uivector **bestid, ssignal *s);
+
+/* Get the Cutoff based on the grow of r2 or q2*/
+int GetLVCCutoff(matrix* r2q2);
+/* Variable Selection using the Particle Swarm Optimization algorithm
+ *
+ * Input:
+ *   mx and my matrix for make model; optionally px and py for testset validation.
+ *   randomness = a number betwee 0 and 1 that represent the randomness to add on the first model generation.
+ *   nrandomnessiter = for compute random models and evaluate also the model consistency...
+ *
+ * Output:
+ * - varselected vector: vector of varialble selected
+ * - map = a matrix of 4 column with the best r2, q2, f-test and number of variables.
+ * - vardistribution = a vector of variables distribution accumulated in all model. Each row is a variable and the value of this row is the number of time that this variable was used.
+ */
+void PSLPSOVariableSelection(matrix *mx, matrix *my, matrix *px, matrix *py,
+                       size_t xautoscaling, size_t yautoscaling, size_t nlv, int validation_type, size_t ngroup, size_t niter,
+                       size_t population_size, double randomness,
+                       uivector **varselected, matrix **map, uivector **vardistribution, size_t nthreads, ssignal *s);
+
+/*
+ * Variable selection using the Genetic Algorithm
+ *
+ * Input
+ *   mx and my matrix for make model; optionally px and py for testset validation.
+ *
+ * population_size = population of models to calculate; is a number > 2
+ * fraction_of_population = fraction of population; is a number between 0 and 1
+ * mutation_rate = rate of mutation; is a number between 0 and 1
+ * crossovertype = 0 for single point crossover, 1 for two point crossover and 2 for uniform crossover
+ * nswapping = used by the uniform crossover (crossovertype = 2) and is a number between 0 and 1. It means the % of variable to swapping
+ *
+ * Output
+ *   varselected vector: vector of varialble selected
+ *   rq2 = coefficient of validation q2  or r2
+ *  f_distribution = coefficient of distribution
+ *  map = a matrix of 4 column with the best r2, q2, f-test and number of variables.
+ */
+void PLSGAVariableSelection(matrix *mx, matrix *my, matrix *px, matrix *py,
+                       size_t xautoscaling, size_t yautoscaling, size_t nlv, int validation_type, size_t ngroup, size_t niter,
+                       size_t population_size, double fraction_of_population, double mutation_rate, size_t crossovertype, double nswapping, double populationconvergence,
+                       uivector **varselected, matrix **map, uivector **vardistribution, size_t nthreads, ssignal *s);
+
+/* Variable selection using the Spearmann correlation coefficient
+ * Input
+ * mx and my matrix for make the model; optionally px and py for testset validation
+ *
+ * nlv = number of principal component
+ * validation_type = validation type: 0 = LOO; 1 RGCV
+ * ngroup = number of group for RGCV
+ * niter = number of iterations for RGCV
+ * nrandomnessiter = number of random iteration for Model consistency
+ *
+ * threshold = the step size to check if variable is in or out
+ *
+ * Output:
+ *  varselected vector: vector of varialble selected
+  *  map = a matrix of 4 column with the best r2, q2, treshold and number of variables.
+ */
+void PLSSpearmannVariableSelection(matrix *mx, matrix *my, matrix *px, matrix *py,
+                                   size_t xautoscaling, size_t yautoscaling, size_t nlv, int validation_type,
+                                   size_t ngroup, size_t niter,
+                                   double threshold,
+                                   uivector **varselected, matrix **map, uivector **vardistribution, size_t nthreads, ssignal *s);
+
+void PrintPLSModel(PLSMODEL *model);
+
+#endif

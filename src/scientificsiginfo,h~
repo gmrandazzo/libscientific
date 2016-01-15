@@ -1,0 +1,14 @@
+
+#ifndef SCIENTIFICINFO_H
+#define SCIENTIFICINFO_H
+
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef int ssignal;
+
+#define STOP 1
+#define RUN 0
+void ScientificVersion();
+
+#endif
