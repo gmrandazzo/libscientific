@@ -8,21 +8,21 @@ using a third part library, lapack version 3.5.0.
 
 Actually libscientific is able to compute:
 
-  -Multivariate analysis
+  - Multivariate analysis
     - PCA (NIPALS ALGORITHM) [1]
     - PLS (NIPALS ALGORITHM) [1]
     - MLR (Ordinary least squares algorithm)
     - UPCA [2]
     - UPLS [2]
 
-  -Pattern recognition
+  - Pattern recognition
     - Fisher LDA
 
-  -Cluster analysis
+  - Cluster analysis
     - K-means++ (David Arthur modification) [3]
     - Hierarchical clustering
 
-  -Object selection
+  - Object selection
     - Most Descriptive Compounds (MDC) [4]
     - Most Dissimilar Compounds  (DIS) [5]
 
