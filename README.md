@@ -111,16 +111,15 @@ To install for all users on Unix/Linux/OSX/Windows:
 Development
 ===========
 GIT
-~~~
+---
 
 You can check the latest sources with the command::
 
   git clone https://github.com/zeld/libscientific.git
 
-~~~
 
 Contributing
-~~~~~~~~~~~~~
+------------
 
 To contribute you can fork the project, or if you have already forked the project
 update to the latest version of libscientific, make the changes and open a Pull Request.
