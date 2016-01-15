@@ -7,30 +7,35 @@ for matrix computations. Only left eigenvectors and eigenvalues are calculated
 using a third part library, lapack version 3.5.0.
 
 Actually libscientific is able to compute:
-- Multivariate analysis
-  * PCA (NIPALS ALGORITHM)
-  * PLS (NIPALS ALGORITHM)
-  * MLR (Ordinary least squares algorithm)
-  * UPCA
-  * UPLS
 
-- Pattern recognition
-  * Fisher LDA
+-Multivariate analysis
+  - PCA (NIPALS ALGORITHM) [1]
+  - PLS (NIPALS ALGORITHM) [1]
+  - MLR (Ordinary least squares algorithm) [2]
+  - UPCA [3]
+  - UPLS [4]
 
-- Cluster analysis
-  * K-means++ (David Arthur algorithm)
-  * Hierarchical clustering
+-Pattern recognition
+  - Fisher LDA
 
-- Object selection
-  * Most Descriptive Compounds (MDC)
-  * Most Dissimilar Compounds  (DIS)
+-Cluster analysis
+  - K-means++ (David Arthur algorithm) [5]
+  - Hierarchical clustering
 
-Moreover for some algorithms this library contains validation methods such as:
+-Object selection
+  - Most Descriptive Compounds (MDC) [6]
+  - Most Dissimilar Compounds  (DIS) [7]
+
+Moreover for some algorithms is possible to run validation methods
+with parallel computing to be faster:
+
 - Bootstrap k-fold Cross Validation (RGCV)
 - Leave-One-Out
 - Y-Scrambling
-running in with parallel computing to be faster.
 
+
+License
+============
 
 Libscientific is distributed under GPLv3 license, this means that:
 
@@ -38,8 +43,8 @@ Libscientific is distributed under GPLv3 license, this means that:
 - you can modify this library and commit changes.
 - you can not use this library inside a commercial software.
 
-License
-============
+To know more in details how the licens work please read the file "LICENSE" or
+go to "http://www.gnu.org/licenses/gpl-3.0.en.html"
 
 Libscientific is currently property of Giuseppe Marco Randazzo which is also the
 current package maintainer.
@@ -53,9 +58,8 @@ Dependencies
 The required dependencies to use libscientific are:
 
 - fortran compiler
-- c compiler (gcc or clang)
+- c compiler (gcc or clang for osx)
 - cmake
-
 
 Install
 =======
