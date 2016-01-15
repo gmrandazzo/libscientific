@@ -35,6 +35,7 @@ with parallel computing to be faster:
 
 
 References:
+----------
 
 [1] P. Geladi, B.R. Kowalski
      Partial least-squares regression: a tutorial
