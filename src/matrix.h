@@ -86,6 +86,19 @@ void MatrixColRMS(matrix* mx, dvector** colrms);
 /*Calculate the column variance for the matrix mx*/
 void MatrixColVar(matrix *mx, dvector **colvar);
 
+/* Calculate the matrix descriptive statistics:
+ *  - Column Average
+ *  - Column Standard Deviation§
+ *  - Column Variance
+ *  - Column Moda
+ *  - Column Armonic Average
+ *  - Column Geometric Average
+ *  - Column Max
+ *  - Column Min
+ *  - Number of objects equal to the average
+ */
+void MatrixColDescStat(matrix *mx, matrix **ds);
+
 /*Calculate the covariance matrix*/
 void MatrixCovariance(matrix *mx, matrix **cm);
 

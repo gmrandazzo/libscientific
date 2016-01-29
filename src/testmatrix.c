@@ -29,13 +29,22 @@
 void Test32(){
   /*Large matrix*/
   matrix *mx;
-  NewMatrix(&mx, 324327, 33);
+  matrix *ds;
+  int nrow = 356123;
+  int ncol = 33;
+  NewMatrix(&mx, nrow, ncol);
   int i, j;
-  for(i = 0; i < 324327; i++){
-    for(j = 0; j < 33; j++){
-      mx->data[i][j] = i+j;
+  srand(nrow+ncol);
+  for(i = 0; i < nrow; i++){
+    for(j = 0; j < ncol; j++){
+      mx->data[i][j] = randDouble(-1, 1);
     }
   }
+  initMatrix(&ds);
+  puts("Calculating Matrix Statistics Descriptive");
+  MatrixColDescStat(mx, &ds);
+  PrintMatrix(ds);
+  DelMatrix(&ds);
   DelMatrix(&mx);
 }
 

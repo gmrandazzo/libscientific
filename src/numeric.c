@@ -164,23 +164,3 @@ void RouletteWheelselection(dvector *fitness, size_t nselect, size_t init, uivec
     }
   }
 }
-
-
-int cmp(const void *a, const void *b)
-{
-    double fa = *(double *) a;
-    double fb = *(double *) b;
-    return (fa > fb) - (fa < fb);
-}
-
-void median(double array[], int n, double *median)
-{
-  (*median) = -9999.f;
-  qsort(array, n, sizeof(double), cmp);
-
-  if (n%2 == 0){
-    (*median) = (array[(int)abs(n/2)] + array[(int)abs(n/2) - 1])/2.f;
-  }
-  else
-    (*median) = array[(int)abs(n/2)];
-}

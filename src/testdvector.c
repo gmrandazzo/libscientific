@@ -41,7 +41,7 @@ void test5()
   puts("Vector after sorting...");
   PrintDVector(v);
   double m;
-  median(v->data, v->size, &m);
+  DVectorMedian(v, &m);
   printf("Median: %f\n", m);
 
   DelDVector(&v);

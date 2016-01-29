@@ -26,7 +26,7 @@
 #include <ctype.h>
 
 /*strdup is not standard so add an exter or add this code:
- 
+
  char *strdup(const char *str)
 {
     int n = strlen(str) + 1;
@@ -87,22 +87,22 @@ void StrVectorAppend(strvector **s, char *str)
   size_t size = (*s)->size+1;
   strvector *tmp;
   NewStrVector(&tmp, (*s)->size);
-  
+
   for(i = 0; i < (*s)->size; i++){
     setStr(tmp, i, getStr((*s), i));
   }
-  
+
   (*s)->data = xrealloc((*s)->data, sizeof(char*)*size);
 //   (*s)->data[(*s)->size] = xmalloc(sizeof(char)*MAXCHARSIZE);
   (*s)->data[(*s)->size] = xmalloc(sizeof(char));
   (*s)->size += 1;
-  
+
   for(i = 0; i < tmp->size; i++){
     setStr((*s), i, getStr(tmp, i));
   }
-  
+
   setStr((*s), (*s)->size-1, str);
-  
+
   DelStrVector(&tmp);
 }
 
@@ -152,7 +152,7 @@ void StrVectorResize(strvector **s, size_t size_)
       xfree((*s)->data[i]);
     xfree((*s)->data);
   }
-  
+
   (*s)->size = size_;
   (*s)->data = xmalloc(sizeof(char*)*size_);
   for(i = 0; i < (*s)->size; i++){
@@ -225,7 +225,7 @@ void DVectorResize(dvector **d, size_t size_)
   if((*d)->size > 0){
     xfree((*d)->data);
   }
-  
+
   (*d)->data = xmalloc(sizeof(double)*size_);
   (*d)->size = size_;
   for(i = 0; i < (*d)->size; i++){
@@ -238,7 +238,7 @@ void PrintDVector(dvector *v)
   if(v->size > 0){
     size_t i;
     for(i = 0; i < v->size; i++){
-      printf("[%u]: %.4f\n", (unsigned int)i, getDVectorValue(v, i)); 
+      printf("[%u]: %.4f\n", (unsigned int)i, getDVectorValue(v, i));
     }
   }
 }
@@ -349,7 +349,7 @@ double DvectorModule(dvector *v)
   size_t i;
   double sum = +0.f;
   for(i = 0; i < v->size; i++)
-    sum += v->data[i]*v->data[i]; 
+    sum += v->data[i]*v->data[i];
   return sqrt(sum);/* module of the for v */
 }
 
@@ -357,9 +357,9 @@ void DVectNorm(dvector *v, dvector *nv)
 {
   size_t i;
   double mod;
-  
+
   mod = DvectorModule(v);
-  
+
   if((*nv).size != 0 && (*nv).size <= v->size){ /* store the normalized vor value to an other vor named n_v */
     for(i = 0; i < v->size; i++){
       nv->data[i] = v->data[i]/mod;
@@ -410,19 +410,19 @@ void DVectorMinMax(dvector* v, double* min, double* max)
       if(min != NULL){
         (*min) = getDVectorValue(v, 0);
       }
-      
+
       if(max != NULL){
         (*max) = getDVectorValue(v, 0);
       }
     }
-    
+
     for(i = 0; i < v->size; i++){
       if(min != NULL){
         if(getDVectorValue(v, i) < (*min)){
           (*min) = getDVectorValue(v, i);
         }
       }
-      
+
       if(max != NULL){
         if(getDVectorValue(v, i) > (*max)){
           (*max) = getDVectorValue(v, i);
@@ -435,6 +435,25 @@ void DVectorMinMax(dvector* v, double* min, double* max)
     fflush(stderr);
     abort();
   }
+}
+
+int cmp(const void *a, const void *b)
+{
+    double fa = *(double *) a;
+    double fb = *(double *) b;
+    return (fa > fb) - (fa < fb);
+}
+
+void DVectorMedian(dvector* d, double *median)
+{
+  (*median) = -9999.f;
+  qsort(d->data, d->size, sizeof(double), cmp);
+
+  if (d->size%2 == 0){
+    (*median) = (d->data[(int)abs(d->size/2)] + d->data[(int)abs(d->size/2) - 1])/2.f;
+  }
+  else
+    (*median) = d->data[(int)abs(d->size/2)];
 }
 
 void DVectorMean(dvector* d, double* mean)
@@ -452,7 +471,7 @@ void DVectorSDEV(dvector* d, double* sdev)
   size_t i;
   double mean;
   DVectorMean(d, &mean);
-  
+
   (*sdev) = +0.f;
   for(i = 0; i < d->size; i++)
     (*sdev) += square(d->data[i] - mean);
@@ -460,19 +479,9 @@ void DVectorSDEV(dvector* d, double* sdev)
   (*sdev) = sqrt((*sdev));
 }
 
-int floatcomp(const void* elem1, const void* elem2)
-{
-  if(*(const double*)elem1 < *(const double*)elem2){
-    return -1;
-  }
-  else{
-    return *(const double*)elem1 > *(const double*)elem2;
-  }
-}
- 
 void DVectorSort(dvector* v)
 {
-  qsort(v->data, v->size, sizeof(v->data[0]), floatcomp);
+  qsort(v->data, v->size, sizeof(v->data[0]), cmp);
 }
 
 /* INT VECTOR */
@@ -486,7 +495,7 @@ void NewIVector(ivector **d, size_t size_)
 {
   long int i;
   (*d) = xmalloc(sizeof(ivector));
-  (*d)->size = size_; 
+  (*d)->size = size_;
   (*d)->data = xmalloc(sizeof(int)*size_);
   for(i = 0; i < (*d)->size; i++)
     (*d)->data[i] = 0;
@@ -577,7 +586,7 @@ void NewUIVector(uivector **d, size_t size_)
 {
   size_t i;
   (*d) = xmalloc(sizeof(uivector));
-  (*d)->size = size_; 
+  (*d)->size = size_;
   (*d)->data = xmalloc(sizeof(size_t)*size_);
   for(i = 0; i < (*d)->size; i++)
     (*d)->data[i] = 0;
@@ -595,7 +604,7 @@ void UIVectorResize(uivector **d, size_t size_)
   if((*d)->size > 0){
     xfree((*d)->data);
   }
-  
+
   (*d)->data = xmalloc(sizeof(size_t*)*size_);
   (*d)->size = size_;
   for(i = 0; i < (*d)->size; i++)
@@ -683,7 +692,7 @@ int intcmp(const void *v1, const void *v2)
 {
   return (*(int *)v1 - *(int *)v2);
 }
-           
+
 void SortUIVector(uivector* d)
 {
   qsort(d->data, d->size, sizeof(d->data[0]), intcmp);

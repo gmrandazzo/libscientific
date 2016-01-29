@@ -61,7 +61,4 @@ void StochasticUniversalSample(dvector *fitness, size_t nselect, size_t init, ui
 
 void RouletteWheelselection(dvector *fitness, size_t nselect, size_t init, uivector **selection);
 
-/*Median algorithm*/
-void median(double array[], int n, double *median);
-
 #endif

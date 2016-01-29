@@ -101,6 +101,7 @@ void DVectorDVectorDiff(dvector *v1, dvector *v2, dvector **v3);
 void DVectorDVectorSum(dvector *v1, dvector *v2, dvector **v3);
 void DVectorMinMax(dvector *v, double *min, double *max);
 void DVectorMean(dvector *d, double *mean);
+void DVectorMedian(dvector *d, double *mean);
 void DVectorSDEV(dvector *d, double *sdev);
 void DVectorSort(dvector *v);
 

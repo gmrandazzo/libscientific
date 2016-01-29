@@ -1047,6 +1047,67 @@ void MatrixColVar(matrix* mx, dvector** colvar)
   }
 }
 
+/* Calculate the matrix descriptive statistics:
+ *  - Column Average
+ *  - Column Median
+ *  - Column Armonic Average
+ *  - Column Variance Population
+ *  - Column Corrected Variance Population
+ *  - Column Standard Deviation
+ *  - Column Corrected Standard Deviation
+ *  - Column Max
+ *  - Column Min
+ */
+void MatrixColDescStat(matrix *mx, matrix **ds)
+{
+  int i, j;
+  double avg = 0.f;
+  double median = 0.f;
+  double armonic = 0.f;
+  double var = 0.f;
+  double min = 0.f, max = 0.f;
+  dvector *v;
+
+  ResizeMatrix(ds, mx->col, 9);
+  NewDVector(&v, mx->row);
+
+  for(j = 0; j < mx->col; j++){
+    avg = 0.f;
+    var = 0.f;
+    median = 0.f;
+    armonic = 0.f;
+
+    min = max = mx->data[0][j];
+    for(i = 0; i < mx->row; i++){
+      avg += mx->data[i][j];
+      armonic += 1.f/mx->data[i][j];
+      v->data[i] = mx->data[i][j];
+      if(mx->data[i][j] > max)
+        max = mx->data[i][j];
+
+      if(mx->data[i][j] < min)
+        min = mx->data[i][j];
+    }
+    avg /= (float)mx->row;
+
+    DVectorMedian(v, &median);
+    for(i = 0; i < mx->row; i++){
+      var += square(mx->data[i][j] - avg);
+    }
+
+    (*ds)->data[j][0] = avg;
+    (*ds)->data[j][1] = median;
+    (*ds)->data[j][2] = (float)(mx->row)/armonic;
+    (*ds)->data[j][3] = var/(float)mx->row;
+    (*ds)->data[j][4] = var/(float)(mx->row-1);
+    (*ds)->data[j][5] = sqrt(var/(float)mx->row);
+    (*ds)->data[j][6] = sqrt(var/(float)(mx->row-1));
+    (*ds)->data[j][7] = min;
+    (*ds)->data[j][8] = max;
+  }
+  DelDVector(&v);
+}
+
 /* calculation of the covariance matrix */
 void MatrixCovariance(matrix* mx, matrix** cm)
 {
