@@ -61,7 +61,7 @@ uint32_t xor128(void) {
   static uint32_t z = 521288629;
   static uint32_t w = 88675123;
   uint32_t t;
- 
+
   t = x ^ (x << 11);
   x = y; y = z; z = w;
   return w = w ^ (w >> 19) ^ (t ^ (t >> 8));
@@ -102,7 +102,7 @@ void StochasticUniversalSample(dvector *fitness, size_t nselect, size_t init, ui
   for(i = 0; i <  fitness->size; i++){
     sum += getDVectorValue(fitness, i);
   }
-  
+
   if(FLOAT_EQ(sum, 0.f, 1e-3) || sum < 0){
     srand(time(0));
     do{
@@ -145,11 +145,11 @@ void RouletteWheelselection(dvector *fitness, size_t nselect, size_t init, uivec
   sum = 0.f;
   sumfitness = 0.f;
   srand(init);
-  
+
   for(i = 0; i < fitness->size; i++){
     sumfitness += getDVectorValue(fitness, i);
   }
-  
+
   for(k = 0; k < nselect; k++){
     ptr = (double)rand()/(double)RAND_MAX;
     for(i = 0; i < fitness->size; i++){
@@ -163,4 +163,24 @@ void RouletteWheelselection(dvector *fitness, size_t nselect, size_t init, uivec
       }
     }
   }
+}
+
+
+int cmp(const void *a, const void *b)
+{
+    double fa = *(double *) a;
+    double fb = *(double *) b;
+    return (fa > fb) - (fa < fb);
+}
+
+void median(double array[], int n, double *median)
+{
+  (*median) = -9999.f;
+  qsort(array, n, sizeof(double), cmp);
+
+  if (n%2 == 0){
+    (*median) = (array[(int)abs(n/2)] + array[(int)abs(n/2) - 1])/2.f;
+  }
+  else
+    (*median) = array[(int)abs(n/2)];
 }

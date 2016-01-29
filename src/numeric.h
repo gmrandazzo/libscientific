@@ -40,25 +40,28 @@
 
 // #ifdef WIN32
 int myrand_r(unsigned int *seed);
-// #endif 
+// #endif
 size_t Factorial(size_t x);
 int randInt(int low, int high);
 double randDouble(double low, double high);
 double square(double x);
 /*
  *Stocastic Universal Sample
- * 
+ *
  * Input:
  * fitness = vector of weight to select...
  * nselect = number of objects to select
  * init = initializator for randomness...
- * 
+ *
  * Output:
  * selection = vector of selected id
- * 
+ *
  */
 void StochasticUniversalSample(dvector *fitness, size_t nselect, size_t init, uivector **selection);
 
 void RouletteWheelselection(dvector *fitness, size_t nselect, size_t init, uivector **selection);
+
+/*Median algorithm*/
+void median(double array[], int n, double *median);
 
 #endif
