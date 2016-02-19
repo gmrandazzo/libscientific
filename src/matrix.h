@@ -88,14 +88,14 @@ void MatrixColVar(matrix *mx, dvector **colvar);
 
 /* Calculate the matrix descriptive statistics:
  *  - Column Average
- *  - Column Standard Deviation§
- *  - Column Variance
- *  - Column Moda
+ *  - Column Median
  *  - Column Armonic Average
- *  - Column Geometric Average
+ *  - Column Variance Population
+ *  - Column Variance Sample (Correcter Variance)
+ *  - Column Standard Deviation
+ *  - Column Standard Deviation Sample (Corrected Standard Deviation)
  *  - Column Max
  *  - Column Min
- *  - Number of objects equal to the average
  */
 void MatrixColDescStat(matrix *mx, matrix **ds);
 

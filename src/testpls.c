@@ -1208,6 +1208,8 @@ void TestPLS1()
 
   printf("Test PLS 1\n");
 
+  PrintMatrix(x);
+  PrintMatrix(y);
 
   /*Allocate the final output*/
   NewPLSModel(&m);
@@ -1269,13 +1271,13 @@ int main(void)
   TestPLS4();
   TestPLS5();
 
-  /*test 6-9*/
+  /*test 6-9
   TestPLS6();
   TestPLS7();
   TestPLS8();
   TestPLS9();
   TestPLS10();
-  TestPLS11();
+  TestPLS11();*/
 
   /* Experimental tests
   TestPLS12();

@@ -88,37 +88,35 @@ void DelPLSModel(PLSMODEL** m)
   xfree((*m));
 }
 
-/*
- *  Algorithm Geladi
- *
- * 1) take u  = some y[j] from Y
- *
- * 2) w' = u'X/u'u
- *
- * 3) w' = w'/||w||
- *
- * 4) t = Xw/w'w
- *
- * 5) q' = t'Y/t't
- *
- * 6) q' = q'/||q||
- *
- * 7) u = Yq/q'q
- *
- * 8) Compare the t in step 4 with th eone from the preceding iteration.
- * If they are equal (within a certain rounding error) go to step 9, else go to step 2.
- *
- * 9) p' = t'X/t't
- *
- * 10) p_new = p_old'/||p_old'||
- *
- * 11) t_new = t_old*||p_old'||
- *
- * 12) w_new' = w_old'*||p_old'||
- *
- */
-
-
+  /*
+  *  Algorithm Geladi
+  *
+  * 1) take u  = some y[j] from Y
+  *
+  * 2) w' = u'X/u'u
+  *
+  * 3) w' = w'/||w||
+  *
+  * 4) t = Xw/w'w
+  *
+  * 5) q' = t'Y/t't
+  *
+  * 6) q' = q'/||q||
+  *
+  * 7) u = Yq/q'q
+  *
+  * 8) Compare the t in step 4 with th eone from the preceding iteration.
+  * If they are equal (within a certain rounding error) go to step 9, else go to step 2.
+  *
+  * 9) p' = t'X/t't
+  *
+  * 10) p_new = p_old'/||p_old'||
+  *
+  * 11) t_new = t_old*||p_old'||
+  *
+  * 12) w_new' = w_old'*||p_old'||
+  *
+  */
 
 void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautoscaling, PLSMODEL* model, ssignal *s)
 {
@@ -135,6 +133,7 @@ void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautosc
     dvector *Y_avg;
 
     dvector *t; /* X score vector*/
+    dvector *t_old; /* X score vector*/
     dvector *p; /* X loading vector */
     dvector *w; /* X weights vector */
 
@@ -144,7 +143,7 @@ void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautosc
     dvector *xeval;
     dvector *yeval;
 
-    double min, max, dot_t, dot_t_old = 0.f, dot_u, dot_q, dot_w, mod_p_old, ssx;
+    double min, max, dot_t, deltat = 0.f, dot_u, dot_q, dot_w, mod_p_old, ssx;
 
     if(mx->row == my->row){
       if(nlv > mx->col) /* if the number of principal component selected is major of the permitted */
@@ -158,15 +157,8 @@ void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautosc
       MatrixColAverage(mx, &(model->xcolaverage));
 
       for(j = 0; j < mx->col; j++){
-        if(mx->row > 1){
-          for(i = 0; i < mx->row; i++){
-            X->data[i][j] = mx->data[i][j] - model->xcolaverage->data[j];
-          }
-        }
-        else{
-          for(i = 0; i < mx->row; i++){
-            X->data[i][j] = mx->data[i][j];
-          }
+        for(i = 0; i < mx->row; i++){
+          X->data[i][j] = mx->data[i][j] - model->xcolaverage->data[j];
         }
       }
 
@@ -224,15 +216,8 @@ void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautosc
       /*mean centering the y matrix*/
       MatrixColAverage(my, &(model->ycolaverage));
       for(j = 0; j < my->col; j++){
-        if(my->row > 1){
-          for(i = 0; i < my->row; i++){
-            Y->data[i][j] = my->data[i][j] - model->ycolaverage->data[j];
-          }
-        }
-        else{
-          for(i = 0; i < my->row; i++){
-            Y->data[i][j] = my->data[i][j];
-          }
+        for(i = 0; i < my->row; i++){
+          Y->data[i][j] = my->data[i][j] - model->ycolaverage->data[j];
         }
       }
 
@@ -299,6 +284,7 @@ void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautosc
       */
 
       NewDVector(&t, X->row);
+      NewDVector(&t_old, X->row);
       NewDVector(&p, X->col);
       NewDVector(&w, X->col);
 
@@ -425,36 +411,28 @@ void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautosc
               printf("\n New Score vector u for Y\n");
               PrintDVector(u);
               #endif
-
-              dot_t = DVectorDVectorDotProd(t, t);
             }
             else{
               /*If the Y block has only one variable, step 5-8 can be omitted by putting q = 1 and no more iteration is necessary.*/
               DVectorSet(q, 1);
-              dot_t = DVectorDVectorDotProd(t, t);
               //break;
             }
 
-
-            /* Step 8 if mod_t == mod_t_old stop iteration else restart from step 2 */
-            #ifdef DEBUG
-            printf("|t_old| %f\t |t_new| %f\n", dot_t_old, dot_t);
-            sleep(1);
-            #endif
+            /* Step 8 if t_old == t new with a precision PLSCONVERGENCE then stop iteration else restart from step 2 */
 
             if(loop == 0){
-              dot_t_old = dot_t;
+              for(i = 0; i < t->size; i++)
+                t_old->data[i] = t->data[i];
             }
             else{
-              #ifdef DEBUG
-              printf("%f > %f\n", PLSCONVERGENCE*sqrt(dot_t), sqrt(square(dot_t_old - dot_t)));
-              #endif
-              if(PLSCONVERGENCE*sqrt(dot_t) > sqrt(square(dot_t_old - dot_t))){
-                break;
+              deltat = 0.f;
+              for(i = 0; i < t->size; i++){
+                deltat = (t->data[i] - t_old->data[i]) * (t->data[i] - t_old->data[i]);
+                t_old->data[i] = t->data[i];
               }
-              else{
-                dot_t_old = dot_t;
-                continue;
+              deltat = sqrt(deltat);
+              if(deltat < PLSCONVERGENCE){
+                break;
               }
             }
             loop++;
@@ -464,7 +442,7 @@ void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautosc
           /* Step 9 compute the loading vector for X: p' = t'X/t't  and y */
           DVectorMatrixDotProduct(X, t, p);
 
-          /* t't was previously calculed and is stored in mod_t */
+          dot_t = DVectorDVectorDotProd(t, t);
           for(i = 0; i < p->size; i++){
             p->data[i] /= dot_t;
           }
@@ -497,12 +475,6 @@ void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautosc
 
           /*End Step 13*/
 
-          /*MOD VERSION BS
-          for(i = 0; i < q->size; i++){
-            setDVectorValue(q, i, getDVectorValue(q, i)*getDVectorValue(model->b, model->b->size-1));
-          }
-          */
-
           /* Step 14  Adjust X for what has been found: Xnew=X-tp'  and Y fort what has been found Ynew = Y - btp' */
           /* X */
           for(i = 0; i < X->row; i++){
@@ -514,11 +486,7 @@ void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautosc
           /* Y */
           for(i = 0; i < Y->row; i++){
             for(j = 0; j < Y->col; j++){
-              /*Y->data[i][j] -= (model->b->data[pc] * t->data[i] * q->data[j]); Version Geladi*/
-              Y->data[i][j] -= (t->data[i] * q->data[j]);    /*Version Tenenhaus*/
-              /*MOD VERSION BS
-              setMatrixValue(Y, i, j, (getMatrixValue(Y, i, j) - (getDVectorValue(t, i) * getDVectorValue(q, j))));
-              */
+              Y->data[i][j] -= (model->b->data[pc] * t->data[i] * q->data[j]);
             }
           }
 
@@ -597,6 +565,7 @@ void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautosc
       DelMatrix(&Y);
 
       DelDVector(&t);
+      DelDVector(&t_old);
       DelDVector(&p);
       DelDVector(&w);
 
@@ -615,25 +584,23 @@ void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautosc
   }
 }
 
-void PLSBetasCoeff(PLSMODEL *model, size_t nlv, matrix **betas)
+void PLSBetasCoeff(PLSMODEL *model, size_t nlv, dvector **betas)
 {
   /* compute beta coefficient
    Wstar = W *(P'*W)^(-1);
-   B = Wstar*Q’;
+   B = Wstar*b’;
   */
-  matrix *W, *P_, *Q_;
+  matrix *W, *P_, *B_;
   NewMatrix(&W, model->xweights->row, nlv);
   NewMatrix(&P_, nlv, model->xweights->row);
-  NewMatrix(&Q_, nlv, model->yloadings->row);
+  NewMatrix(&B_, nlv, 1);;
 
   for(size_t j = 0; j < nlv; j++){
     for(size_t i = 0; i < model->xweights->row; i++){
       W->data[i][j] = model->xweights->data[i][j];
       P_->data[j][i] = model->xloadings->data[i][j];
     }
-    for(size_t i = 0; i < model->yloadings->row; i++){
-      Q_->data[j][i] = model->yloadings->data[i][j];
-    }
+    B_->data[j][0] = model->b->data[j];
   }
 
   matrix *PW;
@@ -651,15 +618,19 @@ void PLSBetasCoeff(PLSMODEL *model, size_t nlv, matrix **betas)
   MatrixDotProduct(W, PWinv, WStar);
   DelMatrix(&PWinv);
 
-  ResizeMatrix(betas, model->xweights->row, model->yloadings->row);
-  MatrixDotProduct(WStar, Q_, (*betas));
-  DelMatrix(&WStar);
+  matrix *betas_;
+  NewMatrix(&betas_, WStar->row, 1);
+  MatrixDotProduct(WStar, B_, betas_);
 
-  /* method standard
-  ResizeMatrix(betas, model->xweights->row, model->yloadings->row);
-  MatrixDotProduct(W, Q_, (*betas));
-  */
-  DelMatrix(&Q_);
+  DVectorResize(betas, model->xweights->row);
+  for(size_t i = 0; i < betas_->row; i++){
+    (*betas)->data[i] = betas_->data[i][0];
+  }
+  // PrintDVector((*betas));
+  DelMatrix(&WStar);
+  DelMatrix(&betas_);
+
+  DelMatrix(&B_);
   DelMatrix(&W);
 }
 /*

@@ -1052,9 +1052,9 @@ void MatrixColVar(matrix* mx, dvector** colvar)
  *  - Column Median
  *  - Column Armonic Average
  *  - Column Variance Population
- *  - Column Corrected Variance Population
+ *  - Column Variance Sample (Correcter Variance)
  *  - Column Standard Deviation
- *  - Column Corrected Standard Deviation
+ *  - Column Standard Deviation Sample (Corrected Standard Deviation)
  *  - Column Max
  *  - Column Min
  */

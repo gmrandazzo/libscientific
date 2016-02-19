@@ -30,6 +30,7 @@ typedef struct{
   matrix *xweights;
   matrix *yscores;
   matrix *yloadings;
+  matrix *cweights;
   dvector *b;
   dvector *xvarexp;
   dvector *xcolaverage;
@@ -63,10 +64,11 @@ void NewPLSModel(PLSMODEL **m);
  */
 void DelPLSModel(PLSMODEL **m);
 
+/* PLS calculation from P. Geladi algorithm */
 void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautoscaling, PLSMODEL *model, ssignal *s);
 
 /* Calculate betas coefficients from a pls model at nlv latent variables */
-void PLSBetasCoeff(PLSMODEL *model, size_t nlv, matrix **betas);
+void PLSBetasCoeff(PLSMODEL *model, size_t nlv, dvector **betas);
 
 void PLSScorePredictor(matrix *mx, PLSMODEL *model, size_t nlv, matrix **xscores);
 
