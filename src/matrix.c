@@ -1285,45 +1285,50 @@ double Matrix1norm(matrix *mx)
   return norm;
 }
 
-double Determinant(double **a,int n)
+double MatrixDeterminant(matrix *mx1)
 {
-  int i,j,j1,j2;
-  double det = 0;
-  double **m = NULL;
+  if(mx1->row == mx1->col){
+    size_t i, j, k, l;
+    double d = 0;
+    matrix *mx2;
 
-  if (n < 1){ /* Error */
-    return 9999;
-  }
-  else if(n == 1){ /* Shouldn't get used */
-    det = a[0][0];
-  }
-  else if (n == 2){
-    det = a[0][0] * a[1][1] - a[1][0] * a[0][1];
+    if (mx1->row < 1){
+      return 9999;
+    }
+    else if(mx1->row == 1){
+      d = mx1->data[0][0];
+    }
+    else if (mx1->row == 2){
+      d = mx1->data[0][0] * mx1->data[1][1] - mx1->data[1][0] * mx1->data[0][1];
+    }
+    else{
+      d = 0.;
+      for(k = 0; k < mx1->row; k++){
+        NewMatrix(&mx2, mx1->row-1, mx1->row-1);
+        for(i = 1; i < mx1->row; i++){
+          l = 0;
+          for(j = 0; j < mx1->row; j++){
+            if(j == k)
+              continue;
+            else{
+              mx2->data[i-1][l] = mx1->data[i][j];
+              l++;
+            }
+          }
+        }
+        d += pow(-1.0, 1.0+k+1.0) * mx1->data[0][k] * MatrixDeterminant(mx2);
+        DelMatrix(&mx2);
+      }
+    }
+    return d;
   }
   else{
-    det = 0;
-    for (j1=0;j1<n;j1++){
-      m = malloc((n-1)*sizeof(double *));
-      for (i=0;i<n-1;i++)
-        m[i] = malloc((n-1)*sizeof(double));
-      for (i=1;i<n;i++) {
-        j2 = 0;
-        for (j=0;j<n;j++) {
-          if (j == j1)
-            continue;
-          m[i-1][j2] = a[i][j];
-          j2++;
-        }
-      }
-      det += pow(-1.0,1.0+j1+1.0) * a[0][j1] * Determinant(m,n-1);
-      for (i=0;i<n-1;i++)
-        free(m[i]);
-      free(m);
-    }
+    /* Error! */
+    return 9999;
   }
-  return det;
 }
 
+/*
 double MatrixDeterminant(matrix *mx)
 {
   if(mx->row == mx->col){
@@ -1333,6 +1338,7 @@ double MatrixDeterminant(matrix *mx)
     return 9999;
   }
 }
+*/
 
 void MatrixNorm(matrix *mx, matrix *nmx)
 {
