@@ -26,6 +26,27 @@
 #include "numeric.h"
 #include "algebra.h"
 
+void Test33(){
+  matrix *m;
+  NewMatrix(&m, 3, 3);
+  m->data[0][0] = 3;
+  m->data[0][1] = 5;
+  m->data[0][2] = 6;
+
+  m->data[1][0] = 9;
+  m->data[1][1] = 2;
+  m->data[1][2] = -1;
+
+  m->data[2][0] = 5;
+  m->data[2][1] = -8;
+  m->data[2][2] = 1;
+
+  double det = MatrixDeterminant(m);
+  if(det == -580){
+    printf("Matrix determinant %f   :OK\n", det);
+  }
+}
+
 void Test32(){
   /*Large matrix*/
   matrix *mx;
@@ -1093,5 +1114,6 @@ int main(void)
   Test30();
   Test31();*/
   Test32();
+  Test33();
   return 0;
 }

@@ -132,6 +132,7 @@ void MatrixSVNScaling(matrix *mx_in, matrix **mx_out);
 
 double Matrixnorm(matrix *mx);
 double Matrix1norm(matrix *mx);
+double MatrixDeterminant(matrix *mx);
 void MatrixNorm(matrix *mx, matrix *nmx);
 void MatrixColumnMinMax(matrix* mx, size_t col, double* min, double* max);
 void MatrixSort(matrix *mx, size_t col_n);
