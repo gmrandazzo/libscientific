@@ -1469,10 +1469,18 @@ void MatrixGetMinValue(matrix* mx, size_t* row, size_t* col)
   }
 }
 
+
+int cmpfunc(const void *a, const void *b )
+{
+  const double *a_ = *(const double **)a;
+  const double *b_ = *(const double **)b;
+  return b_[0] - a_[0];
+}
+
 void SVD(matrix* mx, matrix **U, matrix **S, matrix **VT)
 {
-  size_t i;
-  matrix *w1, *w2, *mx_t, *v;
+  size_t i, j;
+  matrix *w1, *w2, *mx_t, *v, *to_sort;
   dvector *eval1, *eval2;
   NewMatrix(&w1, mx->row, mx->row); // A A^T
   NewMatrix(&w2, mx->col, mx->col); // A^T A
@@ -1494,12 +1502,39 @@ void SVD(matrix* mx, matrix **U, matrix **S, matrix **VT)
   MatrixTranspose(v, (*VT));
   ResizeMatrix(S, mx->row, mx->col);
 
+  NewMatrix(&to_sort, (*S)->row, 2);
+
   for(i = 0; i < (*S)->col; i++){
     if(FLOAT_EQ(eval1->data[i], 0.f, 1e-6) || eval1->data[i] < 0)
       (*S)->data[i][i] = 0.f;
-    else
+    else{
       (*S)->data[i][i] = sqrt(eval1->data[i]);
+      to_sort->data[i][0] = (*S)->data[i][i];
+      to_sort->data[i][1] = i;
+    }
   }
+
+  /* Re arrange the matrix U, V by sorting from the larger S to the smaller S */
+  qsort(to_sort->data, to_sort->row, sizeof(double*), cmpfunc);
+
+  /* Now swap column in U and row in VT accordin the eigenvector order*/
+  for(j = 0; j < (*U)->col; j++){
+    size_t c_id = (int)to_sort->data[j][1];
+    (*S)->data[j][j] = to_sort->data[j][0];
+    dvector *col = getMatrixColumn((*U), j);
+    dvector *row = getMatrixRow((*VT), j);
+    for(i = 0; i < (*U)->row; i++){
+      (*U)->data[i][j] = (*U)->data[i][c_id];
+      (*U)->data[i][c_id] = col->data[i];
+
+      (*VT)->data[j][i] = (*VT)->data[c_id][i];
+      (*VT)->data[c_id][i] = row->data[i];
+    }
+    DelDVector(&row);
+    DelDVector(&col);
+  }
+  DelMatrix(&to_sort);
+
 
   DelMatrix(&v);
   DelMatrix(&mx_t);
