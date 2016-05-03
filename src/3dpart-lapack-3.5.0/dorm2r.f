@@ -1,7 +1,3 @@
-* Use, modification, and distribution is subject to the Lapack Software
-* modified BSD license (See accompanying file LICENSE_lapack.txt or copy at
-* http://www.netlib.org/lapack/#_licensing\)
-*
 *> \brief \b DORM2R multiplies a general matrix by the orthogonal matrix from a QR factorization determined by sgeqrf (unblocked algorithm).
 *
 *  =========== DOCUMENTATION ===========

@@ -1,7 +1,3 @@
-* Use, modification, and distribution is subject to the Lapack Software
-* modified BSD license (See accompanying file LICENSE_lapack.txt or copy at
-* http://www.netlib.org/lapack/#_licensing\)
-*
 *> \brief \b DLASQ4 computes an approximation to the smallest eigenvalue using values of d from the previous transform. Used by sbdsqr.
 *
 *  =========== DOCUMENTATION ===========

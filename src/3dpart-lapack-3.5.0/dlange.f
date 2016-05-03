@@ -1,7 +1,3 @@
-* Use, modification, and distribution is subject to the Lapack Software
-* modified BSD license (See accompanying file LICENSE_lapack.txt or copy at
-* http://www.netlib.org/lapack/#_licensing\)
-*
 *> \brief \b DLANGE returns the value of the 1-norm, Frobenius norm, infinity-norm, or the largest absolute value of any element of a general rectangular matrix.
 *
 *  =========== DOCUMENTATION ===========

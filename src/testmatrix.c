@@ -119,6 +119,36 @@ void Test29()
   DelMatrix(&m);
 }
 
+void Test28BIS()
+{
+  matrix *m, *U, *S, *V_T;
+  puts("Test 28: Computing Singular Value Decomposition");
+
+  NewMatrix(&m, 3, 3);
+  m->data[0][0] = 15.629; m->data[0][1] = -6.399; m->data[0][2] = -4.843;
+  m->data[1][0] = 5.305; m->data[1][1] = 14.513; m->data[1][2] = -3.903;
+  m->data[2][0] = 2.822; m->data[2][1] = -1.792; m->data[2][2] = -4.535;
+
+
+  puts("INIT MATRIX");
+  PrintMatrix(m);
+
+  initMatrix(&U);
+  initMatrix(&S);
+  initMatrix(&V_T);
+
+  SVD(m, &U, &S, &V_T);
+
+  puts("U"); PrintMatrix(U);
+  puts("S"); PrintMatrix(S);
+  puts("V_T"); PrintMatrix(V_T);
+
+  DelMatrix(&U);
+  DelMatrix(&S);
+  DelMatrix(&V_T);
+  DelMatrix(&m);
+}
+
 void Test28()
 {
   matrix *m, *U, *S, *V_T;
@@ -1109,11 +1139,12 @@ int main(void)
   /*Test25();
   Test26();
   Test27();
-  Test28();
-  Test29();
+  Test28();*/
+  Test28BIS();
+  /*Test29();
   Test30();
-  Test31();*/
+  Test31();
   Test32();
-  Test33();
+  Test33();*/
   return 0;
 }

@@ -1,7 +1,3 @@
-* Use, modification, and distribution is subject to the Lapack Software
-* modified BSD license (See accompanying file LICENSE_lapack.txt or copy at
-* http://www.netlib.org/lapack/#_licensing\)
-*
 *> \brief \b DLASQ2 computes all the eigenvalues of the symmetric positive definite tridiagonal matrix associated with the qd Array Z to high relative accuracy. Used by sbdsqr and sstegr.
 *
 *  =========== DOCUMENTATION ===========

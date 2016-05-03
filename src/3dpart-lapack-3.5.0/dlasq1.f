@@ -1,7 +1,3 @@
-* Use, modification, and distribution is subject to the Lapack Software
-* modified BSD license (See accompanying file LICENSE_lapack.txt or copy at
-* http://www.netlib.org/lapack/#_licensing\)
-*
 *> \brief \b DLASQ1 computes the singular values of a real square bidiagonal matrix. Used by sbdsqr.
 *
 *  =========== DOCUMENTATION ===========
@@ -105,17 +101,17 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date September 2012
+*> \date November 2015
 *
 *> \ingroup auxOTHERcomputational
 *
 *  =====================================================================
       SUBROUTINE DLASQ1( N, D, E, WORK, INFO )
 *
-*  -- LAPACK computational routine (version 3.4.2) --
+*  -- LAPACK computational routine (version 3.6.0) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     September 2012
+*     November 2015
 *
 *     .. Scalar Arguments ..
       INTEGER            INFO, N
@@ -148,7 +144,7 @@
 *
       INFO = 0
       IF( N.LT.0 ) THEN
-         INFO = -2
+         INFO = -1
          CALL XERBLA( 'DLASQ1', -INFO )
          RETURN
       ELSE IF( N.EQ.0 ) THEN

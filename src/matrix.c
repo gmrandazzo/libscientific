@@ -1495,8 +1495,8 @@ void SVD(matrix* mx, matrix **U, matrix **S, matrix **VT)
   initDVector(&eval2);
 
   initMatrix(&v);
-  EVectEval(w1, &eval1, U);
-  EVectEval(w2, &eval2, &v);
+  EVectEval(w1, &eval1, &v);
+  EVectEval(w2, &eval2, U);
 
   ResizeMatrix(VT, v->col, v->row);
   MatrixTranspose(v, (*VT));
@@ -1514,27 +1514,36 @@ void SVD(matrix* mx, matrix **U, matrix **S, matrix **VT)
     }
   }
 
-  /* Re arrange the matrix U, V by sorting from the larger S to the smaller S */
+  /* Re arrange the matrix U, V by sorting from the larger S to the smaller S*/
   qsort(to_sort->data, to_sort->row, sizeof(double*), cmpfunc);
 
   /* Now swap column in U and row in VT accordin the eigenvector order*/
+  matrix *Utmp, *VTtmp;
+  NewMatrix(&Utmp, (*U)->row, (*U)->col);
+  NewMatrix(&VTtmp, (*VT)->row, (*VT)->col);
+
   for(j = 0; j < (*U)->col; j++){
     size_t c_id = (int)to_sort->data[j][1];
     (*S)->data[j][j] = to_sort->data[j][0];
-    dvector *col = getMatrixColumn((*U), j);
-    dvector *row = getMatrixRow((*VT), j);
-    for(i = 0; i < (*U)->row; i++){
-      (*U)->data[i][j] = (*U)->data[i][c_id];
-      (*U)->data[i][c_id] = col->data[i];
 
-      (*VT)->data[j][i] = (*VT)->data[c_id][i];
-      (*VT)->data[c_id][i] = row->data[i];
+    for(i = 0; i < (*U)->row; i++){
+      Utmp->data[i][j] = (*U)->data[i][c_id];
+      //double tmp = (*U)->data[i][j];
+      //(*U)->data[i][j] = (*U)->data[i][c_id];
+      //(*U)->data[i][c_id] = tmp;
+      VTtmp->data[j][i] = (*VT)->data[c_id][i];
+      //double tmp = (*VT)->data[j][i];
+      //(*VT)->data[j][i] = (*VT)->data[c_id][i];
+      //(*VT)->data[c_id][i] = tmp;
     }
-    DelDVector(&row);
-    DelDVector(&col);
+
   }
   DelMatrix(&to_sort);
 
+  MatrixCopy(Utmp, U);
+  MatrixCopy(VTtmp, VT);
+  DelMatrix(&Utmp);
+  DelMatrix(&VTtmp);
 
   DelMatrix(&v);
   DelMatrix(&mx_t);
@@ -1544,11 +1553,10 @@ void SVD(matrix* mx, matrix **U, matrix **S, matrix **VT)
   DelMatrix(&w1);
 }
 
-
 /* DGESVD prototype */
 extern void dgesvd_( char* jobu, char* jobvt, int* m, int* n, double* a,
                 int* lda, double* s, double* u, int* ldu, double* vt, int* ldvt,
-                double* work, int* lwork, int* info );
+                double* work, int* lwork, int* info);
 
 void conv2matrix(int m, int n, double* a, int lda, matrix **mx)
 {
@@ -1562,27 +1570,34 @@ void conv2matrix(int m, int n, double* a, int lda, matrix **mx)
 
 void SVDlapack(matrix *mx, matrix **u, matrix **s, matrix **vt)
 {
-  int i, j;
+  int i, j, k;
   int m = mx->row, n = mx->col, lda = mx->row, ldu = mx->row, ldvt = mx->col, info, lwork;
   double wkopt;
-  double* work;
+  double* work = NULL;
   /* Local arrays */
   double *s_, *u_, *vt_, *a;
   s_ = xmalloc(sizeof(double)*mx->row);
   u_ = xmalloc(sizeof(double)*mx->row*mx->row);
   vt_ = xmalloc(sizeof(double)*mx->col*mx->col);
   a = xmalloc(sizeof(double)*mx->row*mx->col);
-  for(i = 0; i < mx->row; i++)
-    for(j = 0; j < mx->col; j++)
-      a[i+j] = mx->data[i][j];
+  k = 0;
+  for(i = 0; i < mx->row; i++){
+    for(j = 0; j < mx->col; j++){
+      /*a[i+j] = mx->data[i][j];*/
+      a[k] = mx->data[i][j];
+      k+=1;
+    }
+  }
 
   /* Query and allocate the optimal workspace */
   lwork = -1;
-  dgesvd_( "All", "All", &m, &n, a, &lda, s_, u_, &ldu, vt_, &ldvt, &wkopt, &lwork, &info );
+  dgesvd_("All", "All", &m, &n, a, &lda, s_, u_, &ldu, vt_, &ldvt, &wkopt, &lwork, &info);
+  /*dgesdd_( "Singular vectors", &m, &n, a, &lda, s_, u_, &ldu, vt_, &ldvt, &wkopt, &lwork, iwork, &info );*/
   lwork = (int)wkopt;
   work = xmalloc(lwork*sizeof(double));
   /* Compute SVD */
-  dgesvd_( "All", "All", &m, &n, a, &lda, s_, u_, &ldu, vt_, &ldvt, work, &lwork, &info );
+  dgesvd_("All", "All", &m, &n, a, &lda, s_, u_, &ldu, vt_, &ldvt, work, &lwork, &info);
+  /*dgesdd_( "Singular vectors", &m, &n, a, &lda, s_, u_, &ldu, vt_, &ldvt, work, &lwork, iwork, &info );*/
 
   if(info > 0) {
     printf("SVD convergence failed!\n" );
@@ -1795,6 +1810,7 @@ extern void dgeev_(char* jobvl, char* jobvr, int* n, double* a,
                 int* lda, double* wr, double* wi, double* vl, int* ldvl,
                 double* vr, int* ldvr, double* work, int* lwork, int* info);
 
+
 void EVectEval(matrix *mx, dvector **eval, matrix **evect)
 {
   /* Locals */
@@ -1826,13 +1842,13 @@ void EVectEval(matrix *mx, dvector **eval, matrix **evect)
 
   /* Query and allocate the optimal workspace */
   lwork = -1;
-  dgeev_("N", "V", &n, a, &lda, wr, wi, vl, &ldvl, vr, &ldvr, &wkopt, &lwork, &info);
+  dgeev_("V", "V", &n, a, &lda, wr, wi, vl, &ldvl, vr, &ldvr, &wkopt, &lwork, &info);
 
   lwork = (int)wkopt;
   work = xmalloc(lwork*sizeof(double));
 
   /* Solve eigenproblem */
-  dgeev_("N", "V", &n, a, &lda, wr, wi, vl, &ldvl, vr, &ldvr, work, &lwork, &info);
+  dgeev_("V", "V", &n, a, &lda, wr, wi, vl, &ldvl, vr, &ldvr, work, &lwork, &info);
   /* Check for convergence */
   if(info > 0){
     printf( "The algorithm failed to compute eigenvalues.\n" );
