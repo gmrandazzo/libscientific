@@ -1,1 +1,0 @@
-/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc  -std=c99 -O1 -pedantic -Wall -g -g -Wl,-search_paths_first -Wl,-headerpad_max_install_names  CMakeFiles/testmwpca.dir/testmwpca.c.o  -o testmwpca  libscientific.dylib -lm -lpthread 
