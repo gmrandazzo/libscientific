@@ -1057,6 +1057,8 @@ void MatrixColVar(matrix* mx, dvector** colvar)
  *  - Column Standard Deviation Sample (Corrected Standard Deviation)
  *  - Column Max
  *  - Column Min
+ *  - Coefficient of variation Population (CV)
+ *  - Coefficient of variation Sample (CV)
  */
 void MatrixColDescStat(matrix *mx, matrix **ds)
 {
@@ -1068,7 +1070,7 @@ void MatrixColDescStat(matrix *mx, matrix **ds)
   double min = 0.f, max = 0.f;
   dvector *v;
 
-  ResizeMatrix(ds, mx->col, 9);
+  ResizeMatrix(ds, mx->col, 11);
   NewDVector(&v, mx->row);
 
   for(j = 0; j < mx->col; j++){
@@ -1102,8 +1104,10 @@ void MatrixColDescStat(matrix *mx, matrix **ds)
     (*ds)->data[j][4] = var/(float)(mx->row-1);
     (*ds)->data[j][5] = sqrt(var/(float)mx->row);
     (*ds)->data[j][6] = sqrt(var/(float)(mx->row-1));
-    (*ds)->data[j][7] = min;
-    (*ds)->data[j][8] = max;
+    (*ds)->data[j][7] = (*ds)->data[j][5]/avg;
+    (*ds)->data[j][8] = (*ds)->data[j][6]/avg;
+    (*ds)->data[j][9] = min;
+    (*ds)->data[j][10] = max;
   }
   DelDVector(&v);
 }
@@ -1480,7 +1484,7 @@ int cmpfunc(const void *a, const void *b )
 void SVD(matrix* mx, matrix **U, matrix **S, matrix **VT)
 {
   size_t i, j;
-  matrix *w1, *w2, *mx_t, *v, *to_sort;
+  matrix *w1, *w2, *mx_t, *v/*, *to_sort*/;
   dvector *eval1, *eval2;
   NewMatrix(&w1, mx->row, mx->row); // A A^T
   NewMatrix(&w2, mx->col, mx->col); // A^T A
@@ -1502,22 +1506,22 @@ void SVD(matrix* mx, matrix **U, matrix **S, matrix **VT)
   MatrixTranspose(v, (*VT));
   ResizeMatrix(S, mx->row, mx->col);
 
-  NewMatrix(&to_sort, (*S)->row, 2);
+  /*NewMatrix(&to_sort, (*S)->row, 2);*/
 
   for(i = 0; i < (*S)->col; i++){
     if(FLOAT_EQ(eval1->data[i], 0.f, 1e-6) || eval1->data[i] < 0)
       (*S)->data[i][i] = 0.f;
     else{
       (*S)->data[i][i] = sqrt(eval1->data[i]);
-      to_sort->data[i][0] = (*S)->data[i][i];
-      to_sort->data[i][1] = i;
+      /*to_sort->data[i][0] = (*S)->data[i][i];
+      to_sort->data[i][1] = i;*/
     }
   }
 
-  /* Re arrange the matrix U, V by sorting from the larger S to the smaller S*/
-  qsort(to_sort->data, to_sort->row, sizeof(double*), cmpfunc);
+  /* Re arrange the matrix U, V by sorting from the larger S to the smaller S
+  qsort(to_sort->data, to_sort->row, sizeof(double*), cmpfunc);*/
 
-  /* Now swap column in U and row in VT accordin the eigenvector order*/
+  /* Now swap column in U and row in VT accordin the eigenvector order
   matrix *Utmp, *VTtmp;
   NewMatrix(&Utmp, (*U)->row, (*U)->col);
   NewMatrix(&VTtmp, (*VT)->row, (*VT)->col);
@@ -1528,22 +1532,18 @@ void SVD(matrix* mx, matrix **U, matrix **S, matrix **VT)
 
     for(i = 0; i < (*U)->row; i++){
       Utmp->data[i][j] = (*U)->data[i][c_id];
-      //double tmp = (*U)->data[i][j];
-      //(*U)->data[i][j] = (*U)->data[i][c_id];
-      //(*U)->data[i][c_id] = tmp;
       VTtmp->data[j][i] = (*VT)->data[c_id][i];
-      //double tmp = (*VT)->data[j][i];
-      //(*VT)->data[j][i] = (*VT)->data[c_id][i];
-      //(*VT)->data[c_id][i] = tmp;
     }
 
   }
   DelMatrix(&to_sort);
 
+
   MatrixCopy(Utmp, U);
   MatrixCopy(VTtmp, VT);
   DelMatrix(&Utmp);
   DelMatrix(&VTtmp);
+ */
 
   DelMatrix(&v);
   DelMatrix(&mx_t);

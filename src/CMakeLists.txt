@@ -171,6 +171,7 @@ set(Lapack_SRCS
 
 set(Scientific_C_SRCS memwrapper.c
                    scientificinfo.c
+                   optimization.c
                    vector.c
                    matrix.c
                    array.c
@@ -190,6 +191,7 @@ set(Scientific_C_SRCS memwrapper.c
 
 set(Scientific_C_H
                 scientificinfo.h
+                optimization.h
                 vector.h
                 matrix.h
                 array.h
@@ -224,6 +226,7 @@ set(SVDTest_SRC testsvd.c)
 set(CLASSIFIERTest_SRC testlda.c)
 set(METRICSPACETest_SRC testmetrics.c)
 set(GRAPHSTest_SRC testgraphs.c)
+set(OptimizationTest_SRC testoptimization.c)
 
 if(WIN32)
   message(STATUS "Set mingw options")
@@ -297,6 +300,9 @@ install(FILES scientific.h DESTINATION ${INCLUDE_INSTALL_DIR})
 
   add_executable(testgraphs ${GRAPHSTest_SRC})
   target_link_libraries(testgraphs libscientific)
+
+  add_executable(testoptimization ${OptimizationTest_SRC})
+  target_link_libraries(testoptimization libscientific)
 
 #   add_executable(testsvd ${SVDTest_SRC})
 #   target_link_libraries(testsvd libscientific)
