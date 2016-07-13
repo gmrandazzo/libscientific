@@ -1,0 +1,36 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/marco/projects/libscientific-0.7.4/src/matrix.h
+stdio.h
+-
+stdlib.h
+-
+vector.h
+/Users/marco/projects/libscientific-0.7.4/src/vector.h
+
+/Users/marco/projects/libscientific-0.7.4/src/metricspace.h
+matrix.h
+/Users/marco/projects/libscientific-0.7.4/src/matrix.h
+vector.h
+/Users/marco/projects/libscientific-0.7.4/src/vector.h
+
+/Users/marco/projects/libscientific-0.7.4/src/testmetrics.c
+stdio.h
+-
+metricspace.h
+/Users/marco/projects/libscientific-0.7.4/src/metricspace.h
+matrix.h
+/Users/marco/projects/libscientific-0.7.4/src/matrix.h
+
+/Users/marco/projects/libscientific-0.7.4/src/vector.h
+stdio.h
+-
+stdlib.h
+-
+
