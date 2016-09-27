@@ -1104,8 +1104,8 @@ void MatrixColDescStat(matrix *mx, matrix **ds)
     (*ds)->data[j][4] = var/(float)(mx->row-1);
     (*ds)->data[j][5] = sqrt(var/(float)mx->row);
     (*ds)->data[j][6] = sqrt(var/(float)(mx->row-1));
-    (*ds)->data[j][7] = (*ds)->data[j][5]/avg;
-    (*ds)->data[j][8] = (*ds)->data[j][6]/avg;
+    (*ds)->data[j][7] = (*ds)->data[j][5]/avg * 100;
+    (*ds)->data[j][8] = (*ds)->data[j][6]/avg * 100;
     (*ds)->data[j][9] = min;
     (*ds)->data[j][10] = max;
   }
@@ -1483,7 +1483,7 @@ int cmpfunc(const void *a, const void *b )
 
 void SVD(matrix* mx, matrix **U, matrix **S, matrix **VT)
 {
-  size_t i, j;
+  size_t i;
   matrix *w1, *w2, *mx_t, *v/*, *to_sort*/;
   dvector *eval1, *eval2;
   NewMatrix(&w1, mx->row, mx->row); // A A^T

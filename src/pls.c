@@ -929,6 +929,29 @@ void PLSRSquared_SSErr_SSTot(matrix *mx, matrix *my, PLSMODEL *model, size_t nlv
   }
 }
 
+/*
+ * VIP are calculated according to the formula:
+ * VIP[j][pc] = sqrt(n_predvars * Sum((b[pc]^2*t[pc]*t^[pc]) * (w[j][pc]/||w[pc]||)^2) / Sum((b[pc]^2*t[pc]*t^[pc])))
+ */
+void PLSVIP(PLSMODEL *model, matrix **vip)
+{
+  size_t nlv = model->xscores->col;
+  size_t npred = model->xloadings->row;
+  size_t i, j, k;
+  ResizeMatrix(vip, npred, nlv);
+  for(i = 0; i < nlv; i++){
+    for(j = 0; j < i; j++){
+      double n = 0.f;
+      double d = 0.f;
+      for(k = 0; k < npred; k++){
+        /*double tmp = model->b[j]^2*t[pc]*t^[pc];
+        n += */
+      }
+    }
+  }
+
+}
+
 void PLSYScrambling(matrix *mx, matrix *my,
                         size_t xautoscaling, size_t yautoscaling,
                         size_t nlv, size_t block,

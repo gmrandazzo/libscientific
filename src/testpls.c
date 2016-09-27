@@ -1169,7 +1169,8 @@ void TestPLS2()
 
 void TestPLS1()
 {
-  matrix *x, *y, *r2q2scrabling, *betas; /* Data matrix */
+  matrix *x, *y, *r2q2scrabling; /* Data matrix */
+  dvector *betas;
   PLSMODEL *m;
 
   NewMatrix(&x, 14, 6);
@@ -1242,9 +1243,9 @@ void TestPLS1()
   PrintMatrix(m->bias);
 
   puts("BETA COEFFICIENTS");
-  initMatrix(&betas);
+  initDVector(&betas);
   PLSBetasCoeff(m, GetLVCCutoff(m->q2y), &betas);
-  PrintMatrix(betas);
+  PrintDVector(betas);
 
   puts("PREDICTED Y");
   PrintMatrix(m->predicted_y);
@@ -1255,7 +1256,7 @@ void TestPLS1()
   puts("REAL Y");
   PrintMatrix(y);
 
-  DelMatrix(&betas);
+  DelDVector(&betas);
   DelPLSModel(&m);
   DelMatrix(&x);
   DelMatrix(&y);

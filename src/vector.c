@@ -450,10 +450,10 @@ void DVectorMedian(dvector* d, double *median)
   qsort(d->data, d->size, sizeof(double), cmp);
 
   if (d->size%2 == 0){
-    (*median) = (d->data[(int)abs(d->size/2)] + d->data[(int)abs(d->size/2) - 1])/2.f;
+    (*median) = (d->data[d->size/2] + d->data[(d->size/2) - 1])/2.f;
   }
   else
-    (*median) = d->data[(int)abs(d->size/2)];
+    (*median) = d->data[d->size/2];
 }
 
 void DVectorMean(dvector* d, double* mean)

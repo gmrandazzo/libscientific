@@ -64,22 +64,47 @@ void NewPLSModel(PLSMODEL **m);
  */
 void DelPLSModel(PLSMODEL **m);
 
-/* PLS calculation from P. Geladi algorithm */
+/*
+ * Description PLS calculation from P. Geladi algorithm
+ */
 void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautoscaling, PLSMODEL *model, ssignal *s);
 
-/* Calculate betas coefficients from a pls model at nlv latent variables */
+/*
+ * Description: Calculate betas coefficients from a pls model at nlv latent variables
+ */
 void PLSBetasCoeff(PLSMODEL *model, size_t nlv, dvector **betas);
 
+/*
+ * Description: Project a matrix and predict the scores into the new space.
+ * This function is used before predict the Y values
+ */
 void PLSScorePredictor(matrix *mx, PLSMODEL *model, size_t nlv, matrix **xscores);
 
+/*
+ * Description: Calculate the Y values.
+ * N.B.: This function is dependent of PLSScorePredictor
+ */
 void PLSYPredictor(matrix *tscore, PLSMODEL *model, size_t nlv, matrix **y);
 
+/*
+ * Description: Calculate the R^2 of the model
+ */
 void PLSRSquared(matrix *mx, matrix *my, PLSMODEL *model, size_t nlv, matrix** r2y, matrix **sdec);
 
+/*
+ * Description: Calculate the SS error and the SS total to calculate
+ * then the R^2 or other parameters
+ */
 void PLSRSquared_SSErr_SSTot(matrix *mx, matrix *my, PLSMODEL *model, size_t nlv, dvector** xss_err, dvector **xss_tot, matrix** yss_err, matrix** yss_tot, matrix **pred_y);
 
-/*Description:
- * Generate Random Models by putting randomly y and check if models have correlations...
+/*
+ * Description: Calculate the PLS Very important variables
+ */
+void PLSVIP(PLSMODEL *model, matrix **vip);
+
+/*
+ * Description: Generate Random Models by putting randomly y
+ * and check if models have correlations.
  */
 void PLSYScrambling(matrix *mx, matrix *my,
                         size_t xautoscaling, size_t yautoscaling,
@@ -87,22 +112,35 @@ void PLSYScrambling(matrix *mx, matrix *my,
                         size_t valtype, size_t rgcv_group, size_t rgcv_iterations,
                         matrix **r2q2scrambling, size_t nthreads, ssignal *s);
 
+/*
+ * Description: Calculate the PLS Bootstrap Random group cross validation.
+ */
+void PLSRandomGroupsCV(matrix *mx, matrix *my, size_t xautoscaling, /*Inputs*/
+                       size_t yautoscaling, size_t nlv, size_t group, size_t iterations, /*Inputs*/
+                      matrix **q2y, matrix **sdep, matrix **bias, matrix **predicted_y, /*Ouputs*/
+                      matrix **pred_residuals, size_t nthreads, ssignal *s); /*Ouputs*/
 
-void PLSRandomGroupsCV(matrix *mx, matrix *my, size_t xautoscaling, size_t yautoscaling, size_t nlv, size_t group, size_t iterations, matrix **q2y, matrix **sdep, matrix **bias, matrix **predicted_y, matrix **pred_residuals, size_t nthreads, ssignal *s);
+/*
+ * Description: Calculate the PLS leave one out cross validation.
+ */
+void PLSLOOCV(matrix *mx, matrix *my, size_t xautoscaling, size_t yautoscaling, size_t nlv,/*Inputs*/
+                        matrix **q2y, matrix **sdep, matrix **bias, /*Ouputs*/
+                        matrix **predicted_y, matrix **pred_residuals, /*Ouputs*/
+                        size_t ntreads, ssignal *s); /*Inputs*/
 
-void PLSLOOCV(matrix *mx, matrix *my,
-                        size_t xautoscaling, size_t yautoscaling,
-                        size_t nlv,
-                        matrix **q2y, matrix **sdep, matrix **bias, matrix **predicted_y, matrix **pred_residuals, size_t ntreads, ssignal *s); /* *loov_ are the loo validated coefficients used to plot predicted vs experimental. if is null is not calculated.*/
 
-/*Validata Sample Stability reducing or fixing the size to build a model*/
+/*
+ * Description: Validata Sample Stability reducing or fixing the size to build a model
+*/
 void PLSStaticSampleValidator(matrix *mx, matrix *my, uivector *obj_class,
                         size_t xautoscaling, size_t yautoscaling,
                         size_t nlv, size_t sample_size, size_t niters,
                         size_t rgcv_group, size_t rgcv_iterations, size_t nthreads,
                         matrix **q2_distr, matrix **sdep_distr, uivector **bestid, ssignal *s);
 
-/*Validate Model Stability using a dinamic incremental sample*/
+/*
+ * Description: Validate Model Stability using a dinamic incremental sample
+ */
 void PLSDynamicSampleValidator(matrix *mx, matrix *my,
                         size_t xautoscaling, size_t yautoscaling,
                         size_t nlv, size_t niters,
@@ -110,8 +148,11 @@ void PLSDynamicSampleValidator(matrix *mx, matrix *my,
                         size_t rgcv_group, size_t rgcv_iterations, size_t nthreads,
                         matrix **q2_surface, matrix **sdep_surface, uivector **bestid, ssignal *s);
 
-/* Get the Cutoff based on the grow of r2 or q2*/
+/*
+ * Description: Get the Cutoff based on the grow of r2 or q2
+ */
 int GetLVCCutoff(matrix* r2q2);
+
 /* Variable Selection using the Particle Swarm Optimization algorithm
  *
  * Input:

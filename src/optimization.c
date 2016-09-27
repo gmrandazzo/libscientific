@@ -22,6 +22,7 @@
 #include "memwrapper.h"
 #include <stdio.h>
 #include <math.h>
+#include <time.h>
 
 typedef struct{
   dvector *x;
