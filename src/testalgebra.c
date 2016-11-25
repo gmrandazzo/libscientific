@@ -277,7 +277,43 @@ void TestPolyFit()
   DelDVector(&y);
   DelMatrix(&x);
 
+}
+
+
+void testOLS1()
+{
+  long int i;
+  matrix *x;
+  dvector *y; /* this vector represent the dependent value associated for each row of the x matrix */
+  dvector *b; /* this vector represent the polynomial coefficients. */
+  puts(">>>>>>>> Test OLS");
+  puts("Problem: Find the electronegativity of H and Br from the dissociation energies of HBr:3.79 eV, H2: 4.52 eV, Br2: 2 eV");
+  NewMatrix(&x, 3, 2);
+  NewDVector(&y, 3);
+  x->data[0][0] = 1; x->data[0][1] = 1; 
+  x->data[1][0] = 2; x->data[1][1] = 0;
+  x->data[2][0] = 0; x->data[2][1] = 2;
+  y->data[0] = 3.79;
+  y->data[1] = 4.52;
+  y->data[2] = 2.0;
   
+  initDVector(&b);
+  puts("Compute...");
+  OrdinaryLeastSquares(x, y, b);
+
+  printf("The answer is: (");
+  for(i = 0; i < b->size; i++){
+    if(i < b->size-1)
+      printf("%f, ", b->data[i]);
+    else
+      printf("%f).\n", b->data[i]);
+
+  }
+
+  DelMatrix(&x);
+  DelDVector(&b);
+  DelDVector(&y);
+
 }
 
 void testLESolv4()
@@ -412,6 +448,7 @@ int main(void)
   testLESolv2();
   testLESolv3();
   testLESolv4();
+  testOLS1();
   TestPolyFit();
   return 0;
 }

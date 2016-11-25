@@ -428,7 +428,7 @@ void LDA(matrix *mx, uivector *y, LDAMODEL *lda)
       lda->fmean->data[k][l] = mean;
       lda->fsdev->data[k][l] = sdev;
       for(i = 0; i < ldfeature->size; i++){
-        lda->mnpdf->m[k]->data[i][l] = 1./sqrt(2 * pi* sdev) * exp(-square((ldfeature->data[i] - mean)/sdev)/2.f);
+        lda->mnpdf->m[k]->data[i][l] = 1./sqrt(2 * _pi_* sdev) * exp(-square((ldfeature->data[i] - mean)/sdev)/2.f);
       }
     }
   }
@@ -510,7 +510,7 @@ void LDAPrediction(matrix *mx, LDAMODEL *lda, matrix **pfeatures, matrix **proba
       if(lda->class_start == 1)
         id -= 1;
       
-      (*mnpdf)->data[j][i] = 1./sqrt(2 * pi* lda->fsdev->data[id][i]) * exp(-square((ldfeature->data[j] - lda->fmean->data[id][i])/lda->fsdev->data[id][i])/2.f);
+      (*mnpdf)->data[j][i] = 1./sqrt(2 * _pi_* lda->fsdev->data[id][i]) * exp(-square((ldfeature->data[j] - lda->fmean->data[id][i])/lda->fsdev->data[id][i])/2.f);
     }
     
     DVectorSet(ldfeature, 0.f);
