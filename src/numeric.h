@@ -31,7 +31,7 @@
 
 #define _isnan_(a) (a != a)
 #define _isinf_(a) (!_isnan_(a) && _isnan_(a - a))
-#define _pi_ 3.1415926535897932384626433
+#define _pi_ 3.14159265358979323846264338327950288419716939937510
 
 /* use this like:
  *    NumOne and NumTwo are the number to compare

@@ -101,11 +101,17 @@ The required dependencies to use libscientific are:
 Install
 =======
 
-To install for all users on Unix/Linux/OSX/Windows:
+Compile from source
+-------------------
 
-  cmake .. -DPREFIX=/usr/local/  
+  cmake -DCMAKE_INSTALL_PREFIX=/usr/local/ ..
   make -j5
   sudo make install
+
+Homebrew OSX
+------------
+
+brew install --HEAD libscientific
 
 
 Development

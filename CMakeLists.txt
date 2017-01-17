@@ -8,13 +8,17 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: Debug Release" FORCE)
 endif(NOT CMAKE_BUILD_TYPE)
 
-if(NOT LIB_INSTALL_DIR)
-  message(SEND_ERROR "Please specify the installation library path with -DLIB_INSTALL_DIR=...")
+if(NOT CMAKE_INSTALL_PREFIX)
+  message(SEND_ERROR "Please specify the installation prefix -DCMAKE_INSTALL_PREFIX=...")
 endif()
 
-if(NOT INCLUDE_INSTALL_DIR)
-  message(SEND_ERROR "Please specify the installation header path with -DINCLUDE_INSTALL_DIR=...")
-endif()
+#if(NOT LIB_INSTALL_DIR)
+#  message(SEND_ERROR "Please specify the installation library path with -DLIB_INSTALL_DIR=...")
+#endif()
+
+#if(NOT INCLUDE_INSTALL_DIR)
+#  message(SEND_ERROR "Please specify the installation header path with -DINCLUDE_INSTALL_DIR=...")
+#endif()
 
 string(TOLOWER "${CMAKE_BUILD_TYPE}" cmake_build_type_tolower)
 
@@ -26,7 +30,7 @@ if(WIN32)
   message(STATUS "Build Release: WIN32")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -O2 -pipe -mwindows -pedantic -Wall -static -DWIN32")
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -static-libgcc -static-libgfortran -s -Wl,-O1")
-elseif(APPLE) 
+elseif(APPLE)
   if(cmake_build_type_tolower STREQUAL "debug")
     message(STATUS "Build Debug: APPLE")
     set(CMAKE_C_FLAGS "-std=c99 -O1 -pedantic -Wall -g")
@@ -63,5 +67,5 @@ add_subdirectory(src)
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
         "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake" IMMEDIATE @ONLY)
-add_custom_target(uninstall "${CMAKE_COMMAND}" -P 
+add_custom_target(uninstall "${CMAKE_COMMAND}" -P
         "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
