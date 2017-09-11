@@ -98,7 +98,7 @@ void GenerateAdjMX(matrix *dmx, double radius, G **graph)
 
 void GenerateNodePositions(G *graph)
 {
-  
+
 }
 
 void FindMinimumPath(G *graph, uivector **minpath)
@@ -130,7 +130,7 @@ void PrintGraph(G *graph){
             //printf("inv %d %d\n", i+(j-(i)),  j+(i-1));
           }
           else{
-            printf("%d\t", graph->adjmx[i+(j-(i))][abs(j-(i-1))]);
+            printf("%d\t", graph->adjmx[i+(j-(i))][j-(i-1)]);
             //printf("inv %d %d\n", i+(j-(i)),  (int)abs(j-(i-1)));
           }
           //printf("%d\t", graph->adjmx[j-(i+1)][i]);
@@ -158,7 +158,7 @@ void PrintGraph(G *graph){
             printf("%f\t", graph->adjweight[i+(j-(i))][j+(i-1)]);
           }
           else{
-            printf("%f\t", graph->adjweight[i+(j-(i))][abs(j-(i-1))]);
+            printf("%f\t", graph->adjweight[i+(j-(i))][j-(i-1)]);
           }
         }
         else{

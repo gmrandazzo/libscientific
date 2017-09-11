@@ -88,6 +88,228 @@ void DelPLSModel(PLSMODEL** m)
   xfree((*m));
 }
 
+/*
+*  Algorithm Geladi
+*
+* 1) take u  = some y[j] from Y
+*
+* 2) w' = u'X/u'u
+*
+* 3) w' = w'/||w||
+*
+* 4) t = Xw/w'w
+*
+* 5) q' = t'Y/t't
+*
+* 6) q' = q'/||q||
+*
+* 7) u = Yq/q'q
+*
+* 8) Compare the t in step 4 with th eone from the preceding iteration.
+* If they are equal (within a certain rounding error) go to step 9, else go to step 2.
+*
+* 9) p' = t'X/t't
+*
+* 10) p_new = p_old'/||p_old'||
+*
+* 11) t_new = t_old*||p_old'||
+*
+* 12) w_new' = w_old'*||p_old'||
+*
+*/
+void LVCalc(matrix **X, matrix **Y, dvector **t, dvector **u, dvector **p, dvector **q, dvector **w, double *bcoef)
+{
+  size_t i, j, loop;
+  double mod_p_old, dot_q, dot_t, dot_u, dot_w, deltat;
+  mod_p_old = dot_q = dot_t = dot_u = dot_w = 0.f;
+
+  dvector *t_old;
+  NewDVector(&t_old, (*t)->size);
+  /* Step 1: select the column vector u with the largest column average from Y  take u = some y_j */
+  if((*Y)->col > 1){
+    dvector *Y_avg;
+    initDVector(&Y_avg);
+    MatrixColVar((*Y), &Y_avg);
+    j = 0;
+    for(i = 1; i < Y_avg->size; i++){
+      if(Y_avg->data[i] > Y_avg->data[j])
+        j = i;
+      else
+        continue;
+    }
+    DelDVector(&Y_avg);
+  }
+  else{ /* only one y dependent variable */
+    j = 0;
+  }
+
+  /* copy the vector to the score u for computing weights w vector  */
+  for(i = 0; i < (*u)->size; i++)
+    (*u)->data[i] = (*Y)->data[i][j];
+  /* End Step 1 */
+
+  #ifdef DEBUG
+  step = 0;
+  #endif
+  loop = 0;
+  while(1){
+    #ifdef DEBUG
+    printf("######### Step %u\n", (unsigned int)step);
+    step++;
+    #endif
+    /* Step 2: Compute a weight vector w = u'X/u'u   (NB.: w is size of X_t->col = (*X)->row ) */
+    DVectorSet((*w), 0.f); /* Reset the w vector */
+    DVectorMatrixDotProduct((*X), (*u), (*w));
+
+    dot_u = DVectorDVectorDotProd((*u), (*u));
+
+    for(i = 0; i < (*w)->size; i++){
+      (*w)->data[i] /= dot_u;
+    }
+    /* End Step2 */
+
+    /* Step 3: w = w/||w1||   Normalize */
+    DVectNorm((*w), (*w));
+
+    /* End Step 3 */
+
+    #ifdef DEBUG
+    printf("\n w Weight Vector for X matrix \n");
+    PrintDVector((*w));
+    #endif
+
+    /* Step 4:   t = Xw/w'w Compute a t score vector. t i size of (*X)->row */
+    DVectorSet((*t), 0.f); /* Reset the t vector */
+    MatrixDVectorDotProduct((*X), (*w), (*t));
+
+    dot_w = DVectorDVectorDotProd((*w), (*w));
+
+    for(i = 0; i < (*t)->size; i++){
+      (*t)->data[i] /= dot_w;
+    }
+
+    #ifdef DEBUG
+    printf("\n t Score Vector for X matrix \n");
+    PrintDVector(t);
+    #endif
+    /* End Step 4 */
+
+    if((*Y)->col > 1){
+      /* Step 5: Compute the loadings Y vector q' = t'Y/t't  and normalize q = q/||q||*/
+      DVectorSet((*q), 0.f); /* Reset the c vector */
+      DVectorMatrixDotProduct((*Y), (*t), (*q));
+
+      dot_t = DVectorDVectorDotProd((*t), (*t));
+
+      for(i = 0; i < (*q)->size; i++){
+        (*q)->data[i] /= dot_t;
+      }
+
+      DVectNorm((*q), (*q));
+      /* End Step 5 */
+
+      /* Step 6. Update the Y Scores u  u = Yq/q'q */
+      DVectorSet((*u), 0.f);
+      MatrixDVectorDotProduct((*Y), (*q), (*u));
+      dot_q = DVectorDVectorDotProd((*q), (*q));
+
+      for(i = 0; i < (*u)->size; i++){
+        (*u)->data[i] /= dot_q;
+      }
+
+      /* End step 6 */
+
+      #ifdef DEBUG
+      printf("\n New Score vector u for Y\n");
+      PrintDVector(u);
+      #endif
+    }
+    else{
+      /*If the Y block has only one variable, step 5-8 can be omitted by putting q = 1 and no more iteration is necessary.*/
+      DVectorSet((*q), 1);
+      //break;
+    }
+
+    /* Step 8 if t_old == t new with a precision PLSCONVERGENCE then stop iteration else restart from step 2 */
+
+    if(loop == 0){
+      for(i = 0; i < (*t)->size; i++)
+        t_old->data[i] = (*t)->data[i];
+    }
+    else{
+      deltat = 0.f;
+      for(i = 0; i < (*t)->size; i++){
+        deltat = ((*t)->data[i] - t_old->data[i]) * ((*t)->data[i] - t_old->data[i]);
+        t_old->data[i] = (*t)->data[i];
+      }
+      deltat = sqrt(deltat);
+      if(deltat < PLSCONVERGENCE){
+        break;
+      }
+    }
+    loop++;
+    /* End step 8 */
+  }
+
+  /* Step 9 compute the loading vector for X: p' = t'X/t't  and y */
+  DVectorMatrixDotProduct((*X), (*t), (*p));
+
+  dot_t = DVectorDVectorDotProd((*t), (*t));
+  for(i = 0; i < (*p)->size; i++){
+    (*p)->data[i] /= dot_t;
+  }
+
+  #ifdef DEBUG
+  printf("X Loadings\n");
+  PrintDVector(p);
+  #endif
+  /* End Step 9*/
+
+  mod_p_old = DvectorModule((*p));
+
+  /* Step 10  p_new = p_old'/||p_old'|| */
+  DVectNorm((*p), (*p));
+
+  /*Step 11 t = t||p'||*/
+  for(i = 0; i < (*t)->size; i++){
+    (*t)->data[i] *= mod_p_old;
+  }
+
+  /*Step 12 */
+  for(i = 0; i < (*w)->size; i++){
+    (*w)->data[i] *= mod_p_old;
+  }
+
+  /* Step 13 Find the Regression Coefficient b:  b = u't/t't */
+  dot_t = DVectorDVectorDotProd((*t), (*t));
+
+  (*bcoef) = DVectorDVectorDotProd((*u), (*t))/dot_t;
+
+  /*End Step 13*/
+
+  /* Step 14  Adjust X for what has been found: Xnew=X-tp'  and Y fort what has been found Ynew = Y - btp' */
+  /* X */
+  for(i = 0; i < (*X)->row; i++){
+    for(j = 0; j < (*X)->col; j++){
+      (*X)->data[i][j] -= (*t)->data[i]*(*p)->data[j];
+    }
+  }
+
+  /* Y */
+  for(i = 0; i < (*Y)->row; i++){
+    for(j = 0; j < (*Y)->col; j++){
+      (*Y)->data[i][j] -= ((*bcoef) * (*t)->data[i] * (*q)->data[j]);
+    }
+  }
+
+  #ifdef DEBUG
+  printf("\n Deflated X \n");
+  PrintMatrix(X);
+  printf("\n Deflated Y\n");
+  PrintMatrix(Y);
+  #endif
+}
+
   /*
   *  Algorithm Geladi
   *
@@ -125,15 +347,12 @@ void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautosc
     size_t step;
     #endif
 
-    size_t i, j, pc, loop; /* pc = principal component */
+    size_t i, j, pc; /* pc = principal component */
 
     matrix *X; /* data matrix of mean centred object  for mx */
     matrix *Y; /* data matrix of mean centred object  for my */
 
-    dvector *Y_avg;
-
     dvector *t; /* X score vector*/
-    dvector *t_old; /* X score vector*/
     dvector *p; /* X loading vector */
     dvector *w; /* X weights vector */
 
@@ -143,7 +362,7 @@ void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautosc
     dvector *xeval;
     dvector *yeval;
 
-    double min, max, dot_t, deltat = 0.f, dot_u, dot_q, dot_w, mod_p_old, ssx;
+    double min, max, ssx;
 
     if(mx->row == my->row){
       if(nlv > mx->col) /* if the number of principal component selected is major of the permitted */
@@ -284,7 +503,6 @@ void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautosc
       */
 
       NewDVector(&t, X->row);
-      NewDVector(&t_old, X->row);
       NewDVector(&p, X->col);
       NewDVector(&w, X->col);
 
@@ -314,202 +532,27 @@ void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautosc
           break;
         }
         else{
-          /* Step 1: select the column vector u with the largest column average from Y  take u = some y_j */
-          if(Y->col > 1){
-            initDVector(&Y_avg);
-            MatrixColVar(Y, &Y_avg);
-            j = 0;
-            for(i = 1; i < Y_avg->size; i++){
-              if(Y_avg->data[i] > Y_avg->data[j])
-                j = i;
-              else
-                continue;
-            }
-            DelDVector(&Y_avg);
-          }
-          else{ /* only one y dependent variable */
-            j = 0;
-          }
-
-          /* copy the vector to the score u for computing weights w vector  */
-          for(i = 0; i < u->size; i++)
-            u->data[i] = Y->data[i][j];
-          /* End Step 1 */
+          double bcoef = 0.f;
+          /* Calculate the Latent Variable (LV) according the NIPALS algorithm */
+          LVCalc(&X, &Y, &t, &u, &p, &q, &w, &bcoef);
 
           #ifdef DEBUG
-          step = 0;
-          #endif
-          loop = 0;
-          while(1){
-            #ifdef DEBUG
-            printf("######### Step %u\n", (unsigned int)step);
-            step++;
-            #endif
-            /* Step 2: Compute a weight vector w = u'X/u'u   (NB.: w is size of X_t->col = X->row ) */
-            DVectorSet(w, 0.f); /* Reset the w vector */
-            DVectorMatrixDotProduct(X, u, w);
-
-            dot_u = DVectorDVectorDotProd(u,u);
-
-            for(i = 0; i < w->size; i++){
-              w->data[i] /= dot_u;
-            }
-            /* End Step2 */
-
-            /* Step 3: w = w/||w1||   Normalize */
-            DVectNorm(w, w);
-
-            /* End Step 3 */
-
-            #ifdef DEBUG
-            printf("\n w Weight Vector for X matrix \n");
-            PrintDVector(w);
-            #endif
-
-            /* Step 4:   t = Xw/w'w Compute a t score vector. t i size of X->row */
-            DVectorSet(t, 0.f); /* Reset the t vector */
-            MatrixDVectorDotProduct(X, w, t);
-
-            dot_w = DVectorDVectorDotProd(w, w);
-
-            for(i = 0; i < t->size; i++){
-              t->data[i] /= dot_w;
-            }
-
-            #ifdef DEBUG
-            printf("\n t Score Vector for X matrix \n");
-            PrintDVector(t);
-            #endif
-            /* End Step 4 */
-
-            if(Y->col > 1){
-              /* Step 5: Compute the loadings Y vector q' = t'Y/t't  and normalize q = q/||q||*/
-              DVectorSet(q, 0.f); /* Reset the c vector */
-              DVectorMatrixDotProduct(Y, t, q);
-
-              dot_t = DVectorDVectorDotProd(t, t);
-
-              for(i = 0; i < q->size; i++){
-                q->data[i] /= dot_t;
-              }
-
-              DVectNorm(q, q);
-              /* End Step 5 */
-
-              /* Step 6. Update the Y Scores u  u = Yq/q'q */
-              DVectorSet(u, 0.f);
-              MatrixDVectorDotProduct(Y, q, u);
-              dot_q = DVectorDVectorDotProd(q, q);
-
-              for(i = 0; i < u->size; i++){
-                u->data[i] /= dot_q;
-              }
-
-              /* End step 6 */
-
-              #ifdef DEBUG
-              printf("\n New Score vector u for Y\n");
-              PrintDVector(u);
-              #endif
-            }
-            else{
-              /*If the Y block has only one variable, step 5-8 can be omitted by putting q = 1 and no more iteration is necessary.*/
-              DVectorSet(q, 1);
-              //break;
-            }
-
-            /* Step 8 if t_old == t new with a precision PLSCONVERGENCE then stop iteration else restart from step 2 */
-
-            if(loop == 0){
-              for(i = 0; i < t->size; i++)
-                t_old->data[i] = t->data[i];
-            }
-            else{
-              deltat = 0.f;
-              for(i = 0; i < t->size; i++){
-                deltat = (t->data[i] - t_old->data[i]) * (t->data[i] - t_old->data[i]);
-                t_old->data[i] = t->data[i];
-              }
-              deltat = sqrt(deltat);
-              if(deltat < PLSCONVERGENCE){
-                break;
-              }
-            }
-            loop++;
-            /* End step 8 */
-          }
-
-          /* Step 9 compute the loading vector for X: p' = t'X/t't  and y */
-          DVectorMatrixDotProduct(X, t, p);
-
-          dot_t = DVectorDVectorDotProd(t, t);
-          for(i = 0; i < p->size; i++){
-            p->data[i] /= dot_t;
-          }
-
-          #ifdef DEBUG
-          printf("X Loadings\n");
-          PrintDVector(p);
-          #endif
-          /* End Step 9*/
-
-          mod_p_old = DvectorModule(p);
-
-          /* Step 10  p_new = p_old'/||p_old'|| */
-          DVectNorm(p, p);
-
-          /*Step 11 t = t||p'||*/
-          for(i = 0; i < t->size; i++){
-            t->data[i] *= mod_p_old;
-          }
-
-          /*Step 12 */
-          for(i = 0; i < w->size; i++){
-            w->data[i] *= mod_p_old;
-          }
-
-          /* Step 13 Find the Regression Coefficient b:  b = u't/t't */
-          dot_t = DVectorDVectorDotProd(t,t);
-
-          DVectorAppend(&(model->b), (DVectorDVectorDotProd(u,t))/dot_t);
-
-          /*End Step 13*/
-
-          /* Step 14  Adjust X for what has been found: Xnew=X-tp'  and Y fort what has been found Ynew = Y - btp' */
-          /* X */
-          for(i = 0; i < X->row; i++){
-            for(j = 0; j < X->col; j++){
-              X->data[i][j] -= t->data[i]*p->data[j];
-            }
-          }
-
-          /* Y */
-          for(i = 0; i < Y->row; i++){
-            for(j = 0; j < Y->col; j++){
-              Y->data[i][j] -= (model->b->data[pc] * t->data[i] * q->data[j]);
-            }
-          }
-
-          #ifdef DEBUG
-          printf("\n X new \n");
+          printf("\n Deflated X\n");
           PrintMatrix(X);
-          printf("\n Y new \n");
+          printf("\n Deflated Y\n");
           PrintMatrix(Y);
           #endif
-
 
           /* Calculating eigenvalue for X and Y in order to estimate the explained variance for each component
           * module of u vector and module of t vector are the eigenvalue
           */
-          dot_u = DVectorDVectorDotProd(u,u); /* Eigen Value for the component of Y */
-          /* mod_t eigenvalue was previously calculated */
-          /* setDVectorValue(yeval, pc, mod_u); NO MAKE SENSE EXPLAIN THE VARIANCE FOR Y*/
-          xeval->data[pc] = dot_t; /* Adding the t eigenvalue */
-
+          yeval->data[pc] = DVectorDVectorDotProd(u,u); /* NO MAKE SENSE EXPLAIN THE VARIANCE FOR Y*/
+          xeval->data[pc] = DVectorDVectorDotProd(t,t); /* Adding the t eigenvalue */
 
           /* If more pairs (t,u) are needed go to 1. with X=Xnew and Y=Ynew.
-          * Storing scores and loadings
+          * Storing scores, loadings, weights, bcoefficients
           */
+          DVectorAppend(&(model->b), bcoef);
 
           for(i = 0; i < t->size; i++){
             model->xscores->data[i][pc] = t->data[i];
@@ -524,15 +567,6 @@ void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautosc
           for(i = 0; i < q->size; i++){
             model->yloadings->data[i][pc] = q->data[i];
           }
-
-          /*
-          MatrixAppendCol(&(model->xscores), t);
-          MatrixAppendCol(&(model->xloadings), p);
-          MatrixAppendCol(&(model->xweights), w);
-          MatrixAppendCol(&(model->yscores), u);
-          MatrixAppendCol(&(model->yloadings), q);
-          */
-          mod_p_old = dot_q = dot_t = dot_u = dot_w = 0.f;
         }
       }
 
@@ -565,7 +599,6 @@ void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautosc
       DelMatrix(&Y);
 
       DelDVector(&t);
-      DelDVector(&t_old);
       DelDVector(&p);
       DelDVector(&w);
 
@@ -2802,7 +2835,6 @@ void PLSGAVariableSelection(matrix *mx, matrix *my, matrix *px, matrix *py,
   MatrixSet(models2, 0.f);
 
   for(i = 0; i < population_size; i++){
-
     for(j = 0; j < mx->col; j++){
       position = rand() % mx->col;
       if((size_t)getMatrixValue(models1, i, position) == 1){ /* set to OFF*/
@@ -3052,6 +3084,7 @@ void PLSGAVariableSelection(matrix *mx, matrix *my, matrix *px, matrix *py,
         setDVectorValue(modelsfitness, i, tmp_fitness); /* Stored the Q^2 or R^2 of models*/
         setDVectorValue(model_f_distribution, i, (tmp_fitness * (population_size - mx->col -1)) /  (mx->col*(1-tmp_fitness)));
 
+        printf("tmpfitness: %f bestfitness: %f tmpbias: %f bestbias: %f\n", tmp_fitness, best_fitness, tmp_bias, best_bias);
         if(tmp_fitness > best_fitness && tmp_bias < best_bias){
 
           best_bias = tmp_bias;

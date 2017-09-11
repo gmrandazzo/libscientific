@@ -24,38 +24,127 @@
 
 #include "vector.h"
 
+/* Description:
+ * Matrix data structure
+ */
 typedef struct{
   double **data;
   size_t row, col;
 }matrix;
 
+/* Description:
+ * Allocate a matrix in memory without a dimension.
+ */
 void initMatrix(matrix **m);
+
+/* Description:
+ * Allocate a matrix in memory with dimension "row" and "col"
+ */
 void NewMatrix(matrix**, size_t row_, size_t col_);
+
+/* Description:
+ * Resize a matrix to new "row" and "col"
+ */
 void ResizeMatrix(matrix **m, size_t row_, size_t col_); /*ResizeMatrix Delete all the data stored inside the matrix */
+
+/* Description:
+ * Destroy a matrix allocation
+ */
 void DelMatrix(matrix**);
 
-/*check for nan != finite */
+/* Description:
+ * Check if some value in matrix are NAN or INFINITE
+ */
 void MatrixCheck(matrix *m);
+
+/* Description:
+ * Find NAN and print the output position to cmdout
+ */
 void FindNan(matrix *m);
+
+/* Description:
+ * Print a matrix to cmdout
+ */
 void PrintMatrix(matrix *m);
+
+/* Description:
+ * Check if a value "val" is in the matrix.
+ * if the value is present return 1 else 0.
+ */
 int ValInMatrix(matrix *m, double val);
+
+/* Description:
+ * Set all values of a matrix to "val"
+ */
 void MatrixSet(matrix *m, double val);
+
+/* Description:
+ * Copy a matrix from a source "msrc" to a destination matrix "mdst"
+ */
 void MatrixCopy(matrix *msrc, matrix **mdst);
+
+/* Description:
+ * Set  matrix value "value" at position "row" and "col"
+ */
 void setMatrixValue(matrix *m, size_t row, size_t col, double val);
+
+/* Description:
+ * Get the matrix value at position "row" and "col"
+ */
 double getMatrixValue(matrix *m, size_t row, size_t col);
+
+/* Description:
+ * Get row matrix with index "row" as double vector.
+ */
 dvector *getMatrixRow(matrix *m, size_t row);
+
+/* Description:
+ * Get column matrix with index "col" as double vector.
+ */
 dvector *getMatrixColumn(matrix *m, size_t col);
+
+/* Description:
+ * Append double vector uivector as row.
+ */
 void MatrixAppendRow(matrix **mx, dvector *row);
+
+/* Description:
+ * Append double vector uivector as column.
+ */
 void MatrixAppendCol(matrix **mx, dvector *col);
+/* Description:
+ * Append unsigned int vector uivector as row
+ */
+void MatrixAppendUIRow(matrix **mx, uivector *row);
+
+/* Description:
+ * Append unsigned int vector uivector as column
+ */
+void MatrixAppendUIRow(matrix **mx, uivector *row);
 
 /*  Matrix Operations */
 
+/* Description:
+ * matrix - row double vector product: the result is a row double vector
+ * i.e.: X(10x5) * d(5x1) = r(10x1)
+ */
 void MatrixDVectorDotProduct(matrix *m, dvector *v, dvector *r);
 /*The standard serial is much faster OBSOLETE*/
 void MultiThreadMatrixDVectorDotProduct(matrix *mx, dvector *v, dvector *p, size_t nthreads_);
+
+/* Description:
+ * column double vector - matrix product: the result is a column double vector
+ * i.e.: d(1x5) * X(5x10) = r(1x10)
+ */
 void DVectorMatrixDotProduct(matrix *mx, dvector *v, dvector *p);
-/* m  = v1'v2 */
+
+/* Description:
+ * transposed double vector - double vecrtor product: the result is a matrix
+ * i.e.: X  = d'd
+ * i.e.: d'(5x1) * d(1x5) = X(1x10)
+ */
 void DVectorTrasposedDVectorDotProduct(dvector *v1, dvector *v2, matrix *m);
+
 /* r = v/mx  = (inv(mx^T)*v^T)^T*/
 void DVectorTransposedMatrixDivision(dvector *v, matrix *mx, dvector *r);
 void MatrixDotProduct(matrix *m_t, matrix *m, matrix *r);

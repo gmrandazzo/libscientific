@@ -65,6 +65,21 @@ void NewPLSModel(PLSMODEL **m);
 void DelPLSModel(PLSMODEL **m);
 
 /*
+ * Calculate the latent variables according the NIPALS algorithm
+ * The function use X, Y and return
+ * - deflated X
+ * - deflated Y
+ * - scores t, u
+ * - loadings p, q
+ * - weights w (or c)
+ * - the beta coefficient bcoef
+ *
+ * N.B.: all the dvector must be initialised.
+ * See Geladi ref. for details
+ */
+void LVCalc(matrix **X, matrix **Y, dvector **t, dvector **u, dvector **p, dvector **q, dvector **w, double *bcoef);
+
+/*
  * Description PLS calculation from P. Geladi algorithm
  */
 void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautoscaling, PLSMODEL *model, ssignal *s);

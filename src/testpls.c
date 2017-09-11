@@ -1265,20 +1265,20 @@ void TestPLS1()
 
 int main(void)
 {
-  /*test 1- 5*/
+  /*test 1- 5
   TestPLS1();
   TestPLS2();
   TestPLS3();
   TestPLS4();
-  TestPLS5();
+  TestPLS5();*/
 
   /*test 6-9
   TestPLS6();
   TestPLS7();
   TestPLS8();
-  TestPLS9();
+  TestPLS9();*/
   TestPLS10();
-  TestPLS11();*/
+  //TestPLS11();
 
   /* Experimental tests
   TestPLS12();

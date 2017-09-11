@@ -61,4 +61,6 @@ void StochasticUniversalSample(dvector *fitness, size_t nselect, size_t init, ui
 
 void RouletteWheelselection(dvector *fitness, size_t nselect, size_t init, uivector **selection);
 
+void Combinations(uivector *num, matrix **comb);
+
 #endif

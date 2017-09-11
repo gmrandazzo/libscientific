@@ -164,3 +164,17 @@ void RouletteWheelselection(dvector *fitness, size_t nselect, size_t init, uivec
     }
   }
 }
+
+void Combinations(uivector *num, matrix **comb)
+{
+  size_t temp;
+  size_t i, j;
+  for(j = 1; j <= num->size; j++){
+    for(i = 0; i < num->size-1; i++){
+      temp = num->data[i];
+      num->data[i] = num->data[i+1];
+      num->data[i+1] = temp;
+      MatrixAppendUIRow(comb, num);
+    }
+  }
+}

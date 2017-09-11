@@ -385,6 +385,134 @@ void MatrixAppendCol(matrix** m, dvector *col)
   (*m)->row = rowsize; /* updating the row matrix size */
 }
 
+
+void MatrixAppendUIRow(matrix** m, uivector *row)
+{
+  size_t i, j;
+  size_t rowsize =  (*m)->row + 1;
+  size_t colsize;
+
+
+  if((*m)->col != 0){
+    if(row->size > (*m)->col)
+      colsize = row->size;
+    else /*if (row->size <= (*m)->col)*/
+      colsize = (*m)->col;
+  }
+  else{
+    colsize = row->size;
+  }
+
+  /*adding a new row*/
+  (*m)->data = xrealloc((*m)->data, sizeof(double*)*rowsize);
+
+  if(colsize > (*m)->col){
+    /*resize the column*/
+    for(i = 0; i < (*m)->row; i++){
+      (*m)->data[i] = xrealloc((*m)->data[i], sizeof(double*)*colsize);
+      /*initialize the new column value*/
+      for(j = (*m)->col; j < colsize; j++){
+        (*m)->data[i][j] = +0.f;
+      }
+    }
+    /*allocate the last row added*/
+    (*m)->data[rowsize-1] = xmalloc(sizeof(double)*colsize);
+
+    /*copy the row value to the new row matrix*/
+    for(i = 0; i < row->size; i++){
+      (*m)->data[rowsize-1][i] = row->data[i];
+    }
+  }
+  else /*if(colsize <= (*m)->col)*/{
+    /*allocate the last row added*/
+    (*m)->data[rowsize-1] = xmalloc(sizeof(double)*colsize);
+    for(i = 0; i < (*m)->col; i++){
+      if(i < row->size){
+        (*m)->data[rowsize -1][i] = row->data[i];
+      }
+      else{
+        (*m)->data[rowsize -1][i] = +0.f;
+      }
+    }
+  }
+
+  if(row->size > (*m)->col)
+    (*m)->col = row->size;
+
+  (*m)->row += 1;
+
+}
+
+void MatrixAppendUICol(matrix** m, uivector *col)
+{
+  size_t i, j;
+  size_t lastcol;
+  size_t colsize;
+  size_t rowsize;
+
+  if((*m)->col != 0){
+    colsize =  (*m)->col + 1;
+  }
+  else{
+    /* redefine anyway the row size because the column have 0 size */
+    colsize = 1;
+  }
+
+  if((*m)->row != 0){
+    if((*m)->row < col->size){
+      rowsize = col->size;
+    }
+    else{
+      rowsize = (*m)->row;
+    }
+  }
+  else{
+    rowsize = col->size;
+  }
+
+  if((*m)->row < rowsize){
+    (*m)->data = xrealloc((*m)->data, sizeof(double*)*rowsize);
+  }
+
+  for(i = 0; i < rowsize; i++){
+    if(i < (*m)->row)
+      (*m)->data[i] = xrealloc((*m)->data[i], sizeof(double)*colsize);
+    else
+      (*m)->data[i] = xmalloc(sizeof(double)*colsize);
+  }
+
+  lastcol = (*m)->col;
+
+  if(rowsize < (*m)->row){
+    for(i = 0; i < (*m)->row; i++ ){
+      if(i < rowsize)
+        (*m)->data[i][lastcol] = col->data[i];
+    else
+      (*m)->data[i][lastcol] = +0.f;
+    }
+  }
+  else{
+    if(rowsize > (*m)->row){
+      for(i = 0; i < rowsize; i++ ){
+        (*m)->data[i][lastcol] = col->data[i];
+      }
+
+      /*Fill with 0 value the new rows except the last column */
+      for(i = (*m)->row; i < rowsize; i++)
+        for(j = 0; j < colsize-1; j++)
+          (*m)->data[i][j] = +0.f;
+    }
+    else{
+      for(i = 0; i < rowsize; i++){
+        (*m)->data[i][lastcol] = col->data[i];
+      }
+    }
+  }
+
+  (*m)->col = colsize; /* updating the column matrix size */
+  (*m)->row = rowsize; /* updating the row matrix size */
+}
+
 /*
  * p[i] =   Σ mx[i][j] * v[j]
  */
@@ -1059,10 +1187,12 @@ void MatrixColVar(matrix* mx, dvector** colvar)
  *  - Column Min
  *  - Coefficient of variation Population (CV)
  *  - Coefficient of variation Sample (CV)
+ *  - N. zeros
  */
 void MatrixColDescStat(matrix *mx, matrix **ds)
 {
   int i, j;
+  size_t n_zeros;
   double avg = 0.f;
   double median = 0.f;
   double armonic = 0.f;
@@ -1070,7 +1200,7 @@ void MatrixColDescStat(matrix *mx, matrix **ds)
   double min = 0.f, max = 0.f;
   dvector *v;
 
-  ResizeMatrix(ds, mx->col, 11);
+  ResizeMatrix(ds, mx->col, 12);
   NewDVector(&v, mx->row);
 
   for(j = 0; j < mx->col; j++){
@@ -1079,8 +1209,14 @@ void MatrixColDescStat(matrix *mx, matrix **ds)
     median = 0.f;
     armonic = 0.f;
 
+    /* get column min and max,
+     * cacluate the average, the median and the armonic average
+     */
     min = max = mx->data[0][j];
+    n_zeros = 0;
     for(i = 0; i < mx->row; i++){
+      if(FLOAT_EQ(mx->data[i][j], 0.f, 1e-6))
+        n_zeros++;
       avg += mx->data[i][j];
       armonic += 1.f/mx->data[i][j];
       v->data[i] = mx->data[i][j];
@@ -1108,6 +1244,7 @@ void MatrixColDescStat(matrix *mx, matrix **ds)
     (*ds)->data[j][8] = (*ds)->data[j][6]/avg * 100;
     (*ds)->data[j][9] = min;
     (*ds)->data[j][10] = max;
+    (*ds)->data[j][11] = n_zeros;
   }
   DelDVector(&v);
 }

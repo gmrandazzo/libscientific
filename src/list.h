@@ -1,6 +1,6 @@
-/* cpca.h
+/* list.h
 *
-* Copyright (C) <2016>  Giuseppe Marco Randazzo
+* Copyright (C) <2017>  Giuseppe Marco Randazzo
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -16,29 +16,23 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef CPCA_H
-#define CPCA_H
+#ifndef LIST_H
+#define LIST_H
+
 #include <stdio.h>
-#include "array.h"
-#include "matrix.h"
+#include <stdlib.h>
 #include "vector.h"
-#include "scientificinfo.h"
 
-#define CPCACONVERGENCE 1e-3
+/* string vector */
+typedef struct{
+  dvector **d;
+  size_t size;
+} dvectorlist;
 
-typedef struct {
-  array *b_scores;
-  array *b_loadings;
-  matrix *sscores;
-  matrix *sweights;
-  dvector *expvar;
-  dvectorlist *colaverage;
-  dvectorlist *colscaling;
-} CPCAMODEL;
+void initDVectorList(dvectorlist **lst);
+void NewDVectorList(dvectorlist **lst, size_t size_);
+void DelDVectorList(dvectorlist **lst);
+void DVectorListAppend(dvectorlist **lst, dvector *d);
 
-void NewCPCAModel(CPCAMODEL **m);
-void DelCPCAModel(CPCAMODEL **m);
-
-void CPCA(array *x, size_t npc, size_t scaling, CPCAMODEL *model);
 
 #endif

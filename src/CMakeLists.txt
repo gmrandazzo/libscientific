@@ -173,6 +173,7 @@ set(Scientific_C_SRCS memwrapper.c
                    scientificinfo.c
                    optimization.c
                    vector.c
+                   list.c
                    matrix.c
                    array.c
                    numeric.c
@@ -182,6 +183,7 @@ set(Scientific_C_SRCS memwrapper.c
                    metricspace.c
                    pca.c
                    pls.c
+                   #cpca.c
                    upca.c
                    upls.c
                    lda.c
@@ -193,6 +195,7 @@ set(Scientific_C_H
                 scientificinfo.h
                 optimization.h
                 vector.h
+                list.h
                 matrix.h
                 array.h
                 numeric.h
@@ -202,6 +205,7 @@ set(Scientific_C_H
                 metricspace.h
                 pca.h
                 pls.h
+                #cpca.h
                 upca.h
                 upls.h
                 lda.h
@@ -213,6 +217,7 @@ set(StrVectorTest_SRC teststrvector.c)
 set(DVectorTest_SRC testdvector.c)
 set(UIVectorTest_SRC testuivector.c)
 set(IVectorTest_SRC testivector.c)
+set(VectorListTest_SRC testlist.c)
 set(MatrixTest_SRC testmatrix.c)
 set(ArrayTest_SRC testarray.c)
 set(AlgebraTest_SRC testalgebra.c)
@@ -252,58 +257,57 @@ install(TARGETS libscientific LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
 install(FILES ${Scientific_C_H} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/scientific)
 install(FILES scientific.h DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
 
-#if(cmake_build_type_tolower STREQUAL "debug")
-  add_executable(teststrvector ${StrVectorTest_SRC})
-  target_link_libraries(teststrvector libscientific)
 
-  add_executable(testdvector ${DVectorTest_SRC})
-  target_link_libraries(testdvector libscientific)
+add_executable(teststrvector ${StrVectorTest_SRC})
+target_link_libraries(teststrvector libscientific)
 
-  add_executable(testuivector ${UIVectorTest_SRC})
-  target_link_libraries(testuivector libscientific)
+add_executable(testdvector ${DVectorTest_SRC})
+target_link_libraries(testdvector libscientific)
 
-  add_executable(testivector ${IVectorTest_SRC})
-  target_link_libraries(testivector libscientific)
+add_executable(testuivector ${UIVectorTest_SRC})
+target_link_libraries(testuivector libscientific)
 
-  add_executable(testmatrix ${MatrixTest_SRC})
-  target_link_libraries(testmatrix libscientific)
+add_executable(testivector ${IVectorTest_SRC})
+target_link_libraries(testivector libscientific)
 
-  add_executable(testarray ${ArrayTest_SRC})
-  target_link_libraries(testarray libscientific)
+add_executable(testlist ${VectorListTest_SRC})
+target_link_libraries(testlist libscientific)
 
-  add_executable(testalgebra ${AlgebraTest_SRC})
-  target_link_libraries(testalgebra libscientific)
+add_executable(testmatrix ${MatrixTest_SRC})
+target_link_libraries(testmatrix libscientific)
 
-  add_executable(testpca ${PCATest_SRC})
-  target_link_libraries(testpca libscientific)
+add_executable(testarray ${ArrayTest_SRC})
+target_link_libraries(testarray libscientific)
 
-  add_executable(testpls ${PLSTest_SRC})
-  target_link_libraries(testpls libscientific)
+add_executable(testalgebra ${AlgebraTest_SRC})
+target_link_libraries(testalgebra libscientific)
 
-  add_executable(testmwpca ${MPCATest_SRC})
-  target_link_libraries(testmwpca libscientific)
+add_executable(testpca ${PCATest_SRC})
+target_link_libraries(testpca libscientific)
 
-  add_executable(testmwpls ${MPLSTest_SRC})
-  target_link_libraries(testmwpls libscientific)
+add_executable(testpls ${PLSTest_SRC})
+target_link_libraries(testpls libscientific)
 
-  add_executable(testclustering ${CLUSTERINGTest_SRC})
-  target_link_libraries(testclustering libscientific)
+add_executable(testmwpca ${MPCATest_SRC})
+target_link_libraries(testmwpca libscientific)
 
-  add_executable(testmlr ${MLRTest_SRC})
-  target_link_libraries(testmlr libscientific)
+add_executable(testmwpls ${MPLSTest_SRC})
+target_link_libraries(testmwpls libscientific)
 
-  add_executable(testlda ${CLASSIFIERTest_SRC})
-  target_link_libraries(testlda libscientific)
+add_executable(testclustering ${CLUSTERINGTest_SRC})
+target_link_libraries(testclustering libscientific)
 
-  add_executable(testmetricspace ${METRICSPACETest_SRC})
-  target_link_libraries(testmetricspace libscientific)
+add_executable(testmlr ${MLRTest_SRC})
+target_link_libraries(testmlr libscientific)
 
-  add_executable(testgraphs ${GRAPHSTest_SRC})
-  target_link_libraries(testgraphs libscientific)
+add_executable(testlda ${CLASSIFIERTest_SRC})
+target_link_libraries(testlda libscientific)
 
-  add_executable(testoptimization ${OptimizationTest_SRC})
-  target_link_libraries(testoptimization libscientific)
+add_executable(testmetricspace ${METRICSPACETest_SRC})
+target_link_libraries(testmetricspace libscientific)
 
-#   add_executable(testsvd ${SVDTest_SRC})
-#   target_link_libraries(testsvd libscientific)
-#endif()
+add_executable(testgraphs ${GRAPHSTest_SRC})
+target_link_libraries(testgraphs libscientific)
+
+add_executable(testoptimization ${OptimizationTest_SRC})
+target_link_libraries(testoptimization libscientific)

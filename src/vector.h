@@ -24,6 +24,7 @@
 
 #define MAXCHARSIZE 6114
 
+/* string vector */
 typedef struct{
   char **data;
   size_t size;
@@ -58,7 +59,7 @@ char *Trim(char *s);
 void SplitString(char *str, char *sep, strvector **tokens);
 
 
-
+/* double vector */
 typedef struct{
   double *data;
   size_t size;
@@ -107,7 +108,6 @@ void DVectorSort(dvector *v);
 
 
 /* Int Vector */
-
 typedef struct{
   int *data;
   size_t size;
@@ -134,7 +134,6 @@ void IVectorSet(ivector *d, int val);
 
 
 /* size_t VECTOR */
-
 typedef struct{
   size_t *data;
   size_t size;

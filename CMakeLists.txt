@@ -12,14 +12,6 @@ if(NOT CMAKE_INSTALL_PREFIX)
   message(SEND_ERROR "Please specify the installation prefix -DCMAKE_INSTALL_PREFIX=...")
 endif()
 
-#if(NOT LIB_INSTALL_DIR)
-#  message(SEND_ERROR "Please specify the installation library path with -DLIB_INSTALL_DIR=...")
-#endif()
-
-#if(NOT INCLUDE_INSTALL_DIR)
-#  message(SEND_ERROR "Please specify the installation header path with -DINCLUDE_INSTALL_DIR=...")
-#endif()
-
 string(TOLOWER "${CMAKE_BUILD_TYPE}" cmake_build_type_tolower)
 
 get_filename_component (Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
