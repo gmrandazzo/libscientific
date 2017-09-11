@@ -2776,6 +2776,7 @@ void PLSGAVariableSelection(matrix *mx, matrix *my, matrix *px, matrix *py,
   dvector *modelsfitness, *best_modelsfitness, *model_f_distribution, *best_model_f_distribution, *rowmap;
   uivector *popvector, *best_model, *crosspoints, *selectedid;
 
+
   /* Initialize with rando models..*/
   NewMatrix(&models1, population_size, mx->col); /*models of the generation k */
   NewMatrix(&models2, population_size, mx->col); /*models of the generation k + 1*/
@@ -2858,6 +2859,7 @@ void PLSGAVariableSelection(matrix *mx, matrix *my, matrix *px, matrix *py,
       }
     }
 
+
     if(nvarON > 0){
       PLSCostPopulation(mx, my, px, py, popvector, xautoscaling, yautoscaling, nlv, validation_type, ngroup, niter, &tmp_model_r2, &tmp_fitness, &tmp_bias, nthreads, s);
     }
@@ -2927,7 +2929,6 @@ void PLSGAVariableSelection(matrix *mx, matrix *my, matrix *px, matrix *py,
       }
 
       initUIVector(&selectedid);
-
       StochasticUniversalSample(modelsfitness, copy_selection, init, &selectedid);
       /*RouletteWheelselection(modelsfitness, copy_selection, init, &selectedid);*/
 
@@ -3084,7 +3085,8 @@ void PLSGAVariableSelection(matrix *mx, matrix *my, matrix *px, matrix *py,
         setDVectorValue(modelsfitness, i, tmp_fitness); /* Stored the Q^2 or R^2 of models*/
         setDVectorValue(model_f_distribution, i, (tmp_fitness * (population_size - mx->col -1)) /  (mx->col*(1-tmp_fitness)));
 
-        printf("tmpfitness: %f bestfitness: %f tmpbias: %f bestbias: %f\n", tmp_fitness, best_fitness, tmp_bias, best_bias);
+        /*printf("[LIBSCIENTIFIC DEBUG] >> tmpfitness: %f bestfitness: %f tmpbias: %f bestbias: %f\n", tmp_fitness, best_fitness, tmp_bias, best_bias);*/
+
         if(tmp_fitness > best_fitness && tmp_bias < best_bias){
 
           best_bias = tmp_bias;

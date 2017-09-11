@@ -459,7 +459,7 @@ void TestPLS10()
 
   /* GENETIC ALGORITM VARIABLE SELECTION  RG: 2 groups, 20 iterations.. */
   PLSGAVariableSelection(x, y, NULL, NULL,
-                       1, 0, 5, 1, 7, 20,
+                       1, 0, 1, 1, 7, 20,
                        50, 0.5, 0.5, 0.0, 0.0, 0.9,
                        &varselected, &map, &vardistribution, 4, NULL);
 

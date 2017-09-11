@@ -103,6 +103,7 @@ void StochasticUniversalSample(dvector *fitness, size_t nselect, size_t init, ui
     sum += getDVectorValue(fitness, i);
   }
 
+  /*CRITICAL BUG! IF ALL VALUES ARE < 0 then there is an infinite loop
   if(FLOAT_EQ(sum, 0.f, 1e-3) || sum < 0){
     srand(time(0));
     do{
@@ -116,7 +117,7 @@ void StochasticUniversalSample(dvector *fitness, size_t nselect, size_t init, ui
       }
     }while(1);
   }
-  else{
+  else{*/
     sum = 0.f;
     srand(init);
     ptr = (double)rand()/(double)RAND_MAX;
@@ -134,7 +135,7 @@ void StochasticUniversalSample(dvector *fitness, size_t nselect, size_t init, ui
         break;
       }
     }
-  }
+  /*}*/
 }
 
 void RouletteWheelselection(dvector *fitness, size_t nselect, size_t init, uivector **selection)
