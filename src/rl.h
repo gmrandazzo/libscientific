@@ -1,6 +1,6 @@
-/* ica.c
+/* rl.h
 *
-* Copyright (C) <2016>  Giuseppe Marco Randazzo
+* Copyright (C) <2017>  Giuseppe Marco Randazzo
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -16,20 +16,13 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef RL_H
+#define RL_H
+
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "ica.h"
+#include "vector.h"
 
 
-
-void ICA(matrix *mx, size_t scaling, size_t npc, ICAMODEL *model, ssignal *s)
-{
-  // 1. Calculate the PCA extracting
-  // 2. Rotation of loadings
-  // Central Limit Theorem:
-  // S = W*X
-  // W is the demelange matrix
-  // X = loadings from PCA
-  
-}
+#endif

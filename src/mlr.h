@@ -33,7 +33,6 @@ typedef struct{
   matrix *pred_residuals;
   dvector *ymean;
   dvector *r2y_model;
-  dvector *r2y_validation;
   dvector *q2y;
   dvector *sdep;/* Standard Deviation over Prediction */
   dvector *sdec; /* Standard Deviation over Recalculating */

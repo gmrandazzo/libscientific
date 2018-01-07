@@ -189,7 +189,8 @@ set(Scientific_C_SRCS memwrapper.c
                    lda.c
 #                    svd.c
                    clustering.c
-                   mlr.c)
+                   mlr.c
+                   modelvalidation.c)
 
 set(Scientific_C_H
                 scientificinfo.h
@@ -211,7 +212,8 @@ set(Scientific_C_H
                 lda.h
 #                 svd.h
                 clustering.h
-                mlr.h)
+                mlr.h
+                modelvalidation.h)
 
 set(StrVectorTest_SRC teststrvector.c)
 set(DVectorTest_SRC testdvector.c)

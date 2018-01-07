@@ -903,12 +903,12 @@ void MatrixPseudoinversion(matrix *m, matrix **m_inv)
   initMatrix(&V_T);
   SVD(m, &U, &S, &V_T);
 
-  puts("U");
+  /*puts("U");
   PrintMatrix(U);
   puts("S");
   PrintMatrix(S);
   puts("VT");
-  PrintMatrix(V_T);
+  PrintMatrix(V_T);*/
 
   matrix *Sinv;
   NewMatrix(&Sinv, S->col, S->row);

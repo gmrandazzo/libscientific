@@ -112,6 +112,14 @@ void PLSRSquared(matrix *mx, matrix *my, PLSMODEL *model, size_t nlv, matrix** r
  */
 void PLSRSquared_SSErr_SSTot(matrix *mx, matrix *my, PLSMODEL *model, size_t nlv, dvector** xss_err, dvector **xss_tot, matrix** yss_err, matrix** yss_tot, matrix **pred_y);
 
+
+/*
+ * Description: Calculate the ROC curve with AUC and the Precision-Recall crurve with his
+ * area usefull in PLS-DA case
+
+void PLSBinaryClassificationScores(matrix *mx, matrix *my, PLSMODEL *model, size_t nlv, dvector** roc_auc, dvector **pr_ap, matrix **roc_curve, matrix **pr_curve);
+*/
+
 /*
  * Description: Calculate the PLS Very important variables
  */
@@ -145,7 +153,7 @@ void PLSLOOCV(matrix *mx, matrix *my, size_t xautoscaling, size_t yautoscaling, 
 
 
 /*
- * Description: Validata Sample Stability reducing or fixing the size to build a model
+ * Description: Validate the model stability by reducing and fixing the sample size
 */
 void PLSStaticSampleValidator(matrix *mx, matrix *my, uivector *obj_class,
                         size_t xautoscaling, size_t yautoscaling,
@@ -154,7 +162,7 @@ void PLSStaticSampleValidator(matrix *mx, matrix *my, uivector *obj_class,
                         matrix **q2_distr, matrix **sdep_distr, uivector **bestid, ssignal *s);
 
 /*
- * Description: Validate Model Stability using a dinamic incremental sample
+ * Description: Validate the model stability using a dinamic incremental object sampling
  */
 void PLSDynamicSampleValidator(matrix *mx, matrix *my,
                         size_t xautoscaling, size_t yautoscaling,

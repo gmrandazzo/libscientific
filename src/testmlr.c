@@ -18,7 +18,58 @@
 
 #include <stdio.h>
 #include "mlr.h"
+#include "modelvalidation.h"
 #include "numeric.h"
+
+void test3()
+{
+  matrix *mx, *my;
+  MLRMODEL *m;
+  ssignal s = SIGSCIENTIFICRUN;
+  puts("Test1: Simple Calculation MLR Model with LOOCV and Model Consistency");
+
+  NewMatrix(&mx, 5, 1);
+  NewMatrix(&my, 5, 1);
+
+  setMatrixValue(mx, 0, 0, 1.8);
+  setMatrixValue(mx, 1, 0, 3.2);
+  setMatrixValue(mx, 2, 0, 5.6);
+  setMatrixValue(mx, 3, 0, 9.43);
+  setMatrixValue(mx, 4, 0, 13.7);
+
+  setMatrixValue(my, 0, 0, 2.1);
+  setMatrixValue(my, 1, 0, 1.8);
+  setMatrixValue(my, 2, 0, 6.4);
+  setMatrixValue(my, 3, 0, 8.2);
+  setMatrixValue(my, 4, 0, 14);
+
+
+  puts("X");
+  PrintMatrix(mx);
+  puts("Y");
+  PrintMatrix(my);
+  NewMLRModel(&m);
+  MLR(mx, my, m, &s);
+
+  MODELINPUT minpt;
+  minpt.mx = &mx;
+  minpt.my = &my;
+  minpt.nlv = 0;
+  minpt.xautoscaling = 0;
+  minpt.yautoscaling = 0;
+
+  matrix *py, *pres;
+  initMatrix(&py);
+  initMatrix(&pres);
+  //BootstrapRandomGroupsCV(&minpt, 3, 100, _MLR, &py, &pres, 4, NULL);
+  LeaveOneOut(&minpt, _MLR_, &py, &pres, 1, NULL);
+  PrintMatrix(py);
+  PrintMLR(m);
+
+  DelMLRModel(&m);
+  DelMatrix(&mx);
+  DelMatrix(&my);
+}
 
 void test2()
 {
@@ -99,7 +150,8 @@ void test1()
 
 int main()
 {
-  test1();
-  test2();
+  /*test1();
+  test2();*/
+  test3();
   return 0;
 }

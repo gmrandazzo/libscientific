@@ -22,25 +22,71 @@
 #include "vector.h"
 #include "scientificinfo.h"
 
+typedef enum{
+    _PLS_ = 0,
+    _MLR_ = 1,
+    _LDA_ = 2
+} AlgorithmType;
+
+typedef struct{
+  matrix **mx;
+  matrix **my;
+  size_t nlv;
+  size_t xautoscaling;
+  size_t yautoscaling;
+} MODELINPUT;
+
+/*
 void YScrambling(matrix *mx, matrix *my,
                         size_t xautoscaling, size_t yautoscaling,
                         size_t nlv, size_t block,
                         size_t valtype, size_t rgcv_group, size_t rgcv_iterations,
                         matrix **r2q2scrambling, size_t nthreads, ssignal *s);
+*/
+
+/* Description: Generate random groups of train and test set.
+ * Usage:
+ * matrix *gid, *x_train, *y_train, *x_test, *y_test;
+ * initMatrix(&gid);
+ * random_group_generator(&gid, 5, 10(objects), 1234567890);
+ *
+ * for(g = 0; g < gid->row; g++){
+ *  initMatrix(&x_train);
+ *  initMatrix(&y_train);
+ *  initMatrix(&x_test);
+ *  initMatrix(&y_test);
+ *  train_test_split(arg->mx, arg->my, gid, g, &x_train,&y_train,&x_test, &y_test);
+ *
+ *  do your calculations....
+ *
+ *  DelMatrix(&x_train);
+ *  DelMatrix(&y_train);
+ *  DelMatrix(&x_test);
+ *  DelMatrix(&y_test);
+ * }
+ * DelMatrix(&gid);
+ */
+void random_kfold_group_generator(matrix **gid, size_t ngroups, size_t nobj, unsigned int *srand_init);
+void train_test_split(matrix *x, matrix *y, matrix *gid, size_t group_id, matrix **x_train, matrix **y_train, matrix **x_test, matrix **y_test);
 
 /*
  * Description: Calculate the Bootstrap Random group cross validation.
+ * Possible algorithms
  */
-void BootstrapRandomGroupsCV(matrix *mx, matrix *my, size_t xautoscaling, /*Inputs*/
-                       size_t yautoscaling, size_t nlv, size_t group, size_t iterations, /*Inputs*/
-                      matrix **q2y, matrix **sdep, matrix **bias, matrix **predicted_y, /*Ouputs*/
-                      matrix **pred_residuals, size_t nthreads, ssignal *s); /*Ouputs*/
+
+void BootstrapRandomGroupsCV(MODELINPUT *input, size_t group, size_t iterations, AlgorithmType algo,
+                             matrix **predicted_y, matrix **pred_residuals, size_t nthreads, ssignal *s);
+
+void LeaveOneOut(MODELINPUT *input, AlgorithmType algo, matrix** predicted_y, matrix **pred_residuals, size_t nthreads, ssignal *s);
+
+void PLSRegressionValidationOutput(matrix *my, matrix *predicted_y,
+                                   matrix **q2y, matrix **sdep, matrix **bias);
+
+void PLSClassificationValidationOutput(matrix *my, matrix *predicted_y,
+                                       matrix **accuracy, matrix **roc, matrix **roc_auc, matrix **precision_recall, matrix **precision_recall_auc);
 
 /*
  * Description: Calculate the leave one out cross validation.
  */
-void LOOCV(matrix *mx, matrix *my, size_t xautoscaling, size_t yautoscaling, size_t nlv,/*Inputs*/
-                        matrix **q2y, matrix **sdep, matrix **bias, /*Ouputs*/
-                        matrix **predicted_y, matrix **pred_residuals, /*Ouputs*/
-                        size_t ntreads, ssignal *s); /*Inputs*/
+
 #endif

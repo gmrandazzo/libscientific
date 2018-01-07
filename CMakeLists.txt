@@ -20,8 +20,10 @@ set(CMAKE_Fortran_FLAGS_DEBUG   "-fno-f2c -O0 -g")
 
 if(WIN32)
   message(STATUS "Build Release: WIN32")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -O2 -pipe -mwindows -pedantic -Wall -static -DWIN32")
-  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -static-libgcc -static-libgfortran -s -Wl,-O1")
+  # add -static if you whant to compile with gcc lib static
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -O2 -pipe -mwindows -pedantic -Wall -DWIN32")
+  # add to the linker flags the static library -static-libgcc -static-libgfortran
+  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -s -Wl,-O1")
 elseif(APPLE)
   if(cmake_build_type_tolower STREQUAL "debug")
     message(STATUS "Build Debug: APPLE")
