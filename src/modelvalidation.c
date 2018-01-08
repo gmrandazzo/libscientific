@@ -243,8 +243,7 @@ void *MLRRandomGroupCVModel(void *arg_)
 
     initMatrix(&y_test_predicted);
     MLRPredictY(x_test, NULL, subm, &y_test_predicted, NULL, NULL, NULL);
-
-
+    
     for(j = 0, k = 0; j < gid->col; j++){
       size_t a = (size_t)gid->data[g][j]; /*object id*/
       if(a != -1){
@@ -281,7 +280,7 @@ void BootstrapRandomGroupsCV(MODELINPUT *input, size_t group, size_t iterations,
   size_t xautoscaling = input->xautoscaling;
   size_t yautoscaling = input->yautoscaling;
 
-  if(nlv > 0 && mx->row == my->row && group > 0 && iterations > 0){
+  if(mx->row == my->row && group > 0 && iterations > 0){
     size_t th, iterations_, i, j;
 
     pthread_t *threads;
@@ -297,7 +296,9 @@ void BootstrapRandomGroupsCV(MODELINPUT *input, size_t group, size_t iterations,
       scol = my->col*nlv;  /* each component have my->col ypsilon */
     }
     else{
+      nlv = 1;
       scol = my->col;
+
     }
 
     NewMatrix(&sum_ypredictions, my->row, scol);
@@ -389,7 +390,15 @@ void BootstrapRandomGroupsCV(MODELINPUT *input, size_t group, size_t iterations,
     xfree(arg);
   }
   else{
-    fprintf(stderr, "Error!! Unable to compute PLS Random Group Cross Validation!!\n");
+    char *algo_;
+    if(algo == _PLS_)
+      algo_ = "PLS";
+    else if(algo == _MLR_)
+      algo_ = "MLR";
+    else
+      algo_ = "LDA";
+
+    fprintf(stderr, "Error!! Unable to compute Random Group Cross Validation for %s\n", algo_);
   }
 }
 
@@ -470,15 +479,21 @@ void LeaveOneOut(MODELINPUT *input, AlgorithmType algo, matrix** predicted_y, ma
     pthread_t *threads;
     loocv_th_arg *arg;
 
+    size_t scol;
     if(nlv > 0){
       if(nlv > mx->col){
         nlv = mx->col;
       }
+      scol = my->col*nlv;  /* each component have my->col ypsilon */
+    }
+    else{
+      nlv = 1;
+      scol = my->col;
     }
 
 
     matrix *loopredictedy;
-    NewMatrix(&loopredictedy, my->row, my->col*nlv);
+    NewMatrix(&loopredictedy, my->row, scol);
 
     threads = xmalloc(sizeof(pthread_t)*nthreads);
     arg = xmalloc(sizeof(loocv_th_arg)*nthreads);

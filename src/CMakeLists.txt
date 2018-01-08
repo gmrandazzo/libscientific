@@ -183,6 +183,7 @@ set(Scientific_C_SRCS memwrapper.c
                    metricspace.c
                    pca.c
                    pls.c
+                   epls.c
                    #cpca.c
                    upca.c
                    upls.c
@@ -206,6 +207,7 @@ set(Scientific_C_H
                 metricspace.h
                 pca.h
                 pls.h
+                epls.h
                 #cpca.h
                 upca.h
                 upls.h

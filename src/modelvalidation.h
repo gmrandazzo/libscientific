@@ -48,14 +48,14 @@ void YScrambling(matrix *mx, matrix *my,
  * Usage:
  * matrix *gid, *x_train, *y_train, *x_test, *y_test;
  * initMatrix(&gid);
- * random_group_generator(&gid, 5, 10(objects), 1234567890);
+ * random_group_generator(&gid, 5 (groups), 10 (objects), 1234567890 (random number));
  *
- * for(g = 0; g < gid->row; g++){
+ * for(g = 0; g < gid->row; g++){ // for each group
  *  initMatrix(&x_train);
  *  initMatrix(&y_train);
  *  initMatrix(&x_test);
  *  initMatrix(&y_test);
- *  train_test_split(arg->mx, arg->my, gid, g, &x_train,&y_train,&x_test, &y_test);
+ *  train_test_split(arg->mx, arg->my, gid, g, &x_train,&y_train,&x_test, &y_test); // fill in train of groups != g and fill as test the group "g"
  *
  *  do your calculations....
  *

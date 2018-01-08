@@ -58,14 +58,30 @@ void test3()
   minpt.xautoscaling = 0;
   minpt.yautoscaling = 0;
 
-  matrix *py, *pres;
-  initMatrix(&py);
-  initMatrix(&pres);
-  //BootstrapRandomGroupsCV(&minpt, 3, 100, _MLR, &py, &pres, 4, NULL);
-  LeaveOneOut(&minpt, _MLR_, &py, &pres, 1, NULL);
-  PrintMatrix(py);
+  matrix *py_rgcv, *pres_rgcv;
+  initMatrix(&py_rgcv);
+  initMatrix(&pres_rgcv);
+  BootstrapRandomGroupsCV(&minpt, 3, 100, _MLR_, &py_rgcv, &pres_rgcv, 4, NULL);
+  puts("Bootstrap Random Group Cross Validation Predicted Y");
+  PrintMatrix(py_rgcv);
+  puts("Bootstrap Random Group Cross Validation Predicted Residuals Y");
+  PrintMatrix(pres_rgcv);
+
+  matrix *py_loo, *pres_loo;
+  initMatrix(&py_loo);
+  initMatrix(&pres_loo);
+  LeaveOneOut(&minpt, _MLR_, &py_loo, &pres_loo, 1, NULL);
+  puts("Leave One Out Predicted Y");
+  PrintMatrix(py_loo);
+  puts("Leave One Out Predicted Residuals Y");
+  PrintMatrix(pres_loo);
+
   PrintMLR(m);
 
+  DelMatrix(&py_rgcv);
+  DelMatrix(&pres_rgcv);
+  DelMatrix(&py_loo);
+  DelMatrix(&pres_loo);
   DelMLRModel(&m);
   DelMatrix(&mx);
   DelMatrix(&my);
