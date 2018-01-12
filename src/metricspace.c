@@ -187,13 +187,14 @@ double MahalanobisDistance(matrix* g1, matrix* g2)
 
 void ROC(dvector *y_true, dvector *y_score,  matrix **roc, double *auc)
 {
+
 /* Algorithm from:
  * An introduction to ROC analysis
  * Tom Fawcett
  * Pattern Recognition Letters 27 (2006) 861–874
  * Calculate the roc curve to plot and it's AUC
  */
- size_t i;
+  size_t i;
   matrix *yy;
   initMatrix(&yy);
   MatrixAppendCol(&yy, y_true);
@@ -228,44 +229,14 @@ void ROC(dvector *y_true, dvector *y_score,  matrix **roc, double *auc)
     roc_row->data[1] = (double)tp/(double)n_tp;
     MatrixAppendRow(roc, roc_row);
   }
-  //(*auc) = AUC((*roc));
+  (*auc) = curve_area((*roc), 100);
 }
 
-
-/*void trapezoidarea(matrix *xy, size_t intervals)
-{
-  size_t i, j, k=0, n;
-  double x[10], y[10], sum=0, h, temp;
-  double fact(int);
-
-
-  printf("\nhow many record you will be enter: ");
-  scanf("%d",&n);
-  for(i=0; i<n; i++)
-  {
-   printf("\n\nenter the value of x%d: ",i);
-   scanf("%f",&x[i]);
-   printf("\n\nenter the value of f(x%d): ",i);
-   scanf("%f",&y[i]);
-  }
-
-  h = xy->data[1][0]-xy->data[0][0];
-  n = intervals-1;
-  for(i = 0; i < n; i++){
-    if(k == 0){
-      sum += xy->data[i][1];
-      k=1;
-    }
-    else{
-      sum += 2 * xy->data[i][1];
-    }
-  }
-  sum += xy->data[i][1];
-  sum *= (h/2);
-  printf("\n\n  I = %f  ",sum);
-}
-*/
-
+/* algorithm taken from:
+ * Natural Cubic Spline: Numerical Analysis book Richard L. Burden and J. Douglas Faires
+ * pag. 149
+ * ISBN-13: 978-0-538-73351-9
+ */
 void cubic_spline_interpolation(matrix *xy, size_t npoints, matrix **interp_xy)
 {
   size_t i;
@@ -351,16 +322,17 @@ void cubic_spline_interpolation(matrix *xy, size_t npoints, matrix **interp_xy)
     DelDVector(&z);
 }
 
-
+/*
+ * trapezoid rule
+ */
 double curve_area(matrix *xy, size_t intervals)
 {
   size_t i;
   matrix *interp_xy;
   initMatrix(&interp_xy);
   cubic_spline_interpolation(xy, intervals, &interp_xy);
-
   double a, b; //a: lower limit, b: upper limit of integration
-  MatrixColumnMinMax(xy, 0, &a, &b);
+  MatrixColumnMinMax(interp_xy, 0, &a, &b);
   double dx = (b-a)/(double)(intervals-1); //step size
   double area = 0.f;
   for(i = 0; i < intervals-1; i++){
@@ -370,5 +342,6 @@ double curve_area(matrix *xy, size_t intervals)
       //dx: height of the trapezoid
       area += ((interp_xy->data[i][1]+interp_xy->data[i+1][1])/2.f)*dx;
   }
+  DelMatrix(&interp_xy);
   return area;
 }
