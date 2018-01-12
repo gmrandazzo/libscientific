@@ -67,7 +67,9 @@ void YScrambling(matrix *mx, matrix *my,
  * DelMatrix(&gid);
  */
 void random_kfold_group_generator(matrix **gid, size_t ngroups, size_t nobj, unsigned int *srand_init);
-void train_test_split(matrix *x, matrix *y, matrix *gid, size_t group_id, matrix **x_train, matrix **y_train, matrix **x_test, matrix **y_test);
+void kfold_group_train_test_split(matrix *x, matrix *y, matrix *gid, size_t group_id, matrix **x_train, matrix **y_train, matrix **x_test, matrix **y_test);
+
+void train_test_split(matrix *x, matrix *y, double testsize, matrix **x_train, matrix **y_train, matrix **x_test, matrix **y_test, uivector **testids, unsigned int *srand_init);
 
 /*
  * Description: Calculate the Bootstrap Random group cross validation.
@@ -79,11 +81,6 @@ void BootstrapRandomGroupsCV(MODELINPUT *input, size_t group, size_t iterations,
 
 void LeaveOneOut(MODELINPUT *input, AlgorithmType algo, matrix** predicted_y, matrix **pred_residuals, size_t nthreads, ssignal *s);
 
-void PLSRegressionValidationOutput(matrix *my, matrix *predicted_y,
-                                   matrix **q2y, matrix **sdep, matrix **bias);
-
-void PLSClassificationValidationOutput(matrix *my, matrix *predicted_y,
-                                       matrix **accuracy, matrix **roc, matrix **roc_auc, matrix **precision_recall, matrix **precision_recall_auc);
 
 /*
  * Description: Calculate the leave one out cross validation.

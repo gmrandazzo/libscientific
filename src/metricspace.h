@@ -22,14 +22,28 @@
 #include "matrix.h"
 #include "vector.h"
 
+/* Description: calculate the euclidean distance between two matrix with the same column number */
 void EuclideanDistance(matrix *m1, matrix *m2, matrix** distances);
 
+/* Description: calculate the square euclidean distance between two matrix with the same column number */
 void SquaredEuclideanDistance(matrix *m1, matrix *m2, matrix **distances);
 
+/* Description: calculate the manhattan distance between two matrix with the same column number */
 void ManhattanDistance(matrix *m1, matrix *m2, matrix** distances);
 
+/* Description: calculate the cosine distance between two matrix with the same column number */
 void CosineDistance(matrix *m1, matrix *m2, matrix** distances);
 
+/* Description: calculate the malanobis distance between two matrix with the same column number */
 double MahalanobisDistance(matrix* g1, matrix* g2);
+
+/* Description: cubic spline interpolation */
+void cubic_spline_interpolation(matrix *xy, size_t npoints, matrix **interp_xy);
+
+double curve_area(matrix *xy, size_t intervals);
+
+/* Description: calculate the ROC curve giving an y_true and an y_score */
+void ROC(dvector *y_true, dvector *y_score, matrix **roc, double *auc);
+
 
 #endif

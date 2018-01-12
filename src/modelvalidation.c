@@ -28,7 +28,7 @@ void random_kfold_group_generator(matrix **gid, size_t ngroups, size_t nobj, uns
   }
 }
 
-void train_test_split(matrix *x, matrix *y, matrix *gid, size_t group_id, matrix **x_train, matrix **y_train, matrix **x_test, matrix **y_test)
+void kfold_group_train_test_split(matrix *x, matrix *y, matrix *gid, size_t group_id, matrix **x_train, matrix **y_train, matrix **x_test, matrix **y_test)
 {
   /* Estimate how many objects are utilised to build the model and how many to predict */
   size_t i, j, k, l, n;
@@ -100,6 +100,52 @@ void train_test_split(matrix *x, matrix *y, matrix *gid, size_t group_id, matrix
   }
 }
 
+void train_test_split(matrix *x, matrix *y, double testsize, matrix **x_train, matrix **y_train, matrix **x_test, matrix **y_test, uivector **testids, unsigned int *srand_init)
+{
+  size_t i, j, n, testsize_;
+  if(testsize > 1.0 || testsize < 0.){
+    testsize_ = (int)ceil(0.2*x->row); /* default value */
+  }
+  else{
+    testsize_ = (int)ceil(testsize*x->row);
+  }
+
+  ResizeMatrix(x_train, (x->row-testsize_), x->col);
+  ResizeMatrix(y_train, (y->row-testsize_), y->col);
+  ResizeMatrix(x_test, testsize_, x->col);
+  ResizeMatrix(y_test, testsize_, y->col);
+
+  /*Fill test set*/
+  for(i = 0; i < testsize_; i++){
+    do{
+      n = (size_t)myrand_r(srand_init) % x->row;
+    } while(UIVectorHasValue((*testids), n) == 0);
+    UIVectorAppend(testids, n);
+
+    for(j = 0; j < x->col; j++){
+      (*x_test)->data[i][j] = x->data[n][j];
+    }
+    for(j = 0; j < y->col; j++){
+      (*y_test)->data[i][j] = y->data[n][j];
+    }
+  }
+  /* Fill training set */
+  for(i = 0, n = 0; i < x->row; i++){
+    if(UIVectorHasValue((*testids), i) == 1){
+      for(j = 0; j < x->col; j++){
+        (*x_train)->data[n][j] = x->data[i][j];
+      }
+      for(j = 0; j < y->col; j++){
+        (*y_train)->data[n][j] = y->data[i][j];
+      }
+      n++;
+    }
+    else{
+      continue;
+    }
+  }
+}
+
 typedef struct{
   matrix *mx, *my; /*INPUT*/
   matrix *predicted_y;  /*OUPUT*/
@@ -143,7 +189,7 @@ void *PLSRandomGroupCVModel(void *arg_)
     initMatrix(&x_test);
     initMatrix(&y_test); /* unused variable here .... */
 
-    train_test_split(arg->mx, arg->my, gid, g, &x_train,&y_train,&x_test, &y_test);
+    kfold_group_train_test_split(arg->mx, arg->my, gid, g, &x_train,&y_train,&x_test, &y_test);
 
     NewPLSModel(&subm);
 
@@ -235,7 +281,7 @@ void *MLRRandomGroupCVModel(void *arg_)
     initMatrix(&x_test);
     initMatrix(&y_test); /* unused variable here .... */
 
-    train_test_split(arg->mx, arg->my, gid, g, &x_train,&y_train,&x_test, &y_test);
+    kfold_group_train_test_split(arg->mx, arg->my, gid, g, &x_train,&y_train,&x_test, &y_test);
 
     NewMLRModel(&subm);
 
@@ -243,7 +289,7 @@ void *MLRRandomGroupCVModel(void *arg_)
 
     initMatrix(&y_test_predicted);
     MLRPredictY(x_test, NULL, subm, &y_test_predicted, NULL, NULL, NULL);
-    
+
     for(j = 0, k = 0; j < gid->col; j++){
       size_t a = (size_t)gid->data[g][j]; /*object id*/
       if(a != -1){
@@ -610,67 +656,4 @@ void LeaveOneOut(MODELINPUT *input, AlgorithmType algo, matrix** predicted_y, ma
   else{
     fprintf(stderr, "Error!! Unable to compute PLS Leave One Out Validation!!\n");
   }
-}
-
-void PLSRegressionValidationOutput(matrix *my, matrix *predicted_y, matrix **q2y, matrix **sdep, matrix **bias)
-{
-  dvector *ymean;
-  size_t i, j, nlv;
-  nlv = predicted_y->col/(double)my->col;
-
-  /*Calculate the Q2 and SDEP and Bias */
-  if(q2y != NULL)
-    ResizeMatrix(q2y, nlv, my->col);
-
-  if(sdep != NULL)
-    ResizeMatrix(sdep, nlv, my->col);
-
-  if(bias != NULL)
-    ResizeMatrix(bias, nlv, my->col);
-
-  if(q2y != NULL || sdep != NULL){
-    initDVector(&ymean);
-    MatrixColAverage(my, &ymean);
-
-    for(size_t lv = 0; lv < nlv; lv++){
-      for(j = 0; j < my->col; j++){
-        double ssreg = 0.f;
-        double sstot = 0.f;
-
-        /*y = m x + k: bias is the m angular coefficient */
-        /*double ypredaverage = 0.f; used to calculate the k */
-        for(i = 0; i < my->row; i++){
-          ssreg += square(my->data[i][j] - predicted_y->data[i][my->col*lv+j]);
-          sstot += square(my->data[i][j] - ymean->data[j]);
-          /*ypredaverage = sum_ypredictions->data[i][j+lv]; */
-        }
-
-        if(bias != NULL){
-          double sum_xi = 0.f, sum_yi = 0.f;
-          /*ypredaverage /= (double)my->row;*/
-          for(i = 0; i < my->row; i++){
-            sum_yi+=(predicted_y->data[i][j+lv]*(my->data[i][j]-ymean->data[j]));
-            sum_xi+=(my->data[i][j]*(my->data[i][j]-ymean->data[j]));
-          }
-
-          (*bias)->data[lv][j] = fabs(1 - sum_yi/sum_xi);
-          /*k = Y-(X*b);*/
-        }
-
-        if(q2y != NULL)
-          (*q2y)->data[lv][j] = 1.f - (ssreg/sstot);
-
-        if(sdep != NULL)
-          (*sdep)->data[lv][j] = sqrt(ssreg/(double)my->row);
-      }
-    }
-
-    DelDVector(&ymean);
-  }
-}
-
-void PLSClassificationValidationOutput(matrix *my, matrix *predicted_y,
-                                       matrix **accuracy, matrix **roc, matrix **roc_auc, matrix **precision_recall, matrix **precision_recall_auc)
-{
-
 }

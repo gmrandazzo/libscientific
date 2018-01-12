@@ -23,13 +23,18 @@
 #include "pca.h" /*Using: MatrixAutoScaling(); and calcVarExpressed(); */
 #include "numeric.h" /* Using:  if(FLOAT_EQ(NumOne, NumTwo));*/
 #include "metricspace.h"
+#include "modelvalidation.h"
 #include <math.h>
 
 void NewEPLSModel(EPLSMODEL** m)
 {
   (*m) = xmalloc(sizeof(EPLSMODEL));
   (*m)->models = NULL;
+  (*m)->q2 = NULL;
+  (*m)->sdep = NULL;
   (*m)->n_models = 0;
+  (*m)->nlv = 0;
+  (*m)->ny = 0;
 }
 
 void DelEPLSModel(EPLSMODEL** m)
@@ -37,12 +42,53 @@ void DelEPLSModel(EPLSMODEL** m)
   size_t i;
   for(i = 0; i < (*m)->n_models; i++){
     DelPLSModel(&(*m)->models[i]);
+    DelMatrix(&(*m)->q2[i]);
+    DelMatrix(&(*m)->sdep[i]);
   }
   xfree((*m)->models);
   xfree((*m));
 }
 
-void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautoscaling, EPLSMODEL *model, ELearningMethod agtype, ssignal *s){}
+void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautoscaling, size_t n_models, double testsize, EPLSMODEL *m, ELearningMethod agtype, ssignal *s)
+{
+  if(agtype == Bagging){
+    matrix *x_train, *y_train, *x_test, *y_test;
+    uivector *testids;
+    size_t i;
+
+    m->models = xmalloc(sizeof(PLSMODEL)*n_models);
+    m->q2 = xmalloc(sizeof(matrix)*n_models);
+    m->sdep = xmalloc(sizeof(matrix)*n_models);
+    m->n_models = n_models;
+    m->nlv = nlv;
+    m->ny = my->col;
+    unsigned int srand_init = mx->row * testsize + xautoscaling + yautoscaling + mx->col + my->col;
+    for(i = 0; i < n_models; i++){
+      initMatrix(&x_train);
+      initMatrix(&y_train);
+      initMatrix(&x_test);
+      initMatrix(&y_test);
+      initUIVector(&testids);
+      train_test_split(mx, my, testsize, &x_train, &y_train, &x_test, &y_test, &testids, &srand_init);
+      srand_init++;
+      NewPLSModel(&m->models[i]);
+      PLS(x_train, y_train, nlv, xautoscaling, yautoscaling, m->models[i], s);
+      initMatrix(&m->q2[i]);
+      initMatrix(&m->sdep[i]);
+      PLSRegressionStatistics(x_test, y_test, m->models[i], nlv, &m->q2[i], &m->sdep[i], NULL);
+      /*PLSRegressionValidationOutput(y_test, y_test_predicted, &m->q2[i], &m->sdep[i], NULL);*/
+
+      DelMatrix(&x_train);
+      DelMatrix(&y_train);
+      DelMatrix(&x_test);
+      DelMatrix(&y_test);
+    }
+  }
+  else{
+    //Random Subspace Method
+  }
+}
+
 void EPLSGetSXScore(EPLSMODEL *m, CombinationRule crule, matrix *sxscores){}
 void EPLSGetSXLoadings(EPLSMODEL *m, CombinationRule crule, matrix *sxloadings){}
 void EPLSGetSYScore(EPLSMODEL *m, CombinationRule crule, matrix *syscores){}
@@ -50,3 +96,34 @@ void EPLSGetSYLoadings(EPLSMODEL *m, CombinationRule crule, matrix *syloadings){
 void EPLSGetSWeights(EPLSMODEL *m, CombinationRule crule, matrix *sweights){}
 void EPLSGetSBetaCoefficients(EPLSMODEL *m, CombinationRule crule, matrix *sbetas){}
 void EPLSYPrediction(matrix *mx, EPLSMODEL *m, CombinationRule crule, matrix *py){}
+
+void PrintEPLSModel(EPLSMODEL *m)
+{
+  size_t i, j, k;
+  for(j = 0; j < m->n_models; j++){
+    PrintMatrix(m->q2[j]);
+    i = k = 1;
+  }
+
+
+  for(k = 0; k < m->ny; k++){
+    printf("Y No. %lu\n", k);
+    puts("Q2 external");
+    for(i = 0; i < m->nlv; i++){
+      printf("%lu;", i+1);
+      for(j = 0; j < m->n_models-1; j++){
+        printf("%f;", m->q2[j]->data[i][k]);
+      }
+      printf("%f\n", m->q2[m->n_models-1]->data[i][k]);
+    }
+    puts("SDEP external");
+    for(i = 0; i < m->nlv; i++){
+      printf("%lu;", i+1);
+      for(j = 0; j < m->n_models-1; j++){
+        printf("%f;", m->sdep[j]->data[i][k]);
+      }
+      printf("%f\n", m->sdep[m->n_models-1]->data[i][k]);
+    }
+    printf(">>> END\n");
+  }
+}

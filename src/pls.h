@@ -102,16 +102,19 @@ void PLSScorePredictor(matrix *mx, PLSMODEL *model, size_t nlv, matrix **xscores
 void PLSYPredictor(matrix *tscore, PLSMODEL *model, size_t nlv, matrix **y);
 
 /*
- * Description: Calculate the R^2 of the model
+ * Description: Calculate the correlation coefficient (ccoeff),
+ *              the standard deviation of the prediction (stdev),
+ *              the bias of the prediction (bias) in a regression model.
+ *              mx and my could be the training or the test datasets.
  */
-void PLSRSquared(matrix *mx, matrix *my, PLSMODEL *model, size_t nlv, matrix** r2y, matrix **sdec);
+void PLSRegressionStatistics(matrix *mx, matrix *my, PLSMODEL *model, size_t nlv, matrix** ccoeff, matrix **stdev, matrix **bias);
 
 /*
- * Description: Calculate the SS error and the SS total to calculate
- * then the R^2 or other parameters
+ * Description: Calculate the roc curve, the auc, the precision recall curve,
+ *              the precision_recall_auc of a classification model.
+ *              mx and my could be the training or the test datasets.
  */
-void PLSRSquared_SSErr_SSTot(matrix *mx, matrix *my, PLSMODEL *model, size_t nlv, dvector** xss_err, dvector **xss_tot, matrix** yss_err, matrix** yss_tot, matrix **pred_y);
-
+void PLSDiscriminantAnalysisStatistics(matrix *mx, matrix *my, PLSMODEL *model, size_t nlv, matrix **roc, matrix **roc_auc, matrix **precision_recall, matrix **precision_recall_auc);
 
 /*
  * Description: Calculate the ROC curve with AUC and the Precision-Recall crurve with his

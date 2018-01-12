@@ -25,7 +25,11 @@
 
 typedef struct{
   PLSMODEL **models;
+  matrix **q2;
+  matrix **sdep;
   size_t n_models;
+  size_t nlv;
+  size_t ny;
 } EPLSMODEL;
 
 /*
@@ -43,7 +47,7 @@ typedef enum{
     RandomSubspaceMethod = 1
 } ELearningMethod;
 
-void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautoscaling, EPLSMODEL *model, ELearningMethod agtype, ssignal *s);
+void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautoscaling, size_t n_models, double testsize, EPLSMODEL *model, ELearningMethod agtype, ssignal *s);
 
 typedef enum{
   Mean = 0,
@@ -59,5 +63,7 @@ void EPLSGetSWeights(EPLSMODEL *m, CombinationRule crule, matrix *sweights);
 void EPLSGetSBetaCoefficients(EPLSMODEL *m, CombinationRule crule, matrix *sbetas);
 
 void EPLSYPrediction(matrix *mx, EPLSMODEL *m, CombinationRule crule, matrix *py);
+
+void PrintEPLSModel(EPLSMODEL *m);
 
 #endif

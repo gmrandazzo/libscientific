@@ -642,6 +642,7 @@ void TestPLS9()
 
   matrix *r2y;
   matrix *sdec;
+  matrix *bias;
 
   matrix *xpred;
   matrix *xpredscores;
@@ -682,8 +683,9 @@ void TestPLS9()
 
   initMatrix(&r2y);
   initMatrix(&sdec);
+  initMatrix(&bias);
 
-  PLSRSquared(x, y, m, 4, &r2y, &sdec);
+  PLSRegressionStatistics(x, y, m, 4, &r2y, &sdec, &bias);
 
   PrintPLSModel(m);
 
@@ -692,6 +694,9 @@ void TestPLS9()
 
   puts("SDEC");
   PrintMatrix(sdec);
+
+  puts("BIAS");
+  PrintMatrix(bias);
 
   initMatrix(&xpredscores);
   initMatrix(&ypred);
@@ -706,7 +711,7 @@ void TestPLS9()
 
   puts("Extimated Y:");
   PrintMatrix(ypred);
-
+  DelMatrix(&bias);
   DelMatrix(&sdec);
   DelMatrix(&r2y);
 
@@ -1358,16 +1363,16 @@ int main(void)
   /*test 6-9
   TestPLS6();
   TestPLS7();
-  TestPLS8();
+  TestPLS8();*/
   TestPLS9();
-  TestPLS10();*/
+  //TestPLS10();
   //TestPLS11();
 
   /* Experimental tests
   TestPLS12();
   TestPLS13();
   TestPLS14();
-  TestPLS15();*/
-  TestPLS16();
+  TestPLS15();
+  TestPLS16();*/
   return 0;
 }

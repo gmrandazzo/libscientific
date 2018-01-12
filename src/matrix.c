@@ -1552,6 +1552,25 @@ void MatrixSort(matrix* mx, size_t col_n)
   }
 }
 
+void MatrixReverseSort(matrix* mx, size_t col_n)
+{
+  size_t i, j, k;
+  double temp;
+  for(i = 0; i < mx->row; i++){
+    for(j = i+1; j < mx->row; j++){
+      if(mx->data[i][col_n] < mx->data[j][col_n]){
+        for(k = 0; k < mx->col; k++){
+          temp = mx->data[i][k];
+          mx->data[i][k] = mx->data[j][k];
+          mx->data[j][k] = temp;
+        }
+      }
+      else{
+        continue;
+      }
+    }
+  }
+}
 
 void MatrixGetMaxValue(matrix* mx, size_t* row, size_t* col)
 {

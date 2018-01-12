@@ -227,6 +227,7 @@ set(ArrayTest_SRC testarray.c)
 set(AlgebraTest_SRC testalgebra.c)
 set(PCATest_SRC testpca.c)
 set(PLSTest_SRC testpls.c)
+set(EPLSTest_SRC testepls.c)
 set(MPCATest_SRC testmwpca.c)
 set(MPLSTest_SRC testmwpls.c)
 set(CLUSTERINGTest_SRC testclustering.c)
@@ -291,6 +292,9 @@ target_link_libraries(testpca libscientific)
 
 add_executable(testpls ${PLSTest_SRC})
 target_link_libraries(testpls libscientific)
+
+add_executable(testepls ${EPLSTest_SRC})
+target_link_libraries(testepls libscientific)
 
 add_executable(testmwpca ${MPCATest_SRC})
 target_link_libraries(testmwpca libscientific)

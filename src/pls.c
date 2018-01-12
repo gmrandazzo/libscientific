@@ -816,150 +816,68 @@ void PLSYPredictor(matrix *tscore, PLSMODEL *model, size_t nlv, matrix **y)
   }
 }
 
-void PLSRSquared(matrix *mx, matrix *my, PLSMODEL *model, size_t nlv, matrix** r2y, matrix **sdec)
+void PLSRegressionStatistics(matrix *mx, matrix *my, PLSMODEL *model, size_t nlv, matrix** ccoeff, matrix **stdev, matrix **bias)
 {
-  size_t pc, i, j;
-  matrix *recalcy;
-  matrix *recalcscores;
-  dvector *r2y_;
-  dvector *sdec_;
+  size_t lv, i, j;
+  matrix *predicted_y;
+  matrix *predicted_xscores;
+  dvector *ccoeff_row;
+  dvector *stdev_row;
   double n, d;
 
   if(nlv > model->b->size)
     nlv = model->b->size;
 
-  for(pc = 1; pc <= nlv; pc++){
-    initMatrix(&recalcy);
-    initMatrix(&recalcscores);
-    initDVector(&r2y_);
-    initDVector(&sdec_);
+  if(bias != NULL)
+    ResizeMatrix(bias, nlv, my->col);
 
-    PLSScorePredictor(mx, model, pc, &recalcscores);
+  for(lv = 0; lv < nlv; lv++){
+    initMatrix(&predicted_y);
+    initMatrix(&predicted_xscores);
+    initDVector(&ccoeff_row);
+    initDVector(&stdev_row);
 
-    PLSYPredictor(recalcscores, model, pc, &recalcy);
+    PLSScorePredictor(mx, model, lv+1, &predicted_xscores);
+
+    PLSYPredictor(predicted_xscores, model, lv+1, &predicted_y);
 
     /* r2y is not cumulative as x and is calculated for each y
     *
     * R2Y = 1 -  Sum((Y_real - Y_Extimated)^2) / Sum((Y_real - Y_med>)^2)
     */
-    for(j = 0; j < recalcy->col; j++){
+    for(j = 0; j < predicted_y->col; j++){
       n = d = 0.f;
-      for(i = 0; i < recalcy->row; i++){
-        n += square(my->data[i][j] - recalcy->data[i][j]);
+      for(i = 0; i < predicted_y->row; i++){
+        n += square(my->data[i][j] - predicted_y->data[i][j]);
         d += square(my->data[i][j] - model->ycolaverage->data[j]);
       }
-      DVectorAppend(&r2y_, 1 - (n/d));
-      DVectorAppend(&sdec_, sqrt(n/my->row));
+      DVectorAppend(&ccoeff_row, 1 - (n/d));
+      DVectorAppend(&stdev_row, sqrt(n/my->row));
+
+      if(bias != NULL){
+        double sum_xi = 0.f, sum_yi = 0.f;
+        for(i = 0; i < my->row; i++){
+          sum_yi+=(predicted_y->data[i][j+lv]*(my->data[i][j]-model->ycolaverage->data[j]));
+          sum_xi+=(my->data[i][j]*(my->data[i][j]-model->ycolaverage->data[j]));
+        }
+        /*k = Y-(X*b);*/
+        (*bias)->data[lv][j] = fabs(1 - sum_yi/sum_xi);
+      }
     }
 
-    MatrixAppendRow(sdec, sdec_);
-    MatrixAppendRow(r2y, r2y_);
+    MatrixAppendRow(stdev, stdev_row);
+    MatrixAppendRow(ccoeff, ccoeff_row);
 
-    DelDVector(&sdec_);
-    DelDVector(&r2y_);
-    DelMatrix(&recalcy);
-    DelMatrix(&recalcscores);
+    DelDVector(&stdev_row);
+    DelDVector(&ccoeff_row);
+    DelMatrix(&predicted_y);
+    DelMatrix(&predicted_xscores);
   }
 }
 
-/* Used During Cross Validation LOO E Random Group
- * yss_err and xss_err are the PRESS predicted residual sums of squares
- */
-void PLSRSquared_SSErr_SSTot(matrix *mx, matrix *my, PLSMODEL *model, size_t nlv, dvector** xss_err, dvector **xss_tot, matrix** yss_err, matrix** yss_tot, matrix** pred_y)
+void PLSDiscriminantAnalysisStatistics(matrix *mx, matrix *my, PLSMODEL *model, size_t nlv, matrix **roc, matrix **roc_auc, matrix **precision_recall, matrix **precision_recall_auc)
 {
-  size_t pc, i, j;
-  matrix *recalcy;
-  matrix *recalcx;
-  matrix *recalcscores;
-  dvector *tmp;
-  double n, d;
 
-  if(nlv > model->b->size){
-    nlv = model->b->size;
-  }
-
-  if(((*yss_err)->row == 0 ||
-    (*yss_err)->row != nlv ||
-    (*yss_err)->col != my->col ||
-    (*yss_tot)->row == 0 ||
-    (*yss_tot)->row != nlv ||
-    (*yss_tot)->col != mx->col)){
-    ResizeMatrix(yss_err, nlv, my->col);
-    ResizeMatrix(yss_tot, nlv, my->col);
-  }
-  else{
-    for(i = 0; i < (*yss_err)->row; i++){
-      for(j = 0; j < (*yss_err)->col; j++){
-        (*yss_err)->data[i][j] = (*yss_tot)->data[i][j] = 0.f;
-      }
-    }
-  }
-
-
-  if(xss_err != NULL && xss_tot != NULL){
-    if(((*xss_err)->size != my->row || (*xss_tot)->size != my->row)){
-      DVectorResize(xss_err, nlv);
-      DVectorResize(xss_tot, nlv);
-    }
-    else{
-      for(i = 0; i < (*xss_err)->size; i++){
-        (*xss_err)->data[i] = (*xss_tot)->data[i] = 0.f;
-      }
-    }
-  }
-
-  for(pc = 1; pc <= nlv; pc++){
-    initMatrix(&recalcy);
-    initMatrix(&recalcscores);
-
-    PLSScorePredictor(mx, model, nlv, &recalcscores);
-
-    PLSYPredictor(recalcscores, model, pc, &recalcy);
-
-    /* r2y is not cumulative as x and is calculated for each y
-    *
-    * R2Y = 1 -  Sum((Y_real - Y_Extimated)^2) / Sum((Y_real - Y_med>)^2)
-    */
-    for(j = 0; j < recalcy->col; j++){
-      n = d = 0.f;
-      for(i = 0; i < recalcy->row; i++){
-        n += square(my->data[i][j] - recalcy->data[i][j]);
-        d += square(my->data[i][j] - model->ycolaverage->data[j]);
-      }
-
-      (*yss_err)->data[pc-1][j] = n;
-      (*yss_tot)->data[pc-1][j] = d;
-
-      if(pred_y != NULL){ /*for each component we have j y values*/
-        tmp = getMatrixColumn(recalcy, j);
-        MatrixAppendCol(pred_y, tmp);
-        DelDVector(&tmp);
-      }
-
-    }
-
-    /* r2x is cumulative because the X is all the matrix */
-    if(xss_err != NULL && xss_tot != NULL){
-      initMatrix(&recalcx);
-      PCAIndVarPredictor(recalcscores, model->xloadings, model->xcolaverage, model->xcolscaling, pc, &recalcx);
-
-      n = d = 0.f;
-      for(j = 0; j < recalcx->col; j++){
-        for(i = 0; i < recalcx->row; i++){
-          n += square(recalcx->data[i][j] - mx->data[i][j]);
-          d += square(mx->data[i][j] - model->xcolaverage->data[j]);
-        }
-      }
-
-      (*xss_err)->data[pc-1] = n;
-      (*xss_tot)->data[pc-1] = d;
-
-      DelMatrix(&recalcx);
-    }
-
-    DelMatrix(&recalcy);
-    DelMatrix(&recalcscores);
-  }
 }
 
 /*
@@ -979,6 +897,8 @@ void PLSVIP(PLSMODEL *model, matrix **vip)
       for(k = 0; k < npred; k++){
         /*double tmp = model->b[j]^2*t[pc]*t^[pc];
         n += */
+        d = k;
+        n += d;
       }
     }
   }
@@ -1078,7 +998,7 @@ void PLSYScrambling(matrix *mx, matrix *my,
 
   NewPLSModel(&tmpmod);
   PLS(mx, my, nlv, xautoscaling, yautoscaling, tmpmod, s);
-  PLSRSquared(mx, my, tmpmod, nlv, &(tmpmod->r2y_model), &(tmpmod->sdec));
+  PLSRegressionStatistics(mx, my, tmpmod, nlv, &(tmpmod->r2y_model), &(tmpmod->sdec), NULL);
 
   /* Calculate y real vs yscrambled and add other r2 q2 */
   size_t r2cutoff = GetLVCCutoff(tmpmod->r2y_model);
@@ -1184,7 +1104,7 @@ void PLSYScrambling(matrix *mx, matrix *my,
 
         NewPLSModel(&tmpmod);
         PLS(mx, randomY, nlv, xautoscaling, yautoscaling, tmpmod, s);
-        PLSRSquared(mx, randomY, tmpmod, nlv, &(tmpmod->r2y_model), &(tmpmod->sdec));
+        PLSRegressionStatistics(mx, randomY, tmpmod, nlv, &(tmpmod->r2y_model), &(tmpmod->sdec), NULL);
 
         /* Calculate y real vs yscrambled and add other r2 q2 */
         size_t r2cutoff = GetLVCCutoff(tmpmod->r2y_model);
@@ -2308,7 +2228,7 @@ void PLSCostPopulation(matrix *mx, matrix *my,
 
     initMatrix(&r2y);
     initMatrix(&sdec);
-    PLSRSquared(subpx, py, m, nlv, &r2y, &sdec);
+    PLSRegressionStatistics(subpx, py, m, nlv, &r2y, &sdec, NULL);
 
     cutoff = GetLVCCutoff(r2y);
 //     MatrixGetMaxValue(r2y, &cutoff, NULL);
@@ -2349,7 +2269,7 @@ void PLSCostPopulation(matrix *mx, matrix *my,
     NewPLSModel(&m);
     PLS(submx, my, nlv, xautoscaling, yautoscaling, m, s);
 
-    PLSRSquared(submx, my,  m, nlv, &m->r2y_model, &m->sdec);
+    PLSRegressionStatistics(submx, my,  m, nlv, &m->r2y_model, &m->sdec, NULL);
 
     cutoff = GetLVCCutoff(q2y);
 //     MatrixGetMaxValue(q2y, &cutoff, NULL);
@@ -2403,7 +2323,7 @@ void PLSCostPopulation(matrix *mx, matrix *my,
 
     NewPLSModel(&m);
     PLS(submx, my, nlv, xautoscaling, yautoscaling, m, s);
-    PLSRSquared(submx, my,  m, nlv, &m->r2y_model, &m->sdec);
+    PLSRegressionStatistics(submx, my,  m, nlv, &m->r2y_model, &m->sdec, NULL);
 
     cutoff = GetLVCCutoff(q2y);
 //     MatrixGetMaxValue(q2y, &cutoff, NULL);

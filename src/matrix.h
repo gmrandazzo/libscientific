@@ -225,6 +225,7 @@ double MatrixDeterminant(matrix *mx);
 void MatrixNorm(matrix *mx, matrix *nmx);
 void MatrixColumnMinMax(matrix* mx, size_t col, double* min, double* max);
 void MatrixSort(matrix *mx, size_t col_n);
+void MatrixReverseSort(matrix* mx, size_t col_n);
 void MatrixGetMaxValue(matrix *mx, size_t *row, size_t *col);
 void MatrixGetMinValue(matrix *mx, size_t *row, size_t *col);
 
