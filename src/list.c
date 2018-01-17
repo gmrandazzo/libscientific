@@ -44,6 +44,7 @@ void DelDVectorList(dvectorlist **lst)
   size_t i;
   for(i = 0; i < (*lst)->size; i++)
     DelDVector(&(*lst)->d[i]);
+  xfree((*lst)->d);
   xfree((*lst));
 }
 

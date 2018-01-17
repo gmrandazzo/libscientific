@@ -16,6 +16,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "array.h"
 #include "pls.h"
 #include "modelvalidation.h"
 #include "matrix.h"
@@ -24,13 +25,149 @@
 #include <time.h>
 
 
-void TestPLS16()
+void TestPLS15()
+{
+  matrix *x, *y;
+
+  PLSMODEL *m;
+
+  array *roc;
+  array *precision_recall;
+  matrix *roc_auc;
+  matrix *precision_recall_ap;
+
+  matrix *xpred;
+  matrix *xpredscores;
+
+  matrix *ypred;
+
+  size_t nobj = 100;
+  size_t nobj_to_pred = 50;
+  size_t nfeats = 250;
+  size_t ntarg = 1;
+  NewMatrix(&x, nobj, nfeats);
+  NewMatrix(&xpred, nobj_to_pred, nfeats);
+  NewMatrix(&y, nobj, ntarg);
+
+  srand(nobj+nfeats+ntarg);
+  for(size_t i = 0; i < nobj; i++){
+    for(size_t j = 0; j < nfeats; j++){
+      setMatrixValue(x, i, j, randDouble(-100,100));
+    }
+
+    for(size_t j = 0; j < ntarg; j++){
+      setMatrixValue(y, i, j, randInt(0,2));
+    }
+  }
+
+  for(size_t i = 0; i < nobj_to_pred; i++){
+    for(size_t j = 0; j < nfeats; j++){
+      setMatrixValue(xpred, i, j, randDouble(-100,100));
+    }
+  }
+
+
+  /*NewMatrix(&x, 4, 2);
+  NewMatrix(&y, 4, 1);
+
+  setMatrixValue(x, 0, 0, 5); setMatrixValue(x, 0, 1, 7);
+  setMatrixValue(x, 1, 0, 3); setMatrixValue(x, 1, 1, 12);
+  setMatrixValue(x, 2, 0, 2); setMatrixValue(x, 2, 1, 1);
+  setMatrixValue(x, 3, 0, 4); setMatrixValue(x, 3, 1, 8);
+
+  setMatrixValue(y, 0, 0, 0);
+  setMatrixValue(y, 1, 0, 0);
+  setMatrixValue(y, 2, 0, 1);
+  setMatrixValue(y, 3, 0, 1);
+
+
+  NewMatrix(&xpred, 3, 2);
+  setMatrixValue(xpred, 0, 0, 5); setMatrixValue(xpred, 0, 1, 5);  // y = 7,33
+  setMatrixValue(xpred, 1, 0, 12); setMatrixValue(xpred, 1, 1, 4); // y = 13,99
+  setMatrixValue(xpred, 2, 0, 21); setMatrixValue(xpred, 2, 1, 15); // y = 26,66
+  */
+
+  puts("Test 15 - PLS DA Model and prediction");
+  /*Allocate the final output*/
+  NewPLSModel(&m);
+
+  /*puts("X:");
+  PrintMatrix(x);
+
+  puts("Y:");
+  PrintMatrix(y);*/
+
+  ssignal run = SIGSCIENTIFICRUN;
+  PLS(x, y, 4, 1, 0, m, &run);
+
+
+
+  /*VALIDATE THE MODEL */
+  MODELINPUT minpt;
+  minpt.mx = &x;
+  minpt.my = &y;
+  minpt.nlv = 4;
+  minpt.xautoscaling = 1;
+  minpt.yautoscaling = 0;
+
+  BootstrapRandomGroupsCV(&minpt, 3, 100, _PLS_, &m->predicted_y, &m->pred_residuals, 4, NULL);
+  PrintMatrix(m->predicted_y);
+
+  initArray(&roc);
+  initArray(&precision_recall);
+  initMatrix(&roc_auc);
+  initMatrix(&precision_recall_ap);
+
+  PLSDiscriminantAnalysisStatistics(y, m->predicted_y, &roc, &roc_auc, &precision_recall, &precision_recall_ap);
+
+  PrintPLSModel(m);
+
+  puts("ROC AUC's for Trainig set");
+  PrintMatrix(roc_auc);
+  puts("ROC Curves for each LV");
+  PrintArray(roc);
+
+  puts("Precision-Recall or Trainig set");
+  PrintMatrix(precision_recall_ap);
+  puts("Precision-Recall Curves for each LV");
+  PrintArray(precision_recall);
+
+  initMatrix(&xpredscores);
+  initMatrix(&ypred);
+
+  PLSScorePredictor(xpred, m, 2, &xpredscores);
+
+  PLSYPredictor(xpredscores, m, 1, &ypred);
+
+  /*puts("\nPrediction scores...");
+  puts("x");
+  PrintMatrix(xpredscores);
+
+  puts("Extimated Y:");
+  PrintMatrix(ypred);
+  */
+  DelMatrix(&roc_auc);
+  DelMatrix(&precision_recall_ap);
+  DelArray(&roc);
+  DelArray(&precision_recall);
+
+  DelPLSModel(&m);
+  DelMatrix(&x);
+  DelMatrix(&y);
+
+  DelMatrix(&xpredscores);
+
+  DelMatrix(&xpred);
+  DelMatrix(&ypred);
+}
+
+void TestPLS14()
 {
   matrix *x, *y;
   PLSMODEL *m;
 
   NewMatrix(&x, 14, 6);
-  NewMatrix(&y, 14, 1);
+  NewMatrix(&y, 14, 2);
 
   x->data[0][0] = 4.0000;  x->data[0][1] = 4.0000;  x->data[0][2] = 1.0000;  x->data[0][3] = 84.1400;  x->data[0][4] = 1.0500;  x->data[0][5] = 235.1500;
   x->data[1][0] = 5.0000;  x->data[1][1] = 5.0000;  x->data[1][2] = 1.0000;  x->data[1][3] = 79.1000;  x->data[1][4] = 0.9780;  x->data[1][5] = 231;
@@ -63,15 +200,27 @@ void TestPLS16()
   y->data[12][0] = 379.0000;
   y->data[13][0] = 361.0000;
 
-  printf("Test PLS 16\n");
+  y->data[0][1] = 0.1500;
+  y->data[1][1] = 0.0000;
+  y->data[2][1] = 1.0000;
+  y->data[3][1] = 0.5500;
+  y->data[4][1] = 2.0000;
+  y->data[5][1] = 2.0000;
+  y->data[6][1] = 1.0000;
+  y->data[7][1] = 0.3000;
+  y->data[8][1] = 3.6500;
+  y->data[9][1] = 0.0000;
+  y->data[10][1] = 0.0000;
+  y->data[11][1] = 0.0000;
+  y->data[12][1] = 0.0000;
+  y->data[13][1] = 1.0000;
+
+  printf("Test PLS 14\n");
 
   NewPLSModel(&m);
   PLS(x, y, 100, 1, 0, m, NULL);
 
-  //PLSRandomGroupsCV(x, y, 1, 0, 999, 3, 100, &m->q2y, &m->sdep, &m->bias, &m->predicted_y, &m->pred_residuals, 4, NULL);
-
-  PLSLOOCV(x, y, 1, 0, 999, &m->q2y, &m->sdep, &m->bias, &m->predicted_y, &m->pred_residuals, 4, NULL);
-
+  /*VALIDATE THE MODEL */
   MODELINPUT minpt;
   minpt.mx = &x;
   minpt.my = &y;
@@ -79,141 +228,24 @@ void TestPLS16()
   minpt.xautoscaling = 1;
   minpt.yautoscaling = 0;
 
-  matrix *py, *pres;
-  initMatrix(&py);
-  initMatrix(&pres);
-  //BootstrapRandomGroupsCV(&minpt, 3, 100, _PLS_, &py, &pres, 4, NULL);
-  LeaveOneOut(&minpt, _PLS_, &py, &pres, 4, NULL);
-
-  PrintMatrix(py);
+  //BootstrapRandomGroupsCV(&minpt, 3, 100, _PLS_, &m->predicted_y, &m->pred_residuals, 4, NULL);
+  LeaveOneOut(&minpt, _PLS_, &m->predicted_y, &m->pred_residuals, 4, NULL);
   PrintMatrix(m->predicted_y);
-  for(size_t i = 0; i < m->predicted_y->row; i++){
-    for(size_t j = 0; j < m->predicted_y->col; j++){
-      double r = m->predicted_y->data[i][j] - py->data[i][j];
-      if(FLOAT_EQ(r, 0.f, 1e-3))
-        continue;
-      else{
-        printf("Algorithm Error!!\n");
-      }
-    }
-  }
 
-  DelMatrix(&py);
-  DelMatrix(&pres);
+  PLSRegressionStatistics(y, m->predicted_y, &m->q2y, &m->sdep, &m->bias);
+  PrintMatrix(m->predicted_y);
+  puts("Q2 Cross Validation");
+  PrintMatrix(m->q2y);
+  puts("SDEP Cross Validation");
+  PrintMatrix(m->sdep);
+  puts("BIAS Cross Validation");
+  PrintMatrix(m->bias);
+
   DelPLSModel(&m);
   DelMatrix(&x);
   DelMatrix(&y);
 }
 
-void TestPLS15()
-{
-  size_t nobj = 200;
-  matrix *mx, *my;
-  uivector *obj_class, *bestid;
-  matrix *q2_surface, *sdep_surface;
-  ssignal s = SIGSCIENTIFICRUN;
-  puts("Test16: Sample Validator Calculation");
-
-  NewUIVector(&obj_class, nobj);
-  NewMatrix(&mx, nobj, 128);
-  NewMatrix(&my, nobj, 1);
-
-  srand(nobj);
-  for(size_t i = 0; i < nobj; i++){
-    obj_class->data[i] = 0;
-    /*if(classid == 10){
-      classid = 0;
-    }
-    else{
-      obj_class->data[i] = classid;
-      classid++;
-    }*/
-    for(size_t j = 0; j < 128; j++){
-      setMatrixValue(mx, i, j, randDouble(0,20));
-    }
-    setMatrixValue(my, i, 0, randDouble(0,1));
-//     setMatrixValue(my, i, 1, randDouble(10,100));
-  }
-
-  initMatrix(&q2_surface);
-  initMatrix(&sdep_surface);
-  initUIVector(&bestid);
-
-  PLSDynamicSampleValidator(mx, my, 1, 0,
-                            10, 20,
-                            obj_class, 10, 9999,
-                            5, 20, 4,
-                            &q2_surface, &sdep_surface, &bestid, &s);
-
-
-  puts("Q2 Surface");
-  PrintMatrix(q2_surface);
-  puts("SDEP Surface");
-  PrintMatrix(sdep_surface);
-
-  puts("BestID");
-  PrintUIVector(bestid);
-  DelUIVector(&bestid);
-  DelUIVector(&obj_class);
-  DelMatrix(&q2_surface);
-  DelMatrix(&sdep_surface);
-  DelMatrix(&mx);
-  DelMatrix(&my);
-}
-
-void TestPLS14()
-{
-  size_t nobj = 700, classid = 0;
-  matrix *mx, *my;
-  uivector *obj_class, *bestid;
-  matrix *q2_distr, *sdep_distr;
-  ssignal s = SIGSCIENTIFICRUN;
-  puts("Test16: Sample Validator Calculation");
-
-  NewUIVector(&obj_class, nobj);
-  NewMatrix(&mx, nobj, 128);
-  NewMatrix(&my, nobj, 1);
-
-  srand(nobj);
-  for(size_t i = 0; i < nobj; i++){
-    if(classid == 10){
-      classid = 0;
-    }
-    else{
-      obj_class->data[i] = classid;
-      classid++;
-    }
-    for(size_t j = 0; j < 128; j++){
-      setMatrixValue(mx, i, j, randDouble(0,20));
-    }
-    setMatrixValue(my, i, 0, randDouble(0,1));
-//     setMatrixValue(my, i, 1, randDouble(10,100));
-  }
-
-  initMatrix(&q2_distr);
-  initMatrix(&sdep_distr);
-  initUIVector(&bestid);
-
-  PLSStaticSampleValidator(mx, my, obj_class,
-                      1, 0,
-                      10, 68, 5,
-                      5, 20, 4,
-                      &q2_distr, &sdep_distr, &bestid, &s);
-
-  puts("Q2 Distribution");
-  PrintMatrix(q2_distr);
-  puts("SDEP Distribution");
-  PrintMatrix(sdep_distr);
-
-  puts("BestID");
-  PrintUIVector(bestid);
-  DelUIVector(&bestid);
-  DelUIVector(&obj_class);
-  DelMatrix(&q2_distr);
-  DelMatrix(&sdep_distr);
-  DelMatrix(&mx);
-  DelMatrix(&my);
-}
 
 void TestPLS13()
 {
@@ -222,8 +254,7 @@ void TestPLS13()
   matrix *q2, *sdep, *bias;
   matrix *predicted_y;
   matrix *predicted_residuals;
-  ssignal s = SIGSCIENTIFICRUN;
-  puts("Test15: Simple Calculation PLS Model with RGCV with random data");
+  puts("Test13: Simple Calculation PLS Model with RGCV with random data");
 
 
   NewMatrix(&mx, nobj, 128);
@@ -244,20 +275,24 @@ void TestPLS13()
   initMatrix(&predicted_y);
   initMatrix(&predicted_residuals);
 
-  PLSRandomGroupsCV(mx, my, 1, 0, 10, 5, 20, &q2, &sdep, &bias, &predicted_y, &predicted_residuals, 4, &s);
-  /*PLSLOOCV(mx, my, 1, 0, 10, &q2, &sdep, &bias, &predicted_y, &predicted_residuals, 4, &s);*/
-  /*PLSYScrambling(mx ,my, 1, 0, 10, 5, 1, 5, 20, &q2, &sdep, &bias, 4, &s);*/
 
-  puts("Q2");
+  MODELINPUT minpt;
+  minpt.mx = &mx;
+  minpt.my = &my;
+  minpt.nlv = 10;
+  minpt.xautoscaling = 1;
+  minpt.yautoscaling = 0;
+
+  //LeaveOneOut(&minpt, _PLS_, &predicted_y, &predicted_residuals, 4, NULL);
+  BootstrapRandomGroupsCV(&minpt, 5, 20, _PLS_, &predicted_y, &predicted_residuals, 4, NULL);
+  PLSRegressionStatistics(my, predicted_y, &q2, &sdep, &bias);
+
+  puts("Q2 Cross Validation");
   PrintMatrix(q2);
-  puts("SDEP");
+  puts("SDEP Cross Validation");
   PrintMatrix(sdep);
-  puts("BIAS");
+  puts("BIAS Cross Validation");
   PrintMatrix(bias);
-  /*puts("Predicted Y");
-  PrintMatrix(predicted_y);
-  puts("Predicted Residuals Y");
-  PrintMatrix(predicted_residuals);*/
 
   DelMatrix(&predicted_y);
   DelMatrix(&predicted_residuals);
@@ -314,12 +349,12 @@ void TestPLS12()
   initUIVector(&varselected);
   initUIVector(&vardistribution);
   initMatrix(&map);
-  /*LOO and Y Scrambling*/
+  /*LOO and Y Scrambling
   PLSSpearmannVariableSelection(x, y, NULL, NULL,
                                    1, 0, 999, 1, 0, 0,
                                    0.1,
                                    &varselected, &map, &vardistribution, 4, NULL);
-
+*/
   puts("Variable Selected");
   PrintUIVector(varselected);
 
@@ -359,11 +394,15 @@ void TestPLS12()
   NewPLSModel(&m);
   PLS(x_, y, 100, 1, 0, m, NULL);
 
-  PLSLOOCV(x_, y, 1, 0, 100,
-                    &m->q2y,
-                    &m->sdep,
-                    &m->predicted_y, &m->bias, &m->pred_residuals, 4, NULL);
+  MODELINPUT minpt;
+  minpt.mx = &x_;
+  minpt.my = &y;
+  minpt.nlv = 10;
+  minpt.xautoscaling = 1;
+  minpt.yautoscaling = 0;
 
+  LeaveOneOut(&minpt, _PLS_, &m->predicted_y, &m->pred_residuals, 4, NULL);
+  PLSRegressionStatistics(y, m->predicted_y, &m->q2y, &m->sdep, &m->bias);
 
   /*PrintPLSModel(m);*/
   puts("Q^2");
@@ -436,14 +475,19 @@ void TestPLS11()
   NewPLSModel(&m);
   PLS(x, y, 100, 1, 0, m, NULL);
 
-  PLSLOOCV(x, y, 1, 0, 100,
-                    &m->q2y,
-                    &m->sdep,
-                    &m->bias,
-                    &m->predicted_y, &m->pred_residuals, 4, NULL);
+  MODELINPUT minpt;
+  minpt.mx = &x;
+  minpt.my = &y;
+  minpt.nlv = 100;
+  minpt.xautoscaling = 1;
+  minpt.yautoscaling = 0;
 
-  /*PLSRandomGroupsCV(x, y, 1, 0, 999, 3, 100, &m->q2y, &m->sdep, &m->predicted_y, &m->pred_residuals, 4, NULL); */
+  LeaveOneOut(&minpt, _PLS_, &m->predicted_y, &m->pred_residuals, 4, NULL);
+  PLSRegressionStatistics(y, m->predicted_y, &m->q2y, &m->sdep, &m->bias);
 
+  ValidationArg varg;
+  varg.vtype = _LOO_;
+  YScrambling(&minpt, _PLS_, varg, 100, &m->r2q2scrambling, 4, NULL);
 
   /*PrintPLSModel(m);*/
   puts("Q^2");
@@ -460,6 +504,9 @@ void TestPLS11()
 
   puts("PREDICTED RESIDUALS");
   PrintMatrix(m->pred_residuals);
+
+  puts("YSCRAMBLING RESULTS");
+  PrintMatrix(m->r2q2scrambling);
 
   puts("RealY");
   PrintMatrix(y);
@@ -540,12 +587,12 @@ void TestPLS10()
                        40, 0.3, 0.5, 0, 0, 0.9,
                        &varselected, &map, &vardistribution, 4, NULL);*/
 
-  /* GENETIC ALGORITM VARIABLE SELECTION  RG: 2 groups, 20 iterations.. */
+  /* GENETIC ALGORITM VARIABLE SELECTION  RG: 2 groups, 20 iterations..
   PLSGAVariableSelection(x, y, NULL, NULL,
                        1, 0, 1, 1, 7, 20,
                        50, 0.5, 0.5, 0.0, 0.0, 0.9,
                        &varselected, &map, &vardistribution, 4, NULL);
-
+*/
 
 
 
@@ -586,12 +633,15 @@ void TestPLS10()
   NewPLSModel(&m);
   PLS(x_, y, 100, 1, 0, m, NULL);
 
-  PLSLOOCV(x_, y, 1, 0, 100,
-                    &m->q2y,
-                    &m->sdep,
-                    &m->bias,
-                    &m->predicted_y, &m->pred_residuals, 4, NULL);
+  MODELINPUT minpt;
+  minpt.mx = &x;
+  minpt.my = &y;
+  minpt.nlv = 100;
+  minpt.xautoscaling = 1;
+  minpt.yautoscaling = 0;
 
+  LeaveOneOut(&minpt, _PLS_, &m->predicted_y, &m->pred_residuals, 4, NULL);
+  PLSRegressionStatistics(y, m->predicted_y, &m->q2y, &m->sdep, &m->bias);
 
   /*PrintPLSModel(m);*/
   puts("Q^2");
@@ -685,7 +735,8 @@ void TestPLS9()
   initMatrix(&sdec);
   initMatrix(&bias);
 
-  PLSRegressionStatistics(x, y, m, 4, &r2y, &sdec, &bias);
+  PLSYPredictorAllLV(x, m, 4, &m->recalculated_y);
+  PLSRegressionStatistics(y, m->recalculated_y, &r2y, &sdec, &bias);
 
   PrintPLSModel(m);
 
@@ -923,7 +974,7 @@ void TestPLS6()
 void TestPLS5()
 {
 
-  matrix *x, *y; /* Data matrix */
+  matrix *x, *y, *predicted_y, *pred_residuals; /* Data matrix */
   matrix *q2y;
   matrix *sdep;
 
@@ -973,18 +1024,31 @@ void TestPLS5()
   initMatrix(&sdep);
 
   ssignal run = SIGSCIENTIFICRUN;
-  PLSRandomGroupsCV(x, y, 1, 0, 5, 3, 20, &q2y, &sdep, NULL, NULL, NULL, 4, &run);
 
-  puts("Q^2 y");
+  MODELINPUT minpt;
+  minpt.mx = &x;
+  minpt.my = &y;
+  minpt.nlv = 999;
+  minpt.xautoscaling = 1;
+  minpt.yautoscaling = 0;
+
+  initMatrix(&predicted_y);
+  initMatrix(&pred_residuals);
+  BootstrapRandomGroupsCV(&minpt, 3, 100, _PLS_, &predicted_y, &pred_residuals, 4, &run);
+  PLSRegressionStatistics(y, predicted_y, &q2y, &sdep, NULL);
+
+  puts("Q2 Cross Validation");
   PrintMatrix(q2y);
 
-  puts("SDEP");
+  puts("SDEP Cross Validation");
   PrintMatrix(sdep);
 
   DelMatrix(&sdep);
   DelMatrix(&q2y);
   DelMatrix(&x);
   DelMatrix(&y);
+  DelMatrix(&predicted_y);
+  DelMatrix(&pred_residuals);
 }
 
 
@@ -1224,19 +1288,23 @@ void TestPLS2()
 
   PrintPLSModel(m);
 
-  PLSLOOCV(x, y, 0, 0, 3,
-                    &m->q2y,
-                    &m->sdep,
-                    &m->bias,
-                    &m->predicted_y, &m->pred_residuals, 4, NULL);
+  /*VALIDATE THE MODEL */
+  MODELINPUT minpt;
+  minpt.mx = &x;
+  minpt.my = &y;
+  minpt.nlv = 999;
+  minpt.xautoscaling = 0;
+  minpt.yautoscaling = 0;
 
-  puts("Q^2");
+  //BootstrapRandomGroupsCV(&minpt, 3, 100, _PLS_, &m->predicted_y, &m->pred_residuals, 4, NULL);
+  LeaveOneOut(&minpt, _PLS_, &m->predicted_y, &m->pred_residuals, 4, &run);
+  PLSRegressionStatistics(y, m->predicted_y, &m->q2y, &m->sdep, &m->bias);
+  PrintMatrix(m->predicted_y);
+  puts("Q2 Cross Validation");
   PrintMatrix(m->q2y);
-
-  puts("SDEP");
+  puts("SDEP Cross Validation");
   PrintMatrix(m->sdep);
-
-  puts("BIAS");
+  puts("BIAS Cross Validation");
   PrintMatrix(m->bias);
 
   puts("PREDICTED Y");
@@ -1257,7 +1325,7 @@ void TestPLS2()
 
 void TestPLS1()
 {
-  matrix *x, *y, *r2q2scrabling; /* Data matrix */
+  matrix *x, *y; /* Data matrix */
   dvector *betas;
   PLSMODEL *m;
 
@@ -1309,17 +1377,25 @@ void TestPLS1()
 
   PrintMatrix(y);
 
-  PLSLOOCV(x, y, 1, 0, 777,
-                    &m->q2y,
-                    &m->sdep,
-                    &m->bias,
-                    &m->predicted_y, &m->pred_residuals, 4, NULL);
 
-  initMatrix(&r2q2scrabling);
-  PLSYScrambling(x, y, 1, 0, 10, 1, 1, 5, 20, &r2q2scrabling, 4, NULL);
+  /*VALIDATE THE MODEL */
+  MODELINPUT minpt;
+  minpt.mx = &x;
+  minpt.my = &y;
+  minpt.nlv = 999;
+  minpt.xautoscaling = 0;
+  minpt.yautoscaling = 0;
 
-  puts("R2Q2SCRAMBLING");
-  PrintMatrix(r2q2scrabling);
+  //BootstrapRandomGroupsCV(&minpt, 3, 100, _PLS_, &m->predicted_y, &m->pred_residuals, 4, NULL);
+  LeaveOneOut(&minpt, _PLS_, &m->predicted_y, &m->pred_residuals, 4, NULL);
+  PLSRegressionStatistics(y, m->predicted_y, &m->q2y, &m->sdep, &m->bias);
+  PrintMatrix(m->predicted_y);
+  puts("Q2 Cross Validation");
+  PrintMatrix(m->q2y);
+  puts("SDEP Cross Validation");
+  PrintMatrix(m->sdep);
+  puts("BIAS Cross Validation");
+  PrintMatrix(m->bias);
 
   puts("Q^2");
   PrintMatrix(m->q2y);
@@ -1348,7 +1424,6 @@ void TestPLS1()
   DelPLSModel(&m);
   DelMatrix(&x);
   DelMatrix(&y);
-  DelMatrix(&r2q2scrabling);
 }
 
 int main(void)
@@ -1363,16 +1438,13 @@ int main(void)
   /*test 6-9
   TestPLS6();
   TestPLS7();
-  TestPLS8();*/
-  TestPLS9();
+  TestPLS8();
+  TestPLS9();*/
   //TestPLS10();
-  //TestPLS11();
-
-  /* Experimental tests
-  TestPLS12();
-  TestPLS13();
-  TestPLS14();
+  TestPLS11();
+  //TestPLS12();
+  /*TestPLS13();
+  TestPLS14();*/
   TestPLS15();
-  TestPLS16();*/
   return 0;
 }

@@ -23,6 +23,72 @@
 
 void test3()
 {
+  /* ROC curve test */
+  dvector *y_score, *y_true;
+  matrix *roc, *pr;
+  double auc, ap;
+  NewDVector(&y_score, 13);
+  NewDVector(&y_true, 13);
+
+  y_score->data[0] = 0.1;
+  y_score->data[1] = 0.2;
+  y_score->data[2] = 0.3;
+  y_score->data[3] = 0.4;
+  y_score->data[4] = 0.5;
+  y_score->data[5] = 0.6;
+  y_score->data[6] = 0.7;
+  y_score->data[7] = 0.8;
+  y_score->data[8] = 0.9;
+  y_score->data[9] = 1.0;
+  y_score->data[10] = 2.0;
+  y_score->data[11] = 3.0;
+  y_score->data[12] = 3.4;
+
+
+  y_true->data[0] = 0;
+  y_true->data[1] = 0;
+  y_true->data[2] = 0;
+  y_true->data[3] = 0;
+  y_true->data[4] = 0;
+  y_true->data[5] = 1;
+  y_true->data[6] = 1;
+  y_true->data[7] = 1;
+  y_true->data[8] = 1;
+  y_true->data[9] = 0;
+  y_true->data[10] = 1;
+  y_true->data[11] = 1;
+  y_true->data[12] = 1;
+
+  initMatrix(&roc);
+  ROC(y_true, y_score,  &roc, &auc);
+  PrintMatrix(roc);
+  if(FLOAT_EQ(auc, 0.904762, 1e-6)){
+    printf("AUC OK!\n");
+  }else{
+    printf("AUC ERROR!\n");
+  }
+  printf("AUC: %f\n", auc);
+
+  initMatrix(&pr);
+  PrecisionRecall(y_true, y_score,  &pr, &ap);
+  PrintMatrix(pr);
+
+  if(FLOAT_EQ(ap, 0.904762, 1e-6)){
+    printf("AVERAGE PRECISION-RECALL OK!\n");
+  }else{
+    printf("AVERAGE PRECISION-RECALL ERROR!\n");
+  }
+  printf("AVERAGE PRECISION-RECALL: %f\n", ap);
+
+  DelMatrix(&pr);
+  DelMatrix(&roc);
+  DelDVector(&y_true);
+  DelDVector(&y_score);
+}
+
+void test2()
+{
+  /* Natural Cubic spline interpolation and area under the curve tests */
   matrix *xy, *interp_xy;
 
   NewMatrix(&xy, 6, 2);
@@ -60,49 +126,9 @@ void test3()
   DelMatrix(&xy);
 }
 
-
-void test2()
-{
-  matrix *xy, *interp_xy;
-
-   NewMatrix(&xy, 4, 2);
-   xy->data[0][0] = -1;
-   xy->data[1][0] = -0.5;
-   xy->data[2][0] = 0.0;
-   xy->data[3][0] = 0.5;
-
-   xy->data[0][1] = 0.86199480;
-   xy->data[1][1] = 0.95802009;
-   xy->data[2][1] = 1.0986123;
-   xy->data[3][1] = 1.2943767;
-
-   /* results
-   0  0.861995  0.175638  0.0 0.0656509
-   1  0.95802 0.224876  0.0984763 0.028281
-   2  1.09861 0.344563  0.140898  -0.093932
-   */
-  initMatrix(&interp_xy);
-  cubic_spline_interpolation(xy, 10, &interp_xy);
-  printf("area: %f\n", curve_area(xy, 10));
-  /* result
-
-  0 0 75 −0.659292 0.219764
-  3 225 76.9779 1.31858 −0.153761
-  5 383 80.4071 0.396018 −0.177237
-  8 623 77.9978 −1.19912 0.0799115
-
-  */
-  puts("X and Y");
-  PrintMatrix(xy);
-  puts("Interpolated X and Y");
-  PrintMatrix(interp_xy);
-  DelMatrix(&interp_xy);
-  DelMatrix(&xy);
-}
-
-
 void test1()
 {
+  /* Euclidean distance between two matrix test */
   matrix *m;
   matrix *dist;
 

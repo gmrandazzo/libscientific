@@ -657,3 +657,409 @@ void LeaveOneOut(MODELINPUT *input, AlgorithmType algo, matrix** predicted_y, ma
     fprintf(stderr, "Error!! Unable to compute PLS Leave One Out Validation!!\n");
   }
 }
+
+/* Get the best r2 and q2 for PLS Model */
+void PLSRegressionYScramblingPipeline(matrix *mx, matrix *my, size_t xautoscaling, size_t yautoscaling, size_t nlv, ValidationArg varg, size_t nthreads, dvector **r2, dvector **q2)
+{
+  size_t i;
+  PLSMODEL *tmpmod;
+  matrix *py;
+  matrix *pres;
+  matrix *yrec;
+  matrix *tmpq2;
+
+  MODELINPUT minpt;
+  minpt.mx = &mx;
+  minpt.my = &my;
+  minpt.nlv = nlv;
+  minpt.xautoscaling = xautoscaling;
+  minpt.yautoscaling = yautoscaling;
+
+  /*compude q2y*/
+  initMatrix(&py);
+  initMatrix(&pres);
+  if(varg.vtype == _LOO_){
+    //BootstrapRandomGroupsCV(&minpt, 3, 100, _PLS_, &py, &pres, 4, NULL);
+    LeaveOneOut(&minpt, _PLS_, &py, &pres, nthreads, NULL);
+  }
+  else{
+    BootstrapRandomGroupsCV(&minpt, 3, 100, _PLS_, &py, &pres, 4, NULL);
+    //PLSRandomGroupsCV(mx, my, input->xautoscaling, input->yautoscaling, input->nlv, varg.rgcv_group, varg.rgcv_iterations, &tmpq2, NULL, NULL, NULL, NULL, nthreads, s);
+  }
+
+  initMatrix(&tmpq2);
+  PLSRegressionStatistics(my, py, &tmpq2, NULL, NULL);
+
+  /*Computer r2y*/
+  NewPLSModel(&tmpmod);
+  PLS(mx, my, nlv, xautoscaling, yautoscaling, tmpmod, NULL);
+
+  initMatrix(&yrec);
+  PLSYPredictorAllLV(mx, tmpmod, nlv, &yrec);
+  PLSRegressionStatistics(my, yrec, &(tmpmod->r2y_model), NULL, NULL);
+
+  /* Calculate y real vs yscrambled and add other r2 q2 */
+  size_t r2cutoff = GetLVCCutoff(tmpmod->r2y_model);
+  size_t q2cutoff = GetLVCCutoff(tmpq2);
+
+  for(i = 0; i < my->col; i++){
+    (*r2)->data[i] = tmpmod->r2y_model->data[r2cutoff][i];
+    (*q2)->data[i] = tmpq2->data[q2cutoff][i];
+  }
+
+  DelMatrix(&yrec);
+  DelPLSModel(&tmpmod);
+  DelMatrix(&tmpq2);
+  DelMatrix(&py);
+  DelMatrix(&pres);
+}
+
+void PLSDiscriminantAnalysisYScramblingPipeline(matrix *mx, matrix *my, size_t xautoscaling, size_t yautoscaling, size_t nlv, ValidationArg varg, size_t nthreads, dvector **auc_recalc_, dvector **auc_validation_)
+{
+  size_t i;
+  PLSMODEL *tmpmod;
+  matrix *py;
+  matrix *pres;
+  matrix *yrec;
+  matrix *auc_recalc;
+  matrix *auc_validation;
+
+
+  MODELINPUT minpt;
+  minpt.mx = &mx;
+  minpt.my = &my;
+  minpt.nlv = nlv;
+  minpt.xautoscaling = xautoscaling;
+  minpt.yautoscaling = yautoscaling;
+
+  /*compude q2y*/
+  initMatrix(&py);
+  initMatrix(&pres);
+  if(varg.vtype == _LOO_){
+    LeaveOneOut(&minpt, _PLS_, &py, &pres, nthreads, NULL);
+  }
+  else{
+    BootstrapRandomGroupsCV(&minpt, 3, 100, _PLS_, &py, &pres, 4, NULL);
+  }
+
+
+  /*Computer the model in recalculation */
+  NewPLSModel(&tmpmod);
+  PLS(mx, my, nlv, xautoscaling, yautoscaling, tmpmod, NULL);
+  initMatrix(&yrec);
+  PLSYPredictorAllLV(mx, tmpmod, nlv, &yrec);
+  PLSDiscriminantAnalysisStatistics(my, yrec, NULL, &auc_recalc, NULL, NULL);
+
+  /*compute the model invalidation */
+  initMatrix(&auc_validation);
+  PLSDiscriminantAnalysisStatistics(my, py, NULL, &auc_validation, NULL, NULL);
+
+  /* Calculate y real vs yscrambled and add other r2 q2 */
+  size_t auc_cutoff = GetLVCCutoff(auc_validation);
+
+  for(i = 0; i < my->col; i++){
+    (*auc_recalc_)->data[i] = auc_recalc->data[auc_cutoff][i];
+    (*auc_validation_)->data[i] = auc_validation->data[auc_cutoff][i];
+  }
+
+  DelMatrix(&yrec);
+  DelPLSModel(&tmpmod);
+  DelMatrix(&auc_validation);
+  DelMatrix(&auc_recalc);
+  DelMatrix(&py);
+  DelMatrix(&pres);
+}
+
+void PermutedObservetCorrelation(matrix *my_true, matrix *my_perm, dvector *yaverage, dvector **ccoef)
+{
+  size_t i, j;
+  for(j = 0; j < my_true->col; j++){
+    double rss = 0.f, tss = 0.f;
+    for(i = 0; i < my_true->row; i++){
+      rss += square(my_true->data[i][j] - my_perm->data[i][j]);
+      tss += square(my_true->data[i][j] - yaverage->data[j]);
+    }
+    (*ccoef)->data[j] = 1 - (rss/tss);
+  }
+}
+
+void YScrambling(MODELINPUT *input, AlgorithmType algo, ValidationArg varg, size_t iterations,
+                  matrix **ccoeff_yscrambling, size_t nthreads, ssignal *s)
+{
+  size_t i, j, k, it;
+  double ytmp;
+
+  matrix *mx, *my;
+  matrix *randomY;
+  dvector *yaverage;
+  dvector *corrpermobs, *coeff_int, *coeff_valid;
+  mx = (*input->mx);
+  my = (*input->my);
+
+  initDVector(&yaverage);
+  MatrixColAverage(my, &yaverage);
+
+  srand(mx->row+mx->col+my->col+iterations);
+
+  initMatrix(&randomY);
+  MatrixCopy(my, &randomY);
+
+  /*Create a the r2q2scrambling matrix */
+  /*
+   * ccoeff_yscrambling columns:
+   *  0: correlation between permuted and observed y
+   *  1: r2 for the model
+   *  2: q2 for the model
+   */
+  ResizeMatrix(ccoeff_yscrambling, 1+iterations, 3);
+  NewDVector(&corrpermobs, my->col);
+  NewDVector(&coeff_int, my->col);
+  NewDVector(&coeff_valid, my->col);
+
+  PermutedObservetCorrelation(my, my, yaverage, &corrpermobs);
+  /*The first row is the model not scrambled...*/
+  if(algo == _PLS_){
+    PLSRegressionYScramblingPipeline(mx, my, input->xautoscaling, input->yautoscaling, input->nlv,  varg, nthreads, &coeff_int, &coeff_valid);
+  }
+  else if(algo == _PLS_DA_){
+    PLSDiscriminantAnalysisYScramblingPipeline(mx, my, input->xautoscaling, input->yautoscaling, input->nlv, varg, nthreads, &coeff_int, &coeff_valid);
+  }
+  /*else if(algo_ == _MLR_)
+  else if(algo_ == _LDA_)*/
+  for(j = 0; j < my->col; j++){
+    size_t mult = j*my->col;
+    (*ccoeff_yscrambling)->data[0][mult] = corrpermobs->data[j];
+    (*ccoeff_yscrambling)->data[0][mult+1] = coeff_int->data[j];
+    (*ccoeff_yscrambling)->data[0][mult+2] = coeff_valid->data[j];
+  }
+
+  for(it = 0; it < iterations; it++){
+    /* Sattolo's algorithm to shuffle the y*/
+    i = randomY->row;
+    while(i > 1){
+      i = i - 1;
+      j = randInt(0, i);
+      for(k = 0; k < randomY->col; k++){
+        ytmp = randomY->data[j][k];
+        randomY->data[j][k] = randomY->data[i][k];
+        randomY->data[i][k] = ytmp;
+      }
+    }
+
+    PermutedObservetCorrelation(my, randomY, yaverage, &corrpermobs);
+    /*The first row is the model not scrambled...*/
+    if(algo == _PLS_){
+      PLSRegressionYScramblingPipeline(mx, randomY, input->xautoscaling, input->yautoscaling, input->nlv, varg, nthreads, &coeff_int, &coeff_valid);
+    }
+    /*else if(algo_ == _MLR_)
+    else if(algo_ == _LDA_)*/
+    for(j = 0; j < my->col; j++){
+      size_t mult = j*my->col;
+      (*ccoeff_yscrambling)->data[it+1][mult] = corrpermobs->data[j];
+      (*ccoeff_yscrambling)->data[it+1][mult+1] = coeff_int->data[j];
+      (*ccoeff_yscrambling)->data[it+1][mult+2] = coeff_valid->data[j];
+    }
+  }
+
+  DelDVector(&coeff_valid);
+  DelDVector(&coeff_int);
+  DelDVector(&corrpermobs);
+  DelDVector(&yaverage);
+  DelMatrix(&randomY);
+}
+
+void YScrambling_OLDMETHOD(MODELINPUT *input, AlgorithmType algo, ValidationArg varg, size_t blocks,
+                  matrix **ccoeff_yscrambling, size_t nthreads, ssignal *s)
+{
+  size_t scrambiterations, iterations_, i, j, k, n, y_, blocksize;
+  int id;
+  double temp;
+
+  matrix *mx, *my;
+  matrix *randomY, *sorted_y_id, *sorty, *gid;
+  dvector *yaverage;
+  dvector *corrpermobs, *r2mod, *q2mod;
+  mx = (*input->mx);
+  my = (*input->my);
+
+  initDVector(&yaverage);
+  MatrixColAverage(my, &yaverage);
+
+  srand(mx->row*mx->col*my->col*blocks);
+  NewMatrix(&randomY, my->row, my->col);
+  NewMatrix(&sorted_y_id, my->row, my->col);
+
+  NewMatrix(&sorty, my->row, 2);
+  for(j = 0; j < my->col; j++){
+    for(i = 0; i < my->row; i++){
+      sorty->data[i][0] = my->data[i][j];
+      sorty->data[i][1] = i;
+    }
+    MatrixSort(sorty, 0);
+
+    for(i = 0; i < my->row; i++){
+      sorted_y_id->data[i][j] = sorty->data[i][1];
+    }
+  }
+  DelMatrix(&sorty);
+
+
+  /*calcualte the block size for the rotate matrix*/
+  blocksize = (size_t)ceil(mx->row/(double)blocks);
+  blocksize += (size_t)ceil((float)((blocksize*blocks) - mx->row)/  blocks);
+
+  NewMatrix(&gid, blocks, blocksize);
+  MatrixSet(gid, -2);
+  /* Crate the boxes to fill -2 means no value to fill, -1 means value to fill*/
+  for(i = 0, j = 0, k = 0; i < mx->row; i++){
+    if(j < blocks){
+      gid->data[j][k] = -1;
+      j++;
+    }
+    else{
+      j = 0;
+      k++;
+      gid->data[j][k] = -1;
+      j++;
+    }
+  }
+
+  /*get number of iterations*/
+  scrambiterations = 0;
+  for(i = 0; i < gid->row; i++){
+    iterations_ = 0;
+    for(j = 0; j < gid->col; j++){
+      if((int)gid->data[i][j] == -1){
+        iterations_++;
+      }
+      else{
+        continue;
+      }
+    }
+
+    if(iterations_ > scrambiterations){
+      scrambiterations = iterations_;
+    }
+    else{
+      continue;
+    }
+  }
+
+  /*Create a the r2q2scrambling matrix */
+  /*
+   * ccoeff_yscrambling columns:
+   *  0: correlation between permuted and observed y
+   *  1: r2 for the model
+   *  2: q2 for the model
+   */
+  ResizeMatrix(ccoeff_yscrambling, 1+scrambiterations, 3);
+  NewDVector(&corrpermobs, my->col);
+  NewDVector(&r2mod, my->col);
+  NewDVector(&q2mod, my->col);
+
+  PermutedObservetCorrelation(my, my, yaverage, &corrpermobs);
+  /*The first row is the model not scrambled...*/
+  if(algo == _PLS_){
+    PLSRegressionYScramblingPipeline(mx, my, input->xautoscaling, input->yautoscaling, input->nlv,  varg, nthreads, &r2mod, &q2mod);
+  }
+  /*else if(algo_ == _MLR_)
+  else if(algo_ == _LDA_)*/
+  for(j = 0; j < my->col; j++){
+    size_t mult = j*my->col;
+    (*ccoeff_yscrambling)->data[0][mult] = corrpermobs->data[j];
+    (*ccoeff_yscrambling)->data[0][mult+1] = r2mod->data[j];
+    (*ccoeff_yscrambling)->data[0][mult+2] = q2mod->data[j];
+  }
+
+
+  for(y_ = 0; y_ < sorted_y_id->col; y_++){
+    /* START WITH THE ORDERED Y_*/
+    k = 0;
+    for(i = 0; i < gid->row; i++){
+      for(j = 0; j < gid->col; j++){
+        if(gid->data[i][j] >= -1){
+          gid->data[i][j] = sorted_y_id->data[k][y_];
+          k++;
+        }
+        else{
+          continue;
+        }
+      }
+    }
+    /*
+    puts("GID Y_");
+    PrintMatrix(gid);
+    */
+
+    iterations_ = 0;
+    while(iterations_ <  scrambiterations){
+      if(s != NULL && (*s) == SIGSCIENTIFICSTOP){
+        break;
+      }
+      else{
+        /* Shuffle the Y bloks */
+        for(i = 0; i < gid->row; i++){
+          for(j = (gid->col-1); j > 0; j--){
+            if(gid->data[i][j] > -1){
+              /*then shift from this id to the first value..*/
+              temp = gid->data[i][j];
+              for(k = j; k > 0; k--){
+                gid->data[i][k] = gid->data[i][k-1];
+              }
+              gid->data[i][0] = temp;
+              break;
+            }
+            else{
+              continue;
+            }
+          }
+        }
+
+        /*
+        printf("Shuffled Y ID %d\n", (int)iterations_);
+        PrintMatrix(gid);
+        */
+
+        /*Fill the shifted y*/
+        n = 0;
+        for(i = 0; i < gid->row; i++){
+          for(j = 0; j < gid->col; j++){
+            id = gid->data[i][j];
+            if(id > -1){
+              for(k = 0; k < my->col; k++){
+                randomY->data[n][k] = my->data[id][k];
+              }
+              n++;
+            }
+            else{
+              continue;
+            }
+          }
+        }
+
+        PermutedObservetCorrelation(my, randomY, yaverage, &corrpermobs);
+        /*The first row is the model not scrambled...*/
+        if(algo == _PLS_){
+          PLSRegressionYScramblingPipeline(mx, randomY, input->xautoscaling, input->yautoscaling, input->nlv, varg, nthreads, &r2mod, &q2mod);
+        }
+        /*else if(algo_ == _MLR_)
+        else if(algo_ == _LDA_)*/
+        for(j = 0; j < my->col; j++){
+          size_t mult = j*my->col;
+          (*ccoeff_yscrambling)->data[iterations_+1][mult] = corrpermobs->data[j];
+          (*ccoeff_yscrambling)->data[iterations_+1][mult+1] = r2mod->data[j];
+          (*ccoeff_yscrambling)->data[iterations_+1][mult+2] = q2mod->data[j];
+        }
+        iterations_++;
+      }
+    }
+  }
+
+  DelDVector(&q2mod);
+  DelDVector(&r2mod);
+  DelDVector(&corrpermobs);
+  DelDVector(&yaverage);
+  DelMatrix(&sorted_y_id);
+  DelMatrix(&randomY);
+  DelMatrix(&gid);
+}

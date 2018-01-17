@@ -17,8 +17,9 @@
 */
 
 #include <stdlib.h>
-#include "pca.h"
 #include <stdlib.h>
+#include "numeric.h"
+#include "pca.h"
 #include "pca.h"
 #include "scientificinfo.h"
 
@@ -27,8 +28,8 @@ void test7()
   matrix *m;
   PCAMODEL *model;
 
-  int nobj = 200;
-  int nvars = 32000;
+  int nobj = 32000;
+  int nvars = 200;
   NewMatrix(&m, nobj, nvars);
 
   srand(nobj);
@@ -39,7 +40,7 @@ void test7()
   }
 
   NewPCAModel(&model);
-
+  printf("Test PCA 7\n");
   PCA(m, 1, 5, model, NULL);
 
   DelPCAModel(&model);
@@ -62,7 +63,7 @@ void test6()
   NewPCAModel(&model);
 
   PCA(m, 0, 5, model, NULL);
-
+  printf("Test PCA 6\n");
   PrintPCA(model);
 
   DelPCAModel(&model);
@@ -231,6 +232,6 @@ int main(void)
   test4();
   test5();
   test6();
-  test7();
+  /*test7();*/
   return 0;
 }

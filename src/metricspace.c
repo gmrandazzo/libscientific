@@ -185,57 +185,12 @@ double MahalanobisDistance(matrix* g1, matrix* g2)
   }
 }
 
-void ROC(dvector *y_true, dvector *y_score,  matrix **roc, double *auc)
-{
-
-/* Algorithm from:
- * An introduction to ROC analysis
- * Tom Fawcett
- * Pattern Recognition Letters 27 (2006) 861–874
- * Calculate the roc curve to plot and it's AUC
- */
-  size_t i;
-  matrix *yy;
-  initMatrix(&yy);
-  MatrixAppendCol(&yy, y_true);
-  MatrixAppendCol(&yy, y_score);
-  MatrixReverseSort(yy, 1); /* sort by y_score*/
-
-  dvector *roc_row;
-  NewDVector(&roc_row, 2);
-  DVectorSet(roc_row, 0.0);
-  MatrixAppendRow(roc, roc_row);
-  /*Calculate the number of tp and tn*/
-  size_t n_tp = 0;
-  size_t n_tn = 0;
-  for(i = 0; i < yy->row; i++){
-    if(FLOAT_EQ(yy->data[i][0], 1.0, 1e-1) == 0){
-      n_tp += 1;
-    }
-    else
-      n_tn += 1;
-  }
-
-  size_t tp = 0;
-  size_t fp = 0;
-  for(i = 0; i < yy->row; i++){
-    if(FLOAT_EQ(yy->data[i][0], 1.0, 1e-1) == 0){
-      tp += 1;
-    }
-    else{
-      fp += 1;
-    }
-    roc_row->data[0] = (double)fp/(double)n_tn;
-    roc_row->data[1] = (double)tp/(double)n_tp;
-    MatrixAppendRow(roc, roc_row);
-  }
-  (*auc) = curve_area((*roc), 100);
-}
-
 /* algorithm taken from:
  * Natural Cubic Spline: Numerical Analysis book Richard L. Burden and J. Douglas Faires
  * pag. 149
  * ISBN-13: 978-0-538-73351-9
+ *
+ * N.B.: If two points have different y but share same x the algorithm will fail
  */
 void cubic_spline_interpolation(matrix *xy, size_t npoints, matrix **interp_xy)
 {
@@ -260,6 +215,10 @@ void cubic_spline_interpolation(matrix *xy, size_t npoints, matrix **interp_xy)
   for(i = 1; i < n; i++){
     alpha->data[i] = 3.f/h->data[i]*(a->data[i+1]-a->data[i]) - 3.f/h->data[i-1]*(a->data[i]-a->data[i-1]);
   }
+
+  PrintDVector(h);
+  PrintDVector(alpha);
+
   NewDVector(&c, np1);
   NewDVector(&l, np1);
   NewDVector(&u, np1);
@@ -284,9 +243,10 @@ void cubic_spline_interpolation(matrix *xy, size_t npoints, matrix **interp_xy)
         d->data[j] = (c->data[j+1]-c->data[j])/(3.f*h->data[j]);
     }
 
-    /*for(i = 0; i < n; i++){
+    puts("SPLINE EQUATIONS");
+    for(i = 0; i < n; i++){
       printf("%f %f %f %f %f\n", xy->data[i][0], a->data[i], b->data[i], c->data[i], d->data[i]);
-    }*/
+    }
 
     ResizeMatrix(interp_xy, npoints, 2);
     MatrixColumnMinMax(xy, 0,&xmin, &xmax);
@@ -323,25 +283,132 @@ void cubic_spline_interpolation(matrix *xy, size_t npoints, matrix **interp_xy)
 }
 
 /*
- * trapezoid rule
+ * area of the curve via the  trapezoid rule
  */
 double curve_area(matrix *xy, size_t intervals)
 {
   size_t i;
   matrix *interp_xy;
   initMatrix(&interp_xy);
-  cubic_spline_interpolation(xy, intervals, &interp_xy);
-  double a, b; //a: lower limit, b: upper limit of integration
-  MatrixColumnMinMax(interp_xy, 0, &a, &b);
-  double dx = (b-a)/(double)(intervals-1); //step size
+  /*If intervals > 0 interpolate with natural cubic splines to have more fine area */
+  if(intervals > 0){
+    /* If two points have different y but share same x the algorithm will fail*/
+    cubic_spline_interpolation(xy, intervals, &interp_xy);
+  }
+  else{
+    MatrixCopy(xy, &interp_xy);
+    intervals = xy->row;
+  }
+
+  double base, height;
   double area = 0.f;
   for(i = 0; i < intervals-1; i++){
-      //using trapezoidal method
-      //the area of a trapezoid is (lower base + upper base)*height/2
-      //f(a+i*dx): upper base, f(a+(i+1)*dx): lower base
-      //dx: height of the trapezoid
-      area += ((interp_xy->data[i][1]+interp_xy->data[i+1][1])/2.f)*dx;
+      /* Trapezoidal method */
+      base = interp_xy->data[i+1][0]-interp_xy->data[i][0];
+      height = ((interp_xy->data[i][1]+interp_xy->data[i+1][1])/2.f);
+      area += base*height;
   }
   DelMatrix(&interp_xy);
   return area;
+}
+
+/* Algorithm from:
+ * An introduction to ROC analysis
+ * Tom Fawcett
+ * Pattern Recognition Letters 27 (2006) 861–874
+ * doi: 10.1016/j.patrec.2005.10.010
+ *
+ * Calculate the roc curve to plot and it's AUC
+ */
+void ROC(dvector *y_true, dvector *y_score,  matrix **roc, double *auc)
+{
+  size_t i;
+  matrix *yy;
+  initMatrix(&yy);
+  MatrixAppendCol(&yy, y_true);
+  MatrixAppendCol(&yy, y_score);
+  MatrixReverseSort(yy, 1); /* sort by y_score*/
+
+  dvector *roc_row;
+  NewDVector(&roc_row, 2);
+  DVectorSet(roc_row, 0.0);
+  MatrixAppendRow(roc, roc_row);
+  /*Calculate the number of tp and tn*/
+  size_t n_tp = 0;
+  size_t n_tn = 0;
+  for(i = 0; i < yy->row; i++){
+    if(FLOAT_EQ(yy->data[i][0], 1.0, 1e-1) == 1){
+      n_tp += 1;
+    }
+    else
+      n_tn += 1;
+  }
+
+  size_t tp = 0;
+  size_t fp = 0;
+  for(i = 0; i < yy->row; i++){
+    if(FLOAT_EQ(yy->data[i][0], 1.0, 1e-1) == 1){
+      tp += 1;
+    }
+    else{
+      fp += 1;
+    }
+    roc_row->data[0] = (double)fp/(double)n_tn;
+    roc_row->data[1] = (double)tp/(double)n_tp;
+    MatrixAppendRow(roc, roc_row);
+  }
+  DelDVector(&roc_row);
+  DelMatrix(&yy);
+  (*auc) = curve_area((*roc), 0);
+}
+
+/* Algorithm from:
+ * An introduction to ROC analysis
+ * Tom Fawcett
+ * Pattern Recognition Letters 27 (2006) 861–874
+ * doi: 10.1016/j.patrec.2005.10.010
+ *
+ * Calculate the precision-recall curve to plot and it's average precision
+ */
+void PrecisionRecall(dvector *y_true, dvector *y_score,  matrix **pr, double *ap)
+{
+  size_t i;
+  matrix *yy;
+  initMatrix(&yy);
+  MatrixAppendCol(&yy, y_true);
+  MatrixAppendCol(&yy, y_score);
+  MatrixReverseSort(yy, 1); /* sort by y_score*/
+
+  dvector *pr_row;
+  NewDVector(&pr_row, 2);
+  pr_row->data[0] = 0.f; // recall
+  pr_row->data[1] = 1.f; // precision
+  MatrixAppendRow(pr, pr_row);
+  /*Calculate the number of tp and tn*/
+  size_t n_tp = 0;
+  size_t n_tn = 0;
+  for(i = 0; i < yy->row; i++){
+    if(FLOAT_EQ(yy->data[i][0], 1.0, 1e-1) == 1){
+      n_tp += 1;
+    }
+    else
+      n_tn += 1;
+  }
+
+  size_t tp = 0;
+  size_t fp = 0;
+  for(i = 0; i < yy->row; i++){
+    if(FLOAT_EQ(yy->data[i][0], 1.0, 1e-1) == 1){
+      tp += 1;
+    }
+    else{
+      fp += 1;
+    }
+    pr_row->data[0] = (double)tp/(double)n_tp;
+    pr_row->data[1] = (double)tp/(double)(tp+fp);
+    MatrixAppendRow(pr, pr_row);
+  }
+  DelDVector(&pr_row);
+  DelMatrix(&yy);
+  (*ap) = curve_area((*pr), 0);
 }

@@ -17,6 +17,8 @@
 */
 
 #include "memwrapper.h"
+#include "array.h"
+#include "matrix.h"
 #include "pls.h"
 #include "pca.h" /*Using: MatrixAutoScaling(); and calcVarExpressed(); */
 #include "numeric.h" /* Using:  if(FLOAT_EQ(NumOne, NumTwo));*/
@@ -308,6 +310,7 @@ void LVCalc(matrix **X, matrix **Y, dvector **t, dvector **u, dvector **p, dvect
   printf("\n Deflated Y\n");
   PrintMatrix(Y);
   #endif
+  DelDVector(&t_old);
 }
 
   /*
@@ -770,7 +773,7 @@ void PLSScorePredictor(matrix *mx, PLSMODEL *model, size_t nlv, matrix **xscores
 }
 
 
-/* Estimate the y dependent variable
+/* Estimate the y dependent variable at nlv
  *
  * y = matrix
  * b = coefficient
@@ -781,7 +784,7 @@ void PLSScorePredictor(matrix *mx, PLSMODEL *model, size_t nlv, matrix **xscores
  */
 void PLSYPredictor(matrix *tscore, PLSMODEL *model, size_t nlv, matrix **y)
 {
-  size_t pc, i, j;
+  size_t lv, i, j;
   double _b;
 
 
@@ -791,12 +794,12 @@ void PLSYPredictor(matrix *tscore, PLSMODEL *model, size_t nlv, matrix **y)
   /*Allocate the y results*/
   ResizeMatrix(y, tscore->row, model->yloadings->row);
 
-  for(pc = 0; pc < nlv; pc++){
-    _b = model->b->data[pc];
+  for(lv = 0; lv < nlv; lv++){
+    _b = model->b->data[lv];
 
     for(i = 0; i < tscore->row; i++){
       for(j = 0; j < model->yloadings->row; j++){
-        (*y)->data[i][j] += _b * tscore->data[i][pc] * model->yloadings->data[j][pc];
+        (*y)->data[i][j] += _b * tscore->data[i][lv] * model->yloadings->data[j][lv];
       }
     }
   }
@@ -816,68 +819,223 @@ void PLSYPredictor(matrix *tscore, PLSMODEL *model, size_t nlv, matrix **y)
   }
 }
 
-void PLSRegressionStatistics(matrix *mx, matrix *my, PLSMODEL *model, size_t nlv, matrix** ccoeff, matrix **stdev, matrix **bias)
+void PLSYPredictorAllLV(matrix *mx, PLSMODEL *model, size_t nlv, matrix **y)
 {
-  size_t lv, i, j;
+  size_t lv, i, j, n_y;
   matrix *predicted_y;
   matrix *predicted_xscores;
-  dvector *ccoeff_row;
-  dvector *stdev_row;
-  double n, d;
 
   if(nlv > model->b->size)
     nlv = model->b->size;
 
-  if(bias != NULL)
-    ResizeMatrix(bias, nlv, my->col);
+  n_y = model->yloadings->row;
+  ResizeMatrix(y, mx->row, n_y*nlv);
 
   for(lv = 0; lv < nlv; lv++){
     initMatrix(&predicted_y);
     initMatrix(&predicted_xscores);
-    initDVector(&ccoeff_row);
-    initDVector(&stdev_row);
 
     PLSScorePredictor(mx, model, lv+1, &predicted_xscores);
-
     PLSYPredictor(predicted_xscores, model, lv+1, &predicted_y);
 
-    /* r2y is not cumulative as x and is calculated for each y
-    *
-    * R2Y = 1 -  Sum((Y_real - Y_Extimated)^2) / Sum((Y_real - Y_med>)^2)
-    */
-    for(j = 0; j < predicted_y->col; j++){
-      n = d = 0.f;
-      for(i = 0; i < predicted_y->row; i++){
-        n += square(my->data[i][j] - predicted_y->data[i][j]);
-        d += square(my->data[i][j] - model->ycolaverage->data[j]);
-      }
-      DVectorAppend(&ccoeff_row, 1 - (n/d));
-      DVectorAppend(&stdev_row, sqrt(n/my->row));
-
-      if(bias != NULL){
-        double sum_xi = 0.f, sum_yi = 0.f;
-        for(i = 0; i < my->row; i++){
-          sum_yi+=(predicted_y->data[i][j+lv]*(my->data[i][j]-model->ycolaverage->data[j]));
-          sum_xi+=(my->data[i][j]*(my->data[i][j]-model->ycolaverage->data[j]));
-        }
-        /*k = Y-(X*b);*/
-        (*bias)->data[lv][j] = fabs(1 - sum_yi/sum_xi);
+    for(i = 0; i < mx->row; i++){
+      for(j = 0; j < n_y; j++){
+        (*y)->data[i][n_y*lv+j] = predicted_y->data[i][j];
       }
     }
-
-    MatrixAppendRow(stdev, stdev_row);
-    MatrixAppendRow(ccoeff, ccoeff_row);
-
-    DelDVector(&stdev_row);
-    DelDVector(&ccoeff_row);
     DelMatrix(&predicted_y);
     DelMatrix(&predicted_xscores);
   }
 }
 
-void PLSDiscriminantAnalysisStatistics(matrix *mx, matrix *my, PLSMODEL *model, size_t nlv, matrix **roc, matrix **roc_auc, matrix **precision_recall, matrix **precision_recall_auc)
+void PLSRegressionStatistics(matrix *my_true, matrix *my_pred, matrix** ccoeff, matrix **stdev, matrix **bias)
 {
+  size_t lv, i, j;
+  dvector *ymean;
 
+  size_t nlv = (size_t) my_pred->col/my_true->col;
+  /*Calculate the Q2 and SDEP */
+  if(ccoeff != NULL)
+    ResizeMatrix(ccoeff, nlv, my_true->col);
+
+  if(stdev != NULL)
+    ResizeMatrix(stdev, nlv, my_true->col);
+
+  if(bias != NULL)
+    ResizeMatrix(bias, nlv, my_true->col);
+
+  initDVector(&ymean);
+  MatrixColAverage(my_true, &ymean);
+
+  for(lv = 0; lv < nlv; lv++){
+    for(j = 0; j < my_true->col; j++){
+      double ssreg = 0.f;
+      double sstot = 0.f;
+      for(i = 0; i < my_true->row; i++){
+        ssreg += square(my_pred->data[i][my_true->col*lv+j] - my_true->data[i][j]);
+        sstot += square(my_true->data[i][j] - ymean->data[j]);
+      }
+
+      if(bias != NULL){
+        double sum_yi = 0.f, sum_xi = 0.f;
+        /*ypredaverage /= (double)my->row;*/
+        for(i = 0; i < my_true->row; i++){
+          sum_yi+=(my_pred->data[i][my_true->col*lv+j]*(my_true->data[i][j]-ymean->data[j]));
+          sum_xi+=(my_true->data[i][j]*(my_true->data[i][j]-ymean->data[j]));
+        }
+        /*sum_yi/sum_xi = m */
+        (*bias)->data[lv][j] = fabs(1 - sum_yi/sum_xi);
+        /*k = Y-(X*b);*/
+      }
+
+      if(ccoeff != NULL)
+        (*ccoeff)->data[lv][j] = 1.f - (ssreg/sstot);
+
+      if(stdev != NULL)
+        (*stdev)->data[lv][j] = sqrt(ssreg/(double)my_true->row);
+    }
+
+  }
+  DelDVector(&ymean);
+}
+
+void PLSDiscriminantAnalysisStatistics(matrix *my_true, matrix *my_score, array **roc, matrix **roc_auc, array **precision_recall, matrix **precision_recall_ap)
+{
+  size_t nlv, lv, i, j, k, n_y;
+  matrix *roc_;
+  matrix *pr_;
+  dvector *y_true;
+  dvector *y_score;
+  dvector *auc_row;
+  dvector *ap_row;
+  double auc, ap;
+
+  nlv = (size_t) my_score->col/my_true->col;
+  n_y = my_true->col;
+
+  NewDVector(&y_true, my_true->row);
+  NewDVector(&y_score, my_true->row);
+
+  for(lv = 0; lv < nlv; lv++){
+    if(roc != NULL)
+      AddArrayMatrix(roc, my_true->row, my_true->col*2);
+
+    if(precision_recall != NULL)
+      AddArrayMatrix(precision_recall, my_true->row, my_true->col*2);
+
+
+    initDVector(&auc_row);
+    initDVector(&ap_row);
+
+    k = 0;
+    for(j = 0; j < my_true->col; j++){
+      for(i = 0; i < my_true->row; i++){
+        y_true->data[i] = my_true->data[i][j];
+        y_score->data[i] = my_score->data[i][n_y*lv+j];
+      }
+
+      initMatrix(&roc_);
+      ROC(y_true, y_score,  &roc_, &auc);
+      initMatrix(&pr_);
+      PrecisionRecall(y_true, y_score,  &pr_, &ap);
+      DVectorAppend(&auc_row, auc);
+      DVectorAppend(&ap_row, ap);
+
+      for(i = 0; i < my_true->row; i++){
+        if(roc != NULL){
+          (*roc)->m[lv]->data[i][k] = roc_->data[i][0];
+          (*roc)->m[lv]->data[i][k+1] = roc_->data[i][1];
+        }
+
+        if(precision_recall != NULL){
+          (*precision_recall)->m[lv]->data[i][k] = pr_->data[i][0];
+          (*precision_recall)->m[lv]->data[i][k+1] = pr_->data[i][1];
+        }
+      }
+      k+=2;
+
+      DelMatrix(&roc_);
+      DelMatrix(&pr_);
+    }
+
+    if(roc_auc != NULL)
+      MatrixAppendRow(roc_auc, auc_row);
+
+    if(precision_recall_ap != NULL)
+      MatrixAppendRow(precision_recall_ap, ap_row);
+
+    DelDVector(&auc_row);
+    DelDVector(&ap_row);
+  }
+
+  DelDVector(&y_true);
+  DelDVector(&y_score);
+}
+
+void PLSDiscriminantAnalysisStatistics_(matrix *mx, matrix *my, PLSMODEL *model, size_t nlv, array **roc, matrix **roc_auc, array **precision_recall, matrix **precision_recall_ap)
+{
+  size_t lv, i, j, k;
+  matrix *predicted_y;
+  matrix *predicted_xscores;
+  matrix *roc_;
+  matrix *pr_;
+  dvector *y_true;
+  dvector *y_score;
+  dvector *auc_row;
+  dvector *ap_row;
+  double auc, ap;
+
+  if(nlv > model->b->size)
+    nlv = model->b->size;
+
+  NewDVector(&y_true, my->row);
+  NewDVector(&y_score, my->row);
+
+  for(lv = 0; lv < nlv; lv++){
+    AddArrayMatrix(roc, my->row, my->col*2);
+    AddArrayMatrix(precision_recall, my->row, my->col*2);
+    initMatrix(&predicted_y);
+    initMatrix(&predicted_xscores);
+    initDVector(&auc_row);
+    initDVector(&ap_row);
+
+    PLSScorePredictor(mx, model, lv+1, &predicted_xscores);
+    PLSYPredictor(predicted_xscores, model, lv+1, &predicted_y);
+    k = 0;
+    for(j = 0; j < predicted_y->col; j++){
+      for(i = 0; i < predicted_y->row; i++){
+        y_true->data[i] = my->data[i][j];
+        y_score->data[i] = predicted_y->data[i][j];
+      }
+
+      initMatrix(&roc_);
+      ROC(y_true, y_score,  &roc_, &auc);
+      initMatrix(&pr_);
+      PrecisionRecall(y_true, y_score,  &pr_, &ap);
+      DVectorAppend(&auc_row, auc);
+      DVectorAppend(&ap_row, ap);
+      for(i = 0; i < my->row; i++){
+        (*roc)->m[lv]->data[i][k] = roc_->data[i][0];
+        (*roc)->m[lv]->data[i][k+1] = roc_->data[i][1];
+        (*precision_recall)->m[lv]->data[i][k] = pr_->data[i][0];
+        (*precision_recall)->m[lv]->data[i][k+1] = pr_->data[i][1];
+      }
+      k+=2;
+
+      DelMatrix(&roc_);
+      DelMatrix(&pr_);
+    }
+
+    MatrixAppendRow(roc_auc, auc_row);
+    MatrixAppendRow(precision_recall_ap, ap_row);
+
+    DelDVector(&auc_row);
+    DelDVector(&ap_row);
+    DelMatrix(&predicted_y);
+    DelMatrix(&predicted_xscores);
+  }
+  DelDVector(&y_true);
+  DelDVector(&y_score);
 }
 
 /*
@@ -905,1180 +1063,7 @@ void PLSVIP(PLSMODEL *model, matrix **vip)
 
 }
 
-void PLSYScrambling(matrix *mx, matrix *my,
-                        size_t xautoscaling, size_t yautoscaling,
-                        size_t nlv, size_t block,
-                        size_t valtype, size_t rgcv_group, size_t rgcv_iterations,
-                        matrix **r2q2scrambling, size_t nthreads, ssignal *s)
-{
-  size_t scrambiterations, iterations_, i, j, k, n, y_, blocksize;
-  int id;
-  double temp;
-  matrix *randomY, *sorted_y_id, *sorty, *gid;
-  matrix *tmpq2;
-  PLSMODEL *tmpmod;
-
-  dvector *yaverage;
-
-  initDVector(&yaverage);
-  MatrixColAverage(my, &yaverage);
-
-  srand(mx->row*mx->col*my->col*block);
-  NewMatrix(&randomY, my->row, my->col);
-  NewMatrix(&sorted_y_id, my->row, my->col);
-
-  NewMatrix(&sorty, my->row, 2);
-  for(j = 0; j < my->col; j++){
-    for(i = 0; i < my->row; i++){
-      sorty->data[i][0] = my->data[i][j];
-      sorty->data[i][1] = i;
-    }
-    MatrixSort(sorty, 0);
-
-    for(i = 0; i < my->row; i++){
-      sorted_y_id->data[i][j] = sorty->data[i][1];
-    }
-  }
-  DelMatrix(&sorty);
-
-
-  /*calcualte the block size for the rotate matrix*/
-  blocksize = (size_t)ceil(mx->row/(double)block);
-  blocksize += (size_t)ceil((float)((blocksize*block) - mx->row)/  block);
-
-  NewMatrix(&gid, block, blocksize);
-  MatrixSet(gid, -2);
-  /* Crate the boxes to fill -2 means no value to fill, -1 means value to fill*/
-  for(i = 0, j = 0, k = 0; i < mx->row; i++){
-    if(j < block){
-      gid->data[j][k] = -1;
-      j++;
-    }
-    else{
-      j = 0;
-      k++;
-      gid->data[j][k] = -1;
-      j++;
-    }
-  }
-
-  /*get number of iterations*/
-  scrambiterations = 0;
-  for(i = 0; i < gid->row; i++){
-    iterations_ = 0;
-    for(j = 0; j < gid->col; j++){
-      if((int)gid->data[i][j] == -1){
-        iterations_++;
-      }
-      else{
-        continue;
-      }
-    }
-
-    if(iterations_ > scrambiterations){
-      scrambiterations = iterations_;
-    }
-    else{
-      continue;
-    }
-  }
-
-  /*Create a the r2q2scrambling matrix */
-  ResizeMatrix(r2q2scrambling, 1+scrambiterations, my->col*3); /* each row is a model. first my->col columns are the r2 scrambled/real, second are the r2 scrabled/scrambled and third the q2 scrabled/scrabmled */
-
-  /*First row is the model not scrambled...*/
-  initMatrix(&tmpq2);
-
-  if(valtype == 0){
-    PLSLOOCV(mx, my, xautoscaling, yautoscaling, nlv, &tmpq2, NULL, NULL, NULL, NULL, nthreads, s);
-  }
-  else{
-    PLSRandomGroupsCV(mx, my, xautoscaling, yautoscaling, nlv, rgcv_group, rgcv_iterations, &tmpq2, NULL, NULL, NULL, NULL, nthreads, s);
-  }
-
-  NewPLSModel(&tmpmod);
-  PLS(mx, my, nlv, xautoscaling, yautoscaling, tmpmod, s);
-  PLSRegressionStatistics(mx, my, tmpmod, nlv, &(tmpmod->r2y_model), &(tmpmod->sdec), NULL);
-
-  /* Calculate y real vs yscrambled and add other r2 q2 */
-  size_t r2cutoff = GetLVCCutoff(tmpmod->r2y_model);
-  size_t q2cutoff = GetLVCCutoff(tmpq2);
-  for(j = 0; j < my->col; j++){
-    double rss = 0.f, tss = 0.f;
-    for(i = 0; i < my->row; i++){
-      rss += square(my->data[i][j] - my->data[i][j]);
-      tss += square(my->data[i][j] - yaverage->data[j]);
-    }
-    (*r2q2scrambling)->data[0][j] = 1 - (rss/tss);
-    (*r2q2scrambling)->data[0][j+my->col] = tmpmod->r2y_model->data[r2cutoff][j];
-    (*r2q2scrambling)->data[0][j+my->col+my->col] = tmpq2->data[q2cutoff][j];
-  }
-
-  DelPLSModel(&tmpmod);
-  DelMatrix(&tmpq2);
-
-  for(y_ = 0; y_ < sorted_y_id->col; y_++){
-
-    /* START WITH THE ORDERED Y_*/
-    k = 0;
-    for(i = 0; i < gid->row; i++){
-      for(j = 0; j < gid->col; j++){
-        if(gid->data[i][j] >= -1){
-          gid->data[i][j] = sorted_y_id->data[k][y_];
-          k++;
-        }
-        else{
-          continue;
-        }
-      }
-    }
-    /*
-    puts("GID Y_");
-    PrintMatrix(gid);
-    */
-
-    iterations_ = 0;
-    while(iterations_ <  scrambiterations){
-      if(s != NULL && (*s) == SIGSCIENTIFICSTOP){
-        break;
-      }
-      else{
-        /* Shuffle the Y bloks */
-        for(i = 0; i < gid->row; i++){
-          for(j = (gid->col-1); j > 0; j--){
-            if(gid->data[i][j] > -1){
-              /*then shift from this id to the first value..*/
-              temp = gid->data[i][j];
-              for(k = j; k > 0; k--){
-                gid->data[i][k] = gid->data[i][k-1];
-              }
-              gid->data[i][0] = temp;
-              break;
-            }
-            else{
-              continue;
-            }
-          }
-        }
-
-        /*
-        printf("Shuffled Y ID %d\n", (int)iterations_);
-        PrintMatrix(gid);
-        */
-
-        /*Fill the shifted y*/
-        n = 0;
-        for(i = 0; i < gid->row; i++){
-          for(j = 0; j < gid->col; j++){
-            id = gid->data[i][j];
-            if(id > -1){
-              for(k = 0; k < my->col; k++){
-                randomY->data[n][k] = my->data[id][k];
-              }
-              n++;
-            }
-            else{
-              continue;
-            }
-          }
-        }
-
-        /*
-        puts("MX");
-        PrintMatrix(mx);
-        puts("MY");
-        PrintMatrix(my);
-        puts("RANDOMY");
-        PrintMatrix(randomY);
-        */
-        /* Calculate calculate Q2 for y predicted...*/
-
-        initMatrix(&tmpq2);
-
-        if(valtype == 0){
-          PLSLOOCV(mx, randomY, xautoscaling, yautoscaling, nlv, &tmpq2, NULL, NULL, NULL, NULL, nthreads, s);
-        }
-        else{
-          PLSRandomGroupsCV(mx, randomY, xautoscaling, yautoscaling, nlv, rgcv_group, rgcv_iterations, &tmpq2, NULL, NULL, NULL, NULL, nthreads, s);
-        }
-
-        NewPLSModel(&tmpmod);
-        PLS(mx, randomY, nlv, xautoscaling, yautoscaling, tmpmod, s);
-        PLSRegressionStatistics(mx, randomY, tmpmod, nlv, &(tmpmod->r2y_model), &(tmpmod->sdec), NULL);
-
-        /* Calculate y real vs yscrambled and add other r2 q2 */
-        size_t r2cutoff = GetLVCCutoff(tmpmod->r2y_model);
-        size_t q2cutoff = GetLVCCutoff(tmpq2);
-        for(j = 0; j < my->col; j++){
-          double rss = 0.f, tss = 0.f;
-          for(i = 0; i < my->row; i++){
-            rss += square(my->data[i][j] - randomY->data[i][j]);
-            tss += square(my->data[i][j] - yaverage->data[j]);
-          }
-          (*r2q2scrambling)->data[iterations_+1][j] = 1 - (rss/tss);
-          (*r2q2scrambling)->data[iterations_+1][j+my->col] = tmpmod->r2y_model->data[r2cutoff][j];
-          (*r2q2scrambling)->data[iterations_+1][j+my->col+my->col] = tmpq2->data[q2cutoff][j];
-        }
-
-        DelPLSModel(&tmpmod);
-        DelMatrix(&tmpq2);
-        iterations_++;
-      }
-    }
-  }
-
-  DelDVector(&yaverage);
-  DelMatrix(&sorted_y_id);
-  DelMatrix(&randomY);
-  DelMatrix(&gid);
-}
-
-/* Cross Validation
- *
- * 1) Divide the dataset in "g" random group
- * 2) for each randomization run:
- *    for each group thake this out and run a PLS model with all the remains groups
- * 3) Predict the response value for the out group and compute PRESS (y_pred - y_r)^2 and the Sum of square of (y_r - y_mid)^2
- * 4) for each randomization divide all the sum by the number of group and sum this untill all the computation are done.
- */
-
-
-typedef struct{
-
-  matrix *mx, *my; /*INPUT*/
-
-  matrix *predicted_y;  /*OUPUT*/
-  uivector *predictioncounter; /*OUPUT*/
-
-  size_t xautoscaling, yautoscaling, nlv, group; /*INPUT*/
-  unsigned int srand_init;
-} rgcv_th_arg;
-
-
-void *RandomGroupCVModel(void *arg_)
-{
-  size_t i, j, k, n, g, lv;
-  rgcv_th_arg *arg;
-  matrix *gid; /* randomization and storing id for each random group into a matrix */
-
-  /* Matrix for compute the PLS models for groups */
-  matrix *subX;
-  matrix *subY;
-  PLSMODEL *subm;
-
-  /*matrix to predict*/
-  matrix *predictX;
-  matrix *realY;
-  matrix *predicty;
-
-
-  arg = (rgcv_th_arg*) arg_;
-
-  NewMatrix(&gid, arg->group, (size_t)ceil(arg->mx->row/(double)arg->group));
-
-  /* Divide in group  all the Dataset */
-  MatrixSet(gid, -1);
-
-  /* step 1 generate the random groups */
-  k = 0;
-  for(i = 0; i <  gid->row; i++){
-    for(j = 0; j <  gid->col; j++){
-      do{
-        /*n = randInt(0, arg->mx->row);*/
-        n = (size_t)myrand_r(&arg->srand_init) % (arg->mx->row);
-      } while(ValInMatrix(gid, n) == 1 && k < (arg->mx->row));
-      if(k < arg->mx->row){
-        gid->data[i][j] = n;
-        k++;
-      }
-      else
-        continue;
-    }
-  }
-
-  /*
-  puts("Gid Matrix");
-  PrintMatrix(gid);
-  */
-      /*
-    printf("Excuded the group number %u\n", (unsigned int)g);
-    puts("Sub Model\nX:");
-    PrintArray(subX);
-    puts("Y:");
-    PrintArray(subY);
-
-    puts("\n\nPredict Group\nX:");
-    PrintArray(predictX);
-    puts("RealY:");
-    PrintArray(realY);
-    */
-  /*step 2*/
-  for(g = 0; g < gid->row; g++){ /*For aeach group */
-    /* Estimate how many objects are inside the sub model without the group "g" */
-    n = 0;
-    for(i = 0; i < gid->row; i++){
-      if(i != g){
-        for(j = 0; j < gid->col; j++){
-          if((int)gid->data[i][j] != -1)
-            n++;
-          else
-            continue;
-        }
-      }
-      else
-        continue;
-    }
-
-    /*Allocate the submodel*/
-    NewMatrix(&subX, n, arg->mx->col);
-    NewMatrix(&subY, n, arg->my->col);
-
-    /* Estimate how many objects are inside the group "g" to predict*/
-    n = 0;
-    for(j = 0; j < gid->col; j++){
-      if((int)gid->data[g][j] != -1)
-        n++;
-      else
-        continue;
-    }
-
-
-    /*Allocate the */
-    NewMatrix(&predictX, n, arg->mx->col);
-    NewMatrix(&realY, n, arg->my->col);
-
-    /* copy the submodel values */
-
-    for(i = 0, k = 0; i < gid->row; i++){
-      if(i != g){
-        for(j = 0; j < gid->col; j++){
-          size_t a =  (size_t)gid->data[i][j]; /* get the row index */
-          if(a != -1){
-            for(n = 0; n < arg->mx->col; n++){
-              subX->data[k][n] = arg->mx->data[a][n];
-            }
-            for(n = 0; n < arg->my->col; n++){
-              subY->data[k][n] = arg->my->data[a][n];
-            }
-            k++;
-          }
-          else{
-            continue;
-          }
-        }
-      }
-      else{
-        continue;
-      }
-    }
-
-    /* copy the objects to predict into predictmx*/
-    for(j = 0, k = 0; j < gid->col; j++){
-      size_t a = (size_t)gid->data[g][j];
-      if(a != -1){
-        for(n = 0; n < arg->mx->col; n++){
-          predictX->data[k][n] = arg->mx->data[a][n];
-        }
-        for(n = 0; n < arg->my->col; n++){
-          realY->data[k][n] = arg->my->data[a][n];
-        }
-        k++;
-      }
-      else{
-        continue;
-      }
-    }
-
-    NewPLSModel(&subm);
-
-    PLS(subX, subY, arg->nlv, arg->xautoscaling, arg->yautoscaling, subm, NULL);
-
-    /* Predict Y for each latent variable */
-    initMatrix(&predicty);
-
-    for(lv = 1; lv <= arg->nlv; lv++){
-      matrix *recalcy;
-      matrix *recalcscores;
-
-      initMatrix(&recalcy);
-      initMatrix(&recalcscores);
-
-      PLSScorePredictor(predictX, subm, lv, &recalcscores);
-      PLSYPredictor(recalcscores, subm, lv, &recalcy);
-
-      for(j = 0; j < recalcy->col; j++){
-        dvector *tmp = getMatrixColumn(recalcy, j);
-        MatrixAppendCol(&predicty, tmp);
-        DelDVector(&tmp);
-      }
-
-      DelMatrix(&recalcy);
-      DelMatrix(&recalcscores);
-    }
-
-    for(j = 0, k = 0; j < gid->col; j++){
-      size_t a = (size_t)gid->data[g][j]; /*riga dell'oggetto....*/
-      if(a != -1){
-        arg->predictioncounter->data[a] += 1; /* this object was visited */
-        /* updating y */
-        for(n = 0; n < predicty->col; n++){
-          arg->predicted_y->data[a][n] +=  predicty->data[k][n];
-        }
-
-        k++;
-      }
-      else{
-        continue;
-      }
-    }
-
-    DelMatrix(&predicty);
-    DelPLSModel(&subm);
-    DelMatrix(&subX);
-    DelMatrix(&subY);
-    DelMatrix(&predictX);
-    DelMatrix(&realY);
-  }
-  DelMatrix(&gid);
-  return 0;
-}
-
-void PLSRandomGroupsCV(matrix *mx, matrix *my, size_t xautoscaling, size_t yautoscaling, size_t nlv, size_t group, size_t iterations, matrix **q2y, matrix **sdep, matrix **bias, matrix **predicted_y, matrix **pred_residuals, size_t nthreads, ssignal *s)
-{
-  if(nlv > 0 && mx->row == my->row && group > 0 && iterations > 0){
-    size_t th, iterations_, i, j;
-
-    pthread_t *threads;
-
-    dvector *ymean;
-    uivector *predictcounter;
-    matrix *sum_ypredictions;
-
-    if(nlv > mx->col){
-      nlv = mx->col;
-    }
-
-    NewMatrix(&sum_ypredictions, my->row, my->col*nlv); /* each component have my->col ypsilon */
-    NewUIVector(&predictcounter, my->row);
-
-    /* each thread have its argument type */
-    threads = xmalloc(sizeof(pthread_t)*nthreads);
-    rgcv_th_arg *arg;
-    arg = xmalloc(sizeof(rgcv_th_arg)*nthreads);
-
-    /*
-    iterations_ = 0;
-    while(iterations_ <  iterations){*/
-    for(iterations_ = 0; iterations_ < iterations; iterations_ += nthreads){
-      if(s != NULL && (*s) == SIGSCIENTIFICSTOP){
-        break;
-      }
-      else{
-        /* Create independent threads each of which will execute function */
-        for(th = 0; th < nthreads; th++){
-          arg[th].mx = mx;
-          arg[th].my = my;
-          arg[th].group = group;
-          arg[th].nlv = nlv;
-          arg[th].xautoscaling = xautoscaling;
-          arg[th].yautoscaling = yautoscaling;
-          arg[th].srand_init = (unsigned int) group + mx->row + my->col + iterations + th + iterations_;
-          NewMatrix(&arg[th].predicted_y, my->row, my->col*nlv); /* each component have my->col ypsilon */
-          NewUIVector(&arg[th].predictioncounter, my->row);
-          pthread_create(&threads[th], NULL, RandomGroupCVModel, (void*) &arg[th]);
-        }
-
-        /* Wait till threads are complete before main continues. Unless we  */
-        /* wait we run the risk of executing an exit which will terminate   */
-        /* the process and all threads before the threads have completed.   */
-        for(th = 0; th < nthreads; th++){
-          pthread_join(threads[th], NULL);
-        }
-
-        /* finalize thread outputs and free the memory.....*/
-        for(th = 0; th < nthreads; th++){
-          for(i = 0; i < arg[th].predicted_y->row; i++){
-            for(j = 0; j < arg[th].predicted_y->col; j++){
-              sum_ypredictions->data[i][j] += arg[th].predicted_y->data[i][j];
-            }
-
-            predictcounter->data[i] += arg[th].predictioncounter->data[i];
-          }
-
-          DelUIVector(&arg[th].predictioncounter);
-          DelMatrix(&arg[th].predicted_y);
-        }
-      }
-    }
-
-    /*Finalize the output by dividing for the number of times that the object was predicted*/
-
-    if(predicted_y != NULL){
-      ResizeMatrix(predicted_y, sum_ypredictions->row, sum_ypredictions->col);
-    }
-
-    if(pred_residuals != NULL){
-      ResizeMatrix(pred_residuals, my->row, my->col*nlv); /* each component have my->col ypsilon */
-    }
-
-    for(i = 0; i < sum_ypredictions->row; i++){
-      for(j = 0; j < sum_ypredictions->col; j++){
-        sum_ypredictions->data[i][j] /= (double)predictcounter->data[i];
-
-        if(predicted_y != NULL)
-          (*predicted_y)->data[i][j] = sum_ypredictions->data[i][j];
-
-        if(pred_residuals != NULL)
-          (*pred_residuals)->data[i][j] = sum_ypredictions->data[i][j] - my->data[i][(size_t)floor(j/nlv)];
-      }
-    }
-
-    /*Calculate the Q2 and SDEP and Bias */
-    if(q2y != NULL)
-      ResizeMatrix(q2y, nlv, my->col);
-
-    if(sdep != NULL)
-      ResizeMatrix(sdep, nlv, my->col);
-
-    if(bias != NULL)
-      ResizeMatrix(bias, nlv, my->col);
-
-    if(q2y != NULL || sdep != NULL){
-      initDVector(&ymean);
-      MatrixColAverage(my, &ymean);
-
-      for(size_t lv = 0; lv < nlv; lv++){
-        for(j = 0; j < my->col; j++){
-          double ssreg = 0.f;
-          double sstot = 0.f;
-
-          /*y = m x + k: bias is the m angular coefficient */
-          /*double ypredaverage = 0.f; used to calculate the k */
-          for(i = 0; i < my->row; i++){
-            ssreg += square(my->data[i][j] - sum_ypredictions->data[i][my->col*lv+j]);
-            sstot += square(my->data[i][j] - ymean->data[j]);
-            /*ypredaverage = sum_ypredictions->data[i][j+lv]; */
-          }
-
-          if(bias != NULL){
-            double sum_xi = 0.f, sum_yi = 0.f;
-            /*ypredaverage /= (double)my->row;*/
-            for(i = 0; i < my->row; i++){
-              sum_yi+=(sum_ypredictions->data[i][j+lv]*(my->data[i][j]-ymean->data[j]));
-              sum_xi+=(my->data[i][j]*(my->data[i][j]-ymean->data[j]));
-            }
-
-            (*bias)->data[lv][j] = fabs(1 - sum_yi/sum_xi);
-            /*k = Y-(X*b);*/
-          }
-
-          if(q2y != NULL)
-            (*q2y)->data[lv][j] = 1.f - (ssreg/sstot);
-
-          if(sdep != NULL)
-            (*sdep)->data[lv][j] = sqrt(ssreg/(double)my->row);
-
-
-        }
-      }
-
-      DelDVector(&ymean);
-    }
-
-    DelMatrix(&sum_ypredictions);
-    DelUIVector(&predictcounter);
-    xfree(threads);
-    xfree(arg);
-  }
-  else{
-    fprintf(stderr, "Error!! Unable to compute PLS Random Group Cross Validation!!\n");
-  }
-}
-
-
-/* Leave One Ouut Validation
- *
- * 1) remove one object
- * 2) calculate the model
- * 3) predict the removed object and so the r2 and q2
- */
-
-typedef struct{
-  matrix *submx, *submy, *predmx, *predmy, *pred_y;
-  size_t nlv, xautoscaling, yautoscaling;
-} loocv_th_arg;
-
-void *PLSLOOModel(void *arg_)
-{
-  size_t lv, j;
-  loocv_th_arg *arg;
-  arg = (loocv_th_arg*) arg_;
-
-  PLSMODEL *subm;
-  NewPLSModel(&subm);
-
-  PLS(arg->submx, arg->submy, arg->nlv, arg->xautoscaling, arg->yautoscaling, subm, NULL);
-
-  /* Predict Y for each latent variable */
-  for(lv = 1; lv <= arg->nlv; lv++){
-    matrix *recalcy;
-    matrix *recalcscores;
-
-    initMatrix(&recalcy);
-    initMatrix(&recalcscores);
-
-    PLSScorePredictor(arg->predmx, subm, lv, &recalcscores);
-    PLSYPredictor(recalcscores, subm, lv, &recalcy);
-
-    for(j = 0; j < recalcy->col; j++){
-      dvector *tmp = getMatrixColumn(recalcy, j);
-      MatrixAppendCol(&arg->pred_y, tmp);
-      DelDVector(&tmp);
-    }
-
-    DelMatrix(&recalcy);
-    DelMatrix(&recalcscores);
-  }
-
-  DelPLSModel(&subm);
-  return 0;
-}
-
-void PLSLOOCV(matrix* mx, matrix* my, size_t xautoscaling, size_t yautoscaling, size_t nlv, matrix** q2y, matrix** sdep, matrix **bias, matrix** predicted_y, matrix **pred_residuals, size_t nthreads, ssignal *s)
-{
- if(nlv > 0 && mx->row == my->row){
-    size_t i, j, k, l, th, model;
-    pthread_t *threads;
-    loocv_th_arg *arg;
-
-    if(nlv > mx->col){
-      nlv = mx->col;
-    }
-
-    dvector *ymean;
-    matrix *loopredictedy;
-    NewMatrix(&loopredictedy, my->row, my->col*nlv);
-
-    threads = xmalloc(sizeof(pthread_t)*nthreads);
-    arg = xmalloc(sizeof(loocv_th_arg)*nthreads);
-
-    /* initialize threads arguments.. */
-    for(th = 0; th < nthreads; th++){
-      arg[th].nlv = nlv;
-      arg[th].xautoscaling = xautoscaling;
-      arg[th].yautoscaling = yautoscaling;
-      NewMatrix(&arg[th].submx, mx->row-1, mx->col);
-      NewMatrix(&arg[th].submy, my->row-1, my->col);
-      NewMatrix(&arg[th].predmx, 1, mx->col);
-      NewMatrix(&arg[th].predmy, 1, my->col);
-    }
-
-
-    for(model = 0; model < mx->row; model += nthreads){ /* we compute mx->row models  */
-      if(s != NULL && (*s) == SIGSCIENTIFICSTOP){
-        break;
-      }
-      else{
-
-        /* copy data into subX, subY, predictX and predictY for each thread argument
-         * and run the thread
-         */
-        for(th = 0; th < nthreads; th++){
-          if(th+model < mx->row){
-            l = 0;
-            for(j = 0; j < mx->row; j++){
-              if(j != model+th){
-                for(k = 0; k  < mx->col; k++){
-                  /*setMatrixValue(arg[th].submx, l, k, getMatrixValue(mx, j, k));*/
-                  arg[th].submx->data[l][k] = mx->data[j][k];
-                }
-                for(k = 0; k < my->col; k++){
-                  /*setMatrixValue(arg[th].submy, l, k, getMatrixValue(my, j, k));*/
-                  arg[th].submy->data[l][k] = my->data[j][k];
-                }
-                l++;
-              }
-              else{
-                for(k = 0; k < mx->col; k++){
-                  arg[th].predmx->data[0][k] = mx->data[j][k];
-                }
-                for(k = 0; k < my->col; k++){
-                  arg[th].predmy->data[0][k] = my->data[j][k];
-                }
-              }
-            }
-
-            initMatrix(&arg[th].pred_y);
-            pthread_create(&threads[th], NULL, PLSLOOModel, (void*) &arg[th]);
-          }
-          else{
-            continue;
-          }
-        }
-
-        /* Wait till threads are complete before main continues. Unless we  */
-        /* wait we run the risk of executing an exit which will terminate   */
-        /* the process and all threads before the threads have completed.   */
-        for(th = 0; th < nthreads; th++){
-          if(th+model < mx->row){
-            pthread_join(threads[th], NULL);
-          }
-          else{
-            continue;
-          }
-        }
-
-        /*Collapse the threads output*/
-        for(th = 0; th < nthreads; th++){
-          if(th+model < mx->row){
-            for(j = 0; j < arg[th].pred_y->col; j++){
-              loopredictedy->data[model+th][j] = arg[th].pred_y->data[0][j];
-            }
-            DelMatrix(&arg[th].pred_y);
-          }
-        }
-      }
-    }
-
-    /*Delete thread arguments*/
-
-    for(th = 0; th < nthreads; th++){
-      DelMatrix(&arg[th].submx);
-      DelMatrix(&arg[th].submy);
-      DelMatrix(&arg[th].predmx);
-      DelMatrix(&arg[th].predmy);
-    }
-
-    /*Finalize the output by dividing for the number of models*/
-    if(predicted_y != NULL){
-      ResizeMatrix(predicted_y, loopredictedy->row, loopredictedy->col);
-      MatrixCopy(loopredictedy, predicted_y);
-    }
-
-    if(pred_residuals != NULL){
-      ResizeMatrix(pred_residuals, my->row, my->col*nlv); /* each component have my->col ypsilon */
-      for(i = 0; i < loopredictedy->row; i++){
-        for(j = 0; j < loopredictedy->col; j++){
-          (*pred_residuals)->data[i][j] = loopredictedy->data[i][j] - my->data[i][(size_t)floor(j/nlv)];
-        }
-      }
-    }
-
-    /*Calculate the Q2 and SDEP */
-    if(q2y != NULL)
-      ResizeMatrix(q2y, nlv, my->col);
-
-    if(sdep != NULL)
-      ResizeMatrix(sdep, nlv, my->col);
-
-    if(bias != NULL)
-      ResizeMatrix(bias, nlv, my->col);
-
-    if(sdep != NULL || q2y != NULL){
-      initDVector(&ymean);
-      MatrixColAverage(my, &ymean);
-
-      for(size_t lv = 0; lv < nlv; lv++){
-        for(j = 0; j < my->col; j++){
-          double ssreg = 0.f;
-          double sstot = 0.f;
-          for(i = 0; i < my->row; i++){
-            ssreg += square(loopredictedy->data[i][my->col*lv+j] - my->data[i][j]);
-            sstot += square(my->data[i][j] - ymean->data[j]);
-          }
-
-          if(bias != NULL){
-            double sum_yi = 0.f, sum_xi = 0.f;
-            /*ypredaverage /= (double)my->row;*/
-            for(i = 0; i < my->row; i++){
-              sum_yi+=(loopredictedy->data[i][my->col*lv+j]*(my->data[i][j]-ymean->data[j]));
-              sum_xi+=(my->data[i][j]*(my->data[i][j]-ymean->data[j]));
-            }
-            /*sum_yi/sum_xi = m */
-            (*bias)->data[lv][j] = fabs(1 - sum_yi/sum_xi);
-            /*k = Y-(X*b);*/
-          }
-
-          if(q2y != NULL)
-            (*q2y)->data[lv][j] = 1.f - (ssreg/sstot);
-
-          if(sdep != NULL)
-            (*sdep)->data[lv][j] = sqrt(ssreg/(double)my->row);
-        }
-
-      }
-      DelDVector(&ymean);
-    }
-
-    DelMatrix(&loopredictedy);
-    xfree(arg);
-    xfree(threads);
-  }
-  else{
-    fprintf(stderr, "Error!! Unable to compute PLS Leave One Out Validation!!\n");
-  }
-}
-
-
-void PLSStaticSampleValidator(matrix *mx, matrix *my, uivector *obj_class,
-                        size_t xautoscaling, size_t yautoscaling,
-                        size_t nlv, size_t sample_size, size_t niters,
-                        size_t rgcv_group, size_t rgcv_iterations, size_t nthreads,
-                        matrix **q2_distr, matrix **sdep_distr, uivector **bestid, ssignal *s)
-{
-  if(obj_class->size == mx->row){
-    size_t iter, i, j, nclass = 0, srand_init;
-    matrix *xsample, *ysample, *tmpq2, *tmpsdep;
-    uivector *tmpid;
-    double bestq2 = -9999;
-    for(i = 0; i < obj_class->size; i++){
-      if(obj_class->data[i] > nclass){
-        nclass = obj_class->data[i];
-      }
-      else{
-        continue;
-      }
-    }
-
-    initMatrix(&tmpq2);
-    initMatrix(&tmpsdep);
-
-    srand_init = mx->row+mx->col+my->col+sample_size+niters+nclass;
-
-    NewMatrix(&xsample, sample_size, mx->col);
-    NewMatrix(&ysample, sample_size, my->col);
-    if(bestid != NULL)
-      UIVectorResize(bestid, sample_size);
-    NewUIVector(&tmpid, sample_size);
-    for(iter = 0; iter < niters; iter++){
-      if(nclass == 0){ /* simple bootstrap on all objects */
-        for(i = 0; i < sample_size; i++){
-          do{
-            size_t n = (size_t)myrand_r((unsigned *)&srand_init) % (mx->row);
-            tmpid->data[i] = n;
-            if(n > obj_class->size){
-              continue;
-            }
-            else{
-              for(j = 0; j < mx->col; j++){
-                xsample->data[i][j] = mx->data[n][j];
-              }
-
-              for(j = 0; j < my->col; j++){
-                ysample->data[i][j] = my->data[n][j];
-              }
-              break;
-            }
-          }while(1);
-        }
-      }
-      else{ /* select a random object from each class */
-        size_t a_class = 0;
-        for(i = 0; i < sample_size; i++){
-          do{
-            size_t n = (size_t)myrand_r((unsigned *)&srand_init) % (mx->row);
-            tmpid->data[i] = n;
-            if(n > obj_class->size){
-              continue;
-            }
-            else{
-              if(obj_class->data[n] == a_class){
-                if(a_class == nclass){
-                  a_class =  (size_t)myrand_r((unsigned *)&srand_init) % (nclass); /*all class are already completed then restart random...*/
-                }
-                else{
-                  a_class++;
-                }
-
-                for(j = 0; j < mx->col; j++){
-                  xsample->data[i][j] = mx->data[n][j];
-                }
-
-                for(j = 0; j < my->col; j++){
-                  ysample->data[i][j] = my->data[n][j];
-                }
-                break;
-              }
-              else{
-                continue;
-              }
-            }
-          }while(1);
-        }
-      }
-
-      /*Now Compute validation...*/
-      matrix *q2y;
-      matrix *sdep;
-      initMatrix(&q2y);
-      initMatrix(&sdep);
-
-      if(rgcv_group == 0 || rgcv_iterations == 0){
-        PLSLOOCV(xsample, ysample, xautoscaling, yautoscaling, nlv,
-                  &q2y,
-                  &sdep,
-                  NULL,
-                  NULL,
-                  NULL, nthreads, s);
-      }
-      else{
-        PLSRandomGroupsCV(xsample, ysample, xautoscaling, yautoscaling, nlv, rgcv_group, rgcv_iterations,
-                      &q2y,
-                      &sdep,
-                      NULL,
-                      NULL,
-                      NULL, nthreads, s);
-      }
-
-      if(bestid != NULL){
-        size_t pc = GetLVCCutoff(q2y);
-        double cumq2 = 0.f;
-        for(i = 0; i < q2y->col; i++)
-          cumq2 += q2y->data[pc][i];
-
-        if(cumq2 > bestq2){
-          bestq2 = cumq2;
-          for(i = 0; i < tmpid->size; i++)
-            (*bestid)->data[i] = tmpid->data[i];
-        }
-      }
-
-      //Search for the best Q2 Model and Select ID to return
-      for(i = 0; i < q2y->col; i++){
-        dvector *q2row = getMatrixColumn(q2y, i);
-        MatrixAppendRow(&tmpq2, q2row);
-        DelDVector(&q2row);
-
-        dvector *sdep_row = getMatrixColumn(sdep, i);
-        MatrixAppendRow(&tmpsdep, sdep_row);
-        DelDVector(&sdep_row);
-      }
-
-      DelMatrix(&q2y);
-      DelMatrix(&sdep);
-    }
-    DelMatrix(&xsample);
-    DelMatrix(&ysample);
-
-    /*Finalize output */
-    ResizeMatrix(q2_distr, tmpq2->col, tmpq2->row);
-    ResizeMatrix(sdep_distr, tmpsdep->col, tmpsdep->row);
-
-    MatrixTranspose(tmpq2, (*q2_distr));
-    MatrixTranspose(tmpsdep, (*sdep_distr));
-    DelMatrix(&tmpsdep);
-    DelMatrix(&tmpq2);
-    DelUIVector(&tmpid);
-  }
-  else{
-    fprintf(stderr, "Error!! The number of objects differ from the number of class objects\n");
-  }
-}
-
-void PLSDynamicSampleValidator(matrix *mx, matrix *my,
-                        size_t xautoscaling, size_t yautoscaling,
-                        size_t nlv, size_t niters,
-                        uivector *obj_class, size_t deltaobj, size_t maxobj,
-                        size_t rgcv_group, size_t rgcv_iterations, size_t nthreads,
-                        matrix **q2_surface, matrix **sdep_surface, uivector **bestid, ssignal *s)
-{
-  if(obj_class->size == mx->row && mx->row > 10){
-    size_t iter, i, j, k, l, nclass = 0, srand_init, incobj;
-    matrix *xsample, *ysample;
-    uivector *tmpflag, *tmpbestflag;
-    double bestq2 = -9999;
-    for(i = 0; i < obj_class->size; i++){
-      if(obj_class->data[i] > nclass){
-        nclass = obj_class->data[i];
-      }
-      else{
-        continue;
-      }
-    }
-
-    if(maxobj > mx->row)
-      maxobj = mx->row;
-
-    NewMatrix(q2_surface, ceil(maxobj/deltaobj)*niters*nlv, 2+my->col);
-    NewMatrix(sdep_surface, ceil(maxobj/deltaobj)*niters*nlv, 2+my->col);
-
-    /*first colum: nobj
-     second column: nlv
-     from third to the end each serie of my->col is a q2 for each y*/
-
-    srand_init = mx->row+mx->col+my->col+niters+nclass+maxobj;
-
-    if(bestid != NULL){
-      NewUIVector(&tmpflag, mx->row);
-      NewUIVector(&tmpbestflag, mx->row);
-    }
-
-    l = 0;
-    for(iter = 0; iter < niters; iter++){
-      incobj = 10;
-      for(k = 0; k < ceil(maxobj/deltaobj); k++){
-        NewMatrix(&xsample, incobj, mx->col);
-        NewMatrix(&ysample, incobj, my->col);
-
-        if(nclass == 0){ /* simple bootstrap on all objects */
-          for(i = 0; i < incobj; i++){
-            do{
-              size_t n = (size_t)myrand_r((unsigned *)&srand_init) % (mx->row);
-              if(n > mx->row){
-                continue;
-              }
-              else{
-                if(bestid != NULL)
-                  tmpflag->data[n] = 1;
-
-                for(j = 0; j < mx->col; j++){
-                  xsample->data[i][j] = mx->data[n][j];
-                }
-
-                for(j = 0; j < my->col; j++){
-                  ysample->data[i][j] = my->data[n][j];
-                }
-                break;
-              }
-            }while(1);
-          }
-        }
-        else{ /* select a random object from each class */
-          size_t a_class = 0;
-          for(i = 0; i < incobj; i++){
-            do{
-              size_t n = (size_t)myrand_r((unsigned *)&srand_init) % (mx->row);
-              if(n > mx->row){
-                continue;
-              }
-              else{
-                if(obj_class->data[n] == a_class){
-                  if(a_class == nclass){
-                    a_class =  (size_t)myrand_r((unsigned *)&srand_init) % (nclass); /*all class are already completed then restart random...*/
-                  }
-                  else{
-                    a_class++;
-                  }
-
-                  if(bestid != NULL)
-                    tmpflag->data[n] = 1;
-
-                  for(j = 0; j < mx->col; j++){
-                    xsample->data[i][j] = mx->data[n][j];
-                  }
-
-                  for(j = 0; j < my->col; j++){
-                    ysample->data[i][j] = my->data[n][j];
-                  }
-                  break;
-                }
-                else{
-                  continue;
-                }
-              }
-            }while(1);
-          }
-        }
-
-        /*Now Compute validation...*/
-        matrix *q2y;
-        matrix *sdep;
-        initMatrix(&q2y);
-        initMatrix(&sdep);
-
-        if(rgcv_group == 0 || rgcv_iterations == 0){
-          PLSLOOCV(xsample, ysample, xautoscaling, yautoscaling, nlv,
-                    &q2y,
-                    &sdep,
-                    NULL,
-                    NULL,
-                    NULL, nthreads, s);
-        }
-        else{
-          PLSRandomGroupsCV(xsample, ysample, xautoscaling, yautoscaling, nlv, rgcv_group, rgcv_iterations,
-                        &q2y,
-                        &sdep,
-                        NULL,
-                        NULL,
-                        NULL, nthreads, s);
-        }
-
-        if(bestid != NULL){
-          size_t pc = GetLVCCutoff(q2y);
-          double cumq2 = 0.f;
-          for(i = 0; i < q2y->col; i++)
-            cumq2 += q2y->data[pc][i];
-
-          if(cumq2 > bestq2){
-            bestq2 = cumq2;
-            for(i = 0; i < tmpflag->size; i++){
-              tmpbestflag->data[i] = tmpflag->data[i];
-              tmpflag->data[i] = 0;
-            }
-          }
-        }
-
-        for(i = 0; i < q2y->row; i++){
-          (*q2_surface)->data[l][0] = incobj;
-          (*q2_surface)->data[l][1] = i+1;
-          (*sdep_surface)->data[l][0] = incobj;
-          (*sdep_surface)->data[l][1] = i+1;
-          for(j = 0; j < q2y->col; j++){
-            if(q2y->data[i][j] < -1){
-              (*q2_surface)->data[l][j+2] = 0;
-            }
-            else
-              (*q2_surface)->data[l][j+2] = q2y->data[i][j];
-            (*sdep_surface)->data[l][j+2] = sdep->data[i][j];
-          }
-          l++;
-        }
-
-        if(incobj + deltaobj < mx->row)
-          incobj += deltaobj;
-        else
-          incobj = mx->row;
-
-        DelMatrix(&q2y);
-        DelMatrix(&sdep);
-        DelMatrix(&xsample);
-        DelMatrix(&ysample);
-      }
-    }
-
-    if(bestid != NULL){
-
-      for(i = 0, j = 0; i < tmpbestflag->size; i++){
-        if(tmpbestflag->data[i] == 1)
-          j++;
-        else
-          continue;
-      }
-
-      UIVectorResize(bestid, j);
-      for(i = 0, j = 0; i < tmpbestflag->size; i++){
-        if(tmpbestflag->data[i] == 1){
-          (*bestid)->data[j] = i;
-          j++;
-        }
-        else
-          continue;
-      }
-
-      DelUIVector(&tmpflag);
-      DelUIVector(&tmpbestflag);
-    }
-  }
-  else{
-    if(mx->row > 10)
-      fprintf(stderr, "Error!! Insufficient number of objects\n");
-    else
-      fprintf(stderr, "Error!! The number of objects differ from the number of class objects\n");
-  }
-}
-
-
-int GetLVCCutoff(matrix *rq2y){
+int GetLVCCutoff_(matrix *rq2y){
   size_t i, j, cutoff = 0;
   double prev, next, max = -9999;
 
@@ -2106,1109 +1091,30 @@ int GetLVCCutoff(matrix *rq2y){
   return cutoff;
 }
 
-/*
- * Variable Selection using the Particle Swarm Optimization algorithm
- *
- * Input:
- *   mx and my matrix for make model; optionally px and py for testset validation.
- *
- * Output:
- * - varselected vector: vector of varialble selected
- * - validation vector:  r2 if you have a test set or q2 if the variable selection is made into de model
- *
- *
- * Each particle is a model. Each model have is velocity and his position.
- *
- * Algoritm:
- *
- * 1) Initialize the particle
- *
- * Population = The model with all varible setted
- * P_g_best = Q^2 of the model as is with all variable or R^2 if you have a prediction!
- *
- * 2) Initialize the models particle.
- * for(i = 1 to i = Population Size):
- *   P_velocity = randomvelocity for the model
- *   P_position = randomposition. This means that the variable could be setted on or off in the model.
- *
- *   P_best = Cost of model with the actual position. So calculation of R^2 or Q^2.
- *
- *   if the cost of actual model P_best is <= to the global cost P_g_best:
- *     P_g_best = P_best
- * end
- *
- * While(R^2 or Q^2 is not good enough...):
- *   For Model P in population:
- *     P_new_velocity of the model = UpdateVelocity(P_old_velocity, P_g_best, P_best)
- *     P_new_position of the model = UpdatePosition(P_old_position, P_velocity)
- *
- *     P_actual_model = R^2 or Q^2 of the actual model setted..
- *
- *     if P_actual_model < = P_best:
- *       P_best = P_actual_model
- *       if P_best <= P_g_best:
- *         P_g_best = P_best
- *
- *
- *
- * N.B.: 0 < rand() < 1
- *
- * UpdateVelocity(P_old_velocity, P_g_best, P_best):
- *   P_new_velocity = P_old_velocity + (c1 *rand() * (P_best - P_old_position)) +
- *     (c2 * rand() * (P_g_best + P_old_position))
- *
- * UpdatePosition(P_old_position, P_new_velocity):
- *   P_new_position = P_old_position + P_new_velocity
- *
- * P_new_position is the position to set on or off so is a number between 1 and the number of variables
- *
- */
-
-void PLSCostPopulation(matrix *mx, matrix *my,
-                      matrix *px, matrix *py,
-                      uivector *popvector,
-                      size_t xautoscaling, size_t yautoscaling, size_t nlv,
-                      int validation_type, size_t ngroup, size_t niter,
-                      double *r2, double *q2, double *bias_, size_t nthreads, ssignal *s)
-{
-  size_t i, j, k, subsize, cutoff;
-  double r2_, q2_, _bias_;
-  matrix *submx, *subpx, *r2y, *sdec, *q2y, *sdep, *bias;
-  PLSMODEL *m;
-
-
-  subsize = 0;
-  if(popvector != NULL){
-    for(i = 0; i < popvector->size; i++){
-      if(getUIVectorValue(popvector, i) == 1){
-        subsize++;
-      }
-      else{
-        continue;
-      }
-    }
-    NewMatrix(&submx, mx->row, subsize);
-    for(i = 0; i < mx->row; i++){
-      k = 0;
-      for(j = 0; j < mx->col; j++){
-        if(getUIVectorValue(popvector, j) == 1){
-          setMatrixValue(submx, i, k, getMatrixValue(mx, i, j));
-          k++;
-        }
-        else{
-          continue;
-        }
-      }
+int GetLVCCutoff(matrix *coeff){
+  size_t i, j, cutoff = 0;
+  double prec;
+  dvector *coeff_avg;
+  NewDVector(&coeff_avg, coeff->row);
+  for(i = 0; i < coeff->row; i++){
+    for(j = 0; j < coeff->col; j++){
+      coeff_avg->data[i] += coeff->data[i][j];
     }
   }
-  else{
-    initMatrix(&submx);
-    MatrixCopy(mx, &submx);
-    subsize = mx->col;
-  }
 
-  if(px != NULL && py != NULL && validation_type == 0){ /* cost = R^2*/
-    NewPLSModel(&m);
-    PLS(submx, my, nlv, xautoscaling, yautoscaling, m, s);
-
-    NewMatrix(&subpx, px->row, subsize);
-
-    k = 0;
-    for(i = 0; i < px->row; i++){
-      for(j = 0; j < px->col; j++){
-        if(getUIVectorValue(popvector, j) == 1){
-          setMatrixValue(subpx, i, k, getMatrixValue(px, i, j));
-          k++;
-        }
-        else{
-          continue;
-        }
-      }
-    }
-
-    initMatrix(&r2y);
-    initMatrix(&sdec);
-    PLSRegressionStatistics(subpx, py, m, nlv, &r2y, &sdec, NULL);
-
-    cutoff = GetLVCCutoff(r2y);
-//     MatrixGetMaxValue(r2y, &cutoff, NULL);
-    r2_ = 0.f;
-    for(j = 0; j < r2y->col; j++){
-      r2_ += getMatrixValue(r2y, cutoff, j);
-    }
-
-    if(r2_ != 0){
-      r2_ /= (double)r2y->col;
-    }
-    else{
-      r2_ = 0.f;
-    }
-
-    if(r2!= NULL)
-      (*r2) = (*q2) = r2_;
-    else
-      (*q2) = r2_;
-    if(bias_ != NULL)
-      (*bias_) = 0.f;
-
-    DelMatrix(&sdec);
-    DelMatrix(&r2y);
-    DelMatrix(&subpx);
-    DelPLSModel(&m);
-  }
-  else if(validation_type == 1){ /*LEAVE ONE OUT*/
-    initMatrix(&q2y);
-    initMatrix(&sdep);
-    initMatrix(&bias);
-    PLSLOOCV(submx, my, xautoscaling, yautoscaling, nlv,
-                      &q2y,
-                      &sdep,
-                      &bias,
-                      NULL, NULL, nthreads, s);
-
-    NewPLSModel(&m);
-    PLS(submx, my, nlv, xautoscaling, yautoscaling, m, s);
-
-    PLSRegressionStatistics(submx, my,  m, nlv, &m->r2y_model, &m->sdec, NULL);
-
-    cutoff = GetLVCCutoff(q2y);
-//     MatrixGetMaxValue(q2y, &cutoff, NULL);
-
-    q2_ = 0.f;
-    for(j = 0; j < q2y->col; j++){
-      q2_ += getMatrixValue(q2y, cutoff, j);
-    }
-
-    _bias_ = 0.f;
-    for(j = 0; j < bias->col; j++){
-      _bias_ += getMatrixValue(bias, cutoff, j);
-    }
-
-    r2_ = 0.f;
-    for(j = 0; j < m->r2y_model->col; j++){
-      r2_ += getMatrixValue(m->r2y_model, cutoff, j);
-    }
-
-    if(q2_ != 0){
-      q2_ /= (double)q2y->col;
-      r2_ /= (double)m->r2y_model->col;
-      _bias_ /= (double)bias->col;
-    }
-    else{
-      q2_ = 0.f;
-      r2_ = 0.f;
-      _bias_ = 99;
-    }
-
-    (*q2) = q2_;
-    if(r2 != NULL)
-      (*r2) = r2_;
-    if(bias_ != NULL)
-      (*bias_) = _bias_;
-
-    DelPLSModel(&m);
-    DelMatrix(&q2y);
-    DelMatrix(&sdep);
-    DelMatrix(&bias);
-  }
-  else{ /*CROSS VALIDATION*/
-    initMatrix(&q2y);
-    initMatrix(&sdep);
-    initMatrix(&bias);
-    PLSRandomGroupsCV(submx, my, xautoscaling, yautoscaling, nlv, ngroup, niter,
-                  &q2y,
-                  &sdep,
-                  &bias,
-                  NULL, NULL, nthreads, s);
-
-    NewPLSModel(&m);
-    PLS(submx, my, nlv, xautoscaling, yautoscaling, m, s);
-    PLSRegressionStatistics(submx, my,  m, nlv, &m->r2y_model, &m->sdec, NULL);
-
-    cutoff = GetLVCCutoff(q2y);
-//     MatrixGetMaxValue(q2y, &cutoff, NULL);
-
-    q2_ = 0.f;
-    for(j = 0; j < q2y->col; j++){
-      q2_ += getMatrixValue(q2y, cutoff, j);
-    }
-
-    _bias_ = 0.f;
-    for(j = 0; j < bias->col; j++){
-      _bias_ += getMatrixValue(bias, cutoff, j);
-    }
-
-    r2_ = 0.f;
-    for(j = 0; j < m->r2y_model->col; j++){
-      r2_ += getMatrixValue(m->r2y_model, cutoff, j);
-    }
-
-    if(q2_ != 0){
-      q2_ /= (double)q2y->col;
-      r2_ /= (double)m->r2y_model->col;
-      _bias_ /= (double)bias->col;
-    }
-    else{
-      q2_ = 0.f;
-      r2_ = 0.f;
-      _bias_ = 99;
-    }
-
-    (*q2) = q2_;
-    if(r2 != NULL)
-      (*r2) = r2_;
-
-    if(bias_ != NULL)
-      (*bias_) = _bias_;
-
-    DelPLSModel(&m);
-    DelMatrix(&q2y);
-    DelMatrix(&sdep);
-    DelMatrix(&bias);
-  }
-
-  DelMatrix(&submx);
-}
-
-
-void PSLPSOVariableSelection(matrix *mx, matrix *my, matrix *px, matrix *py,
-                       size_t xautoscaling, size_t yautoscaling, size_t nlv, int validation_type, size_t ngroup, size_t niter,
-                       size_t population_size, double randomness,
-                       uivector **varselected, matrix **map, uivector **vardistribution, size_t nthreads, ssignal *s)
-{
-  size_t i, j, iter, new_position, population_size_, tmp_var_id, nvarON;
-  double model_r2, cost_g_best, cost_best, tmp_model_r2, tmp_cost_best, tmp_g_best, new_v, new_pos, rand1, rand2;
-  matrix *models, *position, *velocity;
-  uivector *popvector, *best_model;
-  dvector *b_position, *g_position, *rowmap;
-
-  /*1) Initialize the population*/
-
-  population_size_ = population_size + 1; /* + 1 is the model with all variables */
-
-  NewMatrix(&models, population_size_, mx->col);
-  NewMatrix(&position, population_size_, mx->col); /*position chagned stored if are -1 then the position is not stored.... else is  a number >= 0 and < mx->col*/
-  NewMatrix(&velocity, population_size_, mx->col);
-  NewDVector(&b_position, mx->col);
-  NewDVector(&g_position, mx->col);
-  NewUIVector(&popvector, mx->col);
-  NewUIVector(&best_model, mx->col);
-  NewDVector(&rowmap, 4);
-
-  UIVectorSet(popvector, 1); /*get all variables*/
-
-  PLSCostPopulation(mx, my, px, py, popvector, xautoscaling, yautoscaling, nlv, validation_type, ngroup, niter, &model_r2, &cost_g_best, NULL, nthreads, s);
-
-  setDVectorValue(rowmap, 0, model_r2);
-  setDVectorValue(rowmap, 1, cost_g_best);
-  setDVectorValue(rowmap, 2, (cost_g_best  * (population_size - mx->col -1)) /  (mx->col*(1-cost_g_best )));
-  setDVectorValue(rowmap, 3, mx->col);
-
-  MatrixAppendRow(map, rowmap);
-
-  for(i = 0; i < mx->col; i++){
-    UIVectorAppend(vardistribution, 1);
-  }
-
-  /*the best and global position are the same in the first model that have all the variable setted ON*/
-  for(i = 0; i < mx->col; i++){
-    /*All variable are global and best...*/
-    setDVectorValue(g_position, i, i);
-    setDVectorValue(b_position, i, i);
-    setMatrixValue(velocity, 0, i, 0.f);
-  }
-
-  /*
-  printf("model 0 with all variable: %f\n", cost_g_best);
-  */
-
-  /*2) Initialize the models particle.*/
-  MatrixSet(models, 1.0); // all variables are setted ON!
-  MatrixSet(position, -1.0); // all variables on model are unvariate...
-  MatrixSet(velocity, 0); // all variables have no speed...
-
-  srand(mx->row + mx->col + my->col + population_size_);
-
-  for(i = 1; i < population_size_; i++){
-
-    for(j = 0; j < (size_t)floor(mx->col * randomness); j++){ /* % of object to randomize in this case is the 20 % of variable*/
-      setMatrixValue(velocity, i, j, (double)rand()/RAND_MAX); /*velocity is a number between 0 an 1*/
-
-      new_position = rand() % mx->col;
-
-      setMatrixValue(position, i, j, new_position);
-
-      if((size_t)getMatrixValue(models, i, new_position) == 1){ /* set to OFF*/
-        setMatrixValue(models, i, new_position, 0.0);
-      }
-      else{ /* Set to ON*/
-        setMatrixValue(models, i, new_position, 1.0);
-      }
-    }
-
-    /*COMPUTE THE COST OF ACTUAL MODEL RANDOM MODEL*/
-    for(j = 0; j < models->col; j++){
-      setUIVectorValue(popvector, j, (size_t)getMatrixValue(models, i, j));
-    }
-
-    nvarON = 0;
-    for(j = 0; j < models->col; j++){
-      if(getUIVectorValue(popvector, j) == 1){
-        nvarON++;
-      }
-    }
-
-    if(nvarON > 0){
-      PLSCostPopulation(mx, my, px, py, popvector, xautoscaling, yautoscaling, nlv, validation_type, ngroup, niter, &tmp_model_r2, &cost_best, NULL, nthreads, s);
-    }
-    else{
-      tmp_model_r2 = cost_best = 0;
-    }
-
-    for(j = 0; j < models->col; j++){
-      setDVectorValue(b_position, j, getMatrixValue(position, i, j));
-    }
-
-    if(cost_best > cost_g_best){
-      cost_g_best = cost_best;
-      model_r2 = tmp_model_r2;
-
-      for(j = 0; j < models->col; j++){
-        setDVectorValue(g_position, j, getMatrixValue(position, i, j));
-        setUIVectorValue(best_model, j, getUIVectorValue(popvector, j));
-      }
-
-      setDVectorValue(rowmap, 0, model_r2);
-      setDVectorValue(rowmap, 1, cost_g_best);
-      setDVectorValue(rowmap, 2, (cost_g_best  * (population_size - mx->col -1)) /  (mx->col*(1-cost_g_best )));
-      setDVectorValue(rowmap, 3, nvarON);
-
-      MatrixAppendRow(map, rowmap);
-      DVectorSet(rowmap, 0.f);
-    }
-
-    /*
-    printf("Modello %u Generato\n", (size_t)i);
-    PrintUIVector(popvector);
-    */
-  }
-
-
-  /*
-  puts("modelli");
-  PrintMatrix(models);
-
-  puts("Best Position");
-  PrintDVector(b_position);
-  puts("Great Best Position");
-  PrintDVector(g_position);
-
-  puts("Second step!");
-  */
-
-
-/* While(R^2 or Q^2 is not good enough...):
- *   For Model P in population:
- *     P_new_velocity of the model = UpdateVelocity(P_old_velocity, P_g_best, P_best)
- *     P_new_position of the model = UpdatePosition(P_old_position, P_velocity)
- *
- *     P_actual_model = R^2 or Q^2 of the actual model setted..
- *
- *     if P_actual_model < = P_best:
- *       P_best = P_actual_model
- *       if P_best <= P_g_best:
- *         P_g_best = P_best
- */
-
-  iter = 0;
-  do{
-    if(s != NULL && (*s) == SIGSCIENTIFICSTOP){
-      break;
-    }
-    else{
-      /*
-      puts("Velocity");
-      PrintMatrix(velocity);
-      puts("Positions");
-      PrintMatrix(position);
-      while (!getchar()=='\n');
-      */
-
-      tmp_g_best = cost_g_best;
-
-      for(i = 0; i < models->row; i++){
-        /*
-        * update velocity and position and set variable on/off in model
-        */
-        for(j = 0; j < velocity->col; j++){
-            rand1 = (double)rand()/(double)RAND_MAX;
-            rand2 = (double)rand()/(double)RAND_MAX;
-            new_v = getMatrixValue(velocity, i, j);
-            new_v += (1 * rand1 * ((double)getDVectorValue(b_position, j) - getMatrixValue(position, i, j))); /*1 is a constant weight and could be variable */
-            new_v += (1 * rand2 * ((double)getDVectorValue(g_position, j) - getMatrixValue(position, i, j))); /*1 is a constant weight and could be variable */
-            setMatrixValue(velocity, i, j, new_v);
-
-            /*
-            * p(t+1) = p(t) + v(t); this value must be positive...
-            */
-            new_pos = fabs(floor(getMatrixValue(position, i, j) + new_v));
-            setMatrixValue(position, i, j, new_pos);
-            tmp_var_id = (size_t)getMatrixValue(position, i, j);
-
-            if(new_pos > models->col-1 || new_pos < 0){
-              /*
-              printf("Error on setting the variable. Out of range: %f\n", getMatrixValue(position, i, j));
-              */
-              continue;
-            }
-            else{
-              if((size_t)getMatrixValue(models, i, tmp_var_id) == 1){ /* set to OFF*/
-                setMatrixValue(models, i, tmp_var_id, 0.0);
-              }
-              else{ /* Set to ON*/
-                setMatrixValue(models, i, tmp_var_id, 1.0);
-              }
-            }
-        }
-
-        for(j = 0; j < models->col; j++){
-          setUIVectorValue(popvector, j, (size_t)getMatrixValue(models, i, j));
-          setUIVectorValue((*vardistribution), j, (getUIVectorValue((*vardistribution), j)+(size_t)getMatrixValue(models, i, j)));
-        }
-
-
-        nvarON = 0;
-        for(j = 0; j < position->col; j++){
-          if(getUIVectorValue(popvector, j) == 1){
-            nvarON++;
-          }
-        }
-
-        if(nvarON > 0){
-          PLSCostPopulation(mx, my, px, py, popvector, xautoscaling, yautoscaling, nlv, validation_type, ngroup, niter, &tmp_model_r2, &tmp_cost_best, NULL, nthreads, s);
-        }
-        else{
-          tmp_model_r2 = tmp_cost_best = 0;
-        }
-
-        if(tmp_cost_best > cost_best){
-          cost_best = tmp_cost_best;
-
-          for(j = 0; j < position->col; j++){
-            setDVectorValue(b_position, j, fabs(floor(getMatrixValue(position, i, j))));
-          }
-
-          if(cost_best > cost_g_best){
-            cost_g_best = cost_best;
-            model_r2 = tmp_model_r2;
-
-            for(j = 0; j < position->col; j++){
-              setDVectorValue(g_position, j, fabs(floor(getMatrixValue(position, i, j))));
-              setUIVectorValue(best_model, j, getUIVectorValue(popvector, j));
-            }
-
-            setDVectorValue(rowmap, 0, model_r2);
-            setDVectorValue(rowmap, 1, cost_g_best);
-            setDVectorValue(rowmap, 2, (cost_g_best  * (population_size - mx->col -1)) /  (mx->col*(1-cost_g_best )));
-            setDVectorValue(rowmap, 3, nvarON);
-
-            MatrixAppendRow(map, rowmap);
-
-            DVectorSet(rowmap, 0.f);
-
-            iter = 0;
-          }
-        }
-
-        /*
-        printf("iteration %u best_val %f global_best_value %f\n", (size_t) iter, cost_best, cost_g_best);
-        */
-        iter++;
-      }
-    }
-  }while(FLOAT_EQ(cost_g_best, tmp_g_best, PLSCONVERGENCE) && iter < 100);
-
-  /*
-  PrintDVector(g_position);
-
-  printf("Selected Model: %u\n", (size_t)mod_id);
-  PrintMatrix(models);
-  */
-
-  for(i = 0; i < best_model->size; i++){
-    UIVectorAppend(varselected, getUIVectorValue(best_model, i));
-  }
-
-  DelUIVector(&best_model);
-  DelDVector(&rowmap);
-  DelDVector(&g_position);
-  DelDVector(&b_position);
-  DelUIVector(&popvector);
-  DelMatrix(&velocity);
-  DelMatrix(&position);
-  DelMatrix(&models);
-}
-
-
-/* Variable selection using Genetic algorithm
- *
- *
- */
-
-int FitnessMaxsimized(dvector* modelsfitness, dvector* modelsfitness_old, double populationconvergence)
-{
-  size_t i, popsize = 0;
-
-  /*
-  puts("OLD");
-  PrintDVector(modelsfitness_old);
-  puts("NEW");
-  PrintDVector(modelsfitness);
-
-  sleep(1);
-  */
-
-  for(i = 0; i < modelsfitness->size; i++){
-    if(FLOAT_EQ(getDVectorValue(modelsfitness, i), getDVectorValue(modelsfitness_old, i), 1e-3)){
+  prec = coeff_avg->data[0];
+  for(i = 1; i < coeff_avg->size-1; i++){
+    if(prec < coeff_avg->data[i] && coeff_avg->data[i] < coeff_avg->data[i+1]){
+      prec = coeff_avg->data[i];
+      cutoff = i+1;
       continue;
     }
     else{
-      popsize++;
-    }
-  }
-
-  if((double)popsize/(double)modelsfitness->size < populationconvergence){
-    return 1;
-  }
-  else{
-    return 0;
-  }
-}
-
-void PLSGAVariableSelection(matrix *mx, matrix *my, matrix *px, matrix *py,
-                       size_t xautoscaling, size_t yautoscaling, size_t nlv, int validation_type, size_t ngroup, size_t niter,
-                       size_t population_size, double fraction_of_population, double mutation_rate, size_t crossovertype, double nswapping, double populationconvergence,
-                      uivector **varselected, matrix **map, uivector **vardistribution, size_t nthreads, ssignal *s)
-{
-  size_t i, j, k, position, mutatebit, bitswap, totbitswapp, copy_selection, crossover_selection, mutation_selection, init, a, b, nvarON, blockitercount;
-  double best_fitness = 0, best_bias = 99, model_r2, tmp_fitness, tmp_bias, tmp_model_r2;
-  matrix *models1, *models2;
-  dvector *modelsfitness, *best_modelsfitness, *model_f_distribution, *best_model_f_distribution, *rowmap;
-  uivector *popvector, *best_model, *crosspoints, *selectedid;
-
-
-  /* Initialize with rando models..*/
-  NewMatrix(&models1, population_size, mx->col); /*models of the generation k */
-  NewMatrix(&models2, population_size, mx->col); /*models of the generation k + 1*/
-  NewDVector(&modelsfitness, population_size); /* Stored the Q^2 or R^2 of models*/
-  NewDVector(&best_modelsfitness, population_size); /* Stored the Q^2 or R^2 of models*/
-  NewDVector(&model_f_distribution, population_size); /* Stored the Q^2 or R^2 of models*/
-  NewDVector(&best_model_f_distribution, population_size); /* Stored the Q^2 or R^2 of models*/
-  NewUIVector(&best_model, mx->col);
-  NewUIVector(&popvector, mx->col);
-
-  for(i = 0; i < mx->col; i++){
-    UIVectorAppend(vardistribution, 0);
-  }
-
-  NewDVector(&rowmap, 4); /* 1 = R2, 2 = Q2, 3 = f-test, 4 = number of variables ON */
-  best_fitness = 0.f;
-
-  copy_selection = (size_t)floor((1-fraction_of_population) * population_size);
-  crossover_selection = (size_t)floor(fraction_of_population * population_size);
-  mutation_selection = (size_t)floor(mutation_rate*population_size);
-
-  if(crossovertype == 0){ /*single point crossover */
-    totbitswapp = 1;
-  }
-  else if(crossovertype == 1){ /* two point crossover */
-    totbitswapp = 2;
-  }
-  else{ /*uniform crossover*/
-    if(nswapping > 1){
-      totbitswapp = (size_t)floor(((double)models1->col * nswapping)/ 100.f);
-    }
-    else{
-      totbitswapp = (size_t)floor((double)models1->col * nswapping);
-    }
-
-    if(totbitswapp > 0){
-      if(totbitswapp % 2 != 0){
-        totbitswapp +=1;
-      }
-    }
-    else{
-      totbitswapp = 1;
-    }
-  }
-
-  NewUIVector(&crosspoints, totbitswapp);
-
-  /*printf("copy %u cross %u muta %u bit to swap: %u\n", (size_t)copy_selection, (size_t)crossover_selection, (size_t)mutation_selection, (size_t)totbitswapp);*/
-  init = (size_t)(mx->row + mx->col + my->col + population_size + copy_selection + mutation_selection);
-  srand(init);
-
-  DVectorSet(modelsfitness, 0.f);
-  DVectorSet(best_modelsfitness, 0.f);
-  DVectorSet(model_f_distribution, 0.f);
-  DVectorSet(best_model_f_distribution, 0.f);
-  MatrixSet(models1, 0.f);
-  MatrixSet(models2, 0.f);
-
-  for(i = 0; i < population_size; i++){
-    for(j = 0; j < mx->col; j++){
-      position = rand() % mx->col;
-      if((size_t)getMatrixValue(models1, i, position) == 1){ /* set to OFF*/
-        setMatrixValue(models1, i, position, 0.0);
-      }
-      else{ /* Set to ON*/
-        setMatrixValue(models1, i, position, 1.0);
-      }
-    }
-
-    /*COMPUTE THE COST OF ACTUAL MODEL RANDOM MODEL*/
-    for(j = 0; j < models1->col; j++){
-      setUIVectorValue(popvector, j, (size_t)getMatrixValue(models1, i, j));
-      setUIVectorValue((*vardistribution), j, getUIVectorValue((*vardistribution),j)+(size_t)getMatrixValue(models1, i, j));
-    }
-
-    nvarON = 0;
-    for(j = 0; j < popvector->size; j++){
-      if(getUIVectorValue(popvector, j) == 1){
-        nvarON++;
-      }
-    }
-
-
-    if(nvarON > 0){
-      PLSCostPopulation(mx, my, px, py, popvector, xautoscaling, yautoscaling, nlv, validation_type, ngroup, niter, &tmp_model_r2, &tmp_fitness, &tmp_bias, nthreads, s);
-    }
-    else{
-      tmp_model_r2 = tmp_fitness = 0;
-    }
-
-    setDVectorValue(modelsfitness, i, tmp_fitness);
-    setDVectorValue(model_f_distribution, i, (tmp_fitness * (population_size - mx->col -1)) /  (mx->col*(1-tmp_fitness)));
-
-    if(tmp_fitness > best_fitness && tmp_bias < best_bias){
-      best_fitness = tmp_fitness;
-      model_r2 = tmp_model_r2;
-      best_bias = tmp_bias;
-
-      for(j = 0; j < models1->col; j++){
-        setUIVectorValue(best_model, j, getUIVectorValue(popvector, j));
-      }
-
-      setDVectorValue(rowmap, 0, model_r2);
-      setDVectorValue(rowmap, 1, best_fitness);
-      setDVectorValue(rowmap, 2, getDVectorValue(model_f_distribution, i));
-      setDVectorValue(rowmap, 3, (double)nvarON);
-
-      MatrixAppendRow(map, rowmap);
-      DVectorSet(rowmap, 0.f);
-    }
-
-
-    /*
-    printf("Modello %u Generato\n", (unsigned int)i);
-    PrintUIVector(popvector);
-    */
-  }
-
-  /*
-  puts("first best model");
-  PrintUIVector(best_model);
-
-  PrintMatrix((*map));
-
-  puts("Models1");
-  PrintMatrix(models1);
-  puts("Models2");
-  PrintMatrix(models2);
-  */
-
-  blockitercount = 0;
-  do{
-    if(s != NULL && (*s) == SIGSCIENTIFICSTOP){
       break;
     }
-    else{
-      /*printf("blockitercount %u\n", (unsigned int) blockitercount);*/
-
-      tmp_fitness = tmp_model_r2 = 0.f;
-      tmp_bias = 99;
-      /*Create generation k+1*/
-      /*1. Copy
-        *
-        * Select (1-fraction_of_population) * population_size members of models1 and insert into the new population models2
-        * through the roulette whell selection
-        */
-      if(crossover_selection % 2 != 0){
-        crossover_selection -=1;
-        copy_selection +=1;
-      }
-
-      initUIVector(&selectedid);
-      StochasticUniversalSample(modelsfitness, copy_selection, init, &selectedid);
-      /*RouletteWheelselection(modelsfitness, copy_selection, init, &selectedid);*/
-
-      k = 0;
-      for(i = 0; i < selectedid->size; i++, k++){
-        position = getUIVectorValue(selectedid, i);
-        for(j = 0; j < models1->col; j++){
-          setMatrixValue(models2, i, j, getMatrixValue(models1, position, j));
-        }
-      }
-      DelUIVector(&selectedid);
-
-
-      /*
-      * 2. Crossover
-      *
-      * Select fraction_of_population * population_size members of models1; pair them up; produce offspring; inser the offspring into models2
-      *
-      * The selection is made with the roulette whell selection
-      *
-      *
-      */
-
-      initUIVector(&selectedid);
-
-      StochasticUniversalSample(modelsfitness, crossover_selection, init, &selectedid);
-      /*RouletteWheelselection(modelsfitness, crossover_selection, init, &selectedid);*/
-
-      for(i = 0; i < selectedid->size; i+=2){
-
-        position = getUIVectorValue(selectedid, i);
-
-        for(bitswap = 0; bitswap < totbitswapp; bitswap++){
-          setUIVectorValue(crosspoints, bitswap, rand() % models1->col);
-        }
-
-        SortUIVector(crosspoints);
-
-        if(totbitswapp >=2){
-          /*offspring 1*/
-          for(j = 0; j < models1->col; j++){
-            for(bitswap = 0; bitswap < totbitswapp; bitswap += 2){
-              if(j > getUIVectorValue(crosspoints, bitswap) && j < getUIVectorValue(crosspoints, bitswap+1)){ // set pos1
-                setMatrixValue(models2, k, j, getMatrixValue(models1, position, j));
-              }
-              else{ // set pos 2
-                setMatrixValue(models2, k, j, getMatrixValue(models1, position+1, j));
-              }
-            }
-          }
-
-          /*offspring 2*/
-          k++;
-          for(j = 0; j < models1->col; j++){
-            for(bitswap = 0; bitswap < totbitswapp; bitswap += 2){
-              if(j > getUIVectorValue(crosspoints, bitswap) && j < getUIVectorValue(crosspoints, bitswap+1)){ // set pos1
-                setMatrixValue(models2, k, j, getMatrixValue(models1, position+1, j));
-              }
-              else{ // set pos 2
-                setMatrixValue(models2, k, j, getMatrixValue(models1, position, j));
-              }
-            }
-          }
-        }
-        else{
-          /*offspring 1*/
-          for(j = 0; j < models1->col; j++){
-            if(j < getUIVectorValue(crosspoints, 0)){
-              setMatrixValue(models2, k, j, getMatrixValue(models1, position, j));
-            }
-            else{
-              setMatrixValue(models2, k, j, getMatrixValue(models1, position+1, j));
-            }
-          }
-
-          /*offspring 2*/
-          k++;
-          for(j = 0; j < models1->col; j++){
-            if(j < getUIVectorValue(crosspoints, 0)){
-              setMatrixValue(models2, k, j, getMatrixValue(models1, position+1, j));
-            }
-            else{
-              setMatrixValue(models2, k, j, getMatrixValue(models1, position, j));
-            }
-          }
-        }
-        k++;
-
-      }
-      DelUIVector(&selectedid);
-
-    /*3. Mutate
-      * Select a mutation_rate * population_size elements of models2 and invert a randomly selected bit in each;
-      * The selection is always made by the roulette Whell Selection algorithm
-      */
-
-      initUIVector(&selectedid);
-
-      StochasticUniversalSample(modelsfitness, mutation_selection, init, &selectedid);
-  /*      RouletteWheelselection(modelsfitness, mutation_selection, init, &selectedid);*/
-
-      for(i = 0; i < selectedid->size; i++){
-
-        position = getUIVectorValue(selectedid, i);
-        mutatebit = rand() % models1->col;
-
-        if((size_t)getMatrixValue(models2, position, mutatebit) == 1){ /*set OFF*/
-          setMatrixValue(models2, position, mutatebit, 0.0);
-        }
-        else{ /*set ON*/
-          setMatrixValue(models2, position, mutatebit, 1.0);
-        }
-      }
-      DelUIVector(&selectedid);
-
-
-    /* Evaluate fittness for the new generation.....
-      *
-      * Copy the old fitness to
-      *
-      */
-
-      for(i = 0; i < modelsfitness->size; i++){
-        if(getDVectorValue(modelsfitness, i) > getDVectorValue(best_modelsfitness, i)){
-          setDVectorValue(best_modelsfitness, i, getDVectorValue(modelsfitness, i));
-        }
-
-        if(getDVectorValue(model_f_distribution, i) > getDVectorValue(best_model_f_distribution, i)){
-          setDVectorValue(best_model_f_distribution, i, getDVectorValue(model_f_distribution, i));
-        }
-      }
-
-      for(i = 0; i < models2->row; i++){
-        for(j = 0; j < models2->col; j++){
-          setUIVectorValue(popvector, j, (size_t)getMatrixValue(models2, i, j));
-          setUIVectorValue((*vardistribution), j, getUIVectorValue((*vardistribution),j)+(size_t)getMatrixValue(models1, i, j));
-        }
-
-        nvarON = 0;
-        for(j = 0; j < models2->col; j++){
-          if(getUIVectorValue(popvector, j) == 1){
-            nvarON++;
-          }
-        }
-
-        if(nvarON > 0){
-          PLSCostPopulation(mx, my, px, py, popvector, xautoscaling, yautoscaling, nlv, validation_type, ngroup, niter, &tmp_model_r2, &tmp_fitness, &tmp_bias, nthreads, s);
-        }
-        else{
-          tmp_model_r2 = tmp_fitness = 0;
-          tmp_bias = 99;
-        }
-
-        setDVectorValue(modelsfitness, i, tmp_fitness); /* Stored the Q^2 or R^2 of models*/
-        setDVectorValue(model_f_distribution, i, (tmp_fitness * (population_size - mx->col -1)) /  (mx->col*(1-tmp_fitness)));
-
-        /*printf("[LIBSCIENTIFIC DEBUG] >> tmpfitness: %f bestfitness: %f tmpbias: %f bestbias: %f\n", tmp_fitness, best_fitness, tmp_bias, best_bias);*/
-
-        if(tmp_fitness > best_fitness && tmp_bias < best_bias){
-
-          best_bias = tmp_bias;
-          best_fitness = tmp_fitness;
-          model_r2 = tmp_model_r2;
-
-          for(j = 0; j < models2->col; j++){
-            setUIVectorValue(best_model, j, getUIVectorValue(popvector, j));
-          }
-
-          /*
-          puts("POPVECTOR");
-          PrintUIVector(popvector);
-
-          puts("Models1");
-          PrintMatrix(models1);
-          puts("Models2");
-          PrintMatrix(models2);
-
-          sleep(1);
-          */
-          setDVectorValue(rowmap, 0, model_r2);
-          setDVectorValue(rowmap, 1, best_fitness);
-          setDVectorValue(rowmap, 2, getDVectorValue(model_f_distribution, i));
-          setDVectorValue(rowmap, 3, nvarON);
-
-          MatrixAppendRow(map, rowmap);
-          DVectorSet(rowmap, 0.f);
-        }
-      }
-
-      /* copy the new generation... */
-      for(i = 0; i < models2->row; i++){
-        for(j = 0; j < models2->col; j++){
-          setMatrixValue(models1, i, j, getMatrixValue(models2, i, j));
-        }
-      }
-
-      a = FitnessMaxsimized(modelsfitness, best_modelsfitness, populationconvergence);
-      b = FitnessMaxsimized(model_f_distribution, best_model_f_distribution, populationconvergence);
-
-      /*
-      printf("a %d  b %d\n", (unsigned int)a, (unsigned int)b);
-      */
-
-      if(a == b && a == 1){
-        if(blockitercount > 1000){
-          /*No more good solutions found...
-          * decrease the population size and the population convergence
-          */
-          break;
-        }
-        else{
-          blockitercount++;
-        }
-      }
-      else{
-        blockitercount = 0;
-      }
-    }
-  }while((a != 0 && b != 0));
-
-
-  /*
-  puts("BEST_MODEL");
-  PrintUIVector(best_model);
-  */
-
-  for(i = 0; i < best_model->size; i++){
-    UIVectorAppend(varselected, getUIVectorValue(best_model,  i));
   }
-
-  /*
-  puts("VARSELEVTED");
-  PrintUIVector((*varselected));
-  puts("----------");
-  */
-
-  DelDVector(&rowmap);
-  DelUIVector(&crosspoints);
-  DelDVector(&best_modelsfitness);
-  DelDVector(&model_f_distribution);
-  DelDVector(&best_model_f_distribution);
-  DelDVector(&modelsfitness);
-  DelUIVector(&popvector);
-  DelUIVector(&best_model);
-  DelMatrix(&models2);
-  DelMatrix(&models1);
-}
-
-void PLSSpearmannVariableSelection(matrix* mx, matrix* my, matrix* px, matrix* py,
-                                   size_t xautoscaling, size_t yautoscaling, size_t nlv, int validation_type, size_t ngroup, size_t niter,
-                                   double threshold,
-                                   uivector** varselected, matrix** map, uivector **vardistribution, size_t nthreads, ssignal* s){
-  size_t i, j, k, nstep, nvarON;
-  double step, r2, q2, best_q2 = 0, rangemax;
-
-  matrix *mxy, *spearmanncorrelmx;
-  uivector *popvector, *bestmodel;
-  dvector *rowmap;
-
-  NewDVector(&rowmap, 4);
-  NewUIVector(&popvector, mx->col);
-  NewUIVector(&bestmodel, mx->col);
-  NewMatrix(&mxy, mx->row, mx->col+my->col);
-  UIVectorResize(vardistribution, mx->col);
-
-  for(i = 0; i < mx->row; i++){
-    k = 0;
-    for(j = 0; j < mx->col; j++){
-      setMatrixValue(mxy, i, k, getMatrixValue(mx, i, j));
-      k++;
-    }
-
-    for(j = 0; j < my->col; j++){
-      setMatrixValue(mxy, i, k, getMatrixValue(my, i, j));
-      k++;
-    }
-  }
-
-  initMatrix(&spearmanncorrelmx);
-
-  SpearmanCorrelMatrix(mxy, spearmanncorrelmx);
-
-  rangemax = fabs(getMatrixValue(spearmanncorrelmx, 0, mx->col)); /* the first y value in the spearmanncorrelmx */
-  for(j = 0; j < my->col; j++){
-    for(i = 1; i < mx->col; i++){
-      if(rangemax < getMatrixValue(spearmanncorrelmx, i, mx->col+j)){
-        rangemax = getMatrixValue(spearmanncorrelmx, i, mx->col+j);
-      }
-      else{
-        continue;
-      }
-    }
-  }
-
-  if(threshold < 0 || threshold > 1){
-    threshold = 0.1; /* 1 / 10 */
-  }
-
-  threshold *= rangemax;
-  nstep = (size_t) ceil(rangemax/threshold);
-  step = rangemax - threshold; /* From maximum of relaction to minimum */
-  for(i = 0; i < nstep; i++){
-    if(s != NULL && (*s) == SIGSCIENTIFICSTOP){
-      break;
-    }
-    else{
-      nvarON = 0;
-      for(k = 0; k < mx->col; k++){
-        double nyes = 0.f;
-        for(j = 0; j < my->col; j++){
-          if(fabs(getMatrixValue(spearmanncorrelmx, mx->col+j, k)) > step){
-            nyes += 1;
-          }
-          else{
-            continue;
-          }
-        }
-
-        if((double)((my->col - nyes)/(double)my->col) > 0.5){ /* if the variable is no more good for the 50% of y reject*/
-          setUIVectorValue(popvector, k, 0);
-        }
-        else{
-          setUIVectorValue(popvector, k, 1);
-          setUIVectorValue((*vardistribution), k, getUIVectorValue((*vardistribution), k)+1);
-          nvarON++;
-        }
-      }
-
-      if(nvarON > 0){
-        PLSCostPopulation(mx, my, px, py, popvector, xautoscaling, yautoscaling, nlv, validation_type, ngroup, niter, &r2, &q2, NULL, nthreads, s);
-
-
-        if(q2 > best_q2){
-          for(j = 0; j < popvector->size; j++){
-            setUIVectorValue(bestmodel, j, getUIVectorValue(popvector, j));
-          }
-          best_q2 = q2;
-        }
-
-        setDVectorValue(rowmap, 0, r2);
-        setDVectorValue(rowmap, 1, q2);
-        setDVectorValue(rowmap, 2, step);
-        setDVectorValue(rowmap, 3, nvarON); /* number of variables */
-        MatrixAppendRow(map, rowmap);
-        DVectorSet(rowmap, 0);
-        UIVectorSet(popvector, 0);
-      }
-      step -= threshold;
-    }
-  }
-
-  for(i = 0; i < bestmodel->size; i++){
-    UIVectorAppend(varselected, getUIVectorValue(bestmodel,  i));
-  }
-
-  DelUIVector(&bestmodel);
-  DelDVector(&rowmap);
-  DelUIVector(&popvector);
-  DelMatrix(&spearmanncorrelmx);
-  DelMatrix(&mxy);
+  DelDVector(&coeff_avg);
+  return cutoff;
 }
 
 void PrintPLSModel(PLSMODEL* model)

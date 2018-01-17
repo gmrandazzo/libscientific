@@ -76,11 +76,13 @@ void ResizeMatrix(matrix **m, size_t row_, size_t col_)
 
 void DelMatrix(matrix **m)
 {
-  size_t i;
-  for(i = 0; i < (*m)->row; i++)
-    xfree((*m)->data[i]);
-  xfree((*m)->data);
-  xfree((*m));
+  if(m != NULL){
+    size_t i;
+    for(i = 0; i < (*m)->row; i++)
+      xfree((*m)->data[i]);
+    xfree((*m)->data);
+    xfree((*m));
+  }
 }
 
 void MatrixCheck(matrix *m)

@@ -45,6 +45,8 @@ void DelEPLSModel(EPLSMODEL** m)
     DelMatrix(&(*m)->q2[i]);
     DelMatrix(&(*m)->sdep[i]);
   }
+  xfree((*m)->sdep);
+  xfree((*m)->q2);
   xfree((*m)->models);
   xfree((*m));
 }
@@ -52,7 +54,7 @@ void DelEPLSModel(EPLSMODEL** m)
 void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautoscaling, size_t n_models, double testsize, EPLSMODEL *m, ELearningMethod agtype, ssignal *s)
 {
   if(agtype == Bagging){
-    matrix *x_train, *y_train, *x_test, *y_test;
+    matrix *x_train, *y_train, *x_test, *y_test, *p_y_test;
     uivector *testids;
     size_t i;
 
@@ -73,11 +75,12 @@ void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautos
       srand_init++;
       NewPLSModel(&m->models[i]);
       PLS(x_train, y_train, nlv, xautoscaling, yautoscaling, m->models[i], s);
+      initMatrix(&p_y_test);
+      PLSYPredictorAllLV(x_test, m->models[i], nlv, &p_y_test);
       initMatrix(&m->q2[i]);
       initMatrix(&m->sdep[i]);
-      PLSRegressionStatistics(x_test, y_test, m->models[i], nlv, &m->q2[i], &m->sdep[i], NULL);
-      /*PLSRegressionValidationOutput(y_test, y_test_predicted, &m->q2[i], &m->sdep[i], NULL);*/
-
+      PLSRegressionStatistics(y_test, p_y_test, &m->q2[i], &m->sdep[i], NULL);
+      DelMatrix(&p_y_test);
       DelMatrix(&x_train);
       DelMatrix(&y_train);
       DelMatrix(&x_test);

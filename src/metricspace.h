@@ -40,10 +40,15 @@ double MahalanobisDistance(matrix* g1, matrix* g2);
 /* Description: cubic spline interpolation */
 void cubic_spline_interpolation(matrix *xy, size_t npoints, matrix **interp_xy);
 
+/* Description: calculate area of a curve.
+ * If intervals > 0 will interpolate the curve
+ */
 double curve_area(matrix *xy, size_t intervals);
 
 /* Description: calculate the ROC curve giving an y_true and an y_score */
 void ROC(dvector *y_true, dvector *y_score, matrix **roc, double *auc);
 
+/* Description: calculate the Precision-Recall curve giving an y_true and an y_score */
+void PrecisionRecall(dvector *y_true, dvector *y_score,  matrix **pr, double *ap);
 
 #endif
