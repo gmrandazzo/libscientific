@@ -61,11 +61,13 @@ void NewStrVector(strvector **s, size_t size_)
 
 void DelStrVector(strvector **s)
 {
-  size_t i;
-  for(i = 0; i < (*s)->size; i++)
-    xfree((*s)->data[i]);
-  xfree((*s)->data);
-  xfree((*s));
+  if(s != NULL){
+    size_t i;
+    for(i = 0; i < (*s)->size; i++)
+      xfree((*s)->data[i]);
+    xfree((*s)->data);
+    xfree((*s));
+  }
 }
 
 void setStr(strvector *s, size_t i, char *str)
@@ -215,8 +217,10 @@ void NewDVector(dvector **d, size_t size_)
 
 void DelDVector(dvector **d )
 {
+  if(d != NULL){
     xfree((*d)->data);
     xfree((*d));
+  }
 }
 
 void DVectorResize(dvector **d, size_t size_)
@@ -503,8 +507,10 @@ void NewIVector(ivector **d, size_t size_)
 
 void DelIVector(ivector **d )
 {
-  xfree((*d)->data);
-  xfree((*d));
+  if(d != NULL){
+    xfree((*d)->data);
+    xfree((*d));
+  }
 }
 
 void IVectorAppend(ivector **d, int val)
@@ -594,8 +600,10 @@ void NewUIVector(uivector **d, size_t size_)
 
 void DelUIVector(uivector **d )
 {
-  xfree((*d)->data);
-  xfree((*d));
+  if(d != NULL){
+    xfree((*d)->data);
+    xfree((*d));
+  }
 }
 
 void UIVectorResize(uivector **d, size_t size_)

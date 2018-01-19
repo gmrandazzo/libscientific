@@ -110,7 +110,7 @@ void TestPLS15()
   minpt.xautoscaling = 1;
   minpt.yautoscaling = 0;
 
-  BootstrapRandomGroupsCV(&minpt, 3, 100, _PLS_, &m->predicted_y, &m->pred_residuals, 4, NULL);
+  BootstrapRandomGroupsCV(&minpt, 3, 100, _PLS_, &m->predicted_y, &m->pred_residuals, 4, NULL, 0);
   PrintMatrix(m->predicted_y);
 
   initArray(&roc);
@@ -228,8 +228,8 @@ void TestPLS14()
   minpt.xautoscaling = 1;
   minpt.yautoscaling = 0;
 
-  //BootstrapRandomGroupsCV(&minpt, 3, 100, _PLS_, &m->predicted_y, &m->pred_residuals, 4, NULL);
-  LeaveOneOut(&minpt, _PLS_, &m->predicted_y, &m->pred_residuals, 4, NULL);
+  //BootstrapRandomGroupsCV(&minpt, 3, 100, _PLS_, &m->predicted_y, &m->pred_residuals, 4, NULL, 0);
+  LeaveOneOut(&minpt, _PLS_, &m->predicted_y, &m->pred_residuals, 4, NULL, 0);
   PrintMatrix(m->predicted_y);
 
   PLSRegressionStatistics(y, m->predicted_y, &m->q2y, &m->sdep, &m->bias);
@@ -283,8 +283,8 @@ void TestPLS13()
   minpt.xautoscaling = 1;
   minpt.yautoscaling = 0;
 
-  //LeaveOneOut(&minpt, _PLS_, &predicted_y, &predicted_residuals, 4, NULL);
-  BootstrapRandomGroupsCV(&minpt, 5, 20, _PLS_, &predicted_y, &predicted_residuals, 4, NULL);
+  //LeaveOneOut(&minpt, _PLS_, &predicted_y, &predicted_residuals, 4, NULL, 0);
+  BootstrapRandomGroupsCV(&minpt, 5, 20, _PLS_, &predicted_y, &predicted_residuals, 4, NULL, 0);
   PLSRegressionStatistics(my, predicted_y, &q2, &sdep, &bias);
 
   puts("Q2 Cross Validation");
@@ -401,7 +401,7 @@ void TestPLS12()
   minpt.xautoscaling = 1;
   minpt.yautoscaling = 0;
 
-  LeaveOneOut(&minpt, _PLS_, &m->predicted_y, &m->pred_residuals, 4, NULL);
+  LeaveOneOut(&minpt, _PLS_, &m->predicted_y, &m->pred_residuals, 4, NULL, 0);
   PLSRegressionStatistics(y, m->predicted_y, &m->q2y, &m->sdep, &m->bias);
 
   /*PrintPLSModel(m);*/
@@ -482,7 +482,7 @@ void TestPLS11()
   minpt.xautoscaling = 1;
   minpt.yautoscaling = 0;
 
-  LeaveOneOut(&minpt, _PLS_, &m->predicted_y, &m->pred_residuals, 4, NULL);
+  LeaveOneOut(&minpt, _PLS_, &m->predicted_y, &m->pred_residuals, 4, NULL, 0);
   PLSRegressionStatistics(y, m->predicted_y, &m->q2y, &m->sdep, &m->bias);
 
   ValidationArg varg;
@@ -640,7 +640,7 @@ void TestPLS10()
   minpt.xautoscaling = 1;
   minpt.yautoscaling = 0;
 
-  LeaveOneOut(&minpt, _PLS_, &m->predicted_y, &m->pred_residuals, 4, NULL);
+  LeaveOneOut(&minpt, _PLS_, &m->predicted_y, &m->pred_residuals, 4, NULL, 0);
   PLSRegressionStatistics(y, m->predicted_y, &m->q2y, &m->sdep, &m->bias);
 
   /*PrintPLSModel(m);*/
@@ -735,7 +735,7 @@ void TestPLS9()
   initMatrix(&sdec);
   initMatrix(&bias);
 
-  PLSYPredictorAllLV(x, m, 4, &m->recalculated_y);
+  PLSYPredictorAllLV(x, m, &m->recalculated_y);
   PLSRegressionStatistics(y, m->recalculated_y, &r2y, &sdec, &bias);
 
   PrintPLSModel(m);
@@ -1034,7 +1034,7 @@ void TestPLS5()
 
   initMatrix(&predicted_y);
   initMatrix(&pred_residuals);
-  BootstrapRandomGroupsCV(&minpt, 3, 100, _PLS_, &predicted_y, &pred_residuals, 4, &run);
+  BootstrapRandomGroupsCV(&minpt, 3, 100, _PLS_, &predicted_y, &pred_residuals, 4, &run, 0);
   PLSRegressionStatistics(y, predicted_y, &q2y, &sdep, NULL);
 
   puts("Q2 Cross Validation");
@@ -1296,8 +1296,8 @@ void TestPLS2()
   minpt.xautoscaling = 0;
   minpt.yautoscaling = 0;
 
-  //BootstrapRandomGroupsCV(&minpt, 3, 100, _PLS_, &m->predicted_y, &m->pred_residuals, 4, NULL);
-  LeaveOneOut(&minpt, _PLS_, &m->predicted_y, &m->pred_residuals, 4, &run);
+  //BootstrapRandomGroupsCV(&minpt, 3, 100, _PLS_, &m->predicted_y, &m->pred_residuals, 4, NULL, 0);
+  LeaveOneOut(&minpt, _PLS_, &m->predicted_y, &m->pred_residuals, 4, &run, 0);
   PLSRegressionStatistics(y, m->predicted_y, &m->q2y, &m->sdep, &m->bias);
   PrintMatrix(m->predicted_y);
   puts("Q2 Cross Validation");
@@ -1386,8 +1386,8 @@ void TestPLS1()
   minpt.xautoscaling = 0;
   minpt.yautoscaling = 0;
 
-  //BootstrapRandomGroupsCV(&minpt, 3, 100, _PLS_, &m->predicted_y, &m->pred_residuals, 4, NULL);
-  LeaveOneOut(&minpt, _PLS_, &m->predicted_y, &m->pred_residuals, 4, NULL);
+  BootstrapRandomGroupsCV(&minpt, 3, 100, _PLS_, &m->predicted_y, &m->pred_residuals, 4, NULL, 0);
+  //LeaveOneOut(&minpt, _PLS_, &m->predicted_y, &m->pred_residuals, 4, NULL, 0);
   PLSRegressionStatistics(y, m->predicted_y, &m->q2y, &m->sdep, &m->bias);
   PrintMatrix(m->predicted_y);
   puts("Q2 Cross Validation");
@@ -1428,9 +1428,9 @@ void TestPLS1()
 
 int main(void)
 {
-  /*test 1- 5
+  /*test 1- 5*/
   TestPLS1();
-  TestPLS2();
+  /*TestPLS2();
   TestPLS3();
   TestPLS4();
   TestPLS5();*/
@@ -1441,10 +1441,10 @@ int main(void)
   TestPLS8();
   TestPLS9();*/
   //TestPLS10();
-  TestPLS11();
+//TestPLS11();
   //TestPLS12();
   /*TestPLS13();
   TestPLS14();*/
-  TestPLS15();
+//TestPLS15();
   return 0;
 }

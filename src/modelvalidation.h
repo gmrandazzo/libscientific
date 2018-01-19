@@ -25,8 +25,10 @@
 typedef enum{
     _PLS_ = 0,
     _PLS_DA_ = 1,
-    _MLR_ = 2,
-    _LDA_ = 3
+    _EPLS_ = 2,
+    _EPLS_DA_ = 3,
+    _MLR_ = 4,
+    _LDA_ = 5
 } AlgorithmType;
 
 typedef enum{
@@ -89,10 +91,9 @@ void train_test_split(matrix *x, matrix *y, double testsize, matrix **x_train, m
  */
 
 void BootstrapRandomGroupsCV(MODELINPUT *input, size_t group, size_t iterations, AlgorithmType algo,
-                             matrix **predicted_y, matrix **pred_residuals, size_t nthreads, ssignal *s);
+                             matrix **predicted_y, matrix **pred_residuals, size_t nthreads, ssignal *s, int arg, ...);
 
-void LeaveOneOut(MODELINPUT *input, AlgorithmType algo,
-                 matrix** predicted_y, matrix **pred_residuals, size_t nthreads, ssignal *s);
+void LeaveOneOut(MODELINPUT *input, AlgorithmType algo, matrix** predicted_y, matrix **pred_residuals, size_t nthreads, ssignal *s, int arg, ...);
 
 void YScrambling(MODELINPUT *input, AlgorithmType algo, ValidationArg varg, size_t iterations,
                  matrix **ccoeff_yscrambling, size_t nthreads, ssignal *s);

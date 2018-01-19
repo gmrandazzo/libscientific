@@ -61,7 +61,7 @@ void test3()
   matrix *py_rgcv, *pres_rgcv;
   initMatrix(&py_rgcv);
   initMatrix(&pres_rgcv);
-  BootstrapRandomGroupsCV(&minpt, 3, 100, _MLR_, &py_rgcv, &pres_rgcv, 4, NULL);
+  BootstrapRandomGroupsCV(&minpt, 3, 100, _MLR_, &py_rgcv, &pres_rgcv, 4, NULL, 0);
   puts("Bootstrap Random Group Cross Validation Predicted Y");
   PrintMatrix(py_rgcv);
   puts("Bootstrap Random Group Cross Validation Predicted Residuals Y");
@@ -70,7 +70,7 @@ void test3()
   matrix *py_loo, *pres_loo;
   initMatrix(&py_loo);
   initMatrix(&pres_loo);
-  LeaveOneOut(&minpt, _MLR_, &py_loo, &pres_loo, 1, NULL);
+  LeaveOneOut(&minpt, _MLR_, &py_loo, &pres_loo, 1, NULL, 0);
   puts("Leave One Out Predicted Y");
   PrintMatrix(py_loo);
   puts("Leave One Out Predicted Residuals Y");

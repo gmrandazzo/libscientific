@@ -819,14 +819,13 @@ void PLSYPredictor(matrix *tscore, PLSMODEL *model, size_t nlv, matrix **y)
   }
 }
 
-void PLSYPredictorAllLV(matrix *mx, PLSMODEL *model, size_t nlv, matrix **y)
+void PLSYPredictorAllLV(matrix *mx, PLSMODEL *model, matrix **y)
 {
-  size_t lv, i, j, n_y;
+  size_t lv, i, j, n_y, nlv;
   matrix *predicted_y;
   matrix *predicted_xscores;
 
-  if(nlv > model->b->size)
-    nlv = model->b->size;
+  nlv = model->b->size;
 
   n_y = model->yloadings->row;
   ResizeMatrix(y, mx->row, n_y*nlv);
@@ -968,72 +967,6 @@ void PLSDiscriminantAnalysisStatistics(matrix *my_true, matrix *my_score, array 
     DelDVector(&ap_row);
   }
 
-  DelDVector(&y_true);
-  DelDVector(&y_score);
-}
-
-void PLSDiscriminantAnalysisStatistics_(matrix *mx, matrix *my, PLSMODEL *model, size_t nlv, array **roc, matrix **roc_auc, array **precision_recall, matrix **precision_recall_ap)
-{
-  size_t lv, i, j, k;
-  matrix *predicted_y;
-  matrix *predicted_xscores;
-  matrix *roc_;
-  matrix *pr_;
-  dvector *y_true;
-  dvector *y_score;
-  dvector *auc_row;
-  dvector *ap_row;
-  double auc, ap;
-
-  if(nlv > model->b->size)
-    nlv = model->b->size;
-
-  NewDVector(&y_true, my->row);
-  NewDVector(&y_score, my->row);
-
-  for(lv = 0; lv < nlv; lv++){
-    AddArrayMatrix(roc, my->row, my->col*2);
-    AddArrayMatrix(precision_recall, my->row, my->col*2);
-    initMatrix(&predicted_y);
-    initMatrix(&predicted_xscores);
-    initDVector(&auc_row);
-    initDVector(&ap_row);
-
-    PLSScorePredictor(mx, model, lv+1, &predicted_xscores);
-    PLSYPredictor(predicted_xscores, model, lv+1, &predicted_y);
-    k = 0;
-    for(j = 0; j < predicted_y->col; j++){
-      for(i = 0; i < predicted_y->row; i++){
-        y_true->data[i] = my->data[i][j];
-        y_score->data[i] = predicted_y->data[i][j];
-      }
-
-      initMatrix(&roc_);
-      ROC(y_true, y_score,  &roc_, &auc);
-      initMatrix(&pr_);
-      PrecisionRecall(y_true, y_score,  &pr_, &ap);
-      DVectorAppend(&auc_row, auc);
-      DVectorAppend(&ap_row, ap);
-      for(i = 0; i < my->row; i++){
-        (*roc)->m[lv]->data[i][k] = roc_->data[i][0];
-        (*roc)->m[lv]->data[i][k+1] = roc_->data[i][1];
-        (*precision_recall)->m[lv]->data[i][k] = pr_->data[i][0];
-        (*precision_recall)->m[lv]->data[i][k+1] = pr_->data[i][1];
-      }
-      k+=2;
-
-      DelMatrix(&roc_);
-      DelMatrix(&pr_);
-    }
-
-    MatrixAppendRow(roc_auc, auc_row);
-    MatrixAppendRow(precision_recall_ap, ap_row);
-
-    DelDVector(&auc_row);
-    DelDVector(&ap_row);
-    DelMatrix(&predicted_y);
-    DelMatrix(&predicted_xscores);
-  }
   DelDVector(&y_true);
   DelDVector(&y_score);
 }

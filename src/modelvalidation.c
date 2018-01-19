@@ -3,10 +3,12 @@
 #include "mlr.h"
 #include "pls.h"
 #include "pca.h" /*Using: MatrixAutoScaling(); and calcVarExpressed(); */
+#include "epls.h"
 #include "numeric.h" /* Using:  if(FLOAT_EQ(NumOne, NumTwo));*/
 #include "metricspace.h"
 #include <math.h>
 #include <pthread.h>
+#include <stdarg.h>
 
 void random_kfold_group_generator(matrix **gid, size_t ngroups, size_t nobj, unsigned int *srand_init)
 {
@@ -147,6 +149,8 @@ void train_test_split(matrix *x, matrix *y, double testsize, matrix **x_train, m
 }
 
 typedef struct{
+  ELearningParameters eparm;
+  CombinationRule crule;
   matrix *mx, *my; /*INPUT*/
   matrix *predicted_y;  /*OUPUT*/
   uivector *predictioncounter; /*OUPUT*/
@@ -156,7 +160,7 @@ typedef struct{
 
 void *PLSRandomGroupCVModel(void *arg_)
 {
-  size_t j, k, n, g, lv;
+  size_t j, k, n, g;
   rgcv_th_arg *arg;
   matrix *gid; /* randomization and storing id for each random group into a matrix */
 
@@ -194,30 +198,8 @@ void *PLSRandomGroupCVModel(void *arg_)
     NewPLSModel(&subm);
 
     PLS(x_train, y_train, arg->nlv, arg->xautoscaling, arg->yautoscaling, subm, NULL);
-
-    /* Predict Y for each latent variable */
-    //initMatrix(&predicty);
     initMatrix(&y_test_predicted);
-
-    for(lv = 1; lv <= arg->nlv; lv++){
-      matrix *predicted_test_y;
-      matrix *predicted_test_scores;
-
-      initMatrix(&predicted_test_y);
-      initMatrix(&predicted_test_scores);
-
-      PLSScorePredictor(x_test, subm, lv, &predicted_test_scores);
-      PLSYPredictor(predicted_test_scores, subm, lv, &predicted_test_y);
-
-      for(j = 0; j < predicted_test_y->col; j++){
-        dvector *tmp = getMatrixColumn(predicted_test_y, j);
-        MatrixAppendCol(&y_test_predicted, tmp);
-        DelDVector(&tmp);
-      }
-
-      DelMatrix(&predicted_test_y);
-      DelMatrix(&predicted_test_scores);
-    }
+    PLSYPredictorAllLV(x_test, subm, &y_test_predicted);
 
     for(j = 0, k = 0; j < gid->col; j++){
       size_t a = (size_t)gid->data[g][j]; /*object id*/
@@ -317,14 +299,109 @@ void *MLRRandomGroupCVModel(void *arg_)
   return 0;
 }
 
-//void PLSRandomGroupsCV(matrix *mx, matrix *my, size_t xautoscaling, size_t yautoscaling, size_t nlv, size_t group, size_t iterations, matrix **q2y, matrix **sdep, matrix **bias, matrix **predicted_y, matrix **pred_residuals, size_t nthreads, ssignal *s)
-void BootstrapRandomGroupsCV(MODELINPUT *input, size_t group, size_t iterations, AlgorithmType algo, matrix **predicted_y, matrix **pred_residuals, size_t nthreads, ssignal *s)
+void *EPLSRandomGroupCVModel(void *arg_)
+{
+  size_t j, k, n, g;
+  rgcv_th_arg *arg;
+  matrix *gid; /* randomization and storing id for each random group into a matrix */
+
+  /* Matrix for compute the PLS models for groups */
+  matrix *x_train;
+  matrix *y_train;
+  EPLSMODEL *subm;
+
+  /*matrix to predict*/
+  matrix *x_test;
+  matrix *y_test;
+  matrix *y_test_predicted;
+
+  arg = (rgcv_th_arg*) arg_;
+
+  /* step 1 generate the random groups */
+  initMatrix(&gid);
+  random_kfold_group_generator(&gid, arg->group, arg->mx->row, &arg->srand_init);
+
+  /*
+  puts("Gid Matrix");
+  PrintMatrix(gid);
+  */
+
+  /* step 2 */
+  for(g = 0; g < gid->row; g++){ /*For aeach group */
+    /* Estimate how many objects are inside the group "g" to predict and outside the group "g" to build the model  */
+    initMatrix(&x_train);
+    initMatrix(&y_train);
+    initMatrix(&x_test);
+    initMatrix(&y_test); /* unused variable here .... */
+
+    kfold_group_train_test_split(arg->mx, arg->my, gid, g, &x_train,&y_train,&x_test, &y_test);
+
+    NewEPLSModel(&subm);
+
+    EPLS(x_train, y_train, arg->nlv, arg->xautoscaling, arg->yautoscaling, subm, arg->eparm, NULL);
+
+    initMatrix(&y_test_predicted);
+    EPLSYPRedictorAllLV(x_test, subm, arg->crule, &y_test_predicted);
+
+    for(j = 0, k = 0; j < gid->col; j++){
+      size_t a = (size_t)gid->data[g][j]; /*object id*/
+      if(a != -1){
+        arg->predictioncounter->data[a] += 1; /* this object was visited */
+        /* updating y */
+        for(n = 0; n < y_test_predicted->col; n++){
+          arg->predicted_y->data[a][n] +=  y_test_predicted->data[k][n];
+        }
+        k++;
+      }
+      else{
+        continue;
+      }
+    }
+
+    DelMatrix(&y_test_predicted);
+    DelEPLSModel(&subm);
+    DelMatrix(&x_train);
+    DelMatrix(&y_train);
+    DelMatrix(&x_test);
+    DelMatrix(&y_test);
+  }
+
+  DelMatrix(&gid);
+  return 0;
+}
+
+void BootstrapRandomGroupsCV(MODELINPUT *input, size_t group, size_t iterations, AlgorithmType algo, matrix **predicted_y, matrix **pred_residuals, size_t nthreads, ssignal *s, int arg, ...)
 {
   matrix *mx = (*input->mx);
   matrix *my = (*input->my);
-  size_t nlv = input->nlv;
+  size_t nlv;
   size_t xautoscaling = input->xautoscaling;
   size_t yautoscaling = input->yautoscaling;
+  ELearningParameters eparm;
+  CombinationRule crule = Averaging;
+
+  if(input->nlv > mx->col){
+    nlv = mx->col;
+  }
+  else{
+    nlv = input->nlv;
+  }
+
+
+  if(arg > 0){
+    va_list valist;
+    va_start(valist, arg);
+    for (size_t i = 0; i < arg; i++){
+      if(i == 0)
+        eparm = va_arg(valist, ELearningParameters);
+      else if(i == 1)
+        crule = va_arg(valist, CombinationRule);
+      else
+        continue;
+    }
+    /* clean memory reserved for valist */
+    va_end(valist);
+  }
 
   if(mx->row == my->row && group > 0 && iterations > 0){
     size_t th, iterations_, i, j;
@@ -344,7 +421,6 @@ void BootstrapRandomGroupsCV(MODELINPUT *input, size_t group, size_t iterations,
     else{
       nlv = 1;
       scol = my->col;
-
     }
 
     NewMatrix(&sum_ypredictions, my->row, scol);
@@ -365,6 +441,8 @@ void BootstrapRandomGroupsCV(MODELINPUT *input, size_t group, size_t iterations,
       else{
         /* Create independent threads each of which will execute function */
         for(th = 0; th < nthreads; th++){
+          arg[th].eparm = eparm;
+          arg[th].crule = crule;
           arg[th].mx = mx;
           arg[th].my = my;
           arg[th].group = group;
@@ -374,11 +452,14 @@ void BootstrapRandomGroupsCV(MODELINPUT *input, size_t group, size_t iterations,
           arg[th].srand_init = (unsigned int) group + mx->row + my->col + iterations + th + iterations_;
           NewMatrix(&arg[th].predicted_y, my->row, scol);
           NewUIVector(&arg[th].predictioncounter, my->row);
-          if(algo == _PLS_){
+          if(algo == _PLS_ || algo == _PLS_DA_){
             pthread_create(&threads[th], NULL, PLSRandomGroupCVModel, (void*) &arg[th]);
           }
-          if(algo == _MLR_){
+          else if(algo == _MLR_){
             pthread_create(&threads[th], NULL, MLRRandomGroupCVModel, (void*) &arg[th]);
+          }
+          else if(algo == _EPLS_ || algo == _EPLS_DA_){
+            pthread_create(&threads[th], NULL, EPLSRandomGroupCVModel, (void*) &arg[th]);
           }
           else{
             continue;
@@ -439,6 +520,8 @@ void BootstrapRandomGroupsCV(MODELINPUT *input, size_t group, size_t iterations,
     char *algo_;
     if(algo == _PLS_)
       algo_ = "PLS";
+    else if(algo == _PLS_DA_)
+      algo_ = "PLS-DA";
     else if(algo == _MLR_)
       algo_ = "MLR";
     else
@@ -456,6 +539,8 @@ void BootstrapRandomGroupsCV(MODELINPUT *input, size_t group, size_t iterations,
  */
 
 typedef struct{
+  ELearningParameters eparm;
+  CombinationRule crule;
   matrix *x_train, *y_train, *x_test, *y_test, *y_test_predicted;
   size_t nlv, xautoscaling, yautoscaling;
 } loocv_th_arg;
@@ -478,7 +563,6 @@ void *MLRLOOModel_(void *arg_)
 
 void *PLSLOOModel_(void *arg_)
 {
-  size_t lv, j;
   loocv_th_arg *arg;
   arg = (loocv_th_arg*) arg_;
 
@@ -486,39 +570,54 @@ void *PLSLOOModel_(void *arg_)
   NewPLSModel(&subm);
 
   PLS(arg->x_train, arg->y_train, arg->nlv, arg->xautoscaling, arg->yautoscaling, subm, NULL);
-
   /* Predict Y for each latent variable */
-  for(lv = 1; lv <= arg->nlv; lv++){
-    matrix *predicted_test_y;
-    matrix *predicted_test_scores;
-
-    initMatrix(&predicted_test_y);
-    initMatrix(&predicted_test_scores);
-
-    PLSScorePredictor(arg->x_test, subm, lv, &predicted_test_scores);
-    PLSYPredictor(predicted_test_scores, subm, lv, &predicted_test_y);
-
-    for(j = 0; j < predicted_test_y->col; j++){
-      dvector *tmp = getMatrixColumn(predicted_test_y, j);
-      MatrixAppendCol(&arg->y_test_predicted, tmp);
-      DelDVector(&tmp);
-    }
-
-    DelMatrix(&predicted_test_y);
-    DelMatrix(&predicted_test_scores);
-  }
-
+  PLSYPredictorAllLV(arg->x_test, subm, &arg->y_test_predicted);
   DelPLSModel(&subm);
   return 0;
 }
 
-void LeaveOneOut(MODELINPUT *input, AlgorithmType algo, matrix** predicted_y, matrix **pred_residuals, size_t nthreads, ssignal *s)
+void *EPLSLOOModel_(void *arg_)
+{
+  loocv_th_arg *arg;
+  arg = (loocv_th_arg*) arg_;
+
+  EPLSMODEL *subm;
+  NewEPLSModel(&subm);
+
+  EPLS(arg->x_train, arg->y_train, arg->nlv, arg->xautoscaling, arg->yautoscaling, subm, arg->eparm, NULL);
+  //Predict Y for each latent variable
+  EPLSYPRedictorAllLV(arg->x_test, subm, arg->crule, &arg->y_test_predicted);
+
+  DelEPLSModel(&subm);
+  return 0;
+}
+
+
+void LeaveOneOut(MODELINPUT *input, AlgorithmType algo, matrix** predicted_y, matrix **pred_residuals, size_t nthreads, ssignal *s, int arg, ...)
 {
   matrix *mx = (*input->mx);
   matrix *my = (*input->my);
   size_t nlv = input->nlv;
   size_t xautoscaling = input->xautoscaling;
   size_t yautoscaling = input->yautoscaling;
+  ELearningParameters eparm;
+  CombinationRule crule = Averaging;
+
+  if(arg > 0){
+    va_list valist;
+    va_start(valist, arg);
+    for (size_t i = 0; i < arg; i++){
+      if(i == 0)
+        eparm = va_arg(valist, ELearningParameters);
+      else if(i == 1)
+        crule = va_arg(valist, CombinationRule);
+      else
+        continue;
+    }
+    /* clean memory reserved for valist */
+    va_end(valist);
+  }
+
 
   if(mx->row == my->row){
     size_t i, j, k, l, th, model;
@@ -546,6 +645,8 @@ void LeaveOneOut(MODELINPUT *input, AlgorithmType algo, matrix** predicted_y, ma
 
     /* initialize threads arguments.. */
     for(th = 0; th < nthreads; th++){
+      arg[th].eparm = eparm;
+      arg[th].crule = crule;
       arg[th].nlv = nlv;
       arg[th].xautoscaling = xautoscaling;
       arg[th].yautoscaling = yautoscaling;
@@ -589,10 +690,12 @@ void LeaveOneOut(MODELINPUT *input, AlgorithmType algo, matrix** predicted_y, ma
             }
 
             initMatrix(&arg[th].y_test_predicted);
-            if(algo == _PLS_)
+            if(algo == _PLS_ || algo == _PLS_DA_)
               pthread_create(&threads[th], NULL, PLSLOOModel_, (void*) &arg[th]);
             else if(algo == _MLR_)
               pthread_create(&threads[th], NULL, MLRLOOModel_, (void*) &arg[th]);
+            else if(algo == _EPLS_ || algo == _EPLS_DA_)
+              pthread_create(&threads[th], NULL, EPLSLOOModel_, (void*) &arg[th]);
             else
               continue;
           }
@@ -679,12 +782,10 @@ void PLSRegressionYScramblingPipeline(matrix *mx, matrix *my, size_t xautoscalin
   initMatrix(&py);
   initMatrix(&pres);
   if(varg.vtype == _LOO_){
-    //BootstrapRandomGroupsCV(&minpt, 3, 100, _PLS_, &py, &pres, 4, NULL);
-    LeaveOneOut(&minpt, _PLS_, &py, &pres, nthreads, NULL);
+    LeaveOneOut(&minpt, _PLS_, &py, &pres, nthreads, NULL, 0);
   }
   else{
-    BootstrapRandomGroupsCV(&minpt, 3, 100, _PLS_, &py, &pres, 4, NULL);
-    //PLSRandomGroupsCV(mx, my, input->xautoscaling, input->yautoscaling, input->nlv, varg.rgcv_group, varg.rgcv_iterations, &tmpq2, NULL, NULL, NULL, NULL, nthreads, s);
+    BootstrapRandomGroupsCV(&minpt, 3, 100, _PLS_, &py, &pres, 4, NULL, 0);
   }
 
   initMatrix(&tmpq2);
@@ -695,7 +796,7 @@ void PLSRegressionYScramblingPipeline(matrix *mx, matrix *my, size_t xautoscalin
   PLS(mx, my, nlv, xautoscaling, yautoscaling, tmpmod, NULL);
 
   initMatrix(&yrec);
-  PLSYPredictorAllLV(mx, tmpmod, nlv, &yrec);
+  PLSYPredictorAllLV(mx, tmpmod, &yrec);
   PLSRegressionStatistics(my, yrec, &(tmpmod->r2y_model), NULL, NULL);
 
   /* Calculate y real vs yscrambled and add other r2 q2 */
@@ -736,10 +837,10 @@ void PLSDiscriminantAnalysisYScramblingPipeline(matrix *mx, matrix *my, size_t x
   initMatrix(&py);
   initMatrix(&pres);
   if(varg.vtype == _LOO_){
-    LeaveOneOut(&minpt, _PLS_, &py, &pres, nthreads, NULL);
+    LeaveOneOut(&minpt, _PLS_, &py, &pres, nthreads, NULL, 0);
   }
   else{
-    BootstrapRandomGroupsCV(&minpt, 3, 100, _PLS_, &py, &pres, 4, NULL);
+    BootstrapRandomGroupsCV(&minpt, 3, 100, _PLS_, &py, &pres, 4, NULL, 0);
   }
 
 
@@ -747,7 +848,7 @@ void PLSDiscriminantAnalysisYScramblingPipeline(matrix *mx, matrix *my, size_t x
   NewPLSModel(&tmpmod);
   PLS(mx, my, nlv, xautoscaling, yautoscaling, tmpmod, NULL);
   initMatrix(&yrec);
-  PLSYPredictorAllLV(mx, tmpmod, nlv, &yrec);
+  PLSYPredictorAllLV(mx, tmpmod, &yrec);
   PLSDiscriminantAnalysisStatistics(my, yrec, NULL, &auc_recalc, NULL, NULL);
 
   /*compute the model invalidation */
@@ -850,6 +951,9 @@ void YScrambling(MODELINPUT *input, AlgorithmType algo, ValidationArg varg, size
     /*The first row is the model not scrambled...*/
     if(algo == _PLS_){
       PLSRegressionYScramblingPipeline(mx, randomY, input->xautoscaling, input->yautoscaling, input->nlv, varg, nthreads, &coeff_int, &coeff_valid);
+    }
+    else if(algo == _PLS_DA_){
+      PLSDiscriminantAnalysisYScramblingPipeline(mx, my, input->xautoscaling, input->yautoscaling, input->nlv, varg, nthreads, &coeff_int, &coeff_valid);
     }
     /*else if(algo_ == _MLR_)
     else if(algo_ == _LDA_)*/

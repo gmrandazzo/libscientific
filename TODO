@@ -1,5 +1,7 @@
-- UPGRADE MLR VALIDATION TO MULTITHREADING
-- ADD ICA 
+- ADD MLR Statistics Output
+- ADD LDA Statistics Output
+- ADD MLR Yscrambling Pipeline
+- ADD LDA Yscrambling Pipeline
 - ADD NEURAL NETWORK BACK PROPAGATION
 - ADD TOPOLOGICAL ANALYISIS CODE
 - FIX CLUSTERING ALGORITHM hierachical clusterin

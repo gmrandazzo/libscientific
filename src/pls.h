@@ -86,7 +86,7 @@ void LVCalc(matrix **X, matrix **Y, dvector **t, dvector **u, dvector **p, dvect
 void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautoscaling, PLSMODEL *model, ssignal *s);
 
 /*
- * Description: Calculate betas coefficients from a pls model at nlv latent variables
+ * Description: Calculate betas coefficients from a pls model at specific nlv latent variables
  */
 void PLSBetasCoeff(PLSMODEL *model, size_t nlv, dvector **betas);
 
@@ -106,15 +106,8 @@ void PLSYPredictor(matrix *tscore, PLSMODEL *model, size_t nlv, matrix **y);
  * Description: Calculate the Y values at all the lv.
  * Output: y shape (y->row, y->col*nlv)
  */
-void PLSYPredictorAllLV(matrix *mx, PLSMODEL *model, size_t nlv, matrix **y);
+void PLSYPredictorAllLV(matrix *mx, PLSMODEL *model, matrix **y);
 
-/*
- * Description: Calculate the correlation coefficient (ccoeff),
- *              the standard deviation of the prediction (stdev),
- *              the bias of the prediction (bias) in a regression model.
- *              mx and my could be the training or the test datasets.
- */
-//void PLSRegressionStatistics(matrix *mx, matrix *my, PLSMODEL *model, size_t nlv, matrix** ccoeff, matrix **stdev, matrix **bias);
 
 /*
  * Description: Calculate the correlation coefficient (ccoeff),
@@ -130,7 +123,6 @@ void PLSRegressionStatistics(matrix *my_true, matrix *my_pred, matrix** ccoeff, 
  *              mx and my could be the training or the test datasets.
  */
 void PLSDiscriminantAnalysisStatistics(matrix *my_true, matrix *my_score, array **roc, matrix **roc_auc, array **precision_recall, matrix **precision_recall_ap);
-void PLSDiscriminantAnalysisStatistics_(matrix *mx, matrix *my, PLSMODEL *model, size_t nlv, array **roc, matrix **roc_auc, array **precision_recall, matrix **precision_recall_ap);
 
 /*
  * Description: Calculate the ROC curve with AUC and the Precision-Recall crurve with his
@@ -145,9 +137,10 @@ void PLSBinaryClassificationScores(matrix *mx, matrix *my, PLSMODEL *model, size
 void PLSVIP(PLSMODEL *model, matrix **vip);
 
 /*
- * Description: Get the Cutoff based on the grow of r2 or q2
+ * Description: Get the Cutoff based on the grow of r2, q2 in case of regression
+ * or auc in case of classification.
  */
-int GetLVCCutoff(matrix* r2q2);
+int GetLVCCutoff(matrix* coeff);
 
 void PrintPLSModel(PLSMODEL *model);
 
