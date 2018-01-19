@@ -199,7 +199,7 @@ void *PLSRandomGroupCVModel(void *arg_)
 
     PLS(x_train, y_train, arg->nlv, arg->xautoscaling, arg->yautoscaling, subm, NULL);
     initMatrix(&y_test_predicted);
-    PLSYPredictorAllLV(x_test, subm, &y_test_predicted);
+    PLSYPredictorAllLV(x_test, subm, NULL, &y_test_predicted);
 
     for(j = 0, k = 0; j < gid->col; j++){
       size_t a = (size_t)gid->data[g][j]; /*object id*/
@@ -341,7 +341,7 @@ void *EPLSRandomGroupCVModel(void *arg_)
     EPLS(x_train, y_train, arg->nlv, arg->xautoscaling, arg->yautoscaling, subm, arg->eparm, NULL);
 
     initMatrix(&y_test_predicted);
-    EPLSYPRedictorAllLV(x_test, subm, arg->crule, &y_test_predicted);
+    EPLSYPRedictorAllLV(x_test, subm, arg->crule, NULL, &y_test_predicted);
 
     for(j = 0, k = 0; j < gid->col; j++){
       size_t a = (size_t)gid->data[g][j]; /*object id*/
@@ -570,7 +570,7 @@ void *PLSLOOModel_(void *arg_)
 
   PLS(arg->x_train, arg->y_train, arg->nlv, arg->xautoscaling, arg->yautoscaling, subm, NULL);
   /* Predict Y for each latent variable */
-  PLSYPredictorAllLV(arg->x_test, subm, &arg->y_test_predicted);
+  PLSYPredictorAllLV(arg->x_test, subm, NULL, &arg->y_test_predicted);
   DelPLSModel(&subm);
   return 0;
 }
@@ -585,7 +585,7 @@ void *EPLSLOOModel_(void *arg_)
 
   EPLS(arg->x_train, arg->y_train, arg->nlv, arg->xautoscaling, arg->yautoscaling, subm, arg->eparm, NULL);
   //Predict Y for each latent variable
-  EPLSYPRedictorAllLV(arg->x_test, subm, arg->crule, &arg->y_test_predicted);
+  EPLSYPRedictorAllLV(arg->x_test, subm, arg->crule, NULL, &arg->y_test_predicted);
 
   DelEPLSModel(&subm);
   return 0;
@@ -601,7 +601,7 @@ void LeaveOneOut(MODELINPUT *input, AlgorithmType algo, matrix** predicted_y, ma
   size_t yautoscaling = input->yautoscaling;
   ELearningParameters eparm;
   CombinationRule crule = Averaging;
-  
+
   if(input->nlv > mx->col){
     nlv = mx->col;
   }
@@ -787,7 +787,7 @@ void PLSRegressionYScramblingPipeline(matrix *mx, matrix *my, size_t xautoscalin
   /*compude q2y*/
   initMatrix(&py);
   initMatrix(&pres);
-  if(varg.vtype == _LOO_){
+  if(varg.vtype == LOO){
     LeaveOneOut(&minpt, _PLS_, &py, &pres, nthreads, NULL, 0);
   }
   else{
@@ -802,7 +802,7 @@ void PLSRegressionYScramblingPipeline(matrix *mx, matrix *my, size_t xautoscalin
   PLS(mx, my, nlv, xautoscaling, yautoscaling, tmpmod, NULL);
 
   initMatrix(&yrec);
-  PLSYPredictorAllLV(mx, tmpmod, &yrec);
+  PLSYPredictorAllLV(mx, tmpmod, NULL, &yrec);
   PLSRegressionStatistics(my, yrec, &(tmpmod->r2y_model), NULL, NULL);
 
   /* Calculate y real vs yscrambled and add other r2 q2 */
@@ -842,7 +842,7 @@ void PLSDiscriminantAnalysisYScramblingPipeline(matrix *mx, matrix *my, size_t x
   /*compude q2y*/
   initMatrix(&py);
   initMatrix(&pres);
-  if(varg.vtype == _LOO_){
+  if(varg.vtype == LOO){
     LeaveOneOut(&minpt, _PLS_, &py, &pres, nthreads, NULL, 0);
   }
   else{
@@ -854,7 +854,7 @@ void PLSDiscriminantAnalysisYScramblingPipeline(matrix *mx, matrix *my, size_t x
   NewPLSModel(&tmpmod);
   PLS(mx, my, nlv, xautoscaling, yautoscaling, tmpmod, NULL);
   initMatrix(&yrec);
-  PLSYPredictorAllLV(mx, tmpmod, &yrec);
+  PLSYPredictorAllLV(mx, tmpmod, NULL, &yrec);
   PLSDiscriminantAnalysisStatistics(my, yrec, NULL, &auc_recalc, NULL, NULL);
 
   /*compute the model invalidation */

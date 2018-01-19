@@ -205,25 +205,31 @@ void EPLSGetSYLoadings(EPLSMODEL *m, CombinationRule crule, matrix *syloadings){
 void EPLSGetSWeights(EPLSMODEL *m, CombinationRule crule, matrix *sweights){}
 void EPLSGetSBetaCoefficients(EPLSMODEL *m, CombinationRule crule, matrix *sbetas){}
 
-void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, matrix **py)
+void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, array **tscores, matrix **py)
 {
   size_t i, j, k;
   ResizeMatrix(py, mx->row, m->ny*m->nlv);
   matrix *x_subspace;
   initMatrix(&x_subspace);
-
   if(crule == Averaging){
     matrix *model_py;
+    matrix *tscores_;
     for(i = 0; i < m->n_models; i++){
       initMatrix(&model_py);
+      initMatrix(&tscores_);
       if(m->model_feature_ids != NULL){
         //PrintUIVector(m->model_feature_ids[i]);
         SubspaceMatrix(mx, m->model_feature_ids[i], &x_subspace);
-        PLSYPredictorAllLV(x_subspace,  m->models[i], &model_py);
+        PLSYPredictorAllLV(x_subspace,  m->models[i], &tscores_, &model_py);
       }
       else{
-        PLSYPredictorAllLV(mx,  m->models[i], &model_py);
+        PLSYPredictorAllLV(mx,  m->models[i], &tscores_, &model_py);
       }
+
+      if(tscores != NULL){
+        ArrayAppendMatrix(tscores, tscores_);
+      }
+
       for(k = 0; k < model_py->row; k++){
         for(j = 0; j < model_py->col; j++){
           (*py)->data[k][j] += model_py->data[k][j];
@@ -242,16 +248,23 @@ void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, matrix
   else if(crule == Median){
     dvector *v;
     array *model_py;
+    matrix *tscores_;
     initArray(&model_py);
     for(i = 0; i < m->n_models; i++){
+      initMatrix(&tscores_);
       AddArrayMatrix(&model_py, mx->row, m->ny*m->nlv);
       if(m->model_feature_ids != NULL){
         SubspaceMatrix(mx, m->model_feature_ids[i], &x_subspace);
-        PLSYPredictorAllLV(x_subspace,  m->models[i], &model_py->m[i]);
+        PLSYPredictorAllLV(x_subspace,  m->models[i], &tscores_, &model_py->m[i]);
       }
       else{
-        PLSYPredictorAllLV(mx,  m->models[i], &model_py->m[i]);
+        PLSYPredictorAllLV(mx,  m->models[i], &tscores_, &model_py->m[i]);
       }
+
+      if(tscores != NULL)
+        ArrayAppendMatrix(tscores, tscores_);
+
+      DelMatrix(&tscores_);
     }
 
     NewDVector(&v, m->n_models);

@@ -486,7 +486,7 @@ void TestPLS11()
   PLSRegressionStatistics(y, m->predicted_y, &m->q2y, &m->sdep, &m->bias);
 
   ValidationArg varg;
-  varg.vtype = _LOO_;
+  varg.vtype = LOO;
   YScrambling(&minpt, _PLS_, varg, 100, &m->r2q2scrambling, 4, NULL);
 
   /*PrintPLSModel(m);*/
@@ -735,7 +735,7 @@ void TestPLS9()
   initMatrix(&sdec);
   initMatrix(&bias);
 
-  PLSYPredictorAllLV(x, m, &m->recalculated_y);
+  PLSYPredictorAllLV(x, m, NULL, &m->recalculated_y);
   PLSRegressionStatistics(y, m->recalculated_y, &r2y, &sdec, &bias);
 
   PrintPLSModel(m);
@@ -1441,7 +1441,7 @@ int main(void)
   TestPLS8();
   TestPLS9();*/
   //TestPLS10();
-//TestPLS11();
+TestPLS11();
   //TestPLS12();
   /*TestPLS13();
   TestPLS14();*/

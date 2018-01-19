@@ -75,7 +75,7 @@ void EPLSGetSWeights(EPLSMODEL *m, CombinationRule crule, matrix *sweights);
 void EPLSGetSBetaCoefficients(EPLSMODEL *m, CombinationRule crule, matrix *sbetas);
 
 /* Description: */
-void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, matrix **py);
+void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, array **tscores, matrix **py);
 
 /*
  * Description: Calculate the correlation coefficient (ccoeff),

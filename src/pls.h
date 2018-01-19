@@ -106,7 +106,7 @@ void PLSYPredictor(matrix *tscore, PLSMODEL *model, size_t nlv, matrix **y);
  * Description: Calculate the Y values at all the lv.
  * Output: y shape (y->row, y->col*nlv)
  */
-void PLSYPredictorAllLV(matrix *mx, PLSMODEL *model, matrix **y);
+void PLSYPredictorAllLV(matrix *mx, PLSMODEL *model, matrix **tscores, matrix **y);
 
 
 /*

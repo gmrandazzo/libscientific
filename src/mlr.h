@@ -19,8 +19,8 @@
 #include "matrix.h"
 #include "scientificinfo.h"
 
-/* mlr.h 
- * Multiple Linear Regression 
+/* mlr.h
+ * Multiple Linear Regression
  * - Model Building
  * - Model Validation
  */
@@ -47,18 +47,26 @@ void MLR(matrix *mx, matrix *my, MLRMODEL *model, ssignal *s);
 
 void MLRPredictY(matrix* mx, matrix *my, MLRMODEL* model, matrix** predicted_y, matrix** predicted_residuals, dvector** r2y, dvector** sdep);
 
+/*
+ * Description: Calculate the correlation coefficient (ccoeff),
+ *              the standard deviation of the prediction (stdev),
+ *              the bias of the prediction (bias) in a regression model.
+ *              mx and my could be the training or the test datasets.
+ */
+void MLRRegressionStatistics(matrix *my_true, matrix *my_pred, dvector** ccoeff, dvector **stdev, dvector **bias);
+
 /*Description:
  * Generate Random Models by putting randomly y and check if models have correlations...
  */
-void MLRYScrambling(matrix *mx, matrix *my, 
+void MLRYScrambling(matrix *mx, matrix *my,
                         size_t block, size_t valtype, size_t rgcv_group, size_t rgcv_iterations,
                         matrix **r2q2scrambling, ssignal *s);
 
-void MLRRandomGroupsCV(matrix *mx, matrix *my, 
-                        size_t group, size_t iterations, 
+void MLRRandomGroupsCV(matrix *mx, matrix *my,
+                        size_t group, size_t iterations,
                         dvector **q2y, dvector **sdep, dvector **bias, matrix **predicted_y, matrix** pred_residuals, ssignal *s); /* *cv_ are the cross validated coefficients used to plot predicted vs experimental. if is null is not calculated.*/
 
-void MLRLOOCV(matrix *mx, matrix *my, 
+void MLRLOOCV(matrix *mx, matrix *my,
                         dvector **q2y, dvector **sdep, dvector **bias, matrix **predicted_y, matrix **pred_residuals, ssignal *s); /* *loov_ are the loo validated coefficients used to plot predicted vs experimental. if is null is not calculated.*/
 
 

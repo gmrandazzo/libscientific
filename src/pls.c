@@ -819,22 +819,28 @@ void PLSYPredictor(matrix *tscore, PLSMODEL *model, size_t nlv, matrix **y)
   }
 }
 
-void PLSYPredictorAllLV(matrix *mx, PLSMODEL *model, matrix **y)
+void PLSYPredictorAllLV(matrix *mx, PLSMODEL *model, matrix **tscores, matrix **y)
 {
   size_t lv, i, j, n_y, nlv;
   matrix *predicted_y;
   matrix *predicted_xscores;
+
+  if(tscores == NULL){
+    initMatrix(&predicted_xscores);
+  }
+  else{
+    predicted_xscores = (*tscores);
+  }
 
   nlv = model->b->size;
 
   n_y = model->yloadings->row;
   ResizeMatrix(y, mx->row, n_y*nlv);
 
+  PLSScorePredictor(mx, model, nlv, &predicted_xscores);
+
   for(lv = 0; lv < nlv; lv++){
     initMatrix(&predicted_y);
-    initMatrix(&predicted_xscores);
-
-    PLSScorePredictor(mx, model, lv+1, &predicted_xscores);
     PLSYPredictor(predicted_xscores, model, lv+1, &predicted_y);
 
     for(i = 0; i < mx->row; i++){
@@ -843,6 +849,9 @@ void PLSYPredictorAllLV(matrix *mx, PLSMODEL *model, matrix **y)
       }
     }
     DelMatrix(&predicted_y);
+  }
+
+  if(tscores == NULL){
     DelMatrix(&predicted_xscores);
   }
 }

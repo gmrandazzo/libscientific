@@ -51,6 +51,8 @@ void test3()
   NewMLRModel(&m);
   MLR(mx, my, m, &s);
 
+  PrintMLR(m);
+
   MODELINPUT minpt;
   minpt.mx = &mx;
   minpt.my = &my;
@@ -67,6 +69,23 @@ void test3()
   puts("Bootstrap Random Group Cross Validation Predicted Residuals Y");
   PrintMatrix(pres_rgcv);
 
+  dvector *q2, *sdep, *bias;
+  initDVector(&q2);
+  initDVector(&sdep);
+  initDVector(&bias);
+  MLRRegressionStatistics(my, py_rgcv, &q2, &sdep, &bias);
+
+  puts("Q2 LOO");
+  PrintDVector(q2);
+  puts("SDEP LOO");
+  PrintDVector(sdep);
+  puts("BIAS LOO");
+  PrintDVector(bias);
+
+  DelDVector(&q2);
+  DelDVector(&sdep);
+  DelDVector(&bias);
+
   matrix *py_loo, *pres_loo;
   initMatrix(&py_loo);
   initMatrix(&pres_loo);
@@ -76,8 +95,21 @@ void test3()
   puts("Leave One Out Predicted Residuals Y");
   PrintMatrix(pres_loo);
 
-  PrintMLR(m);
+  initDVector(&q2);
+  initDVector(&sdep);
+  initDVector(&bias);
+  MLRRegressionStatistics(my, py_rgcv, &q2, &sdep, &bias);
 
+  puts("Q2 LOO");
+  PrintDVector(q2);
+  puts("SDEP LOO");
+  PrintDVector(sdep);
+  puts("BIAS LOO");
+  PrintDVector(bias);
+
+  DelDVector(&q2);
+  DelDVector(&sdep);
+  DelDVector(&bias);
   DelMatrix(&py_rgcv);
   DelMatrix(&pres_rgcv);
   DelMatrix(&py_loo);

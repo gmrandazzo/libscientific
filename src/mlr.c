@@ -68,7 +68,7 @@ void MLR(matrix* mx, matrix* my, MLRMODEL* model, ssignal *s)
   dvector *b_;
   NewMatrix(&mx_, mx->row, mx->col+1);
   NewDVector(&y_, mx->row);
-  
+
   /* Preparate the matrix to correlate with y trough OLS */
   MatrixCheck(mx);
 
@@ -78,48 +78,48 @@ void MLR(matrix* mx, matrix* my, MLRMODEL* model, ssignal *s)
       setMatrixValue(mx_, i, j, getMatrixValue(mx, i, j-1));
     }
   }
-  
+
   for(i = 0; i < mx_->row; i++){
     setMatrixValue(mx_, i, 0, 1);
   }
-  
+
   /*build models with more than one y*/
   for(j = 0; j < my->col; j++){
     for(i = 0; i < my->row; i++){
       setDVectorValue(y_, i, getMatrixValue(my, i, j));
     }
-    
+
     initDVector(&b_);
-    
+
     OrdinaryLeastSquares(mx_, y_, b_);
-    
+
     MatrixAppendCol(&model->b, b_);
     DelDVector(&b_);
   }
-  
+
   /* Recalculate y from model */
   MatrixColAverage(my, &model->ymean);
-  MLRPredictY(mx, my, model, &model->recalculated_y, &model->recalc_residuals, &model->r2y_model, &model->sdec); 
-  
+  MLRPredictY(mx, my, model, &model->recalculated_y, &model->recalc_residuals, &model->r2y_model, &model->sdec);
+
   DelDVector(&y_);
   DelMatrix(&mx_);
 }
 
 /* Predict y using the equation:
  *
- * y = c + ax1 + bx2 + cx3 + dx4 + ... 
- * 
+ * y = c + ax1 + bx2 + cx3 + dx4 + ...
+ *
  */
 void MLRPredictY(matrix* mx, matrix *my, MLRMODEL* model, matrix** predicted_y, matrix** predicted_residuals, dvector** r2y, dvector** sdep)
 {
   if(mx->col == (model->b->row-1)){
     size_t i, j, k;
     double ypred, rss, tss;
-    
+
     if((*predicted_y)->row != mx->row && (*predicted_y)->col != model->b->col){
       ResizeMatrix(predicted_y, mx->row, model->b->col);
     }
-    
+
     for(k = 0; k < model->b->col; k++){ /*FOR EACH Y*/
       for(i = 0; i < mx->row; i++){ /* FOR EACH OBJECT */
         ypred = getMatrixValue(model->b, 0, k); /* CONSTANT c + ...*/
@@ -129,7 +129,7 @@ void MLRPredictY(matrix* mx, matrix *my, MLRMODEL* model, matrix** predicted_y, 
         setMatrixValue((*predicted_y), i, k, ypred);
       }
     }
-    
+
     if(my != 0){
       if(predicted_residuals != 0){
         ResizeMatrix(predicted_residuals, my->row, my->col);
@@ -139,10 +139,10 @@ void MLRPredictY(matrix* mx, matrix *my, MLRMODEL* model, matrix** predicted_y, 
       * where:
       *   yi = real y
       *   y^i = predicted y
-      * 
+      *
       * Calculate R^2 and SDEC
       */
-      
+
       for(j = 0; j < my->col; j++){
         rss = tss = 0.f;
         for(i = 0; i < my->row; i++){
@@ -152,11 +152,11 @@ void MLRPredictY(matrix* mx, matrix *my, MLRMODEL* model, matrix** predicted_y, 
           rss += square(getMatrixValue(my, i, j) - getMatrixValue((*predicted_y), i, j));
           tss += square(getMatrixValue(my, i, j) - getDVectorValue(model->ymean, j));
         }
-        
+
         if(r2y != 0){
           DVectorAppend(r2y, 1-(rss/tss));
         }
-        
+
         if(sdep != 0){
           DVectorAppend(sdep, sqrt(rss/my->row));
         }
@@ -168,7 +168,56 @@ void MLRPredictY(matrix* mx, matrix *my, MLRMODEL* model, matrix** predicted_y, 
   }
 }
 
-void MLRYScrambling(matrix *mx, matrix *my, 
+
+void MLRRegressionStatistics(matrix *my_true, matrix *my_pred, dvector** ccoeff, dvector **stdev, dvector **bias)
+{
+  size_t i, j;
+  dvector *ymean;
+
+  /*Calculate the Q2 and SDEP */
+  if(ccoeff != NULL)
+    DVectorResize(ccoeff,my_true->col);
+
+  if(stdev != NULL)
+    DVectorResize(stdev, my_true->col);
+
+  if(bias != NULL)
+    DVectorResize(bias, my_true->col);
+
+  initDVector(&ymean);
+  MatrixColAverage(my_true, &ymean);
+
+  for(j = 0; j < my_true->col; j++){
+    double ssreg = 0.f;
+    double sstot = 0.f;
+    for(i = 0; i < my_true->row; i++){
+      ssreg += square(my_pred->data[i][j] - my_true->data[i][j]);
+      sstot += square(my_true->data[i][j] - ymean->data[j]);
+    }
+
+    if(bias != NULL){
+      double sum_yi = 0.f, sum_xi = 0.f;
+      /*ypredaverage /= (double)my->row;*/
+      for(i = 0; i < my_true->row; i++){
+        sum_yi+=(my_pred->data[i][j]*(my_true->data[i][j]-ymean->data[j]));
+        sum_xi+=(my_true->data[i][j]*(my_true->data[i][j]-ymean->data[j]));
+      }
+      /*sum_yi/sum_xi = m */
+      (*bias)->data[j] = fabs(1 - sum_yi/sum_xi);
+      /*k = Y-(X*b);*/
+    }
+
+    if(ccoeff != NULL)
+      (*ccoeff)->data[j] = 1.f - (ssreg/sstot);
+
+    if(stdev != NULL)
+      (*stdev)->data[j] = sqrt(ssreg/(double)my_true->row);
+  }
+
+  DelDVector(&ymean);
+}
+
+void MLRYScrambling(matrix *mx, matrix *my,
                         size_t block, size_t valtype, size_t rgcv_group, size_t rgcv_iterations,
                         matrix **r2q2scrambling, ssignal *s)
 {
@@ -178,11 +227,11 @@ void MLRYScrambling(matrix *mx, matrix *my,
   matrix *randomY, *sorted_y_id, *sorty, *gid;
   dvector *tmpq2, *yaverage;
   MLRMODEL *tmpmod;
-  
+
   srand(mx->row*mx->col*my->col*block);
   NewMatrix(&randomY, my->row, my->col);
   NewMatrix(&sorted_y_id, my->row, my->col);
-  
+
   NewMatrix(&sorty, my->row, 2);
   for(j = 0; j < my->col; j++){
     for(i = 0; i < my->row; i++){
@@ -190,18 +239,18 @@ void MLRYScrambling(matrix *mx, matrix *my,
       sorty->data[i][1] = i;
     }
     MatrixSort(sorty, 0);
-    
+
     for(i = 0; i < my->row; i++){
       sorted_y_id->data[i][j] = sorty->data[i][1];
     }
   }
   DelMatrix(&sorty);
-  
-  
+
+
   /*calcualte the block size for the rotate matrix*/
   blocksize = (size_t)ceil(mx->row/(double)block);
   blocksize += (size_t)ceil((float)((blocksize*block) - mx->row)/  block);
-  
+
   NewMatrix(&gid, block, blocksize);
   MatrixSet(gid, -2);
   /* Crate the boxes to fill -2 means no value to fill, -1 means value to fill*/
@@ -217,7 +266,7 @@ void MLRYScrambling(matrix *mx, matrix *my,
       j++;
     }
   }
-  
+
   /*get number of iterations*/
   scrambiterations = 0;
   for(i = 0; i < gid->row; i++){
@@ -230,7 +279,7 @@ void MLRYScrambling(matrix *mx, matrix *my,
         continue;
       }
     }
-    
+
     if(iterations_ > scrambiterations){
       scrambiterations = iterations_;
     }
@@ -238,9 +287,9 @@ void MLRYScrambling(matrix *mx, matrix *my,
       continue;
     }
   }
-  
+
   for(y_ = 0; y_ < sorted_y_id->col; y_++){
-    
+
     /* START WITH THE ORDERED Y_*/
     k = 0;
     for(i = 0; i < gid->row; i++){
@@ -258,14 +307,14 @@ void MLRYScrambling(matrix *mx, matrix *my,
     puts("GID Y_");
     PrintMatrix(gid);
     */
-    
-    
+
+
   /*Create a the r2q2scrambling matrix */
   ResizeMatrix(r2q2scrambling, 1+scrambiterations, my->col*3); /* each row is a model. first my->col columns are the r2 scrambled/real, second are the r2 scrabled/scrambled and third the q2 scrabled/scrabmled */
-  
+
   /*First row is the model not scrambled...*/
   initDVector(&tmpq2);
-  
+
   if(valtype == 0){
     MLRLOOCV(mx, my, &tmpq2, NULL, NULL, NULL, NULL, s);
   }
@@ -275,7 +324,7 @@ void MLRYScrambling(matrix *mx, matrix *my,
 
   NewMLRModel(&tmpmod);
   MLR(mx, my, tmpmod, s);
-  
+
   /* Calculate y real vs yscrambled and add other r2 q2 */
   initDVector(&yaverage);
   MatrixColAverage(my, &yaverage);
@@ -289,10 +338,10 @@ void MLRYScrambling(matrix *mx, matrix *my,
     (*r2q2scrambling)->data[0][j+my->col] = tmpmod->r2y_model->data[j];
     (*r2q2scrambling)->data[0][j+my->col+my->col] = tmpq2->data[j];
   }
-  
+
   DelMLRModel(&tmpmod);
   DelDVector(&tmpq2);
-    
+
     iterations_ = 0;
     while(iterations_ <  scrambiterations){
       if(s != NULL && (*s) == SIGSCIENTIFICSTOP){
@@ -316,12 +365,12 @@ void MLRYScrambling(matrix *mx, matrix *my,
             }
           }
         }
-        
+
         /*
         printf("Shuffled Y ID %d\n", (int)iterations_);
         PrintMatrix(gid);
         */
-        
+
         /*Fill the shifted y*/
         n = 0;
         for(i = 0; i < gid->row; i++){
@@ -338,7 +387,7 @@ void MLRYScrambling(matrix *mx, matrix *my,
             }
           }
         }
-        
+
         /*
         puts("MX");
         PrintMatrix(mx);
@@ -348,19 +397,19 @@ void MLRYScrambling(matrix *mx, matrix *my,
         PrintMatrix(randomY);
         */
         /* Calculate calculate Q2 for y predicted...*/
-        
+
         initDVector(&tmpq2);
-        
+
         if(valtype == 0){
           MLRLOOCV(mx, randomY, &tmpq2, NULL, NULL, NULL, NULL, s);
         }
         else{
           MLRRandomGroupsCV(mx, randomY, rgcv_group, rgcv_iterations, &tmpq2, NULL, NULL, NULL, NULL, s);
         }
-        
+
         NewMLRModel(&tmpmod);
         MLR(mx, randomY, tmpmod, s);
-        
+
         /* Calculate y real vs yscrambled and add other r2 q2 */
         for(j = 0; j < my->col; j++){
           double rss = 0.f, tss = 0.f;
@@ -372,14 +421,14 @@ void MLRYScrambling(matrix *mx, matrix *my,
           (*r2q2scrambling)->data[iterations_+1][j+my->col] = tmpmod->r2y_model->data[j];
           (*r2q2scrambling)->data[iterations_+1][j+my->col+my->col] = tmpq2->data[j];
         }
-        
+
         DelMLRModel(&tmpmod);
         DelDVector(&tmpq2);
         iterations_++;
       }
     }
   }
-  
+
   DelDVector(&yaverage);
   DelMatrix(&sorted_y_id);
   DelMatrix(&randomY);
@@ -388,38 +437,38 @@ void MLRYScrambling(matrix *mx, matrix *my,
 
 /*cv_ are the cross validated coefficients used to plot predicted vs experimental. if is null is not calculated.*/
 
-void MLRRandomGroupsCV(matrix *mx, matrix *my, 
-                        size_t group, size_t iterations, 
+void MLRRandomGroupsCV(matrix *mx, matrix *my,
+                        size_t group, size_t iterations,
                         dvector **q2y, dvector **sdep, dvector **bias, matrix **predicted_y, matrix** pred_residuals, ssignal *s)
 {
   if(mx->row == my->row && group > 0 && iterations > 0){
     size_t iterations_, i, j, k, n, g;
-    matrix *gid; /* randomization and storing id for each random group into a matrix */  
+    matrix *gid; /* randomization and storing id for each random group into a matrix */
 
     /* Matrix for compute the PLS models for groups */
     matrix *subX;
     matrix *subY;
     MLRMODEL *subm;
 
-    
+
     /* matrix for the randomg group to predict */
     matrix *predictX;
     matrix *realY;
     matrix *predictY;
     dvector *mean_col_y;
-    
+
     dvector *rss;
     dvector *tss;
     uivector *predictcounter; /*count how many times the y are predicted out of the model*/
-    
+
     matrix *_predicted_y_;
 
-    
+
     NewMatrix(&gid, group, (size_t)ceil(mx->row/(double)group));
-    
+
     NewDVector(&rss, my->col);
     NewDVector(&tss, my->col);
-    
+
     if(predicted_y != NULL){
       ResizeMatrix(predicted_y, my->row, my->col);
       _predicted_y_ = (*predicted_y);
@@ -427,14 +476,14 @@ void MLRRandomGroupsCV(matrix *mx, matrix *my,
     else{
       NewMatrix(&_predicted_y_, my->row, my->col);
     }
-    
+
     if(pred_residuals != NULL)
       ResizeMatrix(pred_residuals, my->row, my->col);
 
     NewUIVector(&predictcounter, my->row);
 
     srand(group*mx->row*iterations);
-    
+
     iterations_ = 0;
     while(iterations_ <  iterations){
       if(s != NULL && (*s) == SIGSCIENTIFICSTOP){
@@ -459,14 +508,14 @@ void MLRRandomGroupsCV(matrix *mx, matrix *my,
               continue;
           }
         }
-        
+
         /*
         puts("Gid Matrix");
         PrintMatrix(gid);
         */
-        
+
         /*step 2*/
-        for(g = 0; g < gid->row; g++){ /*For aeach group */ 
+        for(g = 0; g < gid->row; g++){ /*For aeach group */
           /* Estimate how many objects are inside the sub model without the group "g" */
           n = 0;
           for(i = 0; i < gid->row; i++){
@@ -475,34 +524,34 @@ void MLRRandomGroupsCV(matrix *mx, matrix *my,
                 if((int)getMatrixValue(gid, i, j) != -1)
                   n++;
                 else
-                  continue; 
+                  continue;
               }
             }
             else
               continue;
           }
-          
+
           /*Allocate the submodel*/
           NewMatrix(&subX, n, mx->col);
           NewMatrix(&subY, n, my->col);
-          
+
           /* Estimate how many objects are inside the group "g" to predict*/
           n = 0;
           for(j = 0; j < gid->col; j++){
             if((int)getMatrixValue(gid, g, j) != -1)
               n++;
             else
-              continue; 
+              continue;
           }
-          
-          
+
+
           /*Allocate the */
           NewMatrix(&predictX, n, mx->col);
           NewMatrix(&realY, n, my->col);
-          
+
 
           /* copy the submodel values */
-          
+
           for(i = 0, k = 0; i < gid->row; i++){
             if(i != g){
               for(j = 0; j < gid->col; j++){
@@ -525,7 +574,7 @@ void MLRRandomGroupsCV(matrix *mx, matrix *my,
               continue;
             }
           }
-          
+
           /* copy the objects to predict into predictmx*/
           for(j = 0, k = 0; j < gid->col; j++){
             size_t a = (size_t)getMatrixValue(gid, g, j);
@@ -542,14 +591,14 @@ void MLRRandomGroupsCV(matrix *mx, matrix *my,
               continue;
             }
           }
-          
+
           /*
           printf("Excuded the group number %u\n", (unsigned int)g);
           puts("Sub Model\nX:");
           PrintArray(subX);
           puts("Y:");
           PrintArray(subY);
-          
+
           puts("\n\nPredict Group\nX:");
           PrintArray(predictX);
           puts("RealY:");
@@ -558,22 +607,22 @@ void MLRRandomGroupsCV(matrix *mx, matrix *my,
 
           initDVector(&mean_col_y);
           MatrixColAverage(subY, &mean_col_y);
-          
+
           NewMLRModel(&subm);
-          
+
           MLR(subX, subY, subm, s);
-          
+
           initMatrix(&predictY);
-          MLRPredictY(predictX, NULL, subm, &predictY, NULL, NULL, NULL); 
-      
+          MLRPredictY(predictX, NULL, subm, &predictY, NULL, NULL, NULL);
+
           for(j = 0; j < realY->col; j++){
             for(i = 0; i < predictX->row; i++){
               setDVectorValue(rss, j, getDVectorValue(rss, j) + square(getMatrixValue(realY, i, j) - getMatrixValue(predictY, i, j)));
               setDVectorValue(tss, j, getDVectorValue(tss, j) + square(getMatrixValue(realY, i, j) - getDVectorValue(mean_col_y, j)));
             }
           }
-          
-          
+
+
           for(j = 0, k = 0; j < gid->col; j++){
             size_t a = (size_t)getMatrixValue(gid, g, j); /*riga dell'oggetto....*/
             if(a != -1){
@@ -588,7 +637,7 @@ void MLRRandomGroupsCV(matrix *mx, matrix *my,
               continue;
             }
           }
-          
+
           DelDVector(&mean_col_y);
           DelMLRModel(&subm);
           DelMatrix(&predictY);
@@ -600,17 +649,17 @@ void MLRRandomGroupsCV(matrix *mx, matrix *my,
         iterations_++;
       }
     }
-    
+
     /*Finalize the output by dividing for the number of iterations*/
     for(j = 0; j < my->col; j++){
       DVectorAppend(q2y, 1 - (getDVectorValue(rss, j)/getDVectorValue(tss, j)));
     }
-    
+
     if(sdep != NULL)
       for(j = 0; j < my->col; j++)
         DVectorAppend(sdep, sqrt((getDVectorValue(rss, j)/(iterations))/my->row));
 
-    
+
     for(i = 0; i < _predicted_y_->row; i++){
       for(j = 0; j < _predicted_y_->col; j++){
         _predicted_y_->data[i][j] /= predictcounter->data[i];
@@ -618,20 +667,20 @@ void MLRRandomGroupsCV(matrix *mx, matrix *my,
           (*pred_residuals)->data[i][j] = _predicted_y_->data[i][j] - my->data[i][j];
       }
     }
-    
+
     /*for(i = 0; i < (*predicted_y)->row; i++){
       for(j = 0; j < (*predicted_y)->col; j++){
         setMatrixValue((*predicted_y), i, j, getMatrixValue((*predicted_y), i, j)/getUIVectorValue(predictcounter, i));
         setMatrixValue((*pred_residuals), i, j,  getMatrixValue((*predicted_y), i, j) - getMatrixValue(my, i, j));
       }
     }*/
-    
-        
+
+
     if(bias != NULL){
       dvector *ymean;
       initDVector(&ymean);
       MatrixColAverage(my, &ymean);
-      
+
       for(j = 0; j < my->col; j++){
         double sum_xi = 0.f, sum_yi = 0.f;
         /*ypredaverage /= (double)my->row;*/
@@ -639,17 +688,17 @@ void MLRRandomGroupsCV(matrix *mx, matrix *my,
           sum_yi+=(_predicted_y_->data[i][j]*(my->data[i][j]-ymean->data[j]));
           sum_xi+=(my->data[i][j]*(my->data[i][j]-ymean->data[j]));
         }
-        
+
         DVectorAppend(bias, fabs(1 - sum_yi/sum_xi));
         /*k = Y-(X*b);*/
       }
       DelDVector(&ymean);
     }
-    
+
     if(predicted_y == NULL)
       DelMatrix(&_predicted_y_);
     DelUIVector(&predictcounter);
-    
+
     DelMatrix(&gid);
     DelDVector(&rss);
     DelDVector(&tss);
@@ -660,12 +709,12 @@ void MLRRandomGroupsCV(matrix *mx, matrix *my,
 }
 
 /*loov_ are the loo validated coefficients used to plot predicted vs experimental. if is null is not calculated.*/
-void MLRLOOCV(matrix *mx, matrix *my, 
+void MLRLOOCV(matrix *mx, matrix *my,
                         dvector **q2y, dvector **sdep, dvector **bias, matrix **predicted_y, matrix **pred_residuals, ssignal *s)
 {
  if(mx->row == my->row){
     size_t j, k, l, model;
-    
+
     /* Matrix for compute the PLS models for groups */
     matrix *subX;
     matrix *subY;
@@ -676,34 +725,34 @@ void MLRLOOCV(matrix *mx, matrix *my,
     matrix *realY;
     matrix *predictY;
     dvector *mean_col_y;
-    
+
     matrix *predictedy;
-    
+
     dvector *rss;
     dvector *tss;
 
     NewMatrix(&subX, mx->row-1, mx->col);
     NewMatrix(&subY, my->row-1, my->col);
-    
+
     NewMatrix(&predictX, 1, mx->col);
     NewMatrix(&realY, 1, my->col);
     NewMatrix(&predictY, 1, my->col);
-    
+
     NewDVector(&rss, my->col);
     NewDVector(&tss, my->col);
-    
+
     if(predicted_y != NULL){
       ResizeMatrix(predicted_y, my->row, my->col);
     }
     else{
       NewMatrix(&predictedy, my->row, my->col);
     }
-    
+
     if(pred_residuals!= NULL){
       ResizeMatrix(pred_residuals, my->row, my->col);
     }
 
-    
+
     for(model = 0; model < mx->row; model++){ /* we compute mx->row models  */
       if(s != NULL && (*s) == SIGSCIENTIFICSTOP){
         break;
@@ -730,50 +779,50 @@ void MLRLOOCV(matrix *mx, matrix *my,
             }
           }
         }
-        
+
 
         /*Compute the MLRModel*/
         initDVector(&mean_col_y);
         MatrixColAverage(subY, &mean_col_y);
-        
+
         NewMLRModel(&subm);
         MLR(subX, subY, subm, s);
-        MLRPredictY(predictX, NULL, subm, &predictY, NULL, NULL, NULL); 
-        
+        MLRPredictY(predictX, NULL, subm, &predictY, NULL, NULL, NULL);
+
         for(j = 0; j < realY->col; j++){
             setDVectorValue(rss, j, getDVectorValue(rss, j) + square(getMatrixValue(realY, 0, j) - getMatrixValue(predictY, 0, j)));
             setDVectorValue(tss, j, getDVectorValue(tss, j) + square(getMatrixValue(realY, 0, j) - getDVectorValue(mean_col_y, j)));
         }
-        
+
         for(j = 0; j < predictY->col; j++){
           if(predicted_y != NULL)
-            setMatrixValue((*predicted_y), model, j, getMatrixValue(predictY, 0, j)); 
+            setMatrixValue((*predicted_y), model, j, getMatrixValue(predictY, 0, j));
           else
             predictedy->data[model][j] = predictY->data[0][j];
-          
+
           if(pred_residuals != NULL){
             setMatrixValue((*pred_residuals), model, j, getMatrixValue((*predicted_y), model, j) - getMatrixValue(my, model, j));
           }
         }
-        
+
         DelMLRModel(&subm);
         DelDVector(&mean_col_y);
       }
     }
-    
+
     /*Finalize the output by dividing for the number of models*/
     for(j = 0; j < my->col; j++){
       DVectorAppend(q2y, 1 - (getDVectorValue(rss, j)/getDVectorValue(tss, j)));
       if(sdep != NULL)
         DVectorAppend(sdep, sqrt(getDVectorValue(rss, j)/mx->row));
     }
-    
-              
+
+
     if(bias != NULL){
       dvector *ymean;
       initDVector(&ymean);
       MatrixColAverage(my, &ymean);
-      
+
       for(j = 0; j < my->col; j++){
         double sum_xi = 0.f, sum_yi = 0.f;
         /*ypredaverage /= (double)my->row;*/
@@ -782,19 +831,19 @@ void MLRLOOCV(matrix *mx, matrix *my,
             sum_yi+=((*predicted_y)->data[i][j]*(my->data[i][j]-ymean->data[j]));
           else
             sum_yi+=(predictedy->data[i][j]*(my->data[i][j]-ymean->data[j]));
-            
+
           sum_xi+=(my->data[i][j]*(my->data[i][j]-ymean->data[j]));
         }
-        
+
         DVectorAppend(bias, fabs(1 - sum_yi/sum_xi));
         /*k = Y-(X*b);*/
       }
       DelDVector(&ymean);
     }
-    
+
     if(predicted_y == NULL)
       DelMatrix(&predictedy);
-    
+
     DelDVector(&rss);
     DelDVector(&tss);
     DelMatrix(&realY);
@@ -813,36 +862,36 @@ void PrintMLR(MLRMODEL *m)
 {
   puts("b Coeffcicient");
   PrintMatrix(m->b);
-  
+
   puts("R^2");
   PrintDVector(m->r2y_model);
-  
+
   puts("SDEC");
   PrintDVector(m->sdec);
-  
+
   puts("Recalculated y");
   PrintMatrix(m->recalculated_y);
-  
+
   puts("Recalculated Residuals");
   PrintMatrix(m->recalc_residuals);
-  
+
   if(m->q2y->size > 0){
     puts("Q^2");
     PrintDVector(m->q2y);
-    
+
     puts("SDEP");
     PrintDVector(m->sdep);
-    
+
     puts("BIAS");
     PrintDVector(m->bias);
-    
+
     puts("Predicted y");
     PrintMatrix(m->predicted_y);
-    
+
     puts("Predicted Residuals");
     PrintMatrix(m->pred_residuals);
   }
-  
+
   if(m->r2q2scrambling->row > 0){
     puts("R2 Q^2 Y Scrambling");
     PrintMatrix(m->r2q2scrambling);

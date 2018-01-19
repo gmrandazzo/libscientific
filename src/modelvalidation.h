@@ -32,7 +32,7 @@ typedef enum{
 } AlgorithmType;
 
 typedef enum{
-  _LOO_ = 0,
+  LOO = 0,
   BootstrapRGCV = 1
 } ValidationType;
 
