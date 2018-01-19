@@ -43,6 +43,7 @@ extern "C" {
 
 #include <scientific/pca.h>
 #include <scientific/pls.h>
+#include <scientific/epls.h>
 
 #include <scientific/upca.h>
 #include <scientific/upls.h>
@@ -50,6 +51,8 @@ extern "C" {
 #include <scientific/mlr.h>
 
 #include <scientific/lda.h>
+
+#include <scientific/modelvalidation.h>
 
 
 #ifdef __cplusplus

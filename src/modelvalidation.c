@@ -387,7 +387,6 @@ void BootstrapRandomGroupsCV(MODELINPUT *input, size_t group, size_t iterations,
     nlv = input->nlv;
   }
 
-
   if(arg > 0){
     va_list valist;
     va_start(valist, arg);
@@ -602,6 +601,13 @@ void LeaveOneOut(MODELINPUT *input, AlgorithmType algo, matrix** predicted_y, ma
   size_t yautoscaling = input->yautoscaling;
   ELearningParameters eparm;
   CombinationRule crule = Averaging;
+  
+  if(input->nlv > mx->col){
+    nlv = mx->col;
+  }
+  else{
+    nlv = input->nlv;
+  }
 
   if(arg > 0){
     va_list valist;
