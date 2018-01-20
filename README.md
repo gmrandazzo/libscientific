@@ -121,7 +121,7 @@ GIT
 
 You can check the latest sources with the command::
 
-  git clone https://github.com/zeld/libscientific.git
+  git clone https://github.com/gmrandazzo/libscientific.git
 
 
 Contributing
