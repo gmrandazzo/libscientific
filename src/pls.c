@@ -41,21 +41,25 @@ void NewPLSModel(PLSMODEL** m)
   initDVector(&(*m)->xcolscaling);
   initDVector(&(*m)->ycolaverage);
   initDVector(&(*m)->ycolscaling);
-  initMatrix(&(*m)->r2y_model);
-  initMatrix(&(*m)->r2y_validation);
-  initMatrix(&(*m)->recalc_residuals);
-  initMatrix(&(*m)->q2y);
-  initMatrix(&(*m)->sdep);
-  initMatrix(&(*m)->sdec);
-  initMatrix(&(*m)->bias);
   initMatrix(&(*m)->recalculated_y);
+  initMatrix(&(*m)->recalc_residuals);
   initMatrix(&(*m)->predicted_y);
   initMatrix(&(*m)->pred_residuals);
-  initMatrix(&(*m)->r2q2scrambling);
-  initMatrix(&(*m)->q2_sample_validation);
-  initMatrix(&(*m)->sdep_sample_validation);
-  initMatrix(&(*m)->q2_sample_validation_surface);
-  initMatrix(&(*m)->sdep_sample_validation_surface);
+  /* Regression variables */
+  initMatrix(&(*m)->r2y_model); /* each column correspond to an y dependent variable and each row correspond to a principal component*/
+  initMatrix(&(*m)->r2y_validation);
+  initMatrix(&(*m)->q2y);
+  initMatrix(&(*m)->sdep); /* Standard Deviation over Prediction */
+  initMatrix(&(*m)->sdec); /* Standard Deviation over Recalculating */
+  initMatrix(&(*m)->bias);
+
+  /* Discriminant Analyisis variables */
+  initArray(&(*m)->roc);
+  initMatrix(&(*m)->roc_auc);
+  initArray(&(*m)->precision_recall);
+  initMatrix(&(*m)->precision_recall_ap);
+
+  initMatrix(&(*m)->yscrambling);
 }
 
 void DelPLSModel(PLSMODEL** m)
@@ -72,21 +76,26 @@ void DelPLSModel(PLSMODEL** m)
   DelDVector(&(*m)->xcolscaling);
   DelDVector(&(*m)->ycolaverage);
   DelDVector(&(*m)->ycolscaling);
-  DelMatrix(&(*m)->r2y_model);
-  DelMatrix(&(*m)->r2y_validation);
-  DelMatrix(&(*m)->recalc_residuals);
-  DelMatrix(&(*m)->q2y);
-  DelMatrix(&(*m)->sdep);
-  DelMatrix(&(*m)->sdec);
-  DelMatrix(&(*m)->bias);
+
   DelMatrix(&(*m)->recalculated_y);
+  DelMatrix(&(*m)->recalc_residuals);
   DelMatrix(&(*m)->predicted_y);
   DelMatrix(&(*m)->pred_residuals);
-  DelMatrix(&(*m)->r2q2scrambling);
-  DelMatrix(&(*m)->q2_sample_validation);
-  DelMatrix(&(*m)->sdep_sample_validation);
-  DelMatrix(&(*m)->q2_sample_validation_surface);
-  DelMatrix(&(*m)->sdep_sample_validation_surface);
+  /* Regression variables */
+  DelMatrix(&(*m)->r2y_model); /* each column correspond to an y dependent variable and each row correspond to a principal component*/
+  DelMatrix(&(*m)->r2y_validation);
+  DelMatrix(&(*m)->q2y);
+  DelMatrix(&(*m)->sdep); /* Standard Deviation over Prediction */
+  DelMatrix(&(*m)->sdec); /* Standard Deviation over Recalculating */
+  DelMatrix(&(*m)->bias);
+
+  /* Discriminant Analyisis variables */
+  DelArray(&(*m)->roc);
+  DelMatrix(&(*m)->roc_auc);
+  DelArray(&(*m)->precision_recall);
+  DelMatrix(&(*m)->precision_recall_ap);
+
+  DelMatrix(&(*m)->yscrambling);
   xfree((*m));
 }
 

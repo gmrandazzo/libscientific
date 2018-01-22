@@ -31,11 +31,6 @@ void TestPLS15()
 
   PLSMODEL *m;
 
-  array *roc;
-  array *precision_recall;
-  matrix *roc_auc;
-  matrix *precision_recall_ap;
-
   matrix *xpred;
   matrix *xpredscores;
 
@@ -113,24 +108,19 @@ void TestPLS15()
   BootstrapRandomGroupsCV(&minpt, 3, 100, _PLS_, &m->predicted_y, &m->pred_residuals, 4, NULL, 0);
   PrintMatrix(m->predicted_y);
 
-  initArray(&roc);
-  initArray(&precision_recall);
-  initMatrix(&roc_auc);
-  initMatrix(&precision_recall_ap);
-
-  PLSDiscriminantAnalysisStatistics(y, m->predicted_y, &roc, &roc_auc, &precision_recall, &precision_recall_ap);
+  PLSDiscriminantAnalysisStatistics(y, m->predicted_y, &m->roc, &m->roc_auc, &m->precision_recall, &m->precision_recall_ap);
 
   PrintPLSModel(m);
 
   puts("ROC AUC's for Trainig set");
-  PrintMatrix(roc_auc);
+  PrintMatrix(m->roc_auc);
   puts("ROC Curves for each LV");
-  PrintArray(roc);
+  PrintArray(m->roc);
 
   puts("Precision-Recall or Trainig set");
-  PrintMatrix(precision_recall_ap);
+  PrintMatrix(m->precision_recall_ap);
   puts("Precision-Recall Curves for each LV");
-  PrintArray(precision_recall);
+  PrintArray(m->precision_recall);
 
   initMatrix(&xpredscores);
   initMatrix(&ypred);
@@ -146,10 +136,6 @@ void TestPLS15()
   puts("Extimated Y:");
   PrintMatrix(ypred);
   */
-  DelMatrix(&roc_auc);
-  DelMatrix(&precision_recall_ap);
-  DelArray(&roc);
-  DelArray(&precision_recall);
 
   DelPLSModel(&m);
   DelMatrix(&x);
@@ -487,7 +473,7 @@ void TestPLS11()
 
   ValidationArg varg;
   varg.vtype = LOO;
-  YScrambling(&minpt, _PLS_, varg, 100, &m->r2q2scrambling, 4, NULL);
+  YScrambling(&minpt, _PLS_, varg, 100, &m->yscrambling, 4, NULL);
 
   /*PrintPLSModel(m);*/
   puts("Q^2");
@@ -506,7 +492,7 @@ void TestPLS11()
   PrintMatrix(m->pred_residuals);
 
   puts("YSCRAMBLING RESULTS");
-  PrintMatrix(m->r2q2scrambling);
+  PrintMatrix(m->yscrambling);
 
   puts("RealY");
   PrintMatrix(y);
@@ -1445,6 +1431,6 @@ TestPLS11();
   //TestPLS12();
   /*TestPLS13();
   TestPLS14();*/
-//TestPLS15();
+TestPLS15();
   return 0;
 }

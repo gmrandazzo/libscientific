@@ -38,21 +38,25 @@ typedef struct{
   dvector *xcolscaling;
   dvector *ycolaverage;
   dvector *ycolscaling;
+  matrix *recalculated_y;
+  matrix *recalc_residuals;
+  matrix *predicted_y;
+  matrix *pred_residuals;
+  /* Regression variables */
   matrix *r2y_model; /* each column correspond to an y dependent variable and each row correspond to a principal component*/
   matrix *r2y_validation;
-  matrix *recalc_residuals;
   matrix *q2y;
   matrix *sdep; /* Standard Deviation over Prediction */
   matrix *sdec; /* Standard Deviation over Recalculating */
   matrix *bias;
-  matrix *recalculated_y;
-  matrix *predicted_y;
-  matrix *pred_residuals;
-  matrix *r2q2scrambling;
-  matrix *q2_sample_validation;
-  matrix *sdep_sample_validation;
-  matrix *q2_sample_validation_surface;
-  matrix *sdep_sample_validation_surface;
+
+  /* Discriminant Analyisis variables */
+  array *roc;
+  matrix *roc_auc;
+  array *precision_recall;
+  matrix *precision_recall_ap;
+
+  matrix *yscrambling;
 } PLSMODEL;
 
 /*
