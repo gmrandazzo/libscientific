@@ -108,19 +108,19 @@ void TestPLS15()
   BootstrapRandomGroupsCV(&minpt, 3, 100, _PLS_, &m->predicted_y, &m->pred_residuals, 4, NULL, 0);
   PrintMatrix(m->predicted_y);
 
-  PLSDiscriminantAnalysisStatistics(y, m->predicted_y, &m->roc, &m->roc_auc, &m->precision_recall, &m->precision_recall_ap);
+  PLSDiscriminantAnalysisStatistics(y, m->predicted_y, &m->roc_validation, &m->roc_auc_validation, &m->precision_recall_validation, &m->precision_recall_ap_validation);
 
   PrintPLSModel(m);
 
   puts("ROC AUC's for Trainig set");
-  PrintMatrix(m->roc_auc);
+  PrintMatrix(m->roc_auc_validation);
   puts("ROC Curves for each LV");
-  PrintArray(m->roc);
+  PrintArray(m->roc_validation);
 
   puts("Precision-Recall or Trainig set");
-  PrintMatrix(m->precision_recall_ap);
+  PrintMatrix(m->precision_recall_ap_validation);
   puts("Precision-Recall Curves for each LV");
-  PrintArray(m->precision_recall);
+  PrintArray(m->precision_recall_validation);
 
   initMatrix(&xpredscores);
   initMatrix(&ypred);

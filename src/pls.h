@@ -51,10 +51,14 @@ typedef struct{
   matrix *bias;
 
   /* Discriminant Analyisis variables */
-  array *roc;
-  matrix *roc_auc;
-  array *precision_recall;
-  matrix *precision_recall_ap;
+  array *roc_model;
+  array *roc_validation;
+  matrix *roc_auc_model;
+  matrix *roc_auc_validation;
+  array *precision_recall_model;
+  array *precision_recall_validation;
+  matrix *precision_recall_ap_model;
+  matrix *precision_recall_ap_validation;
 
   matrix *yscrambling;
 } PLSMODEL;

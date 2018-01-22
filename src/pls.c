@@ -54,10 +54,14 @@ void NewPLSModel(PLSMODEL** m)
   initMatrix(&(*m)->bias);
 
   /* Discriminant Analyisis variables */
-  initArray(&(*m)->roc);
-  initMatrix(&(*m)->roc_auc);
-  initArray(&(*m)->precision_recall);
-  initMatrix(&(*m)->precision_recall_ap);
+  initArray(&(*m)->roc_model);
+  initMatrix(&(*m)->roc_auc_model);
+  initArray(&(*m)->precision_recall_model);
+  initMatrix(&(*m)->precision_recall_ap_model);
+  initArray(&(*m)->roc_validation);
+  initMatrix(&(*m)->roc_auc_validation);
+  initArray(&(*m)->precision_recall_validation);
+  initMatrix(&(*m)->precision_recall_ap_validation);
 
   initMatrix(&(*m)->yscrambling);
 }
@@ -90,10 +94,14 @@ void DelPLSModel(PLSMODEL** m)
   DelMatrix(&(*m)->bias);
 
   /* Discriminant Analyisis variables */
-  DelArray(&(*m)->roc);
-  DelMatrix(&(*m)->roc_auc);
-  DelArray(&(*m)->precision_recall);
-  DelMatrix(&(*m)->precision_recall_ap);
+  DelArray(&(*m)->roc_model);
+  DelMatrix(&(*m)->roc_auc_model);
+  DelArray(&(*m)->precision_recall_model);
+  DelMatrix(&(*m)->precision_recall_ap_model);
+  DelArray(&(*m)->roc_validation);
+  DelMatrix(&(*m)->roc_auc_validation);
+  DelArray(&(*m)->precision_recall_validation);
+  DelMatrix(&(*m)->precision_recall_ap_validation);
 
   DelMatrix(&(*m)->yscrambling);
   xfree((*m));
