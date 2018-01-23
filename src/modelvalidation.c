@@ -720,6 +720,7 @@ void LeaveOneOut(MODELINPUT *input, AlgorithmType algo, matrix** predicted_y, ma
 
         /*Collapse the threads output*/
         for(th = 0; th < nthreads; th++){
+          PrintMatrix( arg[th].y_test_predicted);
           if(th+model < mx->row){
             for(j = 0; j < arg[th].y_test_predicted->col; j++){
               loopredictedy->data[model+th][j] = arg[th].y_test_predicted->data[0][j];
