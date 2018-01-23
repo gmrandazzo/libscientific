@@ -57,7 +57,7 @@ typedef struct{
   size_t r_fix;
 } ELearningParameters;
 
-void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautoscaling, EPLSMODEL **m, ELearningParameters eparm, ssignal *s);
+void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautoscaling, EPLSMODEL *m, ELearningParameters eparm, ssignal *s);
 
 typedef enum{
   Averaging = 0, /* Hard voting */

@@ -66,19 +66,22 @@ void SubspaceMatrix(matrix *mx, uivector *featureids, matrix **x_subspace)
   }
 }
 
-void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautoscaling, EPLSMODEL **m, ELearningParameters eparm, ssignal *s)
+void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautoscaling, EPLSMODEL *m, ELearningParameters eparm, ssignal *s)
 {
+  puts("EPLS RUN");
   size_t i, j, it;
+  printf("EPLS: %d %zu %f %zu\n", eparm.algorithm, eparm.n_models, eparm.trainsize, eparm.r_fix);
   /* Model allocation */
-  (*m)->models = xmalloc(sizeof(PLSMODEL)*eparm.n_models);
-  (*m)->n_models = eparm.n_models;
+  m->models = xmalloc(sizeof(PLSMODEL)*eparm.n_models);
+  m->n_models = eparm.n_models;
   if(eparm.r_fix < nlv)
-    (*m)->nlv = eparm.r_fix;
+    m->nlv = eparm.r_fix;
   else
-    (*m)->nlv = nlv;
-  (*m)->ny = my->col;
+    m->nlv = nlv;
+  m->ny = my->col;
 
   if(eparm.algorithm == Bagging){
+    puts("Bagging");
     matrix *x_train, *y_train, *x_test, *y_test;
     uivector *testids;
     double testsize = 1 - eparm.trainsize;
@@ -91,8 +94,8 @@ void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautos
       initUIVector(&testids);
       train_test_split(mx, my, testsize, &x_train, &y_train, &x_test, &y_test, &testids, &srand_init);
       srand_init++;
-      NewPLSModel(&(*m)->models[it]);
-      PLS(x_train, y_train, nlv, xautoscaling, yautoscaling, (*m)->models[it], s);
+      NewPLSModel(&m->models[it]);
+      PLS(x_train, y_train, nlv, xautoscaling, yautoscaling, m->models[it], s);
       DelUIVector(&testids);
       DelMatrix(&x_train);
       DelMatrix(&y_train);
@@ -118,7 +121,7 @@ void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautos
      }
 
 
-     (*m)->model_feature_ids = xmalloc(sizeof(uivector*)*eparm.n_models);
+     m->model_feature_ids = xmalloc(sizeof(uivector*)*eparm.n_models);
 
      if(eparm.algorithm == FixedRandomSubspaceMethod){
        NewMatrix(&x_subspace, mx->row, eparm.r_fix);
@@ -140,16 +143,16 @@ void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautos
          featureids->data[i] = tmp;
        }
 
-       NewUIVector(&(*m)->model_feature_ids[it], eparm.r_fix);
+       NewUIVector(&m->model_feature_ids[it], eparm.r_fix);
        /* Copy the column ids for future predictions */
        for(j = 0; j < eparm.r_fix; j++){
-         (*m)->model_feature_ids[it]->data[j] = featureids->data[j];
+         m->model_feature_ids[it]->data[j] = featureids->data[j];
        }
 
        if(eparm.algorithm == FixedRandomSubspaceMethod){
-         SubspaceMatrix(mx, (*m)->model_feature_ids[it], &x_subspace);
-         NewPLSModel(&(*m)->models[it]);
-         PLS(x_subspace, my, nlv, xautoscaling, yautoscaling, (*m)->models[it], s);
+         SubspaceMatrix(mx, m->model_feature_ids[it], &x_subspace);
+         NewPLSModel(&m->models[it]);
+         PLS(x_subspace, my, nlv, xautoscaling, yautoscaling, m->models[it], s);
        }
        else{
 
@@ -160,9 +163,9 @@ void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautos
          initUIVector(&testids);
          train_test_split(mx, my, testsize, &x_train, &y_train, &x_test, &y_test, &testids, &srand_init);
          srand_init++;
-         SubspaceMatrix(x_train, (*m)->model_feature_ids[it], &x_subspace);
-         NewPLSModel(&(*m)->models[it]);
-         PLS(x_subspace, y_train, nlv, xautoscaling, yautoscaling, (*m)->models[it], s);
+         SubspaceMatrix(x_train, m->model_feature_ids[it], &x_subspace);
+         NewPLSModel(&m->models[it]);
+         PLS(x_subspace, y_train, nlv, xautoscaling, yautoscaling, m->models[it], s);
          DelMatrix(&x_train);
          DelMatrix(&y_train);
          DelMatrix(&x_test);
@@ -173,6 +176,7 @@ void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautos
      DelUIVector(&featureids);
      DelMatrix(&x_subspace);
   }
+  puts("EPLS END");
 }
 
 void EPLSGetSXScore(EPLSMODEL *m, CombinationRule crule, matrix *sxscores){}

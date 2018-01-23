@@ -338,7 +338,7 @@ void *EPLSRandomGroupCVModel(void *arg_)
 
     NewEPLSModel(&subm);
 
-    EPLS(x_train, y_train, arg->nlv, arg->xautoscaling, arg->yautoscaling, &subm, arg->eparm, NULL);
+    EPLS(x_train, y_train, arg->nlv, arg->xautoscaling, arg->yautoscaling, subm, arg->eparm, NULL);
 
     initMatrix(&y_test_predicted);
     EPLSYPRedictorAllLV(x_test, subm, arg->crule, NULL, &y_test_predicted);
@@ -583,7 +583,7 @@ void *EPLSLOOModel_(void *arg_)
   EPLSMODEL *subm;
   NewEPLSModel(&subm);
 
-  EPLS(arg->x_train, arg->y_train, arg->nlv, arg->xautoscaling, arg->yautoscaling, &subm, arg->eparm, NULL);
+  EPLS(arg->x_train, arg->y_train, arg->nlv, arg->xautoscaling, arg->yautoscaling, subm, arg->eparm, NULL);
   //Predict Y for each latent variable
   EPLSYPRedictorAllLV(arg->x_test, subm, arg->crule, NULL, &arg->y_test_predicted);
 
