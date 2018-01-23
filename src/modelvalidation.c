@@ -671,6 +671,7 @@ void LeaveOneOut(MODELINPUT *input, AlgorithmType algo, matrix** predicted_y, ma
          * and run the thread
          */
         for(th = 0; th < nthreads; th++){
+          initMatrix(&arg[th].y_test_predicted);
           if(th+model < mx->row){
             l = 0;
             for(j = 0; j < mx->row; j++){
@@ -695,7 +696,7 @@ void LeaveOneOut(MODELINPUT *input, AlgorithmType algo, matrix** predicted_y, ma
               }
             }
 
-            initMatrix(&arg[th].y_test_predicted);
+
             if(algo == _PLS_ || algo == _PLS_DA_)
               pthread_create(&threads[th], NULL, PLSLOOModel_, (void*) &arg[th]);
             else if(algo == _MLR_)
@@ -728,8 +729,8 @@ void LeaveOneOut(MODELINPUT *input, AlgorithmType algo, matrix** predicted_y, ma
             for(j = 0; j < arg[th].y_test_predicted->col; j++){
               loopredictedy->data[model+th][j] = arg[th].y_test_predicted->data[0][j];
             }
-            DelMatrix(&arg[th].y_test_predicted);
           }
+          DelMatrix(&arg[th].y_test_predicted);
         }
       }
     }
