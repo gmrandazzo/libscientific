@@ -31,8 +31,6 @@ void NewEPLSModel(EPLSMODEL** m)
   (*m) = xmalloc(sizeof(EPLSMODEL));
   (*m)->models = NULL;
   (*m)->model_feature_ids = NULL;
-  (*m)->c1_validation = NULL;
-  (*m)->c2_validation = NULL;
   (*m)->n_models = 0;
   (*m)->nlv = 0;
   (*m)->ny = 0;
@@ -45,18 +43,9 @@ void DelEPLSModel(EPLSMODEL** m)
     DelPLSModel(&(*m)->models[i]);
     if((*m)->model_feature_ids != NULL)
       DelUIVector(&(*m)->model_feature_ids[i]);
-
-    if((*m)->c1_validation != NULL)
-      DelMatrix(&(*m)->c1_validation[i]);
-    if((*m)->c2_validation != NULL)
-      DelMatrix(&(*m)->c2_validation[i]);
   }
   if((*m)->model_feature_ids != NULL)
     xfree((*m)->model_feature_ids);
-  if((*m)->c1_validation != NULL)
-    xfree((*m)->c1_validation);
-  if((*m)->c2_validation != NULL)
-    xfree((*m)->c2_validation);
   xfree((*m)->models);
   xfree((*m));
 }
@@ -77,19 +66,17 @@ void SubspaceMatrix(matrix *mx, uivector *featureids, matrix **x_subspace)
   }
 }
 
-void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautoscaling, EPLSMODEL *m, ELearningParameters eparm, ssignal *s)
+void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautoscaling, EPLSMODEL **m, ELearningParameters eparm, ssignal *s)
 {
   size_t i, j, it;
   /* Model allocation */
-  m->models = xmalloc(sizeof(PLSMODEL)*eparm.n_models);
-  /*m->c1_validation = xmalloc(sizeof(matrix)*eparm.n_models);
-  m->c2_validation = xmalloc(sizeof(matrix)*eparm.n_models);*/
-  m->n_models = eparm.n_models;
+  (*m)->models = xmalloc(sizeof(PLSMODEL)*eparm.n_models);
+  (*m)->n_models = eparm.n_models;
   if(eparm.r_fix < nlv)
-    m->nlv = eparm.r_fix;
+    (*m)->nlv = eparm.r_fix;
   else
-    m->nlv = nlv;
-  m->ny = my->col;
+    (*m)->nlv = nlv;
+  (*m)->ny = my->col;
 
   if(eparm.algorithm == Bagging){
     matrix *x_train, *y_train, *x_test, *y_test;
@@ -104,18 +91,8 @@ void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautos
       initUIVector(&testids);
       train_test_split(mx, my, testsize, &x_train, &y_train, &x_test, &y_test, &testids, &srand_init);
       srand_init++;
-      NewPLSModel(&m->models[it]);
-      PLS(x_train, y_train, nlv, xautoscaling, yautoscaling, m->models[it], s);
-      /*initMatrix(&p_y_test);
-      PLSYPredictorAllLV(x_test, m->models[it], nlv, &p_y_test);
-      initMatrix(&m->c1_validation[it]);
-      initMatrix(&m->c2_validation[it]);
-
-      if(emt == Regression)
-        PLSRegressionStatistics(y_test, p_y_test, &m->c1_validation[it], &m->c2_validation[it], NULL);
-      else
-        PLSDiscriminantAnalysisStatistics(y_test, p_y_test, NULL, &m->c1_validation[it], NULL, &m->c2_validation[it]);
-      */
+      NewPLSModel(&(*m)->models[it]);
+      PLS(x_train, y_train, nlv, xautoscaling, yautoscaling, (*m)->models[it], s);
       DelUIVector(&testids);
       DelMatrix(&x_train);
       DelMatrix(&y_train);
@@ -141,7 +118,7 @@ void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautos
      }
 
 
-     m->model_feature_ids = xmalloc(sizeof(uivector*)*eparm.n_models);
+     (*m)->model_feature_ids = xmalloc(sizeof(uivector*)*eparm.n_models);
 
      if(eparm.algorithm == FixedRandomSubspaceMethod){
        NewMatrix(&x_subspace, mx->row, eparm.r_fix);
@@ -163,16 +140,16 @@ void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautos
          featureids->data[i] = tmp;
        }
 
-       NewUIVector(&m->model_feature_ids[it], eparm.r_fix);
+       NewUIVector(&(*m)->model_feature_ids[it], eparm.r_fix);
        /* Copy the column ids for future predictions */
        for(j = 0; j < eparm.r_fix; j++){
-         m->model_feature_ids[it]->data[j] = featureids->data[j];
+         (*m)->model_feature_ids[it]->data[j] = featureids->data[j];
        }
 
        if(eparm.algorithm == FixedRandomSubspaceMethod){
-         SubspaceMatrix(mx, m->model_feature_ids[it], &x_subspace);
-         NewPLSModel(&m->models[it]);
-         PLS(x_subspace, my, nlv, xautoscaling, yautoscaling, m->models[it], s);
+         SubspaceMatrix(mx, (*m)->model_feature_ids[it], &x_subspace);
+         NewPLSModel(&(*m)->models[it]);
+         PLS(x_subspace, my, nlv, xautoscaling, yautoscaling, (*m)->models[it], s);
        }
        else{
 
@@ -183,9 +160,9 @@ void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautos
          initUIVector(&testids);
          train_test_split(mx, my, testsize, &x_train, &y_train, &x_test, &y_test, &testids, &srand_init);
          srand_init++;
-         SubspaceMatrix(x_train, m->model_feature_ids[it], &x_subspace);
-         NewPLSModel(&m->models[it]);
-         PLS(x_subspace, y_train, nlv, xautoscaling, yautoscaling, m->models[it], s);
+         SubspaceMatrix(x_train, (*m)->model_feature_ids[it], &x_subspace);
+         NewPLSModel(&(*m)->models[it]);
+         PLS(x_subspace, y_train, nlv, xautoscaling, yautoscaling, (*m)->models[it], s);
          DelMatrix(&x_train);
          DelMatrix(&y_train);
          DelMatrix(&x_test);
@@ -301,36 +278,8 @@ void EPLSDiscriminantAnalysisStatistics(matrix *my_true, matrix *my_score, array
 
 void PrintEPLSModel(EPLSMODEL *m)
 {
-  size_t i, j, k;
+  size_t i;
   for(i = 0; i < m->n_models; i++){
     PrintPLSModel(m->models[i]);
-  }
-
-  if(m->c1_validation != NULL){
-    for(j = 0; j < m->n_models; j++){
-      PrintMatrix(m->c1_validation[j]);
-    }
-
-
-    for(k = 0; k < m->ny; k++){
-      printf("Y No. %lu\n", k);
-      puts("Q2 or AUC external");
-      for(i = 0; i < m->nlv; i++){
-        printf("%lu;", i+1);
-        for(j = 0; j < m->n_models-1; j++){
-          printf("%f;", m->c1_validation[j]->data[i][k]);
-        }
-        printf("%f\n", m->c1_validation[m->n_models-1]->data[i][k]);
-      }
-      puts("SDEP or PrecisionRecall Average external");
-      for(i = 0; i < m->nlv; i++){
-        printf("%lu;", i+1);
-        for(j = 0; j < m->n_models-1; j++){
-          printf("%f;", m->c2_validation[j]->data[i][k]);
-        }
-        printf("%f\n", m->c2_validation[m->n_models-1]->data[i][k]);
-      }
-      printf(">>> END\n");
-    }
   }
 }

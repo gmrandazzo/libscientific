@@ -73,7 +73,7 @@ void TestEPLS3()
   eparm.r_fix = 4;
   eparm.trainsize = 0.7;
   size_t nlv = 5; /*This will ignored and set to max 4*/
-  EPLS(x, y, nlv, 1, 0, m, eparm, NULL);
+  EPLS(x, y, nlv, 1, 0, &m, eparm, NULL);
 
   //PrintEPLSModel(m);
 
@@ -162,7 +162,7 @@ void TestEPLS2()
   eparm.n_models = 1000;
   eparm.r_fix = 3;
   size_t nlv = 6;
-  EPLS(x, y, nlv, 1, 0, m, eparm, NULL);
+  EPLS(x, y, nlv, 1, 0, &m, eparm, NULL);
 
   //PrintEPLSModel(m);
 
@@ -251,7 +251,7 @@ void TestEPLS1()
   eparm.n_models = 100;
   eparm.trainsize = 0.7;
   size_t nlv = 6;
-  EPLS(x, y, nlv, 1, 0, m, eparm, NULL);
+  EPLS(x, y, nlv, 1, 0, &m, eparm, NULL);
 
   //PrintEPLSModel(m);
 
@@ -293,8 +293,8 @@ void TestEPLS1()
 
 int main(void)
 {
-  /*test 1- 5
-  TestEPLS1();*/
-  /*TestEPLS2();*/
-  TestEPLS3();
+  /*test 1- 5*/
+  TestEPLS1();
+  //TestEPLS2();
+  //TestEPLS3();
 }
