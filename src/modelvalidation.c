@@ -656,7 +656,7 @@ void LeaveOneOut(MODELINPUT *input, AlgorithmType algo, matrix** predicted_y, ma
       NewMatrix(&arg[th].y_train, my->row-1, my->col);
       NewMatrix(&arg[th].x_test, 1, mx->col);
       NewMatrix(&arg[th].y_test, 1, my->col);
-      initMatrix(&arg[th].y_test_predicted);
+      NewMatrix(&arg[th].y_test_predicted, 1, my->col*nlv);
     }
 
     for(model = 0; model < mx->row; model += nthreads){ /* we compute mx->row models  */
