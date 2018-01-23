@@ -581,15 +581,12 @@ void *EPLSLOOModel_(void *arg_)
 
   EPLSMODEL *subm;
   NewEPLSModel(&subm);
-
   EPLS(arg->x_train, arg->y_train, arg->nlv, arg->xautoscaling, arg->yautoscaling, subm, arg->eparm, NULL);
   //Predict Y for each latent variable
   EPLSYPRedictorAllLV(arg->x_test, subm, arg->crule, NULL, &arg->y_test_predicted);
-
   DelEPLSModel(&subm);
   return 0;
 }
-
 
 void LeaveOneOut(MODELINPUT *input, AlgorithmType algo, matrix** predicted_y, matrix **pred_residuals, size_t nthreads, ssignal *s, int arg, ...)
 {
@@ -695,7 +692,6 @@ void LeaveOneOut(MODELINPUT *input, AlgorithmType algo, matrix** predicted_y, ma
               }
             }
 
-
             if(algo == _PLS_ || algo == _PLS_DA_)
               pthread_create(&threads[th], NULL, PLSLOOModel_, (void*) &arg[th]);
             else if(algo == _MLR_)
@@ -729,7 +725,6 @@ void LeaveOneOut(MODELINPUT *input, AlgorithmType algo, matrix** predicted_y, ma
               loopredictedy->data[model+th][j] = arg[th].y_test_predicted->data[0][j];
             }
           }
-          DelMatrix(&arg[th].y_test_predicted);
         }
       }
     }
@@ -741,6 +736,7 @@ void LeaveOneOut(MODELINPUT *input, AlgorithmType algo, matrix** predicted_y, ma
       DelMatrix(&arg[th].y_train);
       DelMatrix(&arg[th].x_test);
       DelMatrix(&arg[th].y_test);
+      DelMatrix(&arg[th].y_test_predicted);
     }
 
     /*Finalize the output by dividing for the number of models*/
