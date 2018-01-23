@@ -68,9 +68,7 @@ void SubspaceMatrix(matrix *mx, uivector *featureids, matrix **x_subspace)
 
 void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautoscaling, EPLSMODEL *m, ELearningParameters eparm, ssignal *s)
 {
-  puts("EPLS RUN");
   size_t i, j, it;
-  printf("EPLS: %d %zu %f %zu\n", eparm.algorithm, eparm.n_models, eparm.trainsize, eparm.r_fix);
   /* Model allocation */
   m->models = xmalloc(sizeof(PLSMODEL)*eparm.n_models);
   m->n_models = eparm.n_models;
@@ -81,7 +79,6 @@ void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautos
   m->ny = my->col;
 
   if(eparm.algorithm == Bagging){
-    puts("Bagging");
     matrix *x_train, *y_train, *x_test, *y_test;
     uivector *testids;
     double testsize = 1 - eparm.trainsize;
@@ -176,7 +173,6 @@ void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautos
      DelUIVector(&featureids);
      DelMatrix(&x_subspace);
   }
-  puts("EPLS END");
 }
 
 void EPLSGetSXScore(EPLSMODEL *m, CombinationRule crule, matrix *sxscores){}
@@ -217,6 +213,7 @@ void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, array 
         }
       }
       DelMatrix(&model_py);
+      DelMatrix(&tscores_);
     }
 
     /* Averaging the result */
