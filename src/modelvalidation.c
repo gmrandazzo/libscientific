@@ -567,7 +567,6 @@ void *PLSLOOModel_(void *arg_)
 
   PLSMODEL *subm;
   NewPLSModel(&subm);
-
   PLS(arg->x_train, arg->y_train, arg->nlv, arg->xautoscaling, arg->yautoscaling, subm, NULL);
   /* Predict Y for each latent variable */
   PLSYPredictorAllLV(arg->x_test, subm, NULL, &arg->y_test_predicted);
@@ -660,6 +659,7 @@ void LeaveOneOut(MODELINPUT *input, AlgorithmType algo, matrix** predicted_y, ma
       NewMatrix(&arg[th].y_train, my->row-1, my->col);
       NewMatrix(&arg[th].x_test, 1, mx->col);
       NewMatrix(&arg[th].y_test, 1, my->col);
+      initMatrix(&arg[th].y_test_predicted);
     }
 
     for(model = 0; model < mx->row; model += nthreads){ /* we compute mx->row models  */
@@ -671,7 +671,6 @@ void LeaveOneOut(MODELINPUT *input, AlgorithmType algo, matrix** predicted_y, ma
          * and run the thread
          */
         for(th = 0; th < nthreads; th++){
-          initMatrix(&arg[th].y_test_predicted);
           if(th+model < mx->row){
             l = 0;
             for(j = 0; j < mx->row; j++){
