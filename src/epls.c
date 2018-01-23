@@ -185,6 +185,7 @@ void EPLSGetSBetaCoefficients(EPLSMODEL *m, CombinationRule crule, matrix *sbeta
 void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, array **tscores, matrix **py)
 {
   size_t i, j, k;
+  printf("%zu %zu\n", mx->row, m->ny*m->nlv);
   ResizeMatrix(py, mx->row, m->ny*m->nlv);
   matrix *x_subspace;
   initMatrix(&x_subspace);
