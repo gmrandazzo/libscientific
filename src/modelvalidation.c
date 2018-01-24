@@ -578,7 +578,6 @@ void *EPLSLOOModel_(void *arg_)
 {
   loocv_th_arg *arg;
   arg = (loocv_th_arg*) arg_;
-
   EPLSMODEL *subm;
   NewEPLSModel(&subm);
   EPLS(arg->x_train, arg->y_train, arg->nlv, arg->xautoscaling, arg->yautoscaling, subm, arg->eparm, NULL);
@@ -588,8 +587,14 @@ void *EPLSLOOModel_(void *arg_)
   return 0;
 }
 
-void LeaveOneOut(MODELINPUT *input, AlgorithmType algo, matrix** predicted_y, matrix **pred_residuals, size_t nthreads, ssignal *s, int arg, ...)
+void LeaveOneOut(MODELINPUT *input, AlgorithmType algo, matrix** predicted_y, matrix **pred_residuals, size_t nthreads, ssignal *s, int arg_, ...)
 {
+  size_t i, j, k, l, th, model;
+  va_list valist;
+  pthread_t *threads;
+  loocv_th_arg *loo_arg;
+  size_t scol;
+  matrix *loopredictedy;
   matrix *mx = (*input->mx);
   matrix *my = (*input->my);
   size_t nlv = input->nlv;
@@ -605,10 +610,9 @@ void LeaveOneOut(MODELINPUT *input, AlgorithmType algo, matrix** predicted_y, ma
     nlv = input->nlv;
   }
 
-  if(arg > 0){
-    va_list valist;
-    va_start(valist, arg);
-    for (size_t i = 0; i < arg; i++){
+  if(arg_ > 0){
+    va_start(valist, arg_);
+    for(i = 0; i < arg_; i++){
       if(i == 0)
         eparm = va_arg(valist, ELearningParameters);
       else if(i == 1)
@@ -620,13 +624,8 @@ void LeaveOneOut(MODELINPUT *input, AlgorithmType algo, matrix** predicted_y, ma
     va_end(valist);
   }
 
-
   if(mx->row == my->row){
-    size_t i, j, k, l, th, model;
-    pthread_t *threads;
-    loocv_th_arg *arg;
 
-    size_t scol;
     if(nlv > 0){
       if(nlv > mx->col){
         nlv = mx->col;
@@ -639,24 +638,23 @@ void LeaveOneOut(MODELINPUT *input, AlgorithmType algo, matrix** predicted_y, ma
     }
 
 
-    matrix *loopredictedy;
     NewMatrix(&loopredictedy, my->row, scol);
 
     threads = xmalloc(sizeof(pthread_t)*nthreads);
-    arg = xmalloc(sizeof(loocv_th_arg)*nthreads);
+    loo_arg = xmalloc(sizeof(loocv_th_arg)*nthreads);
 
     /* initialize threads arguments.. */
     for(th = 0; th < nthreads; th++){
-      arg[th].eparm = eparm;
-      arg[th].crule = crule;
-      arg[th].nlv = nlv;
-      arg[th].xautoscaling = xautoscaling;
-      arg[th].yautoscaling = yautoscaling;
-      NewMatrix(&arg[th].x_train, mx->row-1, mx->col);
-      NewMatrix(&arg[th].y_train, my->row-1, my->col);
-      NewMatrix(&arg[th].x_test, 1, mx->col);
-      NewMatrix(&arg[th].y_test, 1, my->col);
-      NewMatrix(&arg[th].y_test_predicted, 1, my->col*nlv);
+      loo_arg[th].eparm = eparm;
+      loo_arg[th].crule = crule;
+      loo_arg[th].nlv = nlv;
+      loo_arg[th].xautoscaling = xautoscaling;
+      loo_arg[th].yautoscaling = yautoscaling;
+      NewMatrix(&loo_arg[th].x_train, mx->row-1, mx->col);
+      NewMatrix(&loo_arg[th].y_train, my->row-1, my->col);
+      NewMatrix(&loo_arg[th].x_test, 1, mx->col);
+      NewMatrix(&loo_arg[th].y_test, 1, my->col);
+      NewMatrix(&loo_arg[th].y_test_predicted, 1, my->col*nlv);
     }
 
     for(model = 0; model < mx->row; model += nthreads){ /* we compute mx->row models  */
@@ -674,30 +672,30 @@ void LeaveOneOut(MODELINPUT *input, AlgorithmType algo, matrix** predicted_y, ma
               if(j != model+th){
                 for(k = 0; k  < mx->col; k++){
                   /*setMatrixValue(arg[th].submx, l, k, getMatrixValue(mx, j, k));*/
-                  arg[th].x_train->data[l][k] = mx->data[j][k];
+                  loo_arg[th].x_train->data[l][k] = mx->data[j][k];
                 }
                 for(k = 0; k < my->col; k++){
                   /*setMatrixValue(arg[th].submy, l, k, getMatrixValue(my, j, k));*/
-                  arg[th].y_train->data[l][k] = my->data[j][k];
+                  loo_arg[th].y_train->data[l][k] = my->data[j][k];
                 }
                 l++;
               }
               else{
                 for(k = 0; k < mx->col; k++){
-                  arg[th].x_test->data[0][k] = mx->data[j][k];
+                  loo_arg[th].x_test->data[0][k] = mx->data[j][k];
                 }
                 for(k = 0; k < my->col; k++){
-                  arg[th].y_test->data[0][k] = my->data[j][k];
+                  loo_arg[th].y_test->data[0][k] = my->data[j][k];
                 }
               }
             }
 
             if(algo == _PLS_ || algo == _PLS_DA_)
-              pthread_create(&threads[th], NULL, PLSLOOModel_, (void*) &arg[th]);
+              pthread_create(&threads[th], NULL, PLSLOOModel_, (void*) &loo_arg[th]);
             else if(algo == _MLR_)
-              pthread_create(&threads[th], NULL, MLRLOOModel_, (void*) &arg[th]);
+              pthread_create(&threads[th], NULL, MLRLOOModel_, (void*) &loo_arg[th]);
             else if(algo == _EPLS_ || algo == _EPLS_DA_)
-              pthread_create(&threads[th], NULL, EPLSLOOModel_, (void*) &arg[th]);
+              pthread_create(&threads[th], NULL, EPLSLOOModel_, (void*) &loo_arg[th]);
             else
               continue;
           }
@@ -721,8 +719,8 @@ void LeaveOneOut(MODELINPUT *input, AlgorithmType algo, matrix** predicted_y, ma
         /*Collapse the threads output*/
         for(th = 0; th < nthreads; th++){
           if(th+model < mx->row){
-            for(j = 0; j < arg[th].y_test_predicted->col; j++){
-              loopredictedy->data[model+th][j] = arg[th].y_test_predicted->data[0][j];
+            for(j = 0; j < loo_arg[th].y_test_predicted->col; j++){
+              loopredictedy->data[model+th][j] = loo_arg[th].y_test_predicted->data[0][j];
             }
           }
         }
@@ -732,11 +730,11 @@ void LeaveOneOut(MODELINPUT *input, AlgorithmType algo, matrix** predicted_y, ma
     /*Delete thread arguments*/
 
     for(th = 0; th < nthreads; th++){
-      DelMatrix(&arg[th].x_train);
-      DelMatrix(&arg[th].y_train);
-      DelMatrix(&arg[th].x_test);
-      DelMatrix(&arg[th].y_test);
-      DelMatrix(&arg[th].y_test_predicted);
+      DelMatrix(&loo_arg[th].x_train);
+      DelMatrix(&loo_arg[th].y_train);
+      DelMatrix(&loo_arg[th].x_test);
+      DelMatrix(&loo_arg[th].y_test);
+      DelMatrix(&loo_arg[th].y_test_predicted);
     }
 
     /*Finalize the output by dividing for the number of models*/
@@ -755,7 +753,7 @@ void LeaveOneOut(MODELINPUT *input, AlgorithmType algo, matrix** predicted_y, ma
     }
 
     DelMatrix(&loopredictedy);
-    xfree(arg);
+    xfree(loo_arg);
     xfree(threads);
   }
   else{

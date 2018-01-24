@@ -72,10 +72,19 @@ void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautos
   /* Model allocation */
   m->models = xmalloc(sizeof(PLSMODEL)*eparm.n_models);
   m->n_models = eparm.n_models;
-  if(eparm.r_fix < nlv)
-    m->nlv = eparm.r_fix;
-  else
-    m->nlv = nlv;
+  if(eparm.algorithm == Bagging){
+    if(mx->col < nlv)
+      m->nlv = mx->col;
+    else
+      m->nlv = nlv;
+  }
+  else{
+    if(eparm.r_fix < nlv)
+      m->nlv = eparm.r_fix;
+    else
+      m->nlv = nlv;
+  }
+
   m->ny = my->col;
 
   if(eparm.algorithm == Bagging){
@@ -182,11 +191,12 @@ void EPLSGetSYLoadings(EPLSMODEL *m, CombinationRule crule, matrix *syloadings){
 void EPLSGetSWeights(EPLSMODEL *m, CombinationRule crule, matrix *sweights){}
 void EPLSGetSBetaCoefficients(EPLSMODEL *m, CombinationRule crule, matrix *sbetas){}
 
-void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, array **tscores, matrix **py)
+void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, array **tscores, matrix **y)
 {
   size_t i, j, k;
-  printf("%zu %zu\n", mx->row, m->ny*m->nlv);
-  ResizeMatrix(py, mx->row, m->ny*m->nlv);
+
+  ResizeMatrix(y, mx->row, m->ny*m->nlv);
+
   matrix *x_subspace;
   initMatrix(&x_subspace);
   if(crule == Averaging){
@@ -210,7 +220,7 @@ void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, array 
 
       for(k = 0; k < model_py->row; k++){
         for(j = 0; j < model_py->col; j++){
-          (*py)->data[k][j] += model_py->data[k][j];
+          (*y)->data[k][j] += model_py->data[k][j];
         }
       }
       DelMatrix(&model_py);
@@ -218,9 +228,9 @@ void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, array 
     }
 
     /* Averaging the result */
-    for(i = 0; i < (*py)->row; i++){
-      for(j = 0; j < (*py)->col; j++){
-        (*py)->data[i][j] /= (double)m->n_models;
+    for(i = 0; i < (*y)->row; i++){
+      for(j = 0; j < (*y)->col; j++){
+        (*y)->data[i][j] /= (double)m->n_models;
       }
     }
   }
@@ -254,7 +264,7 @@ void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, array 
         }
         double median;
         DVectorMedian(v, &median);
-        (*py)->data[i][j] = median;
+        (*y)->data[i][j] = median;
       }
     }
     DelDVector(&v);
@@ -280,6 +290,9 @@ void EPLSDiscriminantAnalysisStatistics(matrix *my_true, matrix *my_score, array
 
 void PrintEPLSModel(EPLSMODEL *m)
 {
+  printf("N Models: %zu\n", m->n_models);
+  printf("N LV: %zu\n", m->nlv);
+  printf("NY: %zu\n", m->ny);
   size_t i;
   for(i = 0; i < m->n_models; i++){
     PrintPLSModel(m->models[i]);

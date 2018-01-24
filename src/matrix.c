@@ -56,22 +56,32 @@ void NewMatrix(matrix **m, size_t row_ , size_t col_)
 void ResizeMatrix(matrix **m, size_t row_, size_t col_)
 {
   size_t i, j;
+  if(m != NULL){
+    if((*m)->row == row_ && (*m)->col == col_){
+      MatrixSet((*m), +0.f);
+    }
+    else{
+      if((*m)->col > 0 && (*m)->row > 0){
+        for(i = 0; i < (*m)->row; i++){
+          xfree((*m)->data[i]);
+        }
+        xfree((*m)->data);
+      }
 
-  if((*m)->col > 0 && (*m)->row > 0){
-    for(i = 0; i < (*m)->row; i++)
-      xfree((*m)->data[i]);
-    xfree((*m)->data);
+      (*m)->data = xmalloc(sizeof(double*)*row_);
+      for(i = 0; i < row_; i++){
+        (*m)->data[i] = xmalloc(sizeof(double)*col_);
+        for(j = 0; j < col_; j++)
+          (*m)->data[i][j] = +0.f;
+      }
+
+      (*m)->row = row_;
+      (*m)->col = col_;
+    }
   }
-
-  (*m)->data = xmalloc(sizeof(double*)*row_);
-  for(i = 0; i < row_; i++){
-    (*m)->data[i] = xmalloc(sizeof(double)*col_);
-    for(j = 0; j < col_; j++)
-      (*m)->data[i][j] = +0.f;
+  else{
+    NewMatrix(m, row_, col_);
   }
-
-  (*m)->row = row_;
-  (*m)->col = col_;
 }
 
 void DelMatrix(matrix **m)
