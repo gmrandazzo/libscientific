@@ -25,6 +25,40 @@
 #include <time.h>
 
 
+void TestPLS17()
+{
+  matrix *x, *y;
+
+  PLSMODEL *m;
+  NewMatrix(&x, 7, 4);
+  NewMatrix(&y, 7, 1);
+
+  x->data[0][0] = 85.150; x->data[0][1] = 11.000; x->data[0][2] = 1.000; x->data[0][3] = 0.862;
+  x->data[1][0] = 129.160; x->data[1][1] = 7.000; x->data[1][2] = 1.000; x->data[1][3] = 1.090;
+  x->data[2][0] = 79.100; x->data[2][1] = 5.000; x->data[2][2] = 1.000; x->data[2][3] = 0.978;
+  x->data[3][0] = 71.110; x->data[3][1] = 9.000; x->data[3][2] = 1.000; x->data[3][3] = 0.866;
+  x->data[4][0] = 67.090; x->data[4][1] = 5.000; x->data[4][2] = 1.000; x->data[4][3] = 0.970;
+  x->data[5][0] = 72.110; x->data[5][1] = 8.000; x->data[5][2] = 1.000; x->data[5][3] = 0.890;
+  x->data[6][0] = 84.140; x->data[6][1] = 4.000; x->data[6][2] = 1.000; x->data[6][3] = 1.050;
+
+
+  y->data[0][0] = 379.000;
+  y->data[1][0] = 510.000;
+  y->data[2][0] = 388.000;
+  y->data[3][0] = 360.000;
+  y->data[4][0] = 403.000;
+  y->data[5][0] = 339.000;
+  y->data[6][0] = 357.150;
+
+
+  NewPLSModel(&m);
+  PLS(x, y, 4, 1, 0, m, NULL);
+  PrintPLSModel(m);
+  DelPLSModel(&m);
+  DelMatrix(&x);
+  DelMatrix(&y);
+}
+
 void TestPLS15()
 {
   matrix *x, *y;
@@ -1415,7 +1449,7 @@ void TestPLS1()
 int main(void)
 {
   /*test 1- 5*/
-  TestPLS1();
+  //TestPLS1();
   /*TestPLS2();
   TestPLS3();
   TestPLS4();
@@ -1427,10 +1461,11 @@ int main(void)
   TestPLS8();
   TestPLS9();*/
   //TestPLS10();
-TestPLS11();
+//TestPLS11();
   //TestPLS12();
   /*TestPLS13();
   TestPLS14();*/
-TestPLS15();
+//TestPLS15();
+TestPLS17();
   return 0;
 }

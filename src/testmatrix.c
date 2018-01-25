@@ -26,6 +26,41 @@
 #include "numeric.h"
 #include "algebra.h"
 
+
+void Test34()
+{
+
+  matrix *x;
+  dvector *v, *r;
+
+  NewMatrix(&x, 7, 4);
+  NewDVector(&v, 7);
+
+  x->data[0][0] = 0.521; x->data[0][1] = 1.221; x->data[0][2] = 0.000; x->data[0][3] = -0.548;
+  x->data[1][0] = -0.263; x->data[1][1] = -0.273; x->data[1][2] = 0.000; x->data[1][3] = 0.021;
+  x->data[2][0] = -1.690; x->data[2][1] = -3.083; x->data[2][2] = 0.000; x->data[2][3] = 1.125;
+  x->data[3][0] = -0.103; x->data[3][1] = -0.067; x->data[3][2] = 0.000; x->data[3][3] = -0.021;
+  x->data[4][0] = 0.930; x->data[4][1] = 1.370; x->data[4][2] = 0.000; x->data[4][3] = -0.376;
+  x->data[5][0] = -0.596; x->data[5][1] =  -0.990; x->data[5][2] = 0.000; x->data[5][3] = 0.325;
+  x->data[6][0] = 1.201; x->data[6][1] = 1.822; x->data[6][2] = 0.000; x->data[6][3] = -0.525;
+
+  v->data[0] = -3.2144;
+  v->data[1] = 13.4345;
+  v->data[2] = 1.2783;
+  v->data[3] = 4.4551;
+  v->data[4] = 47.1042;
+  v->data[5] = -22.1152;
+  v->data[6] = -40.9425;
+
+  NewDVector(&r, 4);
+  DVectorMatrixDotProduct(x, v, r);
+  PrintDVector(r);
+  DelDVector(&r);
+  DelMatrix(&x);
+  DelDVector(&v);
+}
+
+
 void Test33(){
   matrix *m;
   NewMatrix(&m, 3, 3);
@@ -1146,5 +1181,6 @@ int main(void)
   Test31();
   Test32();
   Test33();*/
+  Test34();
   return 0;
 }

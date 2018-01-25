@@ -320,7 +320,6 @@ void *EPLSRandomGroupCVModel(void *arg_)
   /* step 1 generate the random groups */
   initMatrix(&gid);
   random_kfold_group_generator(&gid, arg->group, arg->mx->row, &arg->srand_init);
-
   /*
   puts("Gid Matrix");
   PrintMatrix(gid);
@@ -333,7 +332,6 @@ void *EPLSRandomGroupCVModel(void *arg_)
     initMatrix(&y_train);
     initMatrix(&x_test);
     initMatrix(&y_test); /* unused variable here .... */
-
     kfold_group_train_test_split(arg->mx, arg->my, gid, g, &x_train,&y_train,&x_test, &y_test);
 
     NewEPLSModel(&subm);
@@ -434,6 +432,7 @@ void BootstrapRandomGroupsCV(MODELINPUT *input, size_t group, size_t iterations,
     iterations_ = 0;
     while(iterations_ <  iterations){*/
     for(iterations_ = 0; iterations_ < iterations; iterations_ += nthreads){
+      printf(">>>>>>>> BRGCV iteration: %zu\n", iterations_);
       if(s != NULL && (*s) == SIGSCIENTIFICSTOP){
         break;
       }

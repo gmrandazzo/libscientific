@@ -23,7 +23,7 @@
 #include "vector.h"
 #include "scientificinfo.h"
 
-#define PLSCONVERGENCE 1e-8
+#define PLSCONVERGENCE 1e-12
 
 typedef struct{
   matrix *xscores;

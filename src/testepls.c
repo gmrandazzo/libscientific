@@ -83,7 +83,7 @@ void TestEPLS3()
   minpt.nlv = 4;
   minpt.xautoscaling = 1;
   minpt.yautoscaling = 0;
-  size_t nthreads = 4;
+  size_t nthreads = 1;
   initMatrix(&y_validation);
   initMatrix(&y_validation_residuals);
   BootstrapRandomGroupsCV(&minpt, 5, 20, _EPLS_, &y_validation, &y_validation_residuals, nthreads, NULL, 2, eparm, Median);
@@ -294,7 +294,7 @@ void TestEPLS1()
 int main(void)
 {
   /*test 1- 5*/
-  TestEPLS1();
+  //TestEPLS1();
   //TestEPLS2();
-  //TestEPLS3();
+  TestEPLS3();
 }

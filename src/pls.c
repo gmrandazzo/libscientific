@@ -142,13 +142,28 @@ void LVCalc(matrix **X, matrix **Y, dvector **t, dvector **u, dvector **p, dvect
   double mod_p_old, dot_q, dot_t, dot_u, dot_w, deltat;
   mod_p_old = dot_q = dot_t = dot_u = dot_w = 0.f;
 
+  /* Make a copy of variables for memory reasons... */
+  matrix *X_, *Y_;
+  dvector *t_, *u_, *p_, *q_, *w_;
+  initMatrix(&X_);
+  initMatrix(&Y_);
+  MatrixCopy((*X), &X_);
+  MatrixCopy((*Y), &Y_);
+
+  NewDVector(&t_, (*t)->size);
+  NewDVector(&u_, (*u)->size);
+  NewDVector(&p_, (*p)->size);
+  NewDVector(&q_, (*q)->size);
+  NewDVector(&w_, (*w)->size);
+
   dvector *t_old;
   NewDVector(&t_old, (*t)->size);
   /* Step 1: select the column vector u with the largest column average from Y  take u = some y_j */
-  if((*Y)->col > 1){
+  if(Y_->col > 1){
     dvector *Y_avg;
     initDVector(&Y_avg);
-    MatrixColVar((*Y), &Y_avg);
+    //MatrixColVar((*Y), &Y_avg);
+    MatrixColVar(Y_, &Y_avg);
     j = 0;
     for(i = 1; i < Y_avg->size; i++){
       if(Y_avg->data[i] > Y_avg->data[j])
@@ -163,8 +178,9 @@ void LVCalc(matrix **X, matrix **Y, dvector **t, dvector **u, dvector **p, dvect
   }
 
   /* copy the vector to the score u for computing weights w vector  */
-  for(i = 0; i < (*u)->size; i++)
-    (*u)->data[i] = (*Y)->data[i][j];
+  for(i = 0; i < u_->size; i++){
+    u_->data[i] = Y_->data[i][j];
+  }
   /* End Step 1 */
 
   #ifdef DEBUG
@@ -177,18 +193,17 @@ void LVCalc(matrix **X, matrix **Y, dvector **t, dvector **u, dvector **p, dvect
     step++;
     #endif
     /* Step 2: Compute a weight vector w = u'X/u'u   (NB.: w is size of X_t->col = (*X)->row ) */
-    DVectorSet((*w), 0.f); /* Reset the w vector */
-    DVectorMatrixDotProduct((*X), (*u), (*w));
+    DVectorSet(w_, 0.f); /* Reset the w vector */
+    DVectorMatrixDotProduct(X_, u_, w_);
+    dot_u = DVectorDVectorDotProd(u_, u_);
 
-    dot_u = DVectorDVectorDotProd((*u), (*u));
-
-    for(i = 0; i < (*w)->size; i++){
-      (*w)->data[i] /= dot_u;
+    for(i = 0; i < w_->size; i++){
+      w_->data[i] /= dot_u;
     }
     /* End Step2 */
 
     /* Step 3: w = w/||w1||   Normalize */
-    DVectNorm((*w), (*w));
+    DVectNorm(w_, w_);
 
     /* End Step 3 */
 
@@ -198,13 +213,12 @@ void LVCalc(matrix **X, matrix **Y, dvector **t, dvector **u, dvector **p, dvect
     #endif
 
     /* Step 4:   t = Xw/w'w Compute a t score vector. t i size of (*X)->row */
-    DVectorSet((*t), 0.f); /* Reset the t vector */
-    MatrixDVectorDotProduct((*X), (*w), (*t));
-
-    dot_w = DVectorDVectorDotProd((*w), (*w));
+    DVectorSet(t_, 0.f);
+    MatrixDVectorDotProduct(X_, w_, t_);
+    dot_w = DVectorDVectorDotProd(w_, w_);
 
     for(i = 0; i < (*t)->size; i++){
-      (*t)->data[i] /= dot_w;
+      t_->data[i] /= dot_w;
     }
 
     #ifdef DEBUG
@@ -213,27 +227,26 @@ void LVCalc(matrix **X, matrix **Y, dvector **t, dvector **u, dvector **p, dvect
     #endif
     /* End Step 4 */
 
-    if((*Y)->col > 1){
+    if(Y_->col > 1){
       /* Step 5: Compute the loadings Y vector q' = t'Y/t't  and normalize q = q/||q||*/
-      DVectorSet((*q), 0.f); /* Reset the c vector */
-      DVectorMatrixDotProduct((*Y), (*t), (*q));
+      DVectorSet(q_, 0.f); /* Reset the c vector */
+      DVectorMatrixDotProduct(Y_, t_, q_);
+      dot_t = DVectorDVectorDotProd(t_, t_);
 
-      dot_t = DVectorDVectorDotProd((*t), (*t));
-
-      for(i = 0; i < (*q)->size; i++){
-        (*q)->data[i] /= dot_t;
+      for(i = 0; i < q_->size; i++){
+        q_->data[i] /= dot_t;
       }
 
-      DVectNorm((*q), (*q));
+      DVectNorm(q_, q_);
       /* End Step 5 */
 
       /* Step 6. Update the Y Scores u  u = Yq/q'q */
-      DVectorSet((*u), 0.f);
-      MatrixDVectorDotProduct((*Y), (*q), (*u));
-      dot_q = DVectorDVectorDotProd((*q), (*q));
+      DVectorSet(u_, 0.f);
+      MatrixDVectorDotProduct(Y_, q_, u_);
+      dot_q = DVectorDVectorDotProd(q_, q_);
 
-      for(i = 0; i < (*u)->size; i++){
-        (*u)->data[i] /= dot_q;
+      for(i = 0; i < u_->size; i++){
+        u_->data[i] /= dot_q;
       }
 
       /* End step 6 */
@@ -245,24 +258,27 @@ void LVCalc(matrix **X, matrix **Y, dvector **t, dvector **u, dvector **p, dvect
     }
     else{
       /*If the Y block has only one variable, step 5-8 can be omitted by putting q = 1 and no more iteration is necessary.*/
-      DVectorSet((*q), 1);
+      //DVectorSet((*q), 1);
+      DVectorSet(q_, 1);
       //break;
     }
 
     /* Step 8 if t_old == t new with a precision PLSCONVERGENCE then stop iteration else restart from step 2 */
 
     if(loop == 0){
-      for(i = 0; i < (*t)->size; i++)
-        t_old->data[i] = (*t)->data[i];
+      for(i = 0; i < t_->size; i++)
+        t_old->data[i] = t_->data[i];
     }
     else{
       deltat = 0.f;
-      for(i = 0; i < (*t)->size; i++){
-        deltat = ((*t)->data[i] - t_old->data[i]) * ((*t)->data[i] - t_old->data[i]);
-        t_old->data[i] = (*t)->data[i];
+      for(i = 0; i < t_->size; i++){
+        deltat = (t_->data[i] - t_old->data[i]) * (t_->data[i] - t_old->data[i]);
+        t_old->data[i] = t_->data[i];
       }
       deltat = sqrt(deltat);
-      if(deltat < PLSCONVERGENCE){
+      //printf("deltat: %.10e %.10e %d\n", deltat, PLSCONVERGENCE, FLOAT_EQ(deltat, 0.f, PLSCONVERGENCE));
+
+      if((deltat < PLSCONVERGENCE) || _isnan_(deltat)){
         break;
       }
     }
@@ -271,11 +287,11 @@ void LVCalc(matrix **X, matrix **Y, dvector **t, dvector **u, dvector **p, dvect
   }
 
   /* Step 9 compute the loading vector for X: p' = t'X/t't  and y */
-  DVectorMatrixDotProduct((*X), (*t), (*p));
+  DVectorMatrixDotProduct(X_, t_, p_);
 
-  dot_t = DVectorDVectorDotProd((*t), (*t));
-  for(i = 0; i < (*p)->size; i++){
-    (*p)->data[i] /= dot_t;
+  dot_t = DVectorDVectorDotProd(t_, t_);
+  for(i = 0; i < p_->size; i++){
+    p_->data[i] /= dot_t;
   }
 
   #ifdef DEBUG
@@ -284,49 +300,67 @@ void LVCalc(matrix **X, matrix **Y, dvector **t, dvector **u, dvector **p, dvect
   #endif
   /* End Step 9*/
 
-  mod_p_old = DvectorModule((*p));
+  mod_p_old = DvectorModule(p_);
 
   /* Step 10  p_new = p_old'/||p_old'|| */
-  DVectNorm((*p), (*p));
+  DVectNorm(p_, p_);
 
   /*Step 11 t = t||p'||*/
-  for(i = 0; i < (*t)->size; i++){
-    (*t)->data[i] *= mod_p_old;
+  for(i = 0; i < t_->size; i++){
+    t_->data[i] *= mod_p_old;
   }
 
   /*Step 12 */
-  for(i = 0; i < (*w)->size; i++){
-    (*w)->data[i] *= mod_p_old;
+  for(i = 0; i < w_->size; i++){
+    w_->data[i] *= mod_p_old;
   }
 
   /* Step 13 Find the Regression Coefficient b:  b = u't/t't */
-  dot_t = DVectorDVectorDotProd((*t), (*t));
+  dot_t = DVectorDVectorDotProd(t_, t_);
 
-  (*bcoef) = DVectorDVectorDotProd((*u), (*t))/dot_t;
+  (*bcoef) = DVectorDVectorDotProd(u_, t_)/dot_t;
 
   /*End Step 13*/
 
   /* Step 14  Adjust X for what has been found: Xnew=X-tp'  and Y fort what has been found Ynew = Y - btp' */
   /* X */
-  for(i = 0; i < (*X)->row; i++){
-    for(j = 0; j < (*X)->col; j++){
-      (*X)->data[i][j] -= (*t)->data[i]*(*p)->data[j];
+  for(i = 0; i < X_->row; i++){
+    for(j = 0; j < X_->col; j++){
+      X_->data[i][j] -= t_->data[i]*p_->data[j];
     }
   }
 
   /* Y */
-  for(i = 0; i < (*Y)->row; i++){
-    for(j = 0; j < (*Y)->col; j++){
-      (*Y)->data[i][j] -= ((*bcoef) * (*t)->data[i] * (*q)->data[j]);
+  for(i = 0; i < Y_->row; i++){
+    for(j = 0; j < Y_->col; j++){
+      //(*Y)->data[i][j] -= ((*bcoef) * (*t)->data[i] * (*q)->data[j]);
+      Y_->data[i][j] -= ((*bcoef) * t_->data[i] * q_->data[j]);
     }
   }
 
+  MatrixCopy(X_, X);
+  MatrixCopy(Y_, Y);
+  DVectorCopy(t_, t);
+  DVectorCopy(p_, p);
+  DVectorCopy(u_, u);
+  DVectorCopy(q_, q);
+  DVectorCopy(w_, w);
+
   #ifdef DEBUG
   printf("\n Deflated X \n");
-  PrintMatrix(X);
+  PrintMatrix(X_);
   printf("\n Deflated Y\n");
-  PrintMatrix(Y);
+  PrintMatrix(Y_);
   #endif
+
+  DelMatrix(&X_);
+  DelMatrix(&Y_);
+  DelDVector(&t_);
+  DelDVector(&p_);
+  DelDVector(&u_);
+  DelDVector(&q_);
+  DelDVector(&w_);
+
   DelDVector(&t_old);
 }
 
