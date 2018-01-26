@@ -18,7 +18,6 @@ double rosen(dvector *x)
   return res;
 }
 
-
 void test1(){
   dvector *x0, *best;
   NewDVector(&x0, 5);
@@ -29,19 +28,26 @@ void test1(){
   x0->data[3] = 1.9;
   x0->data[4] = 1.2;
 
-  printf("Init ROSEN : %f\n", rosen(x0));
-
   initDVector(&best);
   double min = NelderMeadSimplex(&rosen, x0, NULL, 1e-10, 1000, &best);
-  printf("min results obtained: %f\n",  min);
+  /*printf("min results obtained: %f\n",  min);
   puts("Best results obtained vector");
-  PrintDVector(best);
+  PrintDVector(best);*/
   /*litterature*/
-  best->data[0] = 0.995260;
-  best->data[1] = 0.990385;
-  printf("min results litterature: %f\n",rosen(best));
-  puts("Best results litterature vector");
-  PrintDVector(best);
+  best->data[0] = 1.0;
+  best->data[1] = 1.0;
+  best->data[2] = 1.0;
+  best->data[3] = 1.0;
+  best->data[4] = 1.0;
+  double best_litterature = rosen(best);
+  if(FLOAT_EQ(best_litterature, min, 1e-8) == 1){
+    puts("OK!");
+  }
+  else{
+    puts("OPTIMIZATION ERROR!");
+    printf("%f != %f\n", min, best_litterature);
+  }
+
   DelDVector(&x0);
   DelDVector(&best);
 }

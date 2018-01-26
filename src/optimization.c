@@ -24,11 +24,6 @@
 #include <math.h>
 #include <time.h>
 
-typedef struct{
-  dvector *x;
-  double (*func)();
-} simplex_arg;
-
 /*
  *  NelderMeadSimplex:
  *  1) Perform k+1 steps with k the number of variable to optimise
@@ -37,30 +32,6 @@ typedef struct{
  *      x_new =  c - c - x_wost
  *      where c is the centroid calculate with all the best less the worst one.
  */
-
- double do_simplex(void *arg_)
- {
-   simplex_arg *arg;
-   arg = (simplex_arg*) arg_;
-   /*puts("Evaluate");
-   PrintDVector(arg->x);*/
-   //run the function and collect the results to argh->fval!
-   return arg->func(arg->x);
-}
-
-int cmpmin(const void *a, const void *b)
-{
-  const double *a_ = *(const double **)a;
-  const double *b_ = *(const double **)b;
-  int c = sizeof(a_)/sizeof(a_[0]);
-  c = 5;
-  //printf("cmpmin: %d\n", c);
-  //printf("%f %f\n ", a_[c], b_[c]);
-  if(a_[c] < b_[c]) return -1;
-  if(a_[c] > b_[c]) return 1;
-  return 0;
-}
-
 
 void gen_centroids(matrix *x, dvector *c)
 {
@@ -100,17 +71,17 @@ double NelderMeadSimplex(double (*func)(), dvector *x0, dvector *step, double xt
 {
   size_t i, j, iter_;
   matrix *x;
-  dvector *c, *x_r, *x_e, *x_oc, *x_ic, *x_i;
+
+  dvector *c, *x_r, *x_e, *x_oc, *x_ic, *x_i, *x_tmp;
   double res, x_r_res, x_e_res, x_oc_res, x_ic_res;
-  simplex_arg arg;
+
   double alpha = 1; /* alpha >0*/
   double beta = 1+(2.f/(double)x0->size); /* beta > 1 */
   double gamma = 0.75-1/(2.f*(double)x0->size); /* 0 < gamma < 1 */
   double delta = 1- (1.f/(double)x0->size); /* 0 < delta < 1 */
 
-  arg.func = func;
-  NewDVector(&arg.x, x0->size);
   NewDVector(&c, x0->size);
+  NewDVector(&x_tmp, x0->size);
   NewDVector(&x_r, x0->size);
   NewDVector(&x_e, x0->size);
   NewDVector(&x_oc, x0->size);
@@ -149,17 +120,17 @@ double NelderMeadSimplex(double (*func)(), dvector *x0, dvector *step, double xt
   /* 2 perform k+1 calculation to initialize the output function */
   for(i = 0; i < x->row; i++){
     for(j = 0; j < x->col-1; j++){
-      arg.x->data[j] = x->data[i][j];
+      x_tmp->data[j] = x->data[i][j];
     }
-    arg.func = func;
-    x->data[i][ x->col-1] = do_simplex(&arg);
+
+    x->data[i][ x->col-1] = func(x_tmp);
   }
 
   /*puts("Initial matrix");
   PrintMatrix(x);*/
 
   /*3 Rank the initialized output from the best to the worst */
-  qsort(x->data, x->row, sizeof(double*), cmpmin);
+  MatrixSort(x, x->col-1);
 
   iter_ = 0;
   while(iter_ < iter){
@@ -171,10 +142,10 @@ double NelderMeadSimplex(double (*func)(), dvector *x0, dvector *step, double xt
     /* compute the reflection */
     for(i = 0; i < c->size; i++){
       x_r->data[i] = c->data[i]+alpha*(c->data[i]-x->data[x->row-1][i]);
-      arg.x->data[i] = x_r->data[i];
+      x_tmp->data[i] = x_r->data[i];
     }
 
-    x_r_res = do_simplex(&arg);
+    x_r_res = func(x_tmp);
     //printf("Compute reflection: %f\n", x_r_res);
     /* if f(0) < f(r) < f(n) */
     if(x->data[0][x->col-1] < x_r_res && x_r_res < x->data[x->row-2][x->col-1]){
@@ -186,9 +157,9 @@ double NelderMeadSimplex(double (*func)(), dvector *x0, dvector *step, double xt
       /* compute the expansion */
       for(i = 0; i < c->size; i++){
         x_e->data[i] = c->data[i]+beta*(x_r->data[i]-c->data[i]);
-        arg.x->data[i] = x_e->data[i];
+        x_tmp->data[i] = x_e->data[i];
       }
-      x_e_res = do_simplex(&arg);
+      x_e_res = func(x_tmp);
       //printf("Compute expansion: %f\n", x_e_res);
       /* if f(e) < f(r) */
       if(x_e_res < x_r_res){
@@ -203,9 +174,9 @@ double NelderMeadSimplex(double (*func)(), dvector *x0, dvector *step, double xt
     else if(x->data[x->row-2][x->col-1] <= x_r_res && x_r_res < x->data[x->row-1][x->col-1]){
       for(i = 0; i < c->size; i++){
         x_oc->data[i] = c->data[i]+gamma*(x_r->data[i]-c->data[i]);
-        arg.x->data[i] = x_oc->data[i];
+        x_tmp->data[i] = x_oc->data[i];
       }
-      x_oc_res = do_simplex(&arg);
+      x_oc_res = func(x_tmp);
       //printf("Compute outside contraction: %f\n", x_oc_res);
       /*if f(oc) <= f(r) */
       if(x_oc_res <= x_r_res){
@@ -217,10 +188,9 @@ double NelderMeadSimplex(double (*func)(), dvector *x0, dvector *step, double xt
 
         for(i = 0; i < x->row; i++){
           for(j = 0; j < x->col-1; j++){
-            arg.x->data[j] = x->data[i][j];
+            x_tmp->data[j] = x->data[i][j];
           }
-          arg.func = func;
-          x->data[i][ x->col-1] = do_simplex(&arg);
+          x->data[i][ x->col-1] = func(x_tmp);
         }
 
       }
@@ -228,9 +198,9 @@ double NelderMeadSimplex(double (*func)(), dvector *x0, dvector *step, double xt
     else if(x_r_res >= x->data[x->row-1][x->col-1]){
       for(i = 0; i < c->size; i++){
         x_ic->data[i] = c->data[i] - gamma*(x_r->data[i]-c->data[i]);
-        arg.x->data[i] = x_ic->data[i];
+        x_tmp->data[i] = x_ic->data[i];
       }
-      x_ic_res = do_simplex(&arg);
+      x_ic_res = func(x_tmp);
       //printf("Compute inside contraction: %f\n", x_ic_res);
       /* if f(ic) < f(n+1) */
       if(x_ic_res < x->data[x->row-1][x->col-1]){
@@ -240,16 +210,17 @@ double NelderMeadSimplex(double (*func)(), dvector *x0, dvector *step, double xt
         shrink(x, delta);
         for(i = 0; i < x->row; i++){
           for(j = 0; j < x->col-1; j++){
-            arg.x->data[j] = x->data[i][j];
+            x_tmp->data[j] = x->data[i][j];
           }
-          arg.func = func;
-          x->data[i][ x->col-1] = do_simplex(&arg);
+          x->data[i][ x->col-1] = func(x_tmp);
         }
       }
     }
-    qsort(x->data, x->row, sizeof(double*), cmpmin);
-    /*puts("Unsorted matrix");
+    MatrixSort(x, x->col-1);
+    /*
+    puts("Unsorted matrix");
     PrintMatrix(x);
+    MatrixSort(x, x->col-1);
 
     puts("Sorted Matrix");
     PrintMatrix(x);
@@ -258,7 +229,8 @@ double NelderMeadSimplex(double (*func)(), dvector *x0, dvector *step, double xt
     puts("Worst function value");
     printf("%f\n", x->data[x->row-1][x->col-1]);
     printf("------------------\n");
-    sleep(2);*/
+    sleep(2);
+    */
 
     if(fabs(x->data[x->row-1][x->col-1]-x->data[0][x->col-1]) < xtol){
       break;
@@ -268,7 +240,8 @@ double NelderMeadSimplex(double (*func)(), dvector *x0, dvector *step, double xt
     }
   }
 
-  qsort(x->data, x->row, sizeof(double*), cmpmin);
+  MatrixSort(x, x->col-1);
+
   /*puts("Final matrix");
   PrintMatrix(x);*/
 
@@ -277,14 +250,12 @@ double NelderMeadSimplex(double (*func)(), dvector *x0, dvector *step, double xt
     (*best)->data[i] = x->data[0][i];
   res = x->data[0][x0->size];
 
-
   DelDVector(&x_r);
   DelDVector(&x_e);
   DelDVector(&x_oc);
   DelDVector(&x_ic);
   DelDVector(&x_i);
   DelDVector(&c);
-  DelDVector(&arg.x);
   DelMatrix(&x);
   return res;
 }

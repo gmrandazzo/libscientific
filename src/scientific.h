@@ -31,25 +31,24 @@
 extern "C" {
 #endif
 
-#include <scientific/vector.h>
-#include <scientific/matrix.h>
 #include <scientific/array.h>
+#include <scientific/matrix.h>
+#include <scientific/vector.h>
+
 
 #include <scientific/numeric.h>
 #include <scientific/algebra.h>
 #include <scientific/statistic.h>
 #include <scientific/metricspace.h>
-#include <scientific/clustering.h>
+#include <scientific/optimization.h>
 
+#include <scientific/clustering.h>
 #include <scientific/pca.h>
 #include <scientific/pls.h>
 #include <scientific/epls.h>
-
 #include <scientific/upca.h>
 #include <scientific/upls.h>
-
 #include <scientific/mlr.h>
-
 #include <scientific/lda.h>
 
 #include <scientific/modelvalidation.h>
