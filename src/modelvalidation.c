@@ -432,7 +432,6 @@ void BootstrapRandomGroupsCV(MODELINPUT *input, size_t group, size_t iterations,
     iterations_ = 0;
     while(iterations_ <  iterations){*/
     for(iterations_ = 0; iterations_ < iterations; iterations_ += nthreads){
-      printf(">>>>>>>> BRGCV iteration: %zu\n", iterations_);
       if(s != NULL && (*s) == SIGSCIENTIFICSTOP){
         break;
       }

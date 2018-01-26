@@ -26,7 +26,6 @@
 
 typedef struct{
   dvector *x;
-  double fval;
   double (*func)();
 } simplex_arg;
 
@@ -39,37 +38,35 @@ typedef struct{
  *      where c is the centroid calculate with all the best less the worst one.
  */
 
- void do_simplex(void *arg_)
+ double do_simplex(void *arg_)
  {
    simplex_arg *arg;
    arg = (simplex_arg*) arg_;
+   /*puts("Evaluate");
+   PrintDVector(arg->x);*/
    //run the function and collect the results to argh->fval!
-   arg->fval = arg->func(arg->x);
+   return arg->func(arg->x);
 }
 
-/*for maximization */
-int cmpmax(const void *a, const void *b)
-{
-  const double *a_ = *(const double **)a;
-  const double *b_ = *(const double **)b;
-  int c = (int)(sizeof(a_)/sizeof(a_[0]))+1;
-  //printf("cmpmax: %d\n", c);
-  return b_[c] - a_[c];
-}
-
-/* for minimization */
 int cmpmin(const void *a, const void *b)
 {
   const double *a_ = *(const double **)a;
   const double *b_ = *(const double **)b;
-  int c = (int)(sizeof(a_)/sizeof(a_[0]))+1;
+  int c = sizeof(a_)/sizeof(a_[0]);
+  c = 5;
   //printf("cmpmin: %d\n", c);
-  return a_[c] - b_[c];
+  //printf("%f %f\n ", a_[c], b_[c]);
+  if(a_[c] < b_[c]) return -1;
+  if(a_[c] > b_[c]) return 1;
+  return 0;
 }
+
 
 void gen_centroids(matrix *x, dvector *c)
 {
-  /* x is already ordered */
+  /* x is already ordered
+  * the last is skipped;
+   */
   size_t i, j;
   for(j = 0; j < x->col-1; j++){
     c->data[j] = 0.f;
@@ -80,26 +77,47 @@ void gen_centroids(matrix *x, dvector *c)
   }
 }
 
-double NelderMeadSimplex(double (*func)(), dvector *x0, dvector *step, double xtol, size_t iter, dvector **best, enum OPT_TYPE otype)
+void replace_xnp1(matrix *x, dvector *x_new, double x_new_res)
 {
-  size_t i, j, k, iter_;
-  matrix *x;
-  dvector *c;
-  double worst[2] = { 0.f, 0.f};
-  double res = 0.f;
-  simplex_arg arg;
+  size_t i;
+  for(i = 0; i < x_new->size; i++){
+    x->data[x->row-1][i] = x_new->data[i];
+  }
+  x->data[x->row-1][x->col-1] = x_new_res;
+}
 
-  k = x0->size+1;
-  if(otype == maximization)
-    arg.fval = 0.f;
-  else
-    arg.fval = 9999.f;
+void shrink(matrix *x, double delta)
+{
+  size_t i, j;
+  for(i = 1; i < x->row; i++){
+    for(j = 0; j < x->col; j++){
+      x->data[i][j] = x->data[0][j] + delta*(x->data[i][j]-x->data[0][j]);
+    }
+  }
+}
+
+double NelderMeadSimplex(double (*func)(), dvector *x0, dvector *step, double xtol, size_t iter, dvector **best)
+{
+  size_t i, j, iter_;
+  matrix *x;
+  dvector *c, *x_r, *x_e, *x_oc, *x_ic, *x_i;
+  double res, x_r_res, x_e_res, x_oc_res, x_ic_res;
+  simplex_arg arg;
+  double alpha = 1; /* alpha >0*/
+  double beta = 1+(2.f/(double)x0->size); /* beta > 1 */
+  double gamma = 0.75-1/(2.f*(double)x0->size); /* 0 < gamma < 1 */
+  double delta = 1- (1.f/(double)x0->size); /* 0 < delta < 1 */
 
   arg.func = func;
   NewDVector(&arg.x, x0->size);
   NewDVector(&c, x0->size);
+  NewDVector(&x_r, x0->size);
+  NewDVector(&x_e, x0->size);
+  NewDVector(&x_oc, x0->size);
+  NewDVector(&x_ic, x0->size);
+  NewDVector(&x_i, x0->size);
 
-  /*1) create k+1 steps */
+  /*1) create k+1 steps with  k+1 value in wich the last column is the fval result! */
   NewMatrix(&x, x0->size+1, x0->size+1);
   if(step != NULL){
     for(int i = 0; i < x0->size+1; i++){
@@ -111,10 +129,7 @@ double NelderMeadSimplex(double (*func)(), dvector *x0, dvector *step, double xt
           x->data[i][j] = x0->data[j];
         }
       }
-      if(otype == maximization)
-        x->data[i][x0->size] = 0.f;
-      else
-        x->data[i][x0->size] = 9999.f; /* value of function */
+      x->data[i][x->col-1] = 9999.f; /* value of function */
     }
   }
   else{
@@ -127,146 +142,147 @@ double NelderMeadSimplex(double (*func)(), dvector *x0, dvector *step, double xt
           x->data[i][j] = x0->data[j];
         }
       }
-      if(otype == maximization)
-        x->data[i][x0->size] = 0.f;
-      else
-        x->data[i][x0->size] = 9999.f; /* value of function */
+      x->data[i][x->col-1] = 9999.f; /* value of function */
     }
   }
 
-  /* initialization */
-  for(i = 0; i < k; i++){
-    if(otype == maximization)
-      arg.fval = 0.f;
-    else
-      arg.fval = 9999.f;
-
-    for(j = 0; j < x0->size; j++)
+  /* 2 perform k+1 calculation to initialize the output function */
+  for(i = 0; i < x->row; i++){
+    for(j = 0; j < x->col-1; j++){
       arg.x->data[j] = x->data[i][j];
+    }
     arg.func = func;
-    do_simplex(&arg);
-    x->data[i][x0->size] = arg.fval;
+    x->data[i][ x->col-1] = do_simplex(&arg);
   }
-  if(otype == maximization)
-    qsort(x->data, x->row, sizeof(double*), cmpmax);
-  else
-    qsort(x->data, x->row, sizeof(double*), cmpmin);
 
-  /* the last is the worst one!! which is replaced with the new conditions */
-  gen_centroids(x, c);
-  worst[0] = worst[1] = x->data[k-1][k-1];
+  /*puts("Initial matrix");
+  PrintMatrix(x);*/
 
-  for(j = 0; j < x0->size; j++){
-    arg.x->data[j] = c->data[j] + 2.f*(c->data[j]-x->data[k-1][j]);
-    x->data[k-1][j] = arg.x->data[j];
-  }
+  /*3 Rank the initialized output from the best to the worst */
+  qsort(x->data, x->row, sizeof(double*), cmpmin);
 
   iter_ = 0;
-  while(iter_ < iter)
-  {
-    printf("Worst: %.3f %.3f\n", worst[0], worst[1]);
-    if(otype == maximization)
-      arg.fval = 0.f;
-    else
-      arg.fval = 9999.f;
-    for(j = 0; j < x0->size; j++)
-      arg.x->data[j] = x->data[k-1][j];
-    arg.func = func;
-    do_simplex(&arg);
-    x->data[k-1][k-1] = arg.fval;
+  while(iter_ < iter){
 
-    if(otype == maximization)
-      qsort(x->data, x->row, sizeof(double*), cmpmax);
-    else
-      qsort(x->data, x->row, sizeof(double*), cmpmin);
-
-    PrintMatrix(x);
-    sleep(2);
+    /*4 Establish a new condition (excluding the worst) for the next experiment and start with the loop */
     /* the last is the worst one!! which is replaced with the new conditions */
     gen_centroids(x, c);
-    PrintDVector(c);
 
-    /*check if the actual answer is better than all the other's */
-    for(i = 0; i < x->row; i++){
-      if(arg.fval > x->data[i][x->col-1]){
-        continue;
-      }
-      else{
-        break;
-      }
+    /* compute the reflection */
+    for(i = 0; i < c->size; i++){
+      x_r->data[i] = c->data[i]+alpha*(c->data[i]-x->data[x->row-1][i]);
+      arg.x->data[i] = x_r->data[i];
     }
 
-    /*if yes */
-    if(i == x->row-1){
-      x->data[x0->size][x0->size] = arg.fval;
-      /* x = c + 2*(c-x) */
-      puts("x = c + 2*(c-x)");
-      for(j = 0; j < x0->size; j++){
-        arg.x->data[j] = c->data[j] + 2.f*(c->data[j]-x->data[k-1][j]);
-        x->data[k-1][j] = arg.x->data[j];
-      }
+    x_r_res = do_simplex(&arg);
+    //printf("Compute reflection: %f\n", x_r_res);
+    /* if f(0) < f(r) < f(n) */
+    if(x->data[0][x->col-1] < x_r_res && x_r_res < x->data[x->row-2][x->col-1]){
+      /*replace xn+1 with the reflection x_r*/
+      replace_xnp1(x, x_r, x_r_res);
     }
-    else{
-      if(arg.fval > worst[0] && arg.fval < worst[1]){
-        puts("x = c + 0.5*(c-x)");
-        /*x = c + 0.5*(c-x)*/
-        for(j = 0; j < x0->size; j++){
-          /* set the new condition and add to the last worst */
-          arg.x->data[j] = c->data[j] + 0.5*(c->data[j] - x->data[k-1][j]);
-          x->data[k-1][j] = arg.x->data[j];
-        }
+    /*else if f(r) < f(0) */
+    else if(x_r_res < x->data[0][x->col-1]){
+      /* compute the expansion */
+      for(i = 0; i < c->size; i++){
+        x_e->data[i] = c->data[i]+beta*(x_r->data[i]-c->data[i]);
+        arg.x->data[i] = x_e->data[i];
       }
-      else if(arg.fval < worst[0] && arg.fval < worst[1]){
-        puts("x = c - 0.5*(c-x)");
-        /*x = c - 0.5*(c-x)*/
-        for(j = 0; j < x0->size; j++){
-          /* set the new condition and add to the last worst */
-          arg.x->data[j] = c->data[j] - 0.5*(c->data[j] - x->data[k-1][j]);
-          x->data[k-1][j] = arg.x->data[j];
-        }
+      x_e_res = do_simplex(&arg);
+      //printf("Compute expansion: %f\n", x_e_res);
+      /* if f(e) < f(r) */
+      if(x_e_res < x_r_res){
+        /*replace xn+1 with x_e otherwise replace xn+1 with xr*/
+        replace_xnp1(x, x_e, x_e_res);
       }
       else{
-        puts("x = c + c - x");
-        /*x = c + c - x */
-        for(j = 0; j < x0->size; j++){
-          /* set the new condition and add to the last worst */
-          arg.x->data[j] = c->data[j] + c->data[j] - x->data[k-1][j];
-          x->data[k-1][j] = arg.x->data[j];
+        replace_xnp1(x, x_r, x_r_res);
+      }
+    }
+    /* else if f(n) <= f(r) < f(n+1) */
+    else if(x->data[x->row-2][x->col-1] <= x_r_res && x_r_res < x->data[x->row-1][x->col-1]){
+      for(i = 0; i < c->size; i++){
+        x_oc->data[i] = c->data[i]+gamma*(x_r->data[i]-c->data[i]);
+        arg.x->data[i] = x_oc->data[i];
+      }
+      x_oc_res = do_simplex(&arg);
+      //printf("Compute outside contraction: %f\n", x_oc_res);
+      /*if f(oc) <= f(r) */
+      if(x_oc_res <= x_r_res){
+        replace_xnp1(x, x_oc, x_oc_res);
+      }
+      else{
+        /*shrink*/
+        shrink(x, delta);
+
+        for(i = 0; i < x->row; i++){
+          for(j = 0; j < x->col-1; j++){
+            arg.x->data[j] = x->data[i][j];
+          }
+          arg.func = func;
+          x->data[i][ x->col-1] = do_simplex(&arg);
+        }
+
+      }
+    }
+    else if(x_r_res >= x->data[x->row-1][x->col-1]){
+      for(i = 0; i < c->size; i++){
+        x_ic->data[i] = c->data[i] - gamma*(x_r->data[i]-c->data[i]);
+        arg.x->data[i] = x_ic->data[i];
+      }
+      x_ic_res = do_simplex(&arg);
+      //printf("Compute inside contraction: %f\n", x_ic_res);
+      /* if f(ic) < f(n+1) */
+      if(x_ic_res < x->data[x->row-1][x->col-1]){
+        replace_xnp1(x, x_ic, x_ic_res);
+      }
+      else{
+        shrink(x, delta);
+        for(i = 0; i < x->row; i++){
+          for(j = 0; j < x->col-1; j++){
+            arg.x->data[j] = x->data[i][j];
+          }
+          arg.func = func;
+          x->data[i][ x->col-1] = do_simplex(&arg);
         }
       }
     }
-    puts("suco");
+    qsort(x->data, x->row, sizeof(double*), cmpmin);
+    /*puts("Unsorted matrix");
     PrintMatrix(x);
-    for(j = 0; j < x0->size; j++){
-      /* set the new condition and add to the last worst */
-      printf("%.3f - %.3f\n", c->data[j], x->data[k-1][j]);
-      arg.x->data[j] = (c->data[j] + c->data[j]) - x->data[k-1][j];
-      x->data[k-1][j] = arg.x->data[j];
-    }
 
-    double tmp = worst[0];
-    worst[0] = x->data[k-1][k-1];
-    worst[1] = tmp;
+    puts("Sorted Matrix");
+    PrintMatrix(x);
+    puts("Centroid no WORST");
+    PrintDVector(c);
+    puts("Worst function value");
+    printf("%f\n", x->data[x->row-1][x->col-1]);
+    printf("------------------\n");
+    sleep(2);*/
 
-    if(fabs(x->data[0][k-1]-x->data[1][k-1]) > xtol){
-      iter_ +=1;
+    if(fabs(x->data[x->row-1][x->col-1]-x->data[0][x->col-1]) < xtol){
+      break;
     }
     else{
-      break;
+      iter_ +=1;
     }
   }
 
-  if(otype == maximization)
-    qsort(x->data, x->row, sizeof(double*), cmpmax);
-  else
-    qsort(x->data, x->row, sizeof(double*), cmpmin);
-
+  qsort(x->data, x->row, sizeof(double*), cmpmin);
+  /*puts("Final matrix");
+  PrintMatrix(x);*/
 
   DVectorResize(best, x0->size);
   for(i = 0; i < x0->size; i++)
     (*best)->data[i] = x->data[0][i];
   res = x->data[0][x0->size];
 
+
+  DelDVector(&x_r);
+  DelDVector(&x_e);
+  DelDVector(&x_oc);
+  DelDVector(&x_ic);
+  DelDVector(&x_i);
   DelDVector(&c);
   DelDVector(&arg.x);
   DelMatrix(&x);

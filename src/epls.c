@@ -140,7 +140,6 @@ void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautos
      /* Create a random id vector */
      for(it = 0; it < eparm.n_models; it++){
        /* Sattolo's algorithm to shuffle the featureids*/
-       puts("START SHUFFLE VECTOR");
        i = featureids->size;
        while(i > 1){
          i = i - 1;
@@ -149,7 +148,6 @@ void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautos
          featureids->data[j] = featureids->data[i];
          featureids->data[i] = tmp;
        }
-       puts("END SHUFFLE VECTOR");
 
        NewUIVector(&m->model_feature_ids[it], eparm.r_fix);
        /* Copy the column ids for future predictions */

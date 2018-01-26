@@ -25,12 +25,6 @@
 #include "matrix.h"
 #include "numeric.h"
 
-enum OPT_TYPE {
-  maximization,
-  minimization
-};
-
-
-double NelderMeadSimplex(double (*func)(), dvector *x0, dvector *step, double xtol, size_t iter, dvector **best, enum OPT_TYPE otype);
+double NelderMeadSimplex(double (*func)(), dvector *x0, dvector *step, double xtol, size_t iter, dvector **best);
 
 #endif
