@@ -29,11 +29,11 @@ typedef struct{
   double dist;
 } NODE;
 
-/* Most Descriptive Compound Method 
- * Input: 
+/* Most Descriptive Compound Method
+ * Input:
  *  - m: matrix of data in coordinate
  *  - n: number of object to select.
- * 
+ *
  * Output:
  *  - selecttions: vector of id selected..
  */
@@ -42,11 +42,11 @@ void MDC(matrix *m, size_t n, int metric, uivector **selections, ssignal *s);
 
 /*
  * MaxMin Dissimilarity Method
- * 
+ *
  * Input:
  * - m: matrix of data in coordinate
  * - n: number of object to select.
- * 
+ *
  * Output:
  * - selections: vector of id selected
  */
@@ -54,11 +54,11 @@ void MaxDis(matrix* m, size_t n, int metric, uivector** selections, ssignal *s);
 
 /*
  * HyperGrid Map Selections
- * 
+ *
  * Input:
  * - m: matrix of data in coordinate
  * - n: number of object to select.
- * 
+ *
  * Output:
  * - selections: vector of id selected
  */
@@ -66,11 +66,11 @@ void HyperGridMap(matrix* m, size_t step, size_t n, uivector** selections, ssign
 
 /*
  * KMeans++ Centers Method
- * 
+ *
  * Input:
  * - m: matrix of data in coordinate
  * - n: number of object to select.
- * 
+ *
  * Output:
  * - selections: vector of id selected
  */
@@ -78,7 +78,7 @@ void KMeansppCenters(matrix *m, size_t n, uivector **selections, ssignal *s);
 
 /*
  * KMeans Clustering
- * 
+ *
  * Imput:
  *  - m: matrix with N-Dimensional coordinate
  *  - nclusters: Number of clusters desired
@@ -98,10 +98,10 @@ void KMeansRandomGroupsCV(matrix* m, size_t maxnclusters, int initializer, size_
 void KMeansJumpMethod(matrix* m, size_t maxnclusters, int initializer, dvector** jumps, ssignal *s);
 
 enum LinkageType {
-  sl = 0,
-  cl = 1,
-  al = 2,
-  wl = 3
+  single_linkage = 0,
+  complete_linkage = 1,
+  average_linkage = 2,
+  ward_linkage = 3
 };
 
 void HierarchicalClustering(matrix* _m, size_t nclusters, uivector** _clusters, matrix **_centroids_, strvector **dendogram, enum LinkageType linktype, ssignal *s);
