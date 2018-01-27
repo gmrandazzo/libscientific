@@ -20,40 +20,40 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <time.h>
-#include "array.h"
+#include "tensor.h"
 #include "upca.h"
 
 void test4()
 {
-  array *t;
+  tensor *t;
   UPCAMODEL *m;
 
   puts(">>>>>>> Test 4: Compute Multi Way PCA");
 
-  NewArray(&t, 2);
+  NewTensor(&t, 2);
 
-  NewArrayMatrix(&t, 0, 4, 2);
-  NewArrayMatrix(&t, 1, 4, 2);
+  NewTensorMatrix(&t, 0, 4, 2);
+  NewTensorMatrix(&t, 1, 4, 2);
 
-  setArrayValue(t, 0, 0, 0, 7);  setArrayValue(t, 0, 0, 1, 9);
-  setArrayValue(t, 0, 1, 0, 5);  setArrayValue(t, 0, 1, 1, 4);
-  setArrayValue(t, 0, 2, 0, 2);  setArrayValue(t, 0, 2, 1, 10);
-  setArrayValue(t, 0, 3, 0, 4);  setArrayValue(t, 0, 3, 1, 16);
+  setTensorValue(t, 0, 0, 0, 7);  setTensorValue(t, 0, 0, 1, 9);
+  setTensorValue(t, 0, 1, 0, 5);  setTensorValue(t, 0, 1, 1, 4);
+  setTensorValue(t, 0, 2, 0, 2);  setTensorValue(t, 0, 2, 1, 10);
+  setTensorValue(t, 0, 3, 0, 4);  setTensorValue(t, 0, 3, 1, 16);
 
-  setArrayValue(t, 1, 0, 0, 7);  setArrayValue(t, 1, 0, 1, 9);
-  setArrayValue(t, 1, 1, 0, 5);  setArrayValue(t, 1, 1, 1, 4);
-  setArrayValue(t, 1, 2, 0, 4);  setArrayValue(t, 1, 2, 1, 10);
-  setArrayValue(t, 1, 3, 0, 6);  setArrayValue(t, 1, 3, 1, 16);
+  setTensorValue(t, 1, 0, 0, 7);  setTensorValue(t, 1, 0, 1, 9);
+  setTensorValue(t, 1, 1, 0, 5);  setTensorValue(t, 1, 1, 1, 4);
+  setTensorValue(t, 1, 2, 0, 4);  setTensorValue(t, 1, 2, 1, 10);
+  setTensorValue(t, 1, 3, 0, 6);  setTensorValue(t, 1, 3, 1, 16);
 
-  puts("Array");
-  PrintArray(t);
+  puts("Tensor");
+  PrintTensor(t);
 
   NewUPCAModel(&m);
 
   UPCA(t, 2, 1, m, NULL);
 
   DelUPCAModel(&m);
-  DelArray(&t);
+  DelTensor(&t);
 }
 
 /*Test from:
@@ -64,40 +64,40 @@ void test4()
  */
 void test3()
 {
-  array *t;
+  tensor *t;
 
   UPCAMODEL *m;
 
-  array *tpred;
+  tensor *tpred;
   matrix *predscore;
 
   puts(">>>>>>> Test 3: Compute Multi Way PCA and Prediction");
 
-  NewArray(&t, 2);
+  NewTensor(&t, 2);
 
-  NewArrayMatrix(&t, 0, 3, 2);
-  NewArrayMatrix(&t, 1, 3, 2);
+  NewTensorMatrix(&t, 0, 3, 2);
+  NewTensorMatrix(&t, 1, 3, 2);
 
-  setArrayValue(t, 0, 0, 0, 0.424264);  setArrayValue(t, 0, 0, 1, 0.565685);
-  setArrayValue(t, 0, 1, 0, 0.565685);  setArrayValue(t, 0, 1, 1, 0.424264);
-  setArrayValue(t, 0, 2, 0, 0.707101);  setArrayValue(t, 0, 2, 1, 0.707101);
+  setTensorValue(t, 0, 0, 0, 0.424264);  setTensorValue(t, 0, 0, 1, 0.565685);
+  setTensorValue(t, 0, 1, 0, 0.565685);  setTensorValue(t, 0, 1, 1, 0.424264);
+  setTensorValue(t, 0, 2, 0, 0.707101);  setTensorValue(t, 0, 2, 1, 0.707101);
 
-  setArrayValue(t, 1, 0, 0, 0.565685);  setArrayValue(t, 1, 0, 1, 0.424264);
-  setArrayValue(t, 1, 1, 0, 0.424264);  setArrayValue(t, 1, 1, 1, 0.565685);
-  setArrayValue(t, 1, 2, 0, 0.707101);  setArrayValue(t, 1, 2, 1, 0.707101);
-
-
-  NewArray(&tpred, 2);
-  NewArrayMatrix(&tpred, 0, 1, 2);
-  NewArrayMatrix(&tpred, 1, 1, 2);
-
-  setArrayValue(tpred, 0, 0, 0, 0.5);  setArrayValue(tpred, 0, 0, 1, 0.6);
-
-  setArrayValue(tpred, 1, 0, 0, 0.6);  setArrayValue(tpred, 1, 0, 1, 0.4);
+  setTensorValue(t, 1, 0, 0, 0.565685);  setTensorValue(t, 1, 0, 1, 0.424264);
+  setTensorValue(t, 1, 1, 0, 0.424264);  setTensorValue(t, 1, 1, 1, 0.565685);
+  setTensorValue(t, 1, 2, 0, 0.707101);  setTensorValue(t, 1, 2, 1, 0.707101);
 
 
-  puts("Array");
-  PrintArray(t);
+  NewTensor(&tpred, 2);
+  NewTensorMatrix(&tpred, 0, 1, 2);
+  NewTensorMatrix(&tpred, 1, 1, 2);
+
+  setTensorValue(tpred, 0, 0, 0, 0.5);  setTensorValue(tpred, 0, 0, 1, 0.6);
+
+  setTensorValue(tpred, 1, 0, 0, 0.6);  setTensorValue(tpred, 1, 0, 1, 0.4);
+
+
+  puts("Tensor");
+  PrintTensor(t);
 
 
   NewUPCAModel(&m);
@@ -107,8 +107,8 @@ void test3()
   PrintUPCAModel(m);
 
 
-  puts("Array to pred");
-  PrintArray(tpred);
+  puts("Tensor to pred");
+  PrintTensor(tpred);
 
   initMatrix(&predscore);
   UPCAScorePredictor(tpred, m, 9999, &predscore);
@@ -117,10 +117,10 @@ void test3()
   PrintMatrix(predscore);
 
   DelMatrix(&predscore);
-  DelArray(&tpred);
+  DelTensor(&tpred);
 
   DelUPCAModel(&m);
-  DelArray(&t);
+  DelTensor(&t);
 }
 
 
@@ -130,29 +130,29 @@ void test3()
 void test2()
 {
   size_t i, j, k;
-  array *t;
+  tensor *t;
 
   UPCAMODEL *m;
 
   puts(">>>>>>> Test 2: Compute Multi Way PCA with random variables");
 
-  NewArray(&t, 5);
+  NewTensor(&t, 5);
 
   for(i = 0; i < t->order; i++){
-    NewArrayMatrix(&t, i, 30, 10);
+    NewTensorMatrix(&t, i, 30, 10);
   }
 
   srand(time(0));
   for(i = 0; i < t->order; i++){
     for(j = 0; j < t->m[i]->row; j++){
       for(k = 0; k < t->m[i]->col; k++)
-          setArrayValue(t, i, j, k, rand()/((double)(RAND_MAX)+1));
+          setTensorValue(t, i, j, k, rand()/((double)(RAND_MAX)+1));
     }
   }
 
   /*
-  puts("Array");
-  PrintArray(t);
+  puts("Tensor");
+  PrintTensor(t);
   */
 
   NewUPCAModel(&m);
@@ -162,7 +162,7 @@ void test2()
   PrintUPCAModel(m);
 
   DelUPCAModel(&m);
-  DelArray(&t);
+  DelTensor(&t);
 }
 
 /*Test from:
@@ -173,26 +173,26 @@ void test2()
  */
 void test1()
 {
-  array *t;
+  tensor *t;
   UPCAMODEL *m;
 
   puts(">>>>>>> Test 1: Compute Multi Way PCA");
 
-  NewArray(&t, 2);
+  NewTensor(&t, 2);
 
-  NewArrayMatrix(&t, 0, 3, 2);
-  NewArrayMatrix(&t, 1, 3, 2);
+  NewTensorMatrix(&t, 0, 3, 2);
+  NewTensorMatrix(&t, 1, 3, 2);
 
-  setArrayValue(t, 0, 0, 0, 0.424264);  setArrayValue(t, 0, 0, 1, 0.565685);
-  setArrayValue(t, 0, 1, 0, 0.565685);  setArrayValue(t, 0, 1, 1, 0.424264);
-  setArrayValue(t, 0, 2, 0, 0.707101);  setArrayValue(t, 0, 2, 1, 0.707101);
+  setTensorValue(t, 0, 0, 0, 0.424264);  setTensorValue(t, 0, 0, 1, 0.565685);
+  setTensorValue(t, 0, 1, 0, 0.565685);  setTensorValue(t, 0, 1, 1, 0.424264);
+  setTensorValue(t, 0, 2, 0, 0.707101);  setTensorValue(t, 0, 2, 1, 0.707101);
 
-  setArrayValue(t, 1, 0, 0, 0.565685);  setArrayValue(t, 1, 0, 1, 0.424264);
-  setArrayValue(t, 1, 1, 0, 0.424264);  setArrayValue(t, 1, 1, 1, 0.565685);
-  setArrayValue(t, 1, 2, 0, 0.707101);  setArrayValue(t, 1, 2, 1, 0.707101);
+  setTensorValue(t, 1, 0, 0, 0.565685);  setTensorValue(t, 1, 0, 1, 0.424264);
+  setTensorValue(t, 1, 1, 0, 0.424264);  setTensorValue(t, 1, 1, 1, 0.565685);
+  setTensorValue(t, 1, 2, 0, 0.707101);  setTensorValue(t, 1, 2, 1, 0.707101);
 
-  puts("Array");
-  PrintArray(t);
+  puts("Tensor");
+  PrintTensor(t);
 
   NewUPCAModel(&m);
 
@@ -201,7 +201,7 @@ void test1()
   PrintUPCAModel(m);
 
   DelUPCAModel(&m);
-  DelArray(&t);
+  DelTensor(&t);
 }
 
 int main(void)

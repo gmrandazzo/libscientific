@@ -16,7 +16,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "array.h"
+#include "tensor.h"
 #include "pls.h"
 #include "modelvalidation.h"
 #include "matrix.h"
@@ -149,12 +149,12 @@ void TestPLS15()
   puts("ROC AUC's for Trainig set");
   PrintMatrix(m->roc_auc_validation);
   puts("ROC Curves for each LV");
-  PrintArray(m->roc_validation);
+  PrintTensor(m->roc_validation);
 
   puts("Precision-Recall or Trainig set");
   PrintMatrix(m->precision_recall_ap_validation);
   puts("Precision-Recall Curves for each LV");
-  PrintArray(m->precision_recall_validation);
+  PrintTensor(m->precision_recall_validation);
 
   initMatrix(&xpredscores);
   initMatrix(&ypred);

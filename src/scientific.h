@@ -31,7 +31,7 @@
 extern "C" {
 #endif
 
-#include <scientific/array.h>
+#include <scientific/tensor.h>
 #include <scientific/matrix.h>
 #include <scientific/vector.h>
 

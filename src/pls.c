@@ -17,7 +17,7 @@
 */
 
 #include "memwrapper.h"
-#include "array.h"
+#include "tensor.h"
 #include "matrix.h"
 #include "pls.h"
 #include "pca.h" /*Using: MatrixAutoScaling(); and calcVarExpressed(); */
@@ -54,13 +54,13 @@ void NewPLSModel(PLSMODEL** m)
   initMatrix(&(*m)->bias);
 
   /* Discriminant Analyisis variables */
-  initArray(&(*m)->roc_model);
+  initTensor(&(*m)->roc_model);
   initMatrix(&(*m)->roc_auc_model);
-  initArray(&(*m)->precision_recall_model);
+  initTensor(&(*m)->precision_recall_model);
   initMatrix(&(*m)->precision_recall_ap_model);
-  initArray(&(*m)->roc_validation);
+  initTensor(&(*m)->roc_validation);
   initMatrix(&(*m)->roc_auc_validation);
-  initArray(&(*m)->precision_recall_validation);
+  initTensor(&(*m)->precision_recall_validation);
   initMatrix(&(*m)->precision_recall_ap_validation);
 
   initMatrix(&(*m)->yscrambling);
@@ -94,13 +94,13 @@ void DelPLSModel(PLSMODEL** m)
   DelMatrix(&(*m)->bias);
 
   /* Discriminant Analyisis variables */
-  DelArray(&(*m)->roc_model);
+  DelTensor(&(*m)->roc_model);
   DelMatrix(&(*m)->roc_auc_model);
-  DelArray(&(*m)->precision_recall_model);
+  DelTensor(&(*m)->precision_recall_model);
   DelMatrix(&(*m)->precision_recall_ap_model);
-  DelArray(&(*m)->roc_validation);
+  DelTensor(&(*m)->roc_validation);
   DelMatrix(&(*m)->roc_auc_validation);
-  DelArray(&(*m)->precision_recall_validation);
+  DelTensor(&(*m)->precision_recall_validation);
   DelMatrix(&(*m)->precision_recall_ap_validation);
 
   DelMatrix(&(*m)->yscrambling);
@@ -958,7 +958,7 @@ void PLSRegressionStatistics(matrix *my_true, matrix *my_pred, matrix** ccoeff, 
   DelDVector(&ymean);
 }
 
-void PLSDiscriminantAnalysisStatistics(matrix *my_true, matrix *my_score, array **roc, matrix **roc_auc, array **precision_recall, matrix **precision_recall_ap)
+void PLSDiscriminantAnalysisStatistics(matrix *my_true, matrix *my_score, tensor **roc, matrix **roc_auc, tensor **precision_recall, matrix **precision_recall_ap)
 {
   size_t nlv, lv, i, j, k, n_y;
   matrix *roc_;
@@ -977,10 +977,10 @@ void PLSDiscriminantAnalysisStatistics(matrix *my_true, matrix *my_score, array 
 
   for(lv = 0; lv < nlv; lv++){
     if(roc != NULL)
-      AddArrayMatrix(roc, my_true->row, my_true->col*2);
+      AddTensorMatrix(roc, my_true->row, my_true->col*2);
 
     if(precision_recall != NULL)
-      AddArrayMatrix(precision_recall, my_true->row, my_true->col*2);
+      AddTensorMatrix(precision_recall, my_true->row, my_true->col*2);
 
 
     initDVector(&auc_row);

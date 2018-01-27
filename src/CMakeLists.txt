@@ -175,7 +175,7 @@ set(Scientific_C_SRCS memwrapper.c
                    vector.c
                    list.c
                    matrix.c
-                   array.c
+                   tensor.c
                    numeric.c
                    graphs.c
                    algebra.c
@@ -199,7 +199,7 @@ set(Scientific_C_H
                 vector.h
                 list.h
                 matrix.h
-                array.h
+                tensor.h
                 numeric.h
                 graphs.h
                 algebra.h
@@ -223,7 +223,7 @@ set(UIVectorTest_SRC testuivector.c)
 set(IVectorTest_SRC testivector.c)
 set(VectorListTest_SRC testlist.c)
 set(MatrixTest_SRC testmatrix.c)
-set(ArrayTest_SRC testarray.c)
+set(TensorTest_SRC testtensor.c)
 set(AlgebraTest_SRC testalgebra.c)
 set(PCATest_SRC testpca.c)
 set(PLSTest_SRC testpls.c)
@@ -281,8 +281,8 @@ target_link_libraries(testlist libscientific)
 add_executable(testmatrix ${MatrixTest_SRC})
 target_link_libraries(testmatrix libscientific)
 
-add_executable(testarray ${ArrayTest_SRC})
-target_link_libraries(testarray libscientific)
+add_executable(testtensor ${TensorTest_SRC})
+target_link_libraries(testtensor libscientific)
 
 add_executable(testalgebra ${AlgebraTest_SRC})
 target_link_libraries(testalgebra libscientific)

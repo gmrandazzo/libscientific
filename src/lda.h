@@ -21,14 +21,14 @@
 #include <stdio.h>
 #include "matrix.h"
 #include "vector.h"
-#include "array.h"
+#include "tensor.h"
 #include "scientificinfo.h"
 
 
 typedef struct{
   matrix *inv_cov;
-  array *features;
-  array *mnpdf;
+  tensor *features;
+  tensor *mnpdf;
   matrix *evect;
   matrix *mu;
   matrix *fmean;
@@ -51,7 +51,7 @@ void LDA(matrix *mx, uivector *y, LDAMODEL *lda);
  *  - predicted features
  *  - probability
  *  - multivariate normal probability distribution of features
- *  - class prediction 
+ *  - class prediction
  */
 void LDAPrediction(matrix *mx, LDAMODEL *lda, matrix **pfeatures, matrix **probability, matrix **mnpdf, uivector **prediction);
 

@@ -18,7 +18,7 @@
 
 #ifndef PLS_H
 #define PLS_H
-#include "array.h"
+#include "tensor.h"
 #include "matrix.h"
 #include "vector.h"
 #include "scientificinfo.h"
@@ -51,12 +51,12 @@ typedef struct{
   matrix *bias;
 
   /* Discriminant Analyisis variables */
-  array *roc_model;
-  array *roc_validation;
+  tensor *roc_model;
+  tensor *roc_validation;
   matrix *roc_auc_model;
   matrix *roc_auc_validation;
-  array *precision_recall_model;
-  array *precision_recall_validation;
+  tensor *precision_recall_model;
+  tensor *precision_recall_validation;
   matrix *precision_recall_ap_model;
   matrix *precision_recall_ap_validation;
 
@@ -130,7 +130,7 @@ void PLSRegressionStatistics(matrix *my_true, matrix *my_pred, matrix** ccoeff, 
  *              the precision_recall_auc of a classification model.
  *              mx and my could be the training or the test datasets.
  */
-void PLSDiscriminantAnalysisStatistics(matrix *my_true, matrix *my_score, array **roc, matrix **roc_auc, array **precision_recall, matrix **precision_recall_ap);
+void PLSDiscriminantAnalysisStatistics(matrix *my_true, matrix *my_score, tensor **roc, matrix **roc_auc, tensor **precision_recall, matrix **precision_recall_ap);
 
 /*
  * Description: Calculate the ROC curve with AUC and the Precision-Recall crurve with his

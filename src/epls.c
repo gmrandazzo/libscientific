@@ -190,7 +190,7 @@ void EPLSGetSYLoadings(EPLSMODEL *m, CombinationRule crule, matrix *syloadings){
 void EPLSGetSWeights(EPLSMODEL *m, CombinationRule crule, matrix *sweights){}
 void EPLSGetSBetaCoefficients(EPLSMODEL *m, CombinationRule crule, matrix *sbetas){}
 
-void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, array **tscores, matrix **y)
+void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, tensor **tscores, matrix **y)
 {
   size_t i, j, k;
 
@@ -214,7 +214,7 @@ void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, array 
       }
 
       if(tscores != NULL){
-        ArrayAppendMatrix(tscores, tscores_);
+        TensorAppendMatrix(tscores, tscores_);
       }
 
       for(k = 0; k < model_py->row; k++){
@@ -235,12 +235,12 @@ void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, array 
   }
   else if(crule == Median){
     dvector *v;
-    array *model_py;
+    tensor *model_py;
     matrix *tscores_;
-    initArray(&model_py);
+    initTensor(&model_py);
     for(i = 0; i < m->n_models; i++){
       initMatrix(&tscores_);
-      AddArrayMatrix(&model_py, mx->row, m->ny*m->nlv);
+      AddTensorMatrix(&model_py, mx->row, m->ny*m->nlv);
       if(m->model_feature_ids != NULL){
         SubspaceMatrix(mx, m->model_feature_ids[i], &x_subspace);
         PLSYPredictorAllLV(x_subspace,  m->models[i], &tscores_, &model_py->m[i]);
@@ -250,7 +250,7 @@ void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, array 
       }
 
       if(tscores != NULL)
-        ArrayAppendMatrix(tscores, tscores_);
+        TensorAppendMatrix(tscores, tscores_);
 
       DelMatrix(&tscores_);
     }
@@ -267,7 +267,7 @@ void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, array 
       }
     }
     DelDVector(&v);
-    DelArray(&model_py);
+    DelTensor(&model_py);
   }
   else{
     return;
@@ -281,7 +281,7 @@ void EPLSRegressionStatistics(matrix *my_true, matrix *my_pred, matrix** ccoeff,
   PLSRegressionStatistics(my_true, my_pred, ccoeff, stdev, bias);
 }
 
-void EPLSDiscriminantAnalysisStatistics(matrix *my_true, matrix *my_score, array **roc, matrix **roc_auc, array **precision_recall, matrix **precision_recall_ap)
+void EPLSDiscriminantAnalysisStatistics(matrix *my_true, matrix *my_score, tensor **roc, matrix **roc_auc, tensor **precision_recall, matrix **precision_recall_ap)
 {
   /*recall to PLS method */
   PLSDiscriminantAnalysisStatistics(my_true, my_score, roc, roc_auc, precision_recall, precision_recall_ap);

@@ -18,14 +18,14 @@
 
 #ifndef UPCA_H
 #define UPCA_H
-#include "array.h"
+#include "tensor.h"
 #include "matrix.h"
 #include "vector.h"
 #include "scientificinfo.h"
 
 typedef struct{
   matrix *scores;
-  array *loadings;
+  tensor *loadings;
   dvector *varexp;
   matrix *colaverage;
   matrix *colscaling;
@@ -34,11 +34,11 @@ typedef struct{
 void NewUPCAModel(UPCAMODEL **m);
 void DelUPCAModel(UPCAMODEL **m);
 
-int CheckArray(array *X_);
-void UPCA(array *X_, size_t npc, size_t autoscaling, UPCAMODEL *m, ssignal *s);
+int CheckTensor(tensor *X_);
+void UPCA(tensor *X_, size_t npc, size_t autoscaling, UPCAMODEL *m, ssignal *s);
 
-void UPCAScorePredictor(array *X_, UPCAMODEL *model, size_t npc, matrix **pscores);
-void UPCAIndVarPredictor(matrix *T, array *P, matrix *colaverage, matrix *colsdev,  size_t npc, array **X);
+void UPCAScorePredictor(tensor *X_, UPCAMODEL *model, size_t npc, matrix **pscores);
+void UPCAIndVarPredictor(matrix *T, tensor *P, matrix *colaverage, matrix *colsdev,  size_t npc, tensor **X);
 
 void PrintUPCAModel(UPCAMODEL *m);
 

@@ -19,82 +19,82 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include "array.h"
+#include "tensor.h"
 #include "upls.h"
 #include "upca.h"
 
 void test9()
 {
-  array *ax;
-  array *ay;
+  tensor *ax;
+  tensor *ay;
 
   dvector *q2x;
-  array *q2y;
-  array *sdep;
-  array *yscrabl_q2, *yscrabl_sdep;
+  tensor *q2y;
+  tensor *sdep;
+  tensor *yscrabl_q2, *yscrabl_sdep;
 
   UPLSMODEL *m;
 
   puts(">>>>>>> Test 9: Compute Multi Way LOO Cross Validation");
 
-  NewArray(&ax, 2);
+  NewTensor(&ax, 2);
 
-  NewArrayMatrix(&ax, 0, 10, 3);
-  NewArrayMatrix(&ax, 1, 10, 3);
+  NewTensorMatrix(&ax, 0, 10, 3);
+  NewTensorMatrix(&ax, 1, 10, 3);
 
-  setArrayValue(ax, 0, 0, 0, 37);  setArrayValue(ax, 0, 0, 1, 12);  setArrayValue(ax, 0, 0, 2, -1);
-  setArrayValue(ax, 0, 1, 0, 62);  setArrayValue(ax, 0, 1, 1, 40);  setArrayValue(ax, 0, 1, 2, -0.331);
-  setArrayValue(ax, 0, 2, 0, 13);  setArrayValue(ax, 0, 2, 1, 2);   setArrayValue(ax, 0, 2, 2, -0.731);
-  setArrayValue(ax, 0, 3, 0, 62);  setArrayValue(ax, 0, 3, 1, 62);  setArrayValue(ax, 0, 3, 2, -0.893);
-  setArrayValue(ax, 0, 4, 0, 28);  setArrayValue(ax, 0, 4, 1, 46);  setArrayValue(ax, 0, 4, 2, 0.283);
-  setArrayValue(ax, 0, 5, 0, 15);  setArrayValue(ax, 0, 5, 1, 53);  setArrayValue(ax, 0, 5, 2, 0.940);
-  setArrayValue(ax, 0, 6, 0, 49);  setArrayValue(ax, 0, 6, 1, 99);  setArrayValue(ax, 0, 6, 2, 0.231);
-  setArrayValue(ax, 0, 7, 0, 88);  setArrayValue(ax, 0, 7, 1, 48);  setArrayValue(ax, 0, 7, 2, -1);
-  setArrayValue(ax, 0, 8, 0, 15);  setArrayValue(ax, 0, 8, 1, 29);  setArrayValue(ax, 0, 8, 2, 0.88);
-  setArrayValue(ax, 0, 9, 0, 63);  setArrayValue(ax, 0, 9, 1, 78);  setArrayValue(ax, 0, 9, 2, 0.321);
+  setTensorValue(ax, 0, 0, 0, 37);  setTensorValue(ax, 0, 0, 1, 12);  setTensorValue(ax, 0, 0, 2, -1);
+  setTensorValue(ax, 0, 1, 0, 62);  setTensorValue(ax, 0, 1, 1, 40);  setTensorValue(ax, 0, 1, 2, -0.331);
+  setTensorValue(ax, 0, 2, 0, 13);  setTensorValue(ax, 0, 2, 1, 2);   setTensorValue(ax, 0, 2, 2, -0.731);
+  setTensorValue(ax, 0, 3, 0, 62);  setTensorValue(ax, 0, 3, 1, 62);  setTensorValue(ax, 0, 3, 2, -0.893);
+  setTensorValue(ax, 0, 4, 0, 28);  setTensorValue(ax, 0, 4, 1, 46);  setTensorValue(ax, 0, 4, 2, 0.283);
+  setTensorValue(ax, 0, 5, 0, 15);  setTensorValue(ax, 0, 5, 1, 53);  setTensorValue(ax, 0, 5, 2, 0.940);
+  setTensorValue(ax, 0, 6, 0, 49);  setTensorValue(ax, 0, 6, 1, 99);  setTensorValue(ax, 0, 6, 2, 0.231);
+  setTensorValue(ax, 0, 7, 0, 88);  setTensorValue(ax, 0, 7, 1, 48);  setTensorValue(ax, 0, 7, 2, -1);
+  setTensorValue(ax, 0, 8, 0, 15);  setTensorValue(ax, 0, 8, 1, 29);  setTensorValue(ax, 0, 8, 2, 0.88);
+  setTensorValue(ax, 0, 9, 0, 63);  setTensorValue(ax, 0, 9, 1, 78);  setTensorValue(ax, 0, 9, 2, 0.321);
 
-  setArrayValue(ax, 1, 0, 0, 4);   setArrayValue(ax, 1, 0, 1, 3);   setArrayValue(ax, 1, 0, 2, 0.30);
-  setArrayValue(ax, 1, 1, 0, 2);   setArrayValue(ax, 1, 1, 1, 2);   setArrayValue(ax, 1, 1, 2, 0.12);
-  setArrayValue(ax, 1, 2, 0, 5);   setArrayValue(ax, 1, 2, 1, 2);   setArrayValue(ax, 1, 2, 2, 0.53);
-  setArrayValue(ax, 1, 3, 0, 1);   setArrayValue(ax, 1, 3, 1, 1);   setArrayValue(ax, 1, 3, 2, -1);
-  setArrayValue(ax, 1, 4, 0, 7);   setArrayValue(ax, 1, 4, 1, 3);   setArrayValue(ax, 1, 4, 2, -13);
-  setArrayValue(ax, 1, 5, 0, 5);   setArrayValue(ax, 1, 5, 1, 4);   setArrayValue(ax, 1, 5, 2, -56.9);
-  setArrayValue(ax, 1, 6, 0, 12);  setArrayValue(ax, 1, 6, 1, 3);   setArrayValue(ax, 1, 6, 2, 0.36);
-  setArrayValue(ax, 1, 7, 0, 3);   setArrayValue(ax, 1, 7, 1, 3);   setArrayValue(ax, 1, 7, 2, 0.4);
-  setArrayValue(ax, 1, 8, 0, 26);  setArrayValue(ax, 1, 8, 1, 7);   setArrayValue(ax, 1, 8, 2, 0.1);
-  setArrayValue(ax, 1, 9, 0, 5);   setArrayValue(ax, 1, 9, 1, 9);   setArrayValue(ax, 1, 9, 2, 0.37);
+  setTensorValue(ax, 1, 0, 0, 4);   setTensorValue(ax, 1, 0, 1, 3);   setTensorValue(ax, 1, 0, 2, 0.30);
+  setTensorValue(ax, 1, 1, 0, 2);   setTensorValue(ax, 1, 1, 1, 2);   setTensorValue(ax, 1, 1, 2, 0.12);
+  setTensorValue(ax, 1, 2, 0, 5);   setTensorValue(ax, 1, 2, 1, 2);   setTensorValue(ax, 1, 2, 2, 0.53);
+  setTensorValue(ax, 1, 3, 0, 1);   setTensorValue(ax, 1, 3, 1, 1);   setTensorValue(ax, 1, 3, 2, -1);
+  setTensorValue(ax, 1, 4, 0, 7);   setTensorValue(ax, 1, 4, 1, 3);   setTensorValue(ax, 1, 4, 2, -13);
+  setTensorValue(ax, 1, 5, 0, 5);   setTensorValue(ax, 1, 5, 1, 4);   setTensorValue(ax, 1, 5, 2, -56.9);
+  setTensorValue(ax, 1, 6, 0, 12);  setTensorValue(ax, 1, 6, 1, 3);   setTensorValue(ax, 1, 6, 2, 0.36);
+  setTensorValue(ax, 1, 7, 0, 3);   setTensorValue(ax, 1, 7, 1, 3);   setTensorValue(ax, 1, 7, 2, 0.4);
+  setTensorValue(ax, 1, 8, 0, 26);  setTensorValue(ax, 1, 8, 1, 7);   setTensorValue(ax, 1, 8, 2, 0.1);
+  setTensorValue(ax, 1, 9, 0, 5);   setTensorValue(ax, 1, 9, 1, 9);   setTensorValue(ax, 1, 9, 2, 0.37);
 
 
-  NewArray(&ay, 2);
+  NewTensor(&ay, 2);
 
-  NewArrayMatrix(&ay, 0, 10, 1);
-  NewArrayMatrix(&ay, 1, 10, 1);
+  NewTensorMatrix(&ay, 0, 10, 1);
+  NewTensorMatrix(&ay, 1, 10, 1);
 
-  setArrayValue(ay, 0, 0, 0, 50);
-  setArrayValue(ay, 0, 1, 0, 86);
-  setArrayValue(ay, 0, 2, 0, 20);
-  setArrayValue(ay, 0, 3, 0, 95);
-  setArrayValue(ay, 0, 4, 0, 61);
-  setArrayValue(ay, 0, 5, 0, 50.5);
-  setArrayValue(ay, 0, 6, 0, 113.5);
-  setArrayValue(ay, 0, 7, 0, 119);
-  setArrayValue(ay, 0, 8, 0, 62);
-  setArrayValue(ay, 0, 9, 0, 116);
+  setTensorValue(ay, 0, 0, 0, 50);
+  setTensorValue(ay, 0, 1, 0, 86);
+  setTensorValue(ay, 0, 2, 0, 20);
+  setTensorValue(ay, 0, 3, 0, 95);
+  setTensorValue(ay, 0, 4, 0, 61);
+  setTensorValue(ay, 0, 5, 0, 50.5);
+  setTensorValue(ay, 0, 6, 0, 113.5);
+  setTensorValue(ay, 0, 7, 0, 119);
+  setTensorValue(ay, 0, 8, 0, 62);
+  setTensorValue(ay, 0, 9, 0, 116);
 
-  setArrayValue(ay, 1, 0, 0, 50);
-  setArrayValue(ay, 1, 1, 0, 86);
-  setArrayValue(ay, 1, 2, 0, 20);
-  setArrayValue(ay, 1, 3, 0, 95);
-  setArrayValue(ay, 1, 4, 0, 61);
-  setArrayValue(ay, 1, 5, 0, 50.5);
-  setArrayValue(ay, 1, 6, 0, 113.5);
-  setArrayValue(ay, 1, 7, 0, 119);
-  setArrayValue(ay, 1, 8, 0, 62);
-  setArrayValue(ay, 1, 9, 0, 116);
+  setTensorValue(ay, 1, 0, 0, 50);
+  setTensorValue(ay, 1, 1, 0, 86);
+  setTensorValue(ay, 1, 2, 0, 20);
+  setTensorValue(ay, 1, 3, 0, 95);
+  setTensorValue(ay, 1, 4, 0, 61);
+  setTensorValue(ay, 1, 5, 0, 50.5);
+  setTensorValue(ay, 1, 6, 0, 113.5);
+  setTensorValue(ay, 1, 7, 0, 119);
+  setTensorValue(ay, 1, 8, 0, 62);
+  setTensorValue(ay, 1, 9, 0, 116);
 
   initDVector(&q2x);
-  initArray(&q2y);
-  initArray(&sdep);
+  initTensor(&q2y);
+  initTensor(&sdep);
 
   NewUPLSModel(&m);
 
@@ -108,115 +108,115 @@ void test9()
   /*UPLSLOOCV(ax, ay, 1, 1, 3,&q2x, &q2y, &sdep, &m->predicted_y, &m->pred_residuals, &run);*/
 
 
-  initArray(&yscrabl_q2);
-  initArray(&yscrabl_sdep);
+  initTensor(&yscrabl_q2);
+  initTensor(&yscrabl_sdep);
   UPLSYScrambling(ax, ay, 1, 1, 3, 3, 0, 0, 0, &yscrabl_q2, &yscrabl_sdep, NULL);
 
   puts("YSCRAMBL Q2");
-  PrintArray(yscrabl_q2);
+  PrintTensor(yscrabl_q2);
   puts("YSCRAMBL SDEP");
-  PrintArray(yscrabl_sdep);
+  PrintTensor(yscrabl_sdep);
 
   puts("Q2Y");
-  PrintArray(q2y);
+  PrintTensor(q2y);
 
   puts("SDEP");
-  PrintArray(m->sdep);
+  PrintTensor(m->sdep);
 
   puts("Predicted Y");
-  PrintArray(m->predicted_y);
+  PrintTensor(m->predicted_y);
 
   puts("RealY");
-  PrintArray(ay);
+  PrintTensor(ay);
 
   puts("Predicted Residuals");
-  PrintArray(m->pred_residuals);
+  PrintTensor(m->pred_residuals);
 
   if(q2y->order > 0){
     printf("CUTOFF: %u\n", (unsigned int)UPLSGetPCModelCutOff(q2y));
   }
 
-  DelArray(&yscrabl_q2);
-  DelArray(&yscrabl_sdep);
+  DelTensor(&yscrabl_q2);
+  DelTensor(&yscrabl_sdep);
   DelUPLSModel(&m);
-  DelArray(&sdep);
+  DelTensor(&sdep);
   DelDVector(&q2x);
-  DelArray(&q2y);
-  DelArray(&ay);
-  DelArray(&ax);
+  DelTensor(&q2y);
+  DelTensor(&ay);
+  DelTensor(&ax);
 }
 
 void test8()
 {
-  array *ax;
-  array *ay;
+  tensor *ax;
+  tensor *ay;
 
   dvector *q2x;
-  array *q2y;
-  array *sdep;
-  array *predicted_y;
+  tensor *q2y;
+  tensor *sdep;
+  tensor *predicted_y;
 
   puts(">>>>>>> Test 8: Compute Multi Way Random Group Cross Validation");
 
-  NewArray(&ax, 2);
+  NewTensor(&ax, 2);
 
-  NewArrayMatrix(&ax, 0, 10, 3);
-  NewArrayMatrix(&ax, 1, 10, 3);
+  NewTensorMatrix(&ax, 0, 10, 3);
+  NewTensorMatrix(&ax, 1, 10, 3);
 
-  setArrayValue(ax, 0, 0, 0, 37);  setArrayValue(ax, 0, 0, 1, 12);  setArrayValue(ax, 0, 0, 2, -1);
-  setArrayValue(ax, 0, 1, 0, 62);  setArrayValue(ax, 0, 1, 1, 40);  setArrayValue(ax, 0, 1, 2, -0.331);
-  setArrayValue(ax, 0, 2, 0, 13);  setArrayValue(ax, 0, 2, 1, 2);   setArrayValue(ax, 0, 2, 2, -0.731);
-  setArrayValue(ax, 0, 3, 0, 62);  setArrayValue(ax, 0, 3, 1, 62);  setArrayValue(ax, 0, 3, 2, -0.893);
-  setArrayValue(ax, 0, 4, 0, 28);  setArrayValue(ax, 0, 4, 1, 46);  setArrayValue(ax, 0, 4, 2, 0.283);
-  setArrayValue(ax, 0, 5, 0, 15);  setArrayValue(ax, 0, 5, 1, 53);  setArrayValue(ax, 0, 5, 2, 0.940);
-  setArrayValue(ax, 0, 6, 0, 49);  setArrayValue(ax, 0, 6, 1, 99);  setArrayValue(ax, 0, 6, 2, 0.231);
-  setArrayValue(ax, 0, 7, 0, 88);  setArrayValue(ax, 0, 7, 1, 48);  setArrayValue(ax, 0, 7, 2, -1);
-  setArrayValue(ax, 0, 8, 0, 15);  setArrayValue(ax, 0, 8, 1, 29);  setArrayValue(ax, 0, 8, 2, 0.88);
-  setArrayValue(ax, 0, 9, 0, 63);  setArrayValue(ax, 0, 9, 1, 78);  setArrayValue(ax, 0, 9, 2, 0.321);
+  setTensorValue(ax, 0, 0, 0, 37);  setTensorValue(ax, 0, 0, 1, 12);  setTensorValue(ax, 0, 0, 2, -1);
+  setTensorValue(ax, 0, 1, 0, 62);  setTensorValue(ax, 0, 1, 1, 40);  setTensorValue(ax, 0, 1, 2, -0.331);
+  setTensorValue(ax, 0, 2, 0, 13);  setTensorValue(ax, 0, 2, 1, 2);   setTensorValue(ax, 0, 2, 2, -0.731);
+  setTensorValue(ax, 0, 3, 0, 62);  setTensorValue(ax, 0, 3, 1, 62);  setTensorValue(ax, 0, 3, 2, -0.893);
+  setTensorValue(ax, 0, 4, 0, 28);  setTensorValue(ax, 0, 4, 1, 46);  setTensorValue(ax, 0, 4, 2, 0.283);
+  setTensorValue(ax, 0, 5, 0, 15);  setTensorValue(ax, 0, 5, 1, 53);  setTensorValue(ax, 0, 5, 2, 0.940);
+  setTensorValue(ax, 0, 6, 0, 49);  setTensorValue(ax, 0, 6, 1, 99);  setTensorValue(ax, 0, 6, 2, 0.231);
+  setTensorValue(ax, 0, 7, 0, 88);  setTensorValue(ax, 0, 7, 1, 48);  setTensorValue(ax, 0, 7, 2, -1);
+  setTensorValue(ax, 0, 8, 0, 15);  setTensorValue(ax, 0, 8, 1, 29);  setTensorValue(ax, 0, 8, 2, 0.88);
+  setTensorValue(ax, 0, 9, 0, 63);  setTensorValue(ax, 0, 9, 1, 78);  setTensorValue(ax, 0, 9, 2, 0.321);
 
-  setArrayValue(ax, 1, 0, 0, 4);   setArrayValue(ax, 1, 0, 1, 3);   setArrayValue(ax, 1, 0, 2, 0.30);
-  setArrayValue(ax, 1, 1, 0, 2);   setArrayValue(ax, 1, 1, 1, 2);   setArrayValue(ax, 1, 1, 2, 0.12);
-  setArrayValue(ax, 1, 2, 0, 5);   setArrayValue(ax, 1, 2, 1, 2);   setArrayValue(ax, 1, 2, 2, 0.53);
-  setArrayValue(ax, 1, 3, 0, 1);   setArrayValue(ax, 1, 3, 1, 1);   setArrayValue(ax, 1, 3, 2, -1);
-  setArrayValue(ax, 1, 4, 0, 7);   setArrayValue(ax, 1, 4, 1, 3);   setArrayValue(ax, 1, 4, 2, -13);
-  setArrayValue(ax, 1, 5, 0, 5);   setArrayValue(ax, 1, 5, 1, 4);   setArrayValue(ax, 1, 5, 2, -56.9);
-  setArrayValue(ax, 1, 6, 0, 12);  setArrayValue(ax, 1, 6, 1, 3);   setArrayValue(ax, 1, 6, 2, 0.36);
-  setArrayValue(ax, 1, 7, 0, 3);   setArrayValue(ax, 1, 7, 1, 3);   setArrayValue(ax, 1, 7, 2, 0.4);
-  setArrayValue(ax, 1, 8, 0, 26);  setArrayValue(ax, 1, 8, 1, 7);   setArrayValue(ax, 1, 8, 2, 0.1);
-  setArrayValue(ax, 1, 9, 0, 5);   setArrayValue(ax, 1, 9, 1, 9);   setArrayValue(ax, 1, 9, 2, 0.37);
+  setTensorValue(ax, 1, 0, 0, 4);   setTensorValue(ax, 1, 0, 1, 3);   setTensorValue(ax, 1, 0, 2, 0.30);
+  setTensorValue(ax, 1, 1, 0, 2);   setTensorValue(ax, 1, 1, 1, 2);   setTensorValue(ax, 1, 1, 2, 0.12);
+  setTensorValue(ax, 1, 2, 0, 5);   setTensorValue(ax, 1, 2, 1, 2);   setTensorValue(ax, 1, 2, 2, 0.53);
+  setTensorValue(ax, 1, 3, 0, 1);   setTensorValue(ax, 1, 3, 1, 1);   setTensorValue(ax, 1, 3, 2, -1);
+  setTensorValue(ax, 1, 4, 0, 7);   setTensorValue(ax, 1, 4, 1, 3);   setTensorValue(ax, 1, 4, 2, -13);
+  setTensorValue(ax, 1, 5, 0, 5);   setTensorValue(ax, 1, 5, 1, 4);   setTensorValue(ax, 1, 5, 2, -56.9);
+  setTensorValue(ax, 1, 6, 0, 12);  setTensorValue(ax, 1, 6, 1, 3);   setTensorValue(ax, 1, 6, 2, 0.36);
+  setTensorValue(ax, 1, 7, 0, 3);   setTensorValue(ax, 1, 7, 1, 3);   setTensorValue(ax, 1, 7, 2, 0.4);
+  setTensorValue(ax, 1, 8, 0, 26);  setTensorValue(ax, 1, 8, 1, 7);   setTensorValue(ax, 1, 8, 2, 0.1);
+  setTensorValue(ax, 1, 9, 0, 5);   setTensorValue(ax, 1, 9, 1, 9);   setTensorValue(ax, 1, 9, 2, 0.37);
 
 
-  NewArray(&ay, 2);
+  NewTensor(&ay, 2);
 
-  NewArrayMatrix(&ay, 0, 10, 1);
-  NewArrayMatrix(&ay, 1, 10, 1);
+  NewTensorMatrix(&ay, 0, 10, 1);
+  NewTensorMatrix(&ay, 1, 10, 1);
 
-  setArrayValue(ay, 0, 0, 0, 50);
-  setArrayValue(ay, 0, 1, 0, 86);
-  setArrayValue(ay, 0, 2, 0, 20);
-  setArrayValue(ay, 0, 3, 0, 95);
-  setArrayValue(ay, 0, 4, 0, 61);
-  setArrayValue(ay, 0, 5, 0, 50.5);
-  setArrayValue(ay, 0, 6, 0, 113.5);
-  setArrayValue(ay, 0, 7, 0, 119);
-  setArrayValue(ay, 0, 8, 0, 62);
-  setArrayValue(ay, 0, 9, 0, 116);
+  setTensorValue(ay, 0, 0, 0, 50);
+  setTensorValue(ay, 0, 1, 0, 86);
+  setTensorValue(ay, 0, 2, 0, 20);
+  setTensorValue(ay, 0, 3, 0, 95);
+  setTensorValue(ay, 0, 4, 0, 61);
+  setTensorValue(ay, 0, 5, 0, 50.5);
+  setTensorValue(ay, 0, 6, 0, 113.5);
+  setTensorValue(ay, 0, 7, 0, 119);
+  setTensorValue(ay, 0, 8, 0, 62);
+  setTensorValue(ay, 0, 9, 0, 116);
 
-  setArrayValue(ay, 1, 0, 0, 50);
-  setArrayValue(ay, 1, 1, 0, 86);
-  setArrayValue(ay, 1, 2, 0, 20);
-  setArrayValue(ay, 1, 3, 0, 95);
-  setArrayValue(ay, 1, 4, 0, 61);
-  setArrayValue(ay, 1, 5, 0, 50.5);
-  setArrayValue(ay, 1, 6, 0, 113.5);
-  setArrayValue(ay, 1, 7, 0, 119);
-  setArrayValue(ay, 1, 8, 0, 62);
-  setArrayValue(ay, 1, 9, 0, 116);
+  setTensorValue(ay, 1, 0, 0, 50);
+  setTensorValue(ay, 1, 1, 0, 86);
+  setTensorValue(ay, 1, 2, 0, 20);
+  setTensorValue(ay, 1, 3, 0, 95);
+  setTensorValue(ay, 1, 4, 0, 61);
+  setTensorValue(ay, 1, 5, 0, 50.5);
+  setTensorValue(ay, 1, 6, 0, 113.5);
+  setTensorValue(ay, 1, 7, 0, 119);
+  setTensorValue(ay, 1, 8, 0, 62);
+  setTensorValue(ay, 1, 9, 0, 116);
 
   initDVector(&q2x);
-  initArray(&q2y);
-  initArray(&sdep);
-  initArray(&predicted_y);
+  initTensor(&q2y);
+  initTensor(&sdep);
+  initTensor(&predicted_y);
 
   ssignal run = SIGSCIENTIFICRUN;
   /* we divide all the dataset in 5 groups */
@@ -228,27 +228,27 @@ void test8()
   */
 
   puts("Q2Y");
-  PrintArray(q2y);
+  PrintTensor(q2y);
 
   puts("SDEP");
-  PrintArray(sdep);
+  PrintTensor(sdep);
 
   puts("Predicted Y");
-  PrintArray(predicted_y);
+  PrintTensor(predicted_y);
 
   puts("RealY");
-  PrintArray(ay);
+  PrintTensor(ay);
 
   if(q2y->order > 0){
     printf("CUTOFF: %u\n", (unsigned int)UPLSGetPCModelCutOff(q2y));
   }
 
-  DelArray(&predicted_y);
-  DelArray(&sdep);
+  DelTensor(&predicted_y);
+  DelTensor(&sdep);
   DelDVector(&q2x);
-  DelArray(&q2y);
-  DelArray(&ay);
-  DelArray(&ax);
+  DelTensor(&q2y);
+  DelTensor(&ay);
+  DelTensor(&ax);
 }
 
 /*
@@ -256,67 +256,67 @@ void test8()
  */
 void test7()
 {
-  array *ax;
-  array *ay;
+  tensor *ax;
+  tensor *ay;
 
   dvector *q2x;
-  array *q2y;
-  array *sdep;
+  tensor *q2y;
+  tensor *sdep;
 
   puts(">>>>>>> Test 7: Compute Multi Way Random Group Cross Validation");
 
-  NewArray(&ax, 2);
+  NewTensor(&ax, 2);
 
-  NewArrayMatrix(&ax, 0, 10, 2);
-  NewArrayMatrix(&ax, 1, 10, 2);
+  NewTensorMatrix(&ax, 0, 10, 2);
+  NewTensorMatrix(&ax, 1, 10, 2);
 
-  setArrayValue(ax, 0, 0, 0, 37);  setArrayValue(ax, 0, 0, 1, 12);
-  setArrayValue(ax, 0, 1, 0, 62);  setArrayValue(ax, 0, 1, 1, 40);
-  setArrayValue(ax, 0, 2, 0, 13);  setArrayValue(ax, 0, 2, 1, 2);
-  setArrayValue(ax, 0, 3, 0, 62);  setArrayValue(ax, 0, 3, 1, 62);
-  setArrayValue(ax, 0, 4, 0, 28);  setArrayValue(ax, 0, 4, 1, 46);
-  setArrayValue(ax, 0, 5, 0, 15);  setArrayValue(ax, 0, 5, 1, 53);
-  setArrayValue(ax, 0, 6, 0, 49);  setArrayValue(ax, 0, 6, 1, 99);
-  setArrayValue(ax, 0, 7, 0, 88);  setArrayValue(ax, 0, 7, 1, 48);
-  setArrayValue(ax, 0, 8, 0, 15);  setArrayValue(ax, 0, 8, 1, 29);
-  setArrayValue(ax, 0, 9, 0, 63);  setArrayValue(ax, 0, 9, 1, 78);
+  setTensorValue(ax, 0, 0, 0, 37);  setTensorValue(ax, 0, 0, 1, 12);
+  setTensorValue(ax, 0, 1, 0, 62);  setTensorValue(ax, 0, 1, 1, 40);
+  setTensorValue(ax, 0, 2, 0, 13);  setTensorValue(ax, 0, 2, 1, 2);
+  setTensorValue(ax, 0, 3, 0, 62);  setTensorValue(ax, 0, 3, 1, 62);
+  setTensorValue(ax, 0, 4, 0, 28);  setTensorValue(ax, 0, 4, 1, 46);
+  setTensorValue(ax, 0, 5, 0, 15);  setTensorValue(ax, 0, 5, 1, 53);
+  setTensorValue(ax, 0, 6, 0, 49);  setTensorValue(ax, 0, 6, 1, 99);
+  setTensorValue(ax, 0, 7, 0, 88);  setTensorValue(ax, 0, 7, 1, 48);
+  setTensorValue(ax, 0, 8, 0, 15);  setTensorValue(ax, 0, 8, 1, 29);
+  setTensorValue(ax, 0, 9, 0, 63);  setTensorValue(ax, 0, 9, 1, 78);
 
-  setArrayValue(ax, 1, 0, 0, 4);  setArrayValue(ax, 1, 0, 1, 3);
-  setArrayValue(ax, 1, 1, 0, 2);  setArrayValue(ax, 1, 1, 1, 2);
-  setArrayValue(ax, 1, 2, 0, 5);  setArrayValue(ax, 1, 2, 1, 2);
-  setArrayValue(ax, 1, 3, 0, 1);  setArrayValue(ax, 1, 3, 1, 1);
-  setArrayValue(ax, 1, 4, 0, 7);  setArrayValue(ax, 1, 4, 1, 3);
-  setArrayValue(ax, 1, 5, 0, 5);  setArrayValue(ax, 1, 5, 1, 4);
-  setArrayValue(ax, 1, 6, 0, 12);  setArrayValue(ax, 1, 6, 1, 3);
-  setArrayValue(ax, 1, 7, 0, 3);  setArrayValue(ax, 1, 7, 1, 3);
-  setArrayValue(ax, 1, 8, 0, 26);  setArrayValue(ax, 1, 8, 1, 7);
-  setArrayValue(ax, 1, 9, 0, 5);  setArrayValue(ax, 1, 9, 1, 9);
+  setTensorValue(ax, 1, 0, 0, 4);  setTensorValue(ax, 1, 0, 1, 3);
+  setTensorValue(ax, 1, 1, 0, 2);  setTensorValue(ax, 1, 1, 1, 2);
+  setTensorValue(ax, 1, 2, 0, 5);  setTensorValue(ax, 1, 2, 1, 2);
+  setTensorValue(ax, 1, 3, 0, 1);  setTensorValue(ax, 1, 3, 1, 1);
+  setTensorValue(ax, 1, 4, 0, 7);  setTensorValue(ax, 1, 4, 1, 3);
+  setTensorValue(ax, 1, 5, 0, 5);  setTensorValue(ax, 1, 5, 1, 4);
+  setTensorValue(ax, 1, 6, 0, 12);  setTensorValue(ax, 1, 6, 1, 3);
+  setTensorValue(ax, 1, 7, 0, 3);  setTensorValue(ax, 1, 7, 1, 3);
+  setTensorValue(ax, 1, 8, 0, 26);  setTensorValue(ax, 1, 8, 1, 7);
+  setTensorValue(ax, 1, 9, 0, 5);  setTensorValue(ax, 1, 9, 1, 9);
 
-  NewArray(&ay, 1);
+  NewTensor(&ay, 1);
 
-  NewArrayMatrix(&ay, 0, 10, 1);
+  NewTensorMatrix(&ay, 0, 10, 1);
 
-  setArrayValue(ay, 0, 0, 0, 50);
-  setArrayValue(ay, 0, 1, 0, 86);
-  setArrayValue(ay, 0, 2, 0, 20);
-  setArrayValue(ay, 0, 3, 0, 95);
-  setArrayValue(ay, 0, 4, 0, 61);
-  setArrayValue(ay, 0, 5, 0, 50.5);
-  setArrayValue(ay, 0, 6, 0, 113.5);
-  setArrayValue(ay, 0, 7, 0, 119);
-  setArrayValue(ay, 0, 8, 0, 62);
-  setArrayValue(ay, 0, 9, 0, 116);
+  setTensorValue(ay, 0, 0, 0, 50);
+  setTensorValue(ay, 0, 1, 0, 86);
+  setTensorValue(ay, 0, 2, 0, 20);
+  setTensorValue(ay, 0, 3, 0, 95);
+  setTensorValue(ay, 0, 4, 0, 61);
+  setTensorValue(ay, 0, 5, 0, 50.5);
+  setTensorValue(ay, 0, 6, 0, 113.5);
+  setTensorValue(ay, 0, 7, 0, 119);
+  setTensorValue(ay, 0, 8, 0, 62);
+  setTensorValue(ay, 0, 9, 0, 116);
 
 
 
   puts("X:");
-  PrintArray(ax);
+  PrintTensor(ax);
   puts("Y:");
-  PrintArray(ay);
+  PrintTensor(ay);
 
   initDVector(&q2x);
-  initArray(&q2y);
-  initArray(&sdep);
+  initTensor(&q2y);
+  initTensor(&sdep);
 
   /* we divide all the dataset in 5 groups */
   UPLSRandomGroupsCV(ax, ay, 1, 0, 2, 5, 20, &q2x, &q2y, &sdep, NULL, NULL, NULL);
@@ -325,16 +325,16 @@ void test7()
   PrintDVector(q2x);
 
   puts("Q2Y");
-  PrintArray(q2y);
+  PrintTensor(q2y);
 
   puts("SDEP");
-  PrintArray(sdep);
+  PrintTensor(sdep);
 
-  DelArray(&sdep);
+  DelTensor(&sdep);
   DelDVector(&q2x);
-  DelArray(&q2y);
-  DelArray(&ay);
-  DelArray(&ax);
+  DelTensor(&q2y);
+  DelTensor(&ay);
+  DelTensor(&ax);
 }
 
 
@@ -343,58 +343,58 @@ void test7()
  */
 void test6()
 {
-  array *ax;
-  array *ay;
+  tensor *ax;
+  tensor *ay;
 
-  array *axp;
+  tensor *axp;
 
   UPLSMODEL *m;
 
-  array *py;
+  tensor *py;
   matrix *pscores;
 
   dvector *r2x;
-  array *r2y;
-  array *sdec;
+  tensor *r2y;
+  tensor *sdec;
 
 
   puts(">>>>>>> Test 6: Compute Multi Way PLS and Prediction");
 
-  NewArray(&ax, 2);
+  NewTensor(&ax, 2);
 
-  NewArrayMatrix(&ax, 0, 3, 2);
-  NewArrayMatrix(&ax, 1, 3, 2);
+  NewTensorMatrix(&ax, 0, 3, 2);
+  NewTensorMatrix(&ax, 1, 3, 2);
 
-  setArrayValue(ax, 0, 0, 0, 37);  setArrayValue(ax, 0, 0, 1, 12);
-  setArrayValue(ax, 0, 1, 0, 62);  setArrayValue(ax, 0, 1, 1, 40);
-  setArrayValue(ax, 0, 2, 0, 13);  setArrayValue(ax, 0, 2, 1, 2);
+  setTensorValue(ax, 0, 0, 0, 37);  setTensorValue(ax, 0, 0, 1, 12);
+  setTensorValue(ax, 0, 1, 0, 62);  setTensorValue(ax, 0, 1, 1, 40);
+  setTensorValue(ax, 0, 2, 0, 13);  setTensorValue(ax, 0, 2, 1, 2);
 
-  setArrayValue(ax, 1, 0, 0, 4);  setArrayValue(ax, 1, 0, 1, 3);
-  setArrayValue(ax, 1, 1, 0, 2);  setArrayValue(ax, 1, 1, 1, 2);
-  setArrayValue(ax, 1, 2, 0, 5);  setArrayValue(ax, 1, 2, 1, 2);
-
-
-  NewArray(&ay, 2);
-
-  NewArrayMatrix(&ay, 0, 3, 1);
-  NewArrayMatrix(&ay, 1, 3, 1);
-
-  setArrayValue(ay, 0, 0, 0, 50);
-  setArrayValue(ay, 0, 1, 0, 86);
-  setArrayValue(ay, 0, 2, 0, 20);
+  setTensorValue(ax, 1, 0, 0, 4);  setTensorValue(ax, 1, 0, 1, 3);
+  setTensorValue(ax, 1, 1, 0, 2);  setTensorValue(ax, 1, 1, 1, 2);
+  setTensorValue(ax, 1, 2, 0, 5);  setTensorValue(ax, 1, 2, 1, 2);
 
 
-  setArrayValue(ay, 1, 0, 0, 50);
-  setArrayValue(ay, 1, 1, 0, 86);
-  setArrayValue(ay, 1, 2, 0, 20);
+  NewTensor(&ay, 2);
+
+  NewTensorMatrix(&ay, 0, 3, 1);
+  NewTensorMatrix(&ay, 1, 3, 1);
+
+  setTensorValue(ay, 0, 0, 0, 50);
+  setTensorValue(ay, 0, 1, 0, 86);
+  setTensorValue(ay, 0, 2, 0, 20);
 
 
-  NewArray(&axp, 2);
-  NewArrayMatrix(&axp, 0, 1, 2);
-  NewArrayMatrix(&axp, 1, 1, 2);
+  setTensorValue(ay, 1, 0, 0, 50);
+  setTensorValue(ay, 1, 1, 0, 86);
+  setTensorValue(ay, 1, 2, 0, 20);
 
-  setArrayValue(axp, 0, 0, 0, 62);  setArrayValue(axp, 0, 0, 1, 62);
-  setArrayValue(axp, 1, 0, 0, 1);  setArrayValue(axp, 1, 0, 1, 1);
+
+  NewTensor(&axp, 2);
+  NewTensorMatrix(&axp, 0, 1, 2);
+  NewTensorMatrix(&axp, 1, 1, 2);
+
+  setTensorValue(axp, 0, 0, 0, 62);  setTensorValue(axp, 0, 0, 1, 62);
+  setTensorValue(axp, 1, 0, 0, 1);  setTensorValue(axp, 1, 0, 1, 1);
 
 
   NewUPLSModel(&m);
@@ -405,19 +405,19 @@ void test6()
 
 
   initDVector(&r2x);
-  initArray(&r2y);
-  initArray(&sdec);
+  initTensor(&r2y);
+  initTensor(&sdec);
 
   /* calculating the r^2 for x and y model*/
   UPLSRSquared(ax, ay, m, 2, &r2x, &r2y, &sdec);
 
 
   puts("Data\nX:");
-  PrintArray(ax);
+  PrintTensor(ax);
   puts("Y:");
-  PrintArray(ay);
+  PrintTensor(ay);
 
-  initArray(&py);
+  initTensor(&py);
   initMatrix(&pscores);
 
 
@@ -431,28 +431,28 @@ void test6()
   PrintUPLSModel(m);
 
   puts("R^2 for Y");
-  PrintArray(r2y);
+  PrintTensor(r2y);
 
   puts("R^2 for X");
   PrintDVector(r2x);
 
   puts("SDEC:");
-  PrintArray(sdec);
+  PrintTensor(sdec);
 
   puts("PREDICTIONS");
-  PrintArray(py);
+  PrintTensor(py);
 
-  DelArray(&py);
+  DelTensor(&py);
   DelMatrix(&pscores);
-  DelArray(&axp);
+  DelTensor(&axp);
 
-  DelArray(&sdec);
+  DelTensor(&sdec);
   DelDVector(&r2x);
-  DelArray(&r2y);
+  DelTensor(&r2y);
 
   DelUPLSModel(&m);
-  DelArray(&ay);
-  DelArray(&ax);
+  DelTensor(&ay);
+  DelTensor(&ax);
 }
 
 
@@ -461,53 +461,53 @@ void test6()
  */
 void test5()
 {
-  array *ax;
-  array *ay;
+  tensor *ax;
+  tensor *ay;
 
-  array *axp;
+  tensor *axp;
 
   UPLSMODEL *m;
 
-  array *py;
+  tensor *py;
   matrix *pscores;
 
   puts(">>>>>>> Test 5: Compute Multi Way PLS and Prediction");
 
-  NewArray(&ax, 2);
+  NewTensor(&ax, 2);
 
-  NewArrayMatrix(&ax, 0, 3, 2);
-  NewArrayMatrix(&ax, 1, 3, 2);
+  NewTensorMatrix(&ax, 0, 3, 2);
+  NewTensorMatrix(&ax, 1, 3, 2);
 
-  setArrayValue(ax, 0, 0, 0, 37);  setArrayValue(ax, 0, 0, 1, 12);
-  setArrayValue(ax, 0, 1, 0, 62);  setArrayValue(ax, 0, 1, 1, 40);
-  setArrayValue(ax, 0, 2, 0, 13);  setArrayValue(ax, 0, 2, 1, 2);
+  setTensorValue(ax, 0, 0, 0, 37);  setTensorValue(ax, 0, 0, 1, 12);
+  setTensorValue(ax, 0, 1, 0, 62);  setTensorValue(ax, 0, 1, 1, 40);
+  setTensorValue(ax, 0, 2, 0, 13);  setTensorValue(ax, 0, 2, 1, 2);
 
-  setArrayValue(ax, 1, 0, 0, 4);  setArrayValue(ax, 1, 0, 1, 3);
-  setArrayValue(ax, 1, 1, 0, 2);  setArrayValue(ax, 1, 1, 1, 2);
-  setArrayValue(ax, 1, 2, 0, 5);  setArrayValue(ax, 1, 2, 1, 2);
-
-
-  NewArray(&ay, 2);
-
-  NewArrayMatrix(&ay, 0, 3, 1);
-  NewArrayMatrix(&ay, 1, 3, 1);
-
-  setArrayValue(ay, 0, 0, 0, 50);
-  setArrayValue(ay, 0, 1, 0, 86);
-  setArrayValue(ay, 0, 2, 0, 20);
+  setTensorValue(ax, 1, 0, 0, 4);  setTensorValue(ax, 1, 0, 1, 3);
+  setTensorValue(ax, 1, 1, 0, 2);  setTensorValue(ax, 1, 1, 1, 2);
+  setTensorValue(ax, 1, 2, 0, 5);  setTensorValue(ax, 1, 2, 1, 2);
 
 
-  setArrayValue(ay, 1, 0, 0, 50);
-  setArrayValue(ay, 1, 1, 0, 86);
-  setArrayValue(ay, 1, 2, 0, 20);
+  NewTensor(&ay, 2);
+
+  NewTensorMatrix(&ay, 0, 3, 1);
+  NewTensorMatrix(&ay, 1, 3, 1);
+
+  setTensorValue(ay, 0, 0, 0, 50);
+  setTensorValue(ay, 0, 1, 0, 86);
+  setTensorValue(ay, 0, 2, 0, 20);
 
 
-  NewArray(&axp, 2);
-  NewArrayMatrix(&axp, 0, 1, 2);
-  NewArrayMatrix(&axp, 1, 1, 2);
+  setTensorValue(ay, 1, 0, 0, 50);
+  setTensorValue(ay, 1, 1, 0, 86);
+  setTensorValue(ay, 1, 2, 0, 20);
 
-  setArrayValue(axp, 0, 0, 0, 62);  setArrayValue(axp, 0, 0, 1, 62);
-  setArrayValue(axp, 1, 0, 0, 1);  setArrayValue(axp, 1, 0, 1, 1);
+
+  NewTensor(&axp, 2);
+  NewTensorMatrix(&axp, 0, 1, 2);
+  NewTensorMatrix(&axp, 1, 1, 2);
+
+  setTensorValue(axp, 0, 0, 0, 62);  setTensorValue(axp, 0, 0, 1, 62);
+  setTensorValue(axp, 1, 0, 0, 1);  setTensorValue(axp, 1, 0, 1, 1);
 
 
   NewUPLSModel(&m);
@@ -515,12 +515,12 @@ void test5()
   UPLS(ax, ay, 2, 1, 0, m, NULL);
 
   puts("Data\nX:");
-  PrintArray(ax);
+  PrintTensor(ax);
   puts("Y:");
-  PrintArray(ay);
+  PrintTensor(ay);
 
 
-  initArray(&py);
+  initTensor(&py);
   initMatrix(&pscores);
 
 
@@ -534,66 +534,66 @@ void test5()
   PrintMatrix(pscores);
 
   puts("Prediction Y");
-  PrintArray(py);
+  PrintTensor(py);
 
-  DelArray(&py);
+  DelTensor(&py);
   DelMatrix(&pscores);
-  DelArray(&axp);
+  DelTensor(&axp);
 
   DelUPLSModel(&m);
-  DelArray(&ay);
-  DelArray(&ax);
+  DelTensor(&ay);
+  DelTensor(&ax);
 }
 
 void test4()
 {
-  array *ax;
-  array *ay;
+  tensor *ax;
+  tensor *ay;
 
-  array *axp;
+  tensor *axp;
 
   UPLSMODEL *m;
 
-  array *py;
+  tensor *py;
   matrix *pscores;
 
   puts(">>>>>>> Test 4: Compute Multi Way PLS and Prediction");
 
-  NewArray(&ax, 2);
+  NewTensor(&ax, 2);
 
-  NewArrayMatrix(&ax, 0, 3, 4);
-  NewArrayMatrix(&ax, 1, 3, 4);
+  NewTensorMatrix(&ax, 0, 3, 4);
+  NewTensorMatrix(&ax, 1, 3, 4);
 
-  setArrayValue(ax, 0, 0, 0, 0.424264);  setArrayValue(ax, 0, 0, 1, 0.565685);  setArrayValue(ax, 0, 0, 2, 0.4);  setArrayValue(ax, 0, 0, 3, 0.6);
-  setArrayValue(ax, 0, 1, 0, 0.565685);  setArrayValue(ax, 0, 1, 1, 0.424264);  setArrayValue(ax, 0, 1, 2, 0.6);  setArrayValue(ax, 0, 1, 3, 0.4);
-  setArrayValue(ax, 0, 2, 0, 0.707101);  setArrayValue(ax, 0, 2, 1, 0.707101);  setArrayValue(ax, 0, 2, 2, 0.1);  setArrayValue(ax, 0, 2, 3, 0.1);
+  setTensorValue(ax, 0, 0, 0, 0.424264);  setTensorValue(ax, 0, 0, 1, 0.565685);  setTensorValue(ax, 0, 0, 2, 0.4);  setTensorValue(ax, 0, 0, 3, 0.6);
+  setTensorValue(ax, 0, 1, 0, 0.565685);  setTensorValue(ax, 0, 1, 1, 0.424264);  setTensorValue(ax, 0, 1, 2, 0.6);  setTensorValue(ax, 0, 1, 3, 0.4);
+  setTensorValue(ax, 0, 2, 0, 0.707101);  setTensorValue(ax, 0, 2, 1, 0.707101);  setTensorValue(ax, 0, 2, 2, 0.1);  setTensorValue(ax, 0, 2, 3, 0.1);
 
-  setArrayValue(ax, 1, 0, 0, 0.565685);  setArrayValue(ax, 1, 0, 1, 0.424264); setArrayValue(ax, 1, 0, 2, 0.6);  setArrayValue(ax, 1, 0, 3, 0.4);
-  setArrayValue(ax, 1, 1, 0, 0.424264);  setArrayValue(ax, 1, 1, 1, 0.565685);  setArrayValue(ax, 1, 1, 2, 0.4);  setArrayValue(ax, 1, 1, 3, 0.6);
-  setArrayValue(ax, 1, 2, 0, 0.707101);  setArrayValue(ax, 1, 2, 1, 0.707101);  setArrayValue(ax, 1, 2, 2, 0.1);  setArrayValue(ax, 1, 2, 3, 0.1);
-
-
-  NewArray(&ay, 2);
-
-  NewArrayMatrix(&ay, 0, 3, 1);
-  NewArrayMatrix(&ay, 1, 3, 1);
-
-  setArrayValue(ay, 0, 0, 0, 1.0);
-  setArrayValue(ay, 0, 1, 0, 2.0);
-  setArrayValue(ay, 0, 2, 0, 3.0);
+  setTensorValue(ax, 1, 0, 0, 0.565685);  setTensorValue(ax, 1, 0, 1, 0.424264); setTensorValue(ax, 1, 0, 2, 0.6);  setTensorValue(ax, 1, 0, 3, 0.4);
+  setTensorValue(ax, 1, 1, 0, 0.424264);  setTensorValue(ax, 1, 1, 1, 0.565685);  setTensorValue(ax, 1, 1, 2, 0.4);  setTensorValue(ax, 1, 1, 3, 0.6);
+  setTensorValue(ax, 1, 2, 0, 0.707101);  setTensorValue(ax, 1, 2, 1, 0.707101);  setTensorValue(ax, 1, 2, 2, 0.1);  setTensorValue(ax, 1, 2, 3, 0.1);
 
 
-  setArrayValue(ay, 1, 0, 0, 1.0);
-  setArrayValue(ay, 1, 1, 0, 1.5);
-  setArrayValue(ay, 1, 2, 0, 2.0);
+  NewTensor(&ay, 2);
+
+  NewTensorMatrix(&ay, 0, 3, 1);
+  NewTensorMatrix(&ay, 1, 3, 1);
+
+  setTensorValue(ay, 0, 0, 0, 1.0);
+  setTensorValue(ay, 0, 1, 0, 2.0);
+  setTensorValue(ay, 0, 2, 0, 3.0);
 
 
-  NewArray(&axp, 2);
-  NewArrayMatrix(&axp, 0, 1, 4);
-  NewArrayMatrix(&axp, 1, 1, 4);
+  setTensorValue(ay, 1, 0, 0, 1.0);
+  setTensorValue(ay, 1, 1, 0, 1.5);
+  setTensorValue(ay, 1, 2, 0, 2.0);
 
-  setArrayValue(axp, 0, 0, 0, 0.5);  setArrayValue(axp, 0, 0, 1, 0.6);  setArrayValue(axp, 0, 0, 2, 0.45);  setArrayValue(axp, 0, 0, 3, 0.55);
-  setArrayValue(axp, 1, 0, 0, 0.6);  setArrayValue(axp, 1, 0, 1, 0.4);  setArrayValue(axp, 1, 0, 2, 0.55);  setArrayValue(axp, 1, 0, 3, 0.45);
+
+  NewTensor(&axp, 2);
+  NewTensorMatrix(&axp, 0, 1, 4);
+  NewTensorMatrix(&axp, 1, 1, 4);
+
+  setTensorValue(axp, 0, 0, 0, 0.5);  setTensorValue(axp, 0, 0, 1, 0.6);  setTensorValue(axp, 0, 0, 2, 0.45);  setTensorValue(axp, 0, 0, 3, 0.55);
+  setTensorValue(axp, 1, 0, 0, 0.6);  setTensorValue(axp, 1, 0, 1, 0.4);  setTensorValue(axp, 1, 0, 2, 0.55);  setTensorValue(axp, 1, 0, 3, 0.45);
 
 
   NewUPLSModel(&m);
@@ -601,7 +601,7 @@ void test4()
   UPLS(ax, ay, 3, 1, 1, m, NULL);
 
 
-  initArray(&py);
+  initTensor(&py);
   initMatrix(&pscores);
 
   UPLSScorePredictor(axp, m, 3, &pscores);
@@ -614,14 +614,14 @@ void test4()
   PrintMatrix(pscores);
 
   puts("Prediction Y");
-  PrintArray(py);
+  PrintTensor(py);
 
-  DelArray(&py);
+  DelTensor(&py);
   DelMatrix(&pscores);
-  DelArray(&axp);
+  DelTensor(&axp);
   DelUPLSModel(&m);
-  DelArray(&ay);
-  DelArray(&ax);
+  DelTensor(&ay);
+  DelTensor(&ax);
 }
 
 /*Test from:
@@ -632,54 +632,54 @@ void test4()
  */
 void test3()
 {
-  array *ax;
-  array *ay;
+  tensor *ax;
+  tensor *ay;
 
-  array *axp;
+  tensor *axp;
 
   UPLSMODEL *m;
 
 
-  array *py;
+  tensor *py;
   matrix *pscores;
 
   puts(">>>>>>> Test 3: Compute Multi Way PLS and Prediction");
 
-  NewArray(&ax, 2);
+  NewTensor(&ax, 2);
 
-  NewArrayMatrix(&ax, 0, 3, 2);
-  NewArrayMatrix(&ax, 1, 3, 2);
+  NewTensorMatrix(&ax, 0, 3, 2);
+  NewTensorMatrix(&ax, 1, 3, 2);
 
-  setArrayValue(ax, 0, 0, 0, 0.424264);  setArrayValue(ax, 0, 0, 1, 0.565685);
-  setArrayValue(ax, 0, 1, 0, 0.565685);  setArrayValue(ax, 0, 1, 1, 0.424264);
-  setArrayValue(ax, 0, 2, 0, 0.707101);  setArrayValue(ax, 0, 2, 1, 0.707101);
+  setTensorValue(ax, 0, 0, 0, 0.424264);  setTensorValue(ax, 0, 0, 1, 0.565685);
+  setTensorValue(ax, 0, 1, 0, 0.565685);  setTensorValue(ax, 0, 1, 1, 0.424264);
+  setTensorValue(ax, 0, 2, 0, 0.707101);  setTensorValue(ax, 0, 2, 1, 0.707101);
 
-  setArrayValue(ax, 1, 0, 0, 0.565685);  setArrayValue(ax, 1, 0, 1, 0.424264);
-  setArrayValue(ax, 1, 1, 0, 0.424264);  setArrayValue(ax, 1, 1, 1, 0.565685);
-  setArrayValue(ax, 1, 2, 0, 0.707101);  setArrayValue(ax, 1, 2, 1, 0.707101);
-
-
-  NewArray(&ay, 2);
-
-  NewArrayMatrix(&ay, 0, 3, 1);
-  NewArrayMatrix(&ay, 1, 3, 1);
-
-  setArrayValue(ay, 0, 0, 0, 1.0);
-  setArrayValue(ay, 0, 1, 0, 2.0);
-  setArrayValue(ay, 0, 2, 0, 3.0);
+  setTensorValue(ax, 1, 0, 0, 0.565685);  setTensorValue(ax, 1, 0, 1, 0.424264);
+  setTensorValue(ax, 1, 1, 0, 0.424264);  setTensorValue(ax, 1, 1, 1, 0.565685);
+  setTensorValue(ax, 1, 2, 0, 0.707101);  setTensorValue(ax, 1, 2, 1, 0.707101);
 
 
-  setArrayValue(ay, 1, 0, 0, 1.0);
-  setArrayValue(ay, 1, 1, 0, 1.5);
-  setArrayValue(ay, 1, 2, 0, 2.0);
+  NewTensor(&ay, 2);
+
+  NewTensorMatrix(&ay, 0, 3, 1);
+  NewTensorMatrix(&ay, 1, 3, 1);
+
+  setTensorValue(ay, 0, 0, 0, 1.0);
+  setTensorValue(ay, 0, 1, 0, 2.0);
+  setTensorValue(ay, 0, 2, 0, 3.0);
 
 
-  NewArray(&axp, 2);
-  NewArrayMatrix(&axp, 0, 1, 2);
-  NewArrayMatrix(&axp, 1, 1, 2);
+  setTensorValue(ay, 1, 0, 0, 1.0);
+  setTensorValue(ay, 1, 1, 0, 1.5);
+  setTensorValue(ay, 1, 2, 0, 2.0);
 
-  setArrayValue(axp, 0, 0, 0, 0.5);  setArrayValue(axp, 0, 0, 1, 0.6);
-  setArrayValue(axp, 1, 0, 0, 0.6);  setArrayValue(axp, 1, 0, 1, 0.4);
+
+  NewTensor(&axp, 2);
+  NewTensorMatrix(&axp, 0, 1, 2);
+  NewTensorMatrix(&axp, 1, 1, 2);
+
+  setTensorValue(axp, 0, 0, 0, 0.5);  setTensorValue(axp, 0, 0, 1, 0.6);
+  setTensorValue(axp, 1, 0, 0, 0.6);  setTensorValue(axp, 1, 0, 1, 0.4);
 
 
   NewUPLSModel(&m);
@@ -688,7 +688,7 @@ void test3()
   UPLS(ax, ay, 3, 1, 0, m, NULL);
 
 
-  initArray(&py);
+  initTensor(&py);
   initMatrix(&pscores);
 
   UPLSScorePredictor(axp, m, 3, &pscores);
@@ -701,15 +701,15 @@ void test3()
   PrintMatrix(pscores);
 
   puts("Prediction Y");
-  PrintArray(py);
+  PrintTensor(py);
 
-  DelArray(&py);
+  DelTensor(&py);
   DelMatrix(&pscores);
-  DelArray(&axp);
+  DelTensor(&axp);
 
   DelUPLSModel(&m);
-  DelArray(&ay);
-  DelArray(&ax);
+  DelTensor(&ay);
+  DelTensor(&ax);
 }
 
 
@@ -720,36 +720,36 @@ void test3()
 void test2()
 {
   size_t i, j, k;
-  array *ax;
-  array *ay;
+  tensor *ax;
+  tensor *ay;
 
   UPLSMODEL *m;
 
   puts(">>>>>>> Test 2: Compute Multi Way PLS with random variables");
 
-  NewArray(&ax, 3);
+  NewTensor(&ax, 3);
 
   for(i = 0; i < ax->order; i++)
-    NewArrayMatrix(&ax, i, 30, 10);
+    NewTensorMatrix(&ax, i, 30, 10);
 
   srand(time(0));
   for(i = 0; i < ax->order; i++){
     for(j = 0; j < ax->m[i]->row; j++){
       for(k = 0; k < ax->m[i]->col; k++)
-          setArrayValue(ax, i, j, k, rand()/((double)(RAND_MAX)+1));
+          setTensorValue(ax, i, j, k, rand()/((double)(RAND_MAX)+1));
     }
   }
 
 
 
-  NewArray(&ay, 1);
-  NewArrayMatrix(&ay, 0, 30, 1);
+  NewTensor(&ay, 1);
+  NewTensorMatrix(&ay, 0, 30, 1);
 
   srand(time(0));
   for(i = 0; i < ay->order; i++){
     for(j = 0; j < ay->m[i]->row; j++){
       for(k = 0; k < ay->m[i]->col; k++)
-          setArrayValue(ay, i, j, k, rand()/((double)(RAND_MAX)+1));
+          setTensorValue(ay, i, j, k, rand()/((double)(RAND_MAX)+1));
     }
   }
 
@@ -760,8 +760,8 @@ void test2()
   PrintUPLSModel(m);
 
   DelUPLSModel(&m);
-  DelArray(&ay);
-  DelArray(&ax);
+  DelTensor(&ay);
+  DelTensor(&ax);
 }
 
 
@@ -775,40 +775,40 @@ void test2()
  */
 void test1()
 {
-  array *ax;
-  array *ay;
+  tensor *ax;
+  tensor *ay;
 
   UPLSMODEL *m;
 
   puts(">>>>>>> Test 1: Compute Multi Way PLS");
 
-  NewArray(&ax, 2);
+  NewTensor(&ax, 2);
 
-  NewArrayMatrix(&ax, 0, 3, 2);
-  NewArrayMatrix(&ax, 1, 3, 2);
+  NewTensorMatrix(&ax, 0, 3, 2);
+  NewTensorMatrix(&ax, 1, 3, 2);
 
-  setArrayValue(ax, 0, 0, 0, 0.424264);  setArrayValue(ax, 0, 0, 1, 0.565685);
-  setArrayValue(ax, 0, 1, 0, 0.565685);  setArrayValue(ax, 0, 1, 1, 0.424264);
-  setArrayValue(ax, 0, 2, 0, 0.707101);  setArrayValue(ax, 0, 2, 1, 0.707101);
+  setTensorValue(ax, 0, 0, 0, 0.424264);  setTensorValue(ax, 0, 0, 1, 0.565685);
+  setTensorValue(ax, 0, 1, 0, 0.565685);  setTensorValue(ax, 0, 1, 1, 0.424264);
+  setTensorValue(ax, 0, 2, 0, 0.707101);  setTensorValue(ax, 0, 2, 1, 0.707101);
 
-  setArrayValue(ax, 1, 0, 0, 0.565685);  setArrayValue(ax, 1, 0, 1, 0.424264);
-  setArrayValue(ax, 1, 1, 0, 0.424264);  setArrayValue(ax, 1, 1, 1, 0.565685);
-  setArrayValue(ax, 1, 2, 0, 0.707101);  setArrayValue(ax, 1, 2, 1, 0.707101);
-
-
-  NewArray(&ay, 2);
-
-  NewArrayMatrix(&ay, 0, 3, 1);
-  NewArrayMatrix(&ay, 1, 3, 1);
-
-  setArrayValue(ay, 0, 0, 0, 1.0);
-  setArrayValue(ay, 0, 1, 0, 2.0);
-  setArrayValue(ay, 0, 2, 0, 3.0);
+  setTensorValue(ax, 1, 0, 0, 0.565685);  setTensorValue(ax, 1, 0, 1, 0.424264);
+  setTensorValue(ax, 1, 1, 0, 0.424264);  setTensorValue(ax, 1, 1, 1, 0.565685);
+  setTensorValue(ax, 1, 2, 0, 0.707101);  setTensorValue(ax, 1, 2, 1, 0.707101);
 
 
-  setArrayValue(ay, 1, 0, 0, 1.0);
-  setArrayValue(ay, 1, 1, 0, 1.5);
-  setArrayValue(ay, 1, 2, 0, 2.0);
+  NewTensor(&ay, 2);
+
+  NewTensorMatrix(&ay, 0, 3, 1);
+  NewTensorMatrix(&ay, 1, 3, 1);
+
+  setTensorValue(ay, 0, 0, 0, 1.0);
+  setTensorValue(ay, 0, 1, 0, 2.0);
+  setTensorValue(ay, 0, 2, 0, 3.0);
+
+
+  setTensorValue(ay, 1, 0, 0, 1.0);
+  setTensorValue(ay, 1, 1, 0, 1.5);
+  setTensorValue(ay, 1, 2, 0, 2.0);
 
 
   NewUPLSModel(&m);
@@ -818,8 +818,8 @@ void test1()
   PrintUPLSModel(m);
 
   DelUPLSModel(&m);
-  DelArray(&ay);
-  DelArray(&ax);
+  DelTensor(&ay);
+  DelTensor(&ax);
 }
 
 

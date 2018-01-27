@@ -73,7 +73,7 @@ void EPLSGetSWeights(EPLSMODEL *m, CombinationRule crule, matrix *sweights);
 void EPLSGetSBetaCoefficients(EPLSMODEL *m, CombinationRule crule, matrix *sbetas);
 
 /* Description: */
-void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, array **tscores, matrix **py);
+void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, tensor **tscores, matrix **py);
 
 /*
  * Description: Calculate the correlation coefficient (ccoeff),
@@ -88,7 +88,7 @@ void EPLSRegressionStatistics(matrix *my_true, matrix *my_pred, matrix** ccoeff,
  *              the precision_recall_auc of a classification model.
  *              mx and my could be the training or the test datasets.
  */
-void EPLSDiscriminantAnalysisStatistics(matrix *my_true, matrix *my_score, array **roc, matrix **roc_auc, array **precision_recall, matrix **precision_recall_ap);
+void EPLSDiscriminantAnalysisStatistics(matrix *my_true, matrix *my_score, tensor **roc, matrix **roc_auc, tensor **precision_recall, matrix **precision_recall_ap);
 
 void PrintEPLSModel(EPLSMODEL *m);
 

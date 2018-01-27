@@ -21,7 +21,7 @@
 #include "lda.h"
 #include "memwrapper.h"
 #include "numeric.h"
-#include "array.h"
+#include "tensor.h"
 #include <pthread.h>
 
 /* extern int rand_r(unsigned int *seedp);*/
@@ -31,8 +31,8 @@ void NewLDAModel(LDAMODEL** m)
   (*m) = xmalloc(sizeof(LDAMODEL));
   initUIVector(&((*m)->classid));
   initMatrix(&((*m)->evect));
-  initArray(&((*m)->mnpdf));
-  initArray(&((*m)->features));
+  initTensor(&((*m)->mnpdf));
+  initTensor(&((*m)->features));
   initMatrix(&((*m)->inv_cov));
   initMatrix(&((*m)->mu));
   initMatrix(&((*m)->fsdev));
@@ -62,8 +62,8 @@ void DelLDAModel(LDAMODEL** m)
   DelMatrix(&((*m)->inv_cov));
   DelMatrix(&((*m)->evect));
   DelUIVector(&((*m)->classid));
-  DelArray(&((*m)->features));
-  DelArray(&((*m)->mnpdf));
+  DelTensor(&((*m)->features));
+  DelTensor(&((*m)->mnpdf));
   xfree((*m));
 }
 
@@ -72,13 +72,13 @@ void PrintLDAModel(LDAMODEL* m)
   puts("Eigenvalues"); PrintDVector(m->eval);
   puts("Eigenvectors"); PrintMatrix(m->evect);
   puts("Features");
-  PrintArray(m->features);
+  PrintTensor(m->features);
   puts("Multivariate Normal Distribution");
-  PrintArray(m->mnpdf);
-  
+  PrintTensor(m->mnpdf);
+
   puts("Class Average. Each row represent a class");
   PrintMatrix(m->mu);
-  
+
   puts("Validation...");
   puts("Senstivity"); PrintDVector(m->sens);
   puts("Specificity"); PrintDVector(m->spec);
@@ -92,30 +92,30 @@ void PrintLDAModel(LDAMODEL* m)
 void LDA(matrix *mx, uivector *y, LDAMODEL *lda)
 {
   size_t i, j, l, k, cc, imin, imax;
-  array *classes;
-  array *S;
+  tensor *classes;
+  tensor *S;
   matrix *X, *X_T, *Sb, *Sw, *InvSw_Sb;
   dvector *mutot;
   dvector *classmu;
   dvector *evect_, *ldfeature;
   matrix *covmx;
-  
-  
+
+
   lda->nclass = 0;
-  
-  
+
+
   imin = imax = y->data[0];
-  
+
   for(i = 1; i < y->size; i++){
     if(y->data[i] > imax){
       imax = y->data[i];
     }
-    
+
     if(y->data[i] < imin){
       imin = y->data[i];
     }
   }
-  
+
   /* get the number of classes */
   if(imin == 0){
     lda->class_start = 0;
@@ -125,9 +125,9 @@ void LDA(matrix *mx, uivector *y, LDAMODEL *lda)
     lda->class_start = 1;
     lda->nclass = imax;
   }
-  
+
   /*printf("nclass %d\n", (int)lda->nclass);*/
-  
+
   /* Copy data */
   NewMatrix(&X, mx->row, mx->col);
   MatrixCopy(mx, &X);
@@ -139,9 +139,9 @@ void LDA(matrix *mx, uivector *y, LDAMODEL *lda)
     }
   }
   */
-  
+
   /*create classes of objects */
-  NewArray(&classes, lda->nclass);
+  NewTensor(&classes, lda->nclass);
   UIVectorResize(&lda->classid, mx->row);
   j = 0;
   if(imin == 0){
@@ -153,8 +153,8 @@ void LDA(matrix *mx, uivector *y, LDAMODEL *lda)
         else
           continue;
       }
-      NewArrayMatrix(&classes, k, cc, X->col);
-      
+      NewTensorMatrix(&classes, k, cc, X->col);
+
       cc = 0;
       for(i = 0; i < X->row; i++){
         if(y->data[i] == k){
@@ -180,8 +180,8 @@ void LDA(matrix *mx, uivector *y, LDAMODEL *lda)
         else
           continue;
       }
-      NewArrayMatrix(&classes, k, cc, X->col);
-      
+      NewTensorMatrix(&classes, k, cc, X->col);
+
       cc = 0;
       for(i = 0; i < X->row; i++){
         if(y->data[i] == k+1){
@@ -198,19 +198,19 @@ void LDA(matrix *mx, uivector *y, LDAMODEL *lda)
       }
     }
   }
-  
-  /*puts("Classes"); PrintArray(classes);*/
-  
+
+  /*puts("Classes"); PrintTensor(classes);*/
+
   /* Compute the prior probability */
   for(k = 0; k < classes->order; k++){
     DVectorAppend(&lda->pprob, (classes->m[k]->row/(double)X->row));
   }
-  
+
   /*
-  puts("Prior Probability"); 
+  puts("Prior Probability");
   PrintDVector(lda->pprob);
   */
-  
+
   /*Compute the mean of each class*/
   for(k = 0; k < classes->order; k++){
     initDVector(&classmu);
@@ -220,31 +220,31 @@ void LDA(matrix *mx, uivector *y, LDAMODEL *lda)
 
     DelDVector(&classmu);
   }
-  
+
   /*puts("Class Mu");
   FindNan(lda->mu);
   PrintMatrix(lda->mu);*/
-  
+
   /*Calculate the total mean of samples..*/
   initDVector(&mutot);
   MatrixColAverage(X, &mutot);
-  
+
   /*puts("Mu tot");
   PrintDVector(mutot);*/
-  
+
   /*NewDVector(&mutot, mu->col);
-  
+
   for(k = 0; k < mu->row; k++){
     for(i = 0; i < mu->col; i++){
       mutot->data[i] += mu->data[k][i];
     }
   }
-  
+
   for(i = 0; i < mutot->size; i++){
     mutot->data[i] /= nclasses;
   }*/
-  
-  
+
+
   /*Centering data before computing the scatter matrix*/
   for(k = 0; k < classes->order; k++){
     for(i = 0; i < classes->m[k]->row; i++){
@@ -253,32 +253,32 @@ void LDA(matrix *mx, uivector *y, LDAMODEL *lda)
       }
     }
   }
-  
+
   /*
   puts("Classes");
   for(i = 0; i < classes->order; i++){
     FindNan(classes->m[i]);
   }
-   PrintArray(classes);
+   PrintTensor(classes);
   */
   /*Compute the scatter matrix
    * S = nobj - 1 * covmx
    */
-  initArray(&S);
+  initTensor(&S);
   NewMatrix(&covmx, X->col, X->col);
   for(k = 0; k < classes->order; k++){
     matrix *m_T;
     NewMatrix(&m_T, classes->m[k]->col, classes->m[k]->row);
     MatrixTranspose(classes->m[k], m_T);
-    
+
     MatrixDotProduct(m_T, classes->m[k], covmx);
-    
+
     for(i = 0; i < covmx->row; i++){
       for(j = 0; j < covmx->col; j++){
         covmx->data[i][j] /= classes->m[k]->row;
       }
     }
-    ArrayAppendMatrix(&S, covmx);
+    TensorAppendMatrix(&S, covmx);
     MatrixSet(covmx, 0.f);
     DelMatrix(&m_T);
   }
@@ -287,11 +287,11 @@ void LDA(matrix *mx, uivector *y, LDAMODEL *lda)
   for(i = 0; i < S->order; i++)
     FindNan(S->m[i]);
 
-  PrintArray(S);*/
-  
+  PrintTensor(S);*/
+
   /* Compute the class scatter which represent the covariance matrix */
   NewMatrix(&Sw, X->col, X->col);
-  
+
   for(k = 0; k < S->order; k++){
     for(i = 0; i  < S->m[k]->row; i++){
       for(j = 0; j  < S->m[k]->col; j++){
@@ -319,7 +319,7 @@ void LDA(matrix *mx, uivector *y, LDAMODEL *lda)
   puts("Between class scatter matrix Sb");
   FindNan(Sb);
   PrintMatrix(Sb); */
-  
+
   /* Computing the LDA projection */
   /*puts("Compute Matrix Inversion");*/
   MatrixInversion(Sw, &lda->inv_cov);
@@ -332,7 +332,7 @@ void LDA(matrix *mx, uivector *y, LDAMODEL *lda)
     if(_isnan_(ss))
       break;
   }
-  
+
   if(FLOAT_EQ(ss, 0.f, EPSILON) || _isnan_(ss)){
     /*Do SVD as pseudoinversion accordin to Liu et al. because matrix is nonsingular
      *
@@ -350,10 +350,10 @@ void LDA(matrix *mx, uivector *y, LDAMODEL *lda)
     MatrixInversion(Sw, &A_T);
     NewMatrix(&A_T_Sw, A_T->row, Sw->col);
     MatrixDotProduct(A_T, Sw, A_T_Sw);
-    
+
     initMatrix(&A_T_Sw_inv);
     MatrixInversion(A_T_Sw, &A_T_Sw_inv);
-    
+
     MatrixDotProduct(A_T_Sw_inv, A_T, lda->inv_cov);
     DelMatrix(&A_T);
     DelMatrix(&A_T_Sw);
@@ -368,15 +368,15 @@ void LDA(matrix *mx, uivector *y, LDAMODEL *lda)
   /*puts("Compute Matrix Dot Product");*/
   NewMatrix(&InvSw_Sb, lda->inv_cov->row, Sb->col);
   MatrixDotProduct(lda->inv_cov, Sb, InvSw_Sb);
-  
+
   /*puts("InvSw_Sb"); PrintMatrix(InvSw_Sb);*/
   /*puts("Compute Eigenvectors");*/
   EVectEval(InvSw_Sb, &lda->eval, &lda->evect);
   /*EvectEval3(InvSw_Sb, InvSw_Sb->row, &lda->eval, &lda->evect);*/
   /*EVectEval(InvSw_Sb, &lda->eval, &lda->evect); */
-  
-  /* Calculate the new projection in the feature space 
-   * 
+
+  /* Calculate the new projection in the feature space
+   *
    * and the multivariate normal distribution
    */
 /*       Remove centering data   */
@@ -387,44 +387,44 @@ void LDA(matrix *mx, uivector *y, LDAMODEL *lda)
       }
     }
   }
-    
+
   initMatrix(&X_T);
-  
+
   for(k = 0; k < classes->order; k++){
     /*printf("row %d  col %d\n", (int)classes->m[k]->row, (int)classes->m[k]->col);*/
-    AddArrayMatrix(&lda->features, classes->m[k]->row, classes->m[k]->col);
-    AddArrayMatrix(&lda->mnpdf, classes->m[k]->row, classes->m[k]->col);
+    AddTensorMatrix(&lda->features, classes->m[k]->row, classes->m[k]->col);
+    AddTensorMatrix(&lda->mnpdf, classes->m[k]->row, classes->m[k]->col);
   }
-  
+
   NewDVector(&evect_, lda->evect->row);
   initDVector(&ldfeature);
-  
+
   ResizeMatrix(&lda->fmean, classes->order, lda->evect->col);
   ResizeMatrix(&lda->fsdev, classes->order, lda->evect->col);
-  
+
   for(l = 0; l < lda->evect->col; l++){
-    
+
     for(i = 0; i < lda->evect->row; i++){
       evect_->data[i] = lda->evect->data[i][l];
     }
-    
+
     for(k = 0; k < classes->order; k++){
-      
+
       ResizeMatrix(&X_T, classes->m[k]->col, classes->m[k]->row);
       MatrixTranspose(classes->m[k], X_T);
       DVectorResize(&ldfeature, classes->m[k]->row);
-      
+
       DVectorMatrixDotProduct(X_T, evect_, ldfeature);
-      
+
       for(i = 0; i < ldfeature->size; i++){
         lda->features->m[k]->data[i][l] = ldfeature->data[i];
       }
-      
+
 /*        Calculate the multivariate normal distribution  */
       double mean = 0.f, sdev = 0.f;
       DVectorMean(ldfeature, &mean);
       DVectorSDEV(ldfeature, &sdev);
-      
+
       lda->fmean->data[k][l] = mean;
       lda->fsdev->data[k][l] = sdev;
       for(i = 0; i < ldfeature->size; i++){
@@ -432,15 +432,15 @@ void LDA(matrix *mx, uivector *y, LDAMODEL *lda)
       }
     }
   }
-  
+
   DelDVector(&evect_);
   DelMatrix(&covmx);
   DelDVector(&ldfeature);
   DelDVector(&mutot);
   DelMatrix(&Sb);
   DelMatrix(&InvSw_Sb);
-  DelArray(&classes);
-  DelArray(&S);
+  DelTensor(&classes);
+  DelTensor(&S);
   DelMatrix(&Sw);
   DelMatrix(&X_T);
   DelMatrix(&X);
@@ -454,15 +454,15 @@ void LDAPrediction(matrix *mx, LDAMODEL *lda, matrix **pfeatures, matrix **proba
   size_t i, j, argmax, id;
   matrix *mx_T;
   dvector *x, *mu, *C_x_T, *C_mu_T, *ldfeature, *evect_;
-  
+
   NewMatrix(&mx_T, mx->col, mx->row);
   MatrixTranspose(mx, mx_T);
-  
+
   NewDVector(&C_x_T, lda->inv_cov->row);
   NewDVector(&C_mu_T, lda->inv_cov->row);
-  
+
   ResizeMatrix(probability, mx->row, lda->nclass);
-  
+
   for(i = 0; i < mx_T->col; i++){
     x = getMatrixColumn(mx_T, i); /* object k*/
     for(j = 0; j < lda->nclass; j++){
@@ -476,7 +476,7 @@ void LDAPrediction(matrix *mx, LDAMODEL *lda, matrix **pfeatures, matrix **proba
     }
     DelDVector(&x);
   }
-  
+
   for(i = 0; i < (*probability)->row; i++){
     argmax = 0;
     for(j = 1; j < (*probability)->col; j++){
@@ -487,7 +487,7 @@ void LDAPrediction(matrix *mx, LDAMODEL *lda, matrix **pfeatures, matrix **proba
         continue;
       }
     }
-    
+
     if(lda->class_start  == 0){
       UIVectorAppend(classprediction, argmax);
     }
@@ -495,7 +495,7 @@ void LDAPrediction(matrix *mx, LDAMODEL *lda, matrix **pfeatures, matrix **proba
       UIVectorAppend(classprediction, argmax+1);
     }
   }
-  
+
   /* Predict the the new projection in the feature space */
   ResizeMatrix(mnpdf, mx->row, lda->evect->col);
   NewDVector(&ldfeature, mx->row);
@@ -504,15 +504,15 @@ void LDAPrediction(matrix *mx, LDAMODEL *lda, matrix **pfeatures, matrix **proba
     DVectorMatrixDotProduct(mx_T, evect_, ldfeature);
     DelDVector(&evect_);
     MatrixAppendCol(pfeatures, ldfeature);
-    
+
     for(j = 0; j < ldfeature->size; j++){
       id = (*classprediction)->data[j];
       if(lda->class_start == 1)
         id -= 1;
-      
+
       (*mnpdf)->data[j][i] = 1./sqrt(2 * _pi_* lda->fsdev->data[id][i]) * exp(-square((ldfeature->data[j] - lda->fmean->data[id][i])/lda->fsdev->data[id][i])/2.f);
     }
-    
+
     DVectorSet(ldfeature, 0.f);
   }
 
@@ -531,25 +531,25 @@ void LDAError(matrix *mx, uivector *my, LDAMODEL *lda, dvector **sens, dvector *
   uivector *classprediction;
   uivector* tp, *fp, *fn, *tn;
   double d, p, n;
-  
+
   initMatrix(&pfeatures);
   initMatrix(&probability);
   initMatrix(&mnpdf);
   initUIVector(&classprediction);
   LDAPrediction(mx, lda, &pfeatures, &probability, &mnpdf, &classprediction);
-  
+
   NewUIVector(&tp, lda->nclass);
   NewUIVector(&fp, lda->nclass);
   NewUIVector(&tn, lda->nclass);
   NewUIVector(&fn, lda->nclass);
-  
+
   if(lda->class_start == 1){
     pos = -1;
   }
   else{
     pos = 0;
   }
-  
+
   for(k = 0; k < lda->nclass; k++){ /*for each class*/
     for(i = 0; i < my->size; i++){
       /*printf("class %d  object class %d  predicted class %d\n", (int)k, (int)(my->data[i] - pos), (int)(classprediction->data[i] - pos));*/
@@ -575,22 +575,22 @@ void LDAError(matrix *mx, uivector *my, LDAMODEL *lda, dvector **sens, dvector *
       }
     }
   }
-  
+
   if((*sens)->size != lda->nclass)
     DVectorResize(sens, lda->nclass);
-  
+
   if((*spec)->size != lda->nclass)
     DVectorResize(spec, lda->nclass);
-  
+
   if((*ppv)->size != lda->nclass)
     DVectorResize(ppv, lda->nclass);
-  
+
   if((*npv)->size != lda->nclass)
     DVectorResize(npv, lda->nclass);
-  
+
   if((*acc)->size != lda->nclass)
     DVectorResize(acc, lda->nclass);
-  
+
   for(i = 0; i < tp->size; i++){ /* for each class*/
     /* sensitivity calculation */
     d = tp->data[i] + fn->data[i];
@@ -600,7 +600,7 @@ void LDAError(matrix *mx, uivector *my, LDAMODEL *lda, dvector **sens, dvector *
     else{
       (*sens)->data[i] = tp->data[i] / d;
     }
-    
+
     /* specificity calculation */
     d = tn->data[i] + fp->data[i];
     if(FLOAT_EQ(d, 0, 1e-4)){
@@ -609,7 +609,7 @@ void LDAError(matrix *mx, uivector *my, LDAMODEL *lda, dvector **sens, dvector *
     else{
       (*spec)->data[i] = tn->data[i] / d;
     }
-    
+
     /* ppv calculation */
     d = tp->data[i] + fp->data[i];
     if(FLOAT_EQ(d, 0, 1e-4)){
@@ -618,7 +618,7 @@ void LDAError(matrix *mx, uivector *my, LDAMODEL *lda, dvector **sens, dvector *
     else{
       (*ppv)->data[i] = tp->data[i] / d;
     }
-    
+
     /* npv calculation */
     d = fn->data[i] + tn->data[i];
     if(FLOAT_EQ(d, 0, 1e-4)){
@@ -627,13 +627,13 @@ void LDAError(matrix *mx, uivector *my, LDAMODEL *lda, dvector **sens, dvector *
     else{
       (*npv)->data[i] = tn->data[i] / d;
     }
-    
+
     /* acc calculation */
     p = tp->data[i] + fn->data[i];
     n = tn->data[i] + fp->data[i];
     (*acc)->data[i] = (tp->data[i] + tn->data[i]) / (double)(p+n);
   }
-  
+
   DelUIVector(&tp);
   DelUIVector(&fp);
   DelUIVector(&fn);
@@ -658,28 +658,28 @@ void *LDARandomGroupCVModel(void *arg_)
 {
   size_t i, j, k, n, g;
   lda_rgcv_th_arg *arg;
-  matrix *gid; /* randomization and storing id for each random group into a matrix */  
-  
+  matrix *gid; /* randomization and storing id for each random group into a matrix */
+
   /* Matrix for compute the PLS models for groups */
   matrix *subX;
   uivector *subY;
   LDAMODEL *subm;
-  
+
   /*matrix to predict*/
   matrix *predictX;
   uivector *realY;
-  
-  
+
+
   dvector *sens, *spec, *ppv, *npv, *acc;
-  
+
   initDVector(&sens);
   initDVector(&spec);
   initDVector(&ppv);
   initDVector(&npv);
   initDVector(&acc);
-  
+
   arg = (lda_rgcv_th_arg*) arg_;
-  
+
   NewMatrix(&gid, arg->group, (size_t)ceil(arg->mx->row/(double)arg->group));
 
   /* Divide in group  all the Dataset */
@@ -701,7 +701,7 @@ void *LDARandomGroupCVModel(void *arg_)
         continue;
     }
   }
-  
+
   /*
   puts("Gid Matrix");
   PrintMatrix(gid);
@@ -709,17 +709,17 @@ void *LDARandomGroupCVModel(void *arg_)
       /*
     printf("Excuded the group number %u\n", (unsigned int)g);
     puts("Sub Model\nX:");
-    PrintArray(subX);
+    PrintTensor(subX);
     puts("Y:");
-    PrintArray(subY);
-    
+    PrintTensor(subY);
+
     puts("\n\nPredict Group\nX:");
-    PrintArray(predictX);
+    PrintTensor(predictX);
     puts("RealY:");
-    PrintArray(realY);
+    PrintTensor(realY);
     */
   /*step 2*/
-  for(g = 0; g < gid->row; g++){ /*For aeach group */ 
+  for(g = 0; g < gid->row; g++){ /*For aeach group */
     /* Estimate how many objects are inside the sub model without the group "g" */
     n = 0;
     for(i = 0; i < gid->row; i++){
@@ -728,33 +728,33 @@ void *LDARandomGroupCVModel(void *arg_)
           if((int)gid->data[i][j] != -1)
             n++;
           else
-            continue; 
+            continue;
         }
       }
       else
         continue;
     }
-    
+
     /*Allocate the submodel*/
     NewMatrix(&subX, n, arg->mx->col);
     NewUIVector(&subY, n);
-    
+
     /* Estimate how many objects are inside the group "g" to predict*/
     n = 0;
     for(j = 0; j < gid->col; j++){
       if((int)gid->data[g][j] != -1)
         n++;
       else
-        continue; 
+        continue;
     }
-    
-    
+
+
     /*Allocate the */
     NewMatrix(&predictX, n, arg->mx->col);
     NewUIVector(&realY, n);
 
     /* copy the submodel values */
-    
+
     for(i = 0, k = 0; i < gid->row; i++){
       if(i != g){
         for(j = 0; j < gid->col; j++){
@@ -776,7 +776,7 @@ void *LDARandomGroupCVModel(void *arg_)
         continue;
       }
     }
-    
+
     /* copy the objects to predict into predictmx*/
     for(j = 0, k = 0; j < gid->col; j++){
       size_t a = (size_t)gid->data[g][j];
@@ -791,13 +791,13 @@ void *LDARandomGroupCVModel(void *arg_)
         continue;
       }
     }
-    
+
     NewLDAModel(&subm);
-    
+
     LDA(subX, subY, subm);
-    
+
     LDAError(predictX, realY, subm, &sens, &spec, &ppv, &npv, &acc);
-    
+
     if(arg->sens->size == 0){
       DVectorCopy(sens, &arg->sens);
     }
@@ -806,7 +806,7 @@ void *LDARandomGroupCVModel(void *arg_)
         arg->sens->data[i] += sens->data[i];
       }
     }
-    
+
     if(arg->spec->size == 0){
       DVectorCopy(spec, &arg->spec);
     }
@@ -815,7 +815,7 @@ void *LDARandomGroupCVModel(void *arg_)
         arg->spec->data[i] += spec->data[i];
       }
     }
-    
+
     if(arg->ppv->size == 0){
       DVectorCopy(ppv, &arg->ppv);
     }
@@ -824,7 +824,7 @@ void *LDARandomGroupCVModel(void *arg_)
         arg->ppv->data[i] += ppv->data[i];
       }
     }
-    
+
     if(arg->npv->size == 0){
       DVectorCopy(npv, &arg->npv);
     }
@@ -833,7 +833,7 @@ void *LDARandomGroupCVModel(void *arg_)
         arg->npv->data[i] += npv->data[i];
       }
     }
-        
+
     if(arg->acc->size == 0){
       DVectorCopy(acc, &arg->acc);
     }
@@ -842,14 +842,14 @@ void *LDARandomGroupCVModel(void *arg_)
         arg->acc->data[i] += acc->data[i];
       }
     }
-    
+
     DelLDAModel(&subm);
     DelMatrix(&subX);
     DelUIVector(&subY);
     DelMatrix(&predictX);
     DelUIVector(&realY);
   }
-  
+
   DelDVector(&acc);
   DelDVector(&sens);
   DelDVector(&spec);
@@ -864,13 +864,13 @@ void LDARandomGroupsCV(matrix *mx, uivector *my, size_t group, size_t iterations
   if(mx->row == my->size && group > 0 && iterations > 0){
     size_t th, iterations_, i;
     pthread_t *threads;
-    
+
     /* each thread have its argument type */
     threads = xmalloc(sizeof(pthread_t)*nthreads);
     lda_rgcv_th_arg *arg;
     arg = xmalloc(sizeof(lda_rgcv_th_arg)*nthreads);
-    
-    
+
+
     for(th = 0; th < nthreads; th++){
       initDVector(&arg[th].sens);
       initDVector(&arg[th].spec);
@@ -878,7 +878,7 @@ void LDARandomGroupsCV(matrix *mx, uivector *my, size_t group, size_t iterations
       initDVector(&arg[th].npv);
       initDVector(&arg[th].acc);
     }
-    
+
     /*
     iterations_ = 0;
     while(iterations_ <  iterations){*/
@@ -893,15 +893,15 @@ void LDARandomGroupsCV(matrix *mx, uivector *my, size_t group, size_t iterations
           arg[th].my = my;
           arg[th].group = group;
           arg[th].srand_init = (unsigned int) group + mx->row + iterations + th + iterations_;
-          
+
           /*Reset everithings*/
           for(i = 0; i < arg[th].sens->size; i++){
             arg[th].sens->data[i] = arg[th].spec->data[i] = arg[th].ppv->data[i] = arg[th].npv->data[i] = 0.f;
           }
-          
+
           pthread_create(&threads[th], NULL, LDARandomGroupCVModel, (void*) &arg[th]);
         }
-        
+
         /* Wait till threads are complete before main continues. Unless we  */
         /* wait we run the risk of executing an exit which will terminate   */
         /* the process and all threads before the threads have completed.   */
@@ -919,7 +919,7 @@ void LDARandomGroupsCV(matrix *mx, uivector *my, size_t group, size_t iterations
               (*sens)->data[i] += arg[th].sens->data[i];
             }
           }
-          
+
           if((*spec)->size == 0){
             DVectorCopy(arg[th].spec, spec);
           }
@@ -928,7 +928,7 @@ void LDARandomGroupsCV(matrix *mx, uivector *my, size_t group, size_t iterations
               (*spec)->data[i] += arg[th].spec->data[i];
             }
           }
-          
+
           if((*ppv)->size == 0){
             DVectorCopy(arg[th].ppv, ppv);
           }
@@ -937,7 +937,7 @@ void LDARandomGroupsCV(matrix *mx, uivector *my, size_t group, size_t iterations
               (*ppv)->data[i] += arg[th].ppv->data[i];
             }
           }
-          
+
           if((*npv)->size == 0){
             DVectorCopy(arg[th].npv, npv);
           }
@@ -946,7 +946,7 @@ void LDARandomGroupsCV(matrix *mx, uivector *my, size_t group, size_t iterations
               (*npv)->data[i] += arg[th].npv->data[i];
             }
           }
-          
+
           if((*acc)->size == 0){
             DVectorCopy(arg[th].acc, acc);
           }
@@ -958,9 +958,9 @@ void LDARandomGroupsCV(matrix *mx, uivector *my, size_t group, size_t iterations
         }
       }
     }
-    
+
     /*Finalize the output by dividing for the number of iterations*/
-    
+
     double d = group*iterations;
     for(i = 0; i < (*sens)->size; i++){
       (*sens)->data[i] /= d;
@@ -969,7 +969,7 @@ void LDARandomGroupsCV(matrix *mx, uivector *my, size_t group, size_t iterations
       (*npv)->data[i] /= d;
       (*acc)->data[i] /= d;
     }
-    
+
     for(th = 0; th < nthreads; th++){
       DelDVector(&arg[th].sens);
       DelDVector(&arg[th].spec);
@@ -986,8 +986,8 @@ void LDARandomGroupsCV(matrix *mx, uivector *my, size_t group, size_t iterations
 }
 
 
-/* Leave One Ouut Validation 
- * 
+/* Leave One Ouut Validation
+ *
  * 1) remove one object
  * 2) calculate the model
  * 3) predict the removed object and so the r2 and q2
@@ -1003,14 +1003,14 @@ void *LDALOOModel(void *arg_)
 {
   lda_loocv_th_arg *arg;
   arg = (lda_loocv_th_arg*) arg_;
-  
+
   LDAMODEL *subm;
   NewLDAModel(&subm);
-  
+
   LDA(arg->submx, arg->submy, subm);
-  
+
   LDAError(arg->predmx, arg->predmy, subm, &arg->sens, &arg->spec, &arg->ppv, &arg->npv, &arg->acc);
-  
+
   DelLDAModel(&subm);
   return 0;
 }
@@ -1024,7 +1024,7 @@ void LDALOOCV(matrix* mx, uivector* my, dvector** sens, dvector** spec, dvector*
 
     threads = xmalloc(sizeof(pthread_t)*nthreads);
     arg = xmalloc(sizeof(lda_loocv_th_arg)*nthreads);
-    
+
     /* initialize threads arguments.. */
     for(th = 0; th < nthreads; th++){
       NewMatrix(&arg[th].submx, mx->row-1, mx->col);
@@ -1037,14 +1037,14 @@ void LDALOOCV(matrix* mx, uivector* my, dvector** sens, dvector** spec, dvector*
       initDVector(&arg[th].npv);
       initDVector(&arg[th].acc);
     }
-    
-    
+
+
     for(model = 0; model < mx->row; model += nthreads){ /* we compute mx->row models  */
       if(s != NULL && (*s) == SIGSCIENTIFICSTOP){
         break;
       }
       else{
-        
+
         /* copy data into subX, subY, predictX and predictY for each thread argument
          * and run the thread
          */
@@ -1067,14 +1067,14 @@ void LDALOOCV(matrix* mx, uivector* my, dvector** sens, dvector** spec, dvector*
                 arg[th].predmy->data[0] = my->data[j];
               }
             }
-            
+
             pthread_create(&threads[th], NULL, LDALOOModel, (void*) &arg[th]);
           }
           else{
             continue;
           }
         }
-        
+
         /* Wait till threads are complete before main continues. Unless we  */
         /* wait we run the risk of executing an exit which will terminate   */
         /* the process and all threads before the threads have completed.   */
@@ -1097,7 +1097,7 @@ void LDALOOCV(matrix* mx, uivector* my, dvector** sens, dvector** spec, dvector*
               (*sens)->data[i] += arg[th].sens->data[i];
             }
           }
-          
+
           if((*spec)->size == 0){
             DVectorCopy(arg[th].spec, spec);
           }
@@ -1106,7 +1106,7 @@ void LDALOOCV(matrix* mx, uivector* my, dvector** sens, dvector** spec, dvector*
               (*spec)->data[i] += arg[th].spec->data[i];
             }
           }
-          
+
           if((*ppv)->size == 0){
             DVectorCopy(arg[th].ppv, ppv);
           }
@@ -1115,7 +1115,7 @@ void LDALOOCV(matrix* mx, uivector* my, dvector** sens, dvector** spec, dvector*
               (*ppv)->data[i] += arg[th].ppv->data[i];
             }
           }
-          
+
           if((*npv)->size == 0){
             DVectorCopy(arg[th].npv, npv);
           }
@@ -1124,7 +1124,7 @@ void LDALOOCV(matrix* mx, uivector* my, dvector** sens, dvector** spec, dvector*
               (*npv)->data[i] += arg[th].npv->data[i];
             }
           }
-          
+
           if((*acc)->size == 0){
             DVectorCopy(arg[th].acc, acc);
           }
@@ -1136,9 +1136,9 @@ void LDALOOCV(matrix* mx, uivector* my, dvector** sens, dvector** spec, dvector*
         }
       }
     }
-    
+
     /*Delete thread arguments*/
-    
+
     for(th = 0; th < nthreads; th++){
       DelMatrix(&arg[th].submx);
       DelUIVector(&arg[th].submy);
@@ -1150,7 +1150,7 @@ void LDALOOCV(matrix* mx, uivector* my, dvector** sens, dvector** spec, dvector*
       DelDVector(&arg[th].npv);
       DelDVector(&arg[th].acc);
     }
-    
+
     /*Finalize the output by dividing for the number of models*/
     for(i = 0; i < (*sens)->size; i++){
       (*sens)->data[i] /= mx->row;
@@ -1166,4 +1166,3 @@ void LDALOOCV(matrix* mx, uivector* my, dvector** sens, dvector** spec, dvector*
     fprintf(stderr, "Error!! Unable to compute LDA Leave One Out Validation!!\n");
   }
 }
-
