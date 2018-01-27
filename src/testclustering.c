@@ -28,11 +28,11 @@ void test17()
   matrix *m, *centroids;
   int run = SIGSCIENTIFICRUN;
   uivector *clusters;
-  
+
   size_t i, j, maxrow, maxcol;
   maxrow = 100;
   maxcol = 50;
-  
+
   NewMatrix(&m, maxrow, maxcol);
 
   srand(maxrow+maxcol);
@@ -45,24 +45,24 @@ void test17()
   initUIVector(&clusters);
   initMatrix(&centroids);
   puts("Hierarchical Clustering");
-  
+
   HierarchicalClustering(m, 3, &clusters, &centroids, NULL, 0, &run);
-  
+
   puts("clusters");
   PrintUIVector(clusters);
-  
+
   DelUIVector(&clusters);
   DelMatrix(&centroids);
-  DelMatrix(&m);  
+  DelMatrix(&m);
 }
 
 void test16()
 {
   matrix *m;
   uivector *clusters;
-  
+
   NewMatrix(&m, 10, 2);
-  
+
   setMatrixValue(m, 0, 0, 1.9063449);       setMatrixValue(m, 0, 1, 4.7654846);
   setMatrixValue(m, 1, 0, 4.8621579);       setMatrixValue(m, 1, 1, 8.7060234);
   setMatrixValue(m, 2, 0, 3.9597626);       setMatrixValue(m, 2, 1, 4.1309202);
@@ -73,11 +73,11 @@ void test16()
   setMatrixValue(m, 7, 0, 4.8633205);       setMatrixValue(m, 7, 1, 7.717007);
   setMatrixValue(m, 8, 0, 4.3323122);       setMatrixValue(m, 8, 1, 9.0220105);
   setMatrixValue(m, 9, 0, 6.955182);        setMatrixValue(m, 9, 1, 7.0026549);
- 
+
   initUIVector(&clusters);
   HyperGridMap(m, 4, 5, &clusters, SIGSCIENTIFICRUN);
   DelUIVector(&clusters);
-  
+
   DelMatrix(&m);
 }
 
@@ -88,7 +88,7 @@ void test15()
   uivector *clusters;
   strvector *dendogram;
   NewMatrix(&m, 10, 2);
-  
+
   setMatrixValue(m, 0, 0, 1.9063449);       setMatrixValue(m, 0, 1, 4.7654846);
   setMatrixValue(m, 1, 0, 4.8621579);       setMatrixValue(m, 1, 1, 8.7060234);
   setMatrixValue(m, 2, 0, 3.9597626);       setMatrixValue(m, 2, 1, 4.1309202);
@@ -99,20 +99,20 @@ void test15()
   setMatrixValue(m, 7, 0, 4.8633205);       setMatrixValue(m, 7, 1, 7.717007);
   setMatrixValue(m, 8, 0, 4.3323122);       setMatrixValue(m, 8, 1, 9.0220105);
   setMatrixValue(m, 9, 0, 6.955182);        setMatrixValue(m, 9, 1, 7.0026549);
- 
+
 
   initUIVector(&clusters);
   initMatrix(&centroids);
   initStrVector(&dendogram);
   puts("Hierarchical Clustering");
-  
-  HierarchicalClustering(m, 3, &clusters, &centroids, &dendogram, al, &run);
-  
+
+  HierarchicalClustering(m, 3, &clusters, &centroids, &dendogram, average_linkage, &run);
+
   puts("clusters");
   PrintUIVector(clusters);
   puts("Dendogram");
   PrintStrVector(dendogram);
-  
+
   DelStrVector(&dendogram);
   DelUIVector(&clusters);
   DelMatrix(&centroids);
@@ -121,12 +121,12 @@ void test15()
 void test14()
 {
   matrix *m1, *m2;
-  
+
   double dist;
-  
+
   NewMatrix(&m1, 10, 2);
   NewMatrix(&m2, 5, 2);
-  
+
   setMatrixValue(m1, 0, 0, 2);    setMatrixValue(m1, 0, 1, 2);
   setMatrixValue(m1, 1, 0, 2);    setMatrixValue(m1, 1, 1, 5);
   setMatrixValue(m1, 2, 0, 6);    setMatrixValue(m1, 2, 1, 5);
@@ -137,18 +137,18 @@ void test14()
   setMatrixValue(m1, 7, 0, 4);    setMatrixValue(m1, 7, 1, 6);
   setMatrixValue(m1, 8, 0, 2);    setMatrixValue(m1, 8, 1, 5);
   setMatrixValue(m1, 9, 0, 1);    setMatrixValue(m1, 9, 1, 3);
-  
-  
+
+
   setMatrixValue(m2, 0, 0, 6);    setMatrixValue(m2, 0, 1, 5);
   setMatrixValue(m2, 1, 0, 7);    setMatrixValue(m2, 1, 1, 4);
   setMatrixValue(m2, 2, 0, 8);    setMatrixValue(m2, 2, 1, 7);
   setMatrixValue(m2, 3, 0, 5);    setMatrixValue(m2, 3, 1, 6);
   setMatrixValue(m2, 4, 0, 5);    setMatrixValue(m2, 4, 1, 4);
-  
+
   dist = MahalanobisDistance(m1, m2);
-  
+
   printf("dist %f\n", dist);
-  
+
   DelMatrix(&m1);
   DelMatrix(&m2);
 }
@@ -157,7 +157,7 @@ void test13()
 {
  matrix *m, *centroids;
  uivector *clusters;
- 
+
  NewMatrix(&m, 6, 1);
  setMatrixValue(m, 0, 0, 1.2);
  setMatrixValue(m, 1, 0, 5.6);
@@ -165,25 +165,25 @@ void test13()
  setMatrixValue(m, 3, 0, 0.6);
  setMatrixValue(m, 4, 0, 0.1);
  setMatrixValue(m, 5, 0, 2.6);
- 
- 
+
+
   initUIVector(&clusters);
   initMatrix(&centroids);
-  
+
   puts("KMeans ++");
   KMeans(m, 2, 1, &clusters, &centroids, NULL);
 
   puts("Centroids");
   PrintMatrix(centroids);
-    
+
   puts("Selections");
   PrintUIVector(clusters);
-  
+
   puts("Data Matrix to compare with selections");
   PrintMatrix(m);
-  
+
   puts("Results: cluster 1 = 5.6, 3.7   cluster 2 = 1.2, 0.6, 0.1, 2.6");
-  
+
   DelUIVector(&clusters);
   DelMatrix(&centroids);
   DelMatrix(&m);
@@ -194,7 +194,7 @@ void test12()
   matrix *m; /* Data matrix */
   int run = SIGSCIENTIFICRUN;
   dvector *ssdist;
-  
+
   NewMatrix(&m, 100, 2);
   for(i = 0; i < 100; i++){
     for(j = 0; j < 2; j++){
@@ -206,10 +206,10 @@ void test12()
   initDVector(&ssdist);
   puts("KMeans ++ Cross Validation");
   KMeansRandomGroupsCV(m, 15, 1, 3, 10, &ssdist, &run);
-  
+
   puts("ssdist");
   PrintDVector(ssdist);
-  
+
   DelDVector(&ssdist);
   DelMatrix(&m);
 }
@@ -219,33 +219,33 @@ void test11()
   matrix *m; /* Data matrix */
   int run = SIGSCIENTIFICRUN;
   dvector *ssdist;
-  
+
   NewMatrix(&m, 14, 2);
-  
-  m->data[0][0] =  84.1400;  m->data[0][1] =  357.1500;  
-  m->data[1][0] =  79.1000;  m->data[1][1] = 231.0000;  
-  m->data[2][0] =  67.0900;  m->data[2][1] = 403.0000;  
-  m->data[3][0] = 68.0700;  m->data[3][1] = 304.5500;  
-  m->data[4][0] = 68.0800;  m->data[4][1] = 529.0000;  
-  m->data[5][0] = 129.1600;  m->data[5][1] =  510.0000;  
-  m->data[6][0] = 128.1600;  m->data[6][1] =  491.0000;  
-  m->data[7][0] = 78.1118;  m->data[7][1] =  353.3000;  
-  m->data[8][0] = 202.2550;  m->data[8][1] =  666.6500;  
-  m->data[9][0] = 84.1600;  m->data[9][1] = 354.0000;  
-  m->data[10][0] = 72.1100;  m->data[10][1] = 339.0000;  
-  m->data[11][0] = 71.1100;  m->data[11][1] = 360.0000;  
-  m->data[12][0] = 85.1500;  m->data[12][1] = 379.0000;  
-  m->data[13][0] = 86.1300;  m->data[13][1] =  361.0000;  
+
+  m->data[0][0] =  84.1400;  m->data[0][1] =  357.1500;
+  m->data[1][0] =  79.1000;  m->data[1][1] = 231.0000;
+  m->data[2][0] =  67.0900;  m->data[2][1] = 403.0000;
+  m->data[3][0] = 68.0700;  m->data[3][1] = 304.5500;
+  m->data[4][0] = 68.0800;  m->data[4][1] = 529.0000;
+  m->data[5][0] = 129.1600;  m->data[5][1] =  510.0000;
+  m->data[6][0] = 128.1600;  m->data[6][1] =  491.0000;
+  m->data[7][0] = 78.1118;  m->data[7][1] =  353.3000;
+  m->data[8][0] = 202.2550;  m->data[8][1] =  666.6500;
+  m->data[9][0] = 84.1600;  m->data[9][1] = 354.0000;
+  m->data[10][0] = 72.1100;  m->data[10][1] = 339.0000;
+  m->data[11][0] = 71.1100;  m->data[11][1] = 360.0000;
+  m->data[12][0] = 85.1500;  m->data[12][1] = 379.0000;
+  m->data[13][0] = 86.1300;  m->data[13][1] =  361.0000;
 
   initDVector(&ssdist);
   puts("KMeans ++ Cross Validation");
   /*KMeansRandomGroupsCV(m, 9, 1, 3, 20, &ssdist, &run);*/
-  
+
   KMeansJumpMethod(m, 9, 1, &ssdist, &run);
-  
+
   puts("ssdist");
   PrintDVector(ssdist);
-  
+
   DelDVector(&ssdist);
   DelMatrix(&m);
 }
@@ -256,41 +256,41 @@ void test10()
   int run = SIGSCIENTIFICRUN;
   uivector *clusters;
   matrix *centroids;
-  
+
   NewMatrix(&m, 14, 2);
-  
-  m->data[0][0] =  84.1400;  m->data[0][1] =  357.1500;  
-  m->data[1][0] =  79.1000;  m->data[1][1] = 231.0000;  
-  m->data[2][0] =  67.0900;  m->data[2][1] = 403.0000;  
-  m->data[3][0] = 68.0700;  m->data[3][1] = 304.5500;  
-  m->data[4][0] = 68.0800;  m->data[4][1] = 529.0000;  
-  m->data[5][0] = 129.1600;  m->data[5][1] =  510.0000;  
-  m->data[6][0] = 128.1600;  m->data[6][1] =  491.0000;  
-  m->data[7][0] = 78.1118;  m->data[7][1] =  353.3000;  
-  m->data[8][0] = 202.2550;  m->data[8][1] =  666.6500;  
-  m->data[9][0] = 84.1600;  m->data[9][1] = 354.0000;  
-  m->data[10][0] = 72.1100;  m->data[10][1] = 339.0000;  
-  m->data[11][0] = 71.1100;  m->data[11][1] = 360.0000;  
-  m->data[12][0] = 85.1500;  m->data[12][1] = 379.0000;  
-  m->data[13][0] = 86.1300;  m->data[13][1] =  361.0000;  
+
+  m->data[0][0] =  84.1400;  m->data[0][1] =  357.1500;
+  m->data[1][0] =  79.1000;  m->data[1][1] = 231.0000;
+  m->data[2][0] =  67.0900;  m->data[2][1] = 403.0000;
+  m->data[3][0] = 68.0700;  m->data[3][1] = 304.5500;
+  m->data[4][0] = 68.0800;  m->data[4][1] = 529.0000;
+  m->data[5][0] = 129.1600;  m->data[5][1] =  510.0000;
+  m->data[6][0] = 128.1600;  m->data[6][1] =  491.0000;
+  m->data[7][0] = 78.1118;  m->data[7][1] =  353.3000;
+  m->data[8][0] = 202.2550;  m->data[8][1] =  666.6500;
+  m->data[9][0] = 84.1600;  m->data[9][1] = 354.0000;
+  m->data[10][0] = 72.1100;  m->data[10][1] = 339.0000;
+  m->data[11][0] = 71.1100;  m->data[11][1] = 360.0000;
+  m->data[12][0] = 85.1500;  m->data[12][1] = 379.0000;
+  m->data[13][0] = 86.1300;  m->data[13][1] =  361.0000;
 
   initUIVector(&clusters);
   initMatrix(&centroids);
-  
+
   puts("KMeans ++");
   KMeans(m, 3, 1, &clusters, &centroids, &run);
 
   puts("Centroids");
   PrintMatrix(centroids);
-    
+
   puts("Selections");
   PrintUIVector(clusters);
-  
+
   PruneResults(m, centroids, 3, 0, clusters);
-  
+
   puts("New Selections");
   PrintUIVector(clusters);
-  
+
   DelUIVector(&clusters);
   DelMatrix(&centroids);
   DelMatrix(&m);
@@ -301,9 +301,9 @@ void test9()
   matrix *m; /* Data matrix */
   uivector *clusters;
   int run = SIGSCIENTIFICRUN;
-  
+
   NewMatrix(&m, 100, 2);
-    
+
   setMatrixValue(m, 0, 0, 7.651165);  setMatrixValue(m, 0, 1, 33.374403);
   setMatrixValue(m, 1, 0, 6.218197);  setMatrixValue(m, 1, 1, 69.393923);
   setMatrixValue(m, 2, 0, 9.968406);  setMatrixValue(m, 2, 1, 4.948435);
@@ -404,15 +404,15 @@ void test9()
   setMatrixValue(m, 97, 0, 7.109005);  setMatrixValue(m, 97, 1, 11.772769);
   setMatrixValue(m, 98, 0, 3.113531);  setMatrixValue(m, 98, 1, 60.972161);
   setMatrixValue(m, 99, 0, 3.855047);  setMatrixValue(m, 99, 1, 91.930780);
-  
+
   initUIVector(&clusters);
-  
-  
+
+
   KMeans(m, 10, 3, &clusters, NULL, &run);
-  
+
   puts("Selections");
   PrintUIVector(clusters);
-  
+
   DelUIVector(&clusters);
   DelMatrix(&m);
 }
@@ -423,35 +423,35 @@ void test8()
   int run = SIGSCIENTIFICRUN;
   uivector *clusters;
   matrix *centroids;
-  
+
   NewMatrix(&m, 14, 2);
-  
-  m->data[0][0] =  84.1400;  m->data[0][1] =  357.1500;  
-  m->data[1][0] =  79.1000;  m->data[1][1] = 231.0000;  
-  m->data[2][0] =  67.0900;  m->data[2][1] = 403.0000;  
-  m->data[3][0] = 68.0700;  m->data[3][1] = 304.5500;  
-  m->data[4][0] = 68.0800;  m->data[4][1] = 529.0000;  
-  m->data[5][0] = 129.1600;  m->data[5][1] =  510.0000;  
-  m->data[6][0] = 128.1600;  m->data[6][1] =  491.0000;  
-  m->data[7][0] = 78.1118;  m->data[7][1] =  353.3000;  
-  m->data[8][0] = 202.2550;  m->data[8][1] =  666.6500;  
-  m->data[9][0] = 84.1600;  m->data[9][1] = 354.0000;  
-  m->data[10][0] = 72.1100;  m->data[10][1] = 339.0000;  
-  m->data[11][0] = 71.1100;  m->data[11][1] = 360.0000;  
-  m->data[12][0] = 85.1500;  m->data[12][1] = 379.0000;  
-  m->data[13][0] = 86.1300;  m->data[13][1] =  361.0000;  
+
+  m->data[0][0] =  84.1400;  m->data[0][1] =  357.1500;
+  m->data[1][0] =  79.1000;  m->data[1][1] = 231.0000;
+  m->data[2][0] =  67.0900;  m->data[2][1] = 403.0000;
+  m->data[3][0] = 68.0700;  m->data[3][1] = 304.5500;
+  m->data[4][0] = 68.0800;  m->data[4][1] = 529.0000;
+  m->data[5][0] = 129.1600;  m->data[5][1] =  510.0000;
+  m->data[6][0] = 128.1600;  m->data[6][1] =  491.0000;
+  m->data[7][0] = 78.1118;  m->data[7][1] =  353.3000;
+  m->data[8][0] = 202.2550;  m->data[8][1] =  666.6500;
+  m->data[9][0] = 84.1600;  m->data[9][1] = 354.0000;
+  m->data[10][0] = 72.1100;  m->data[10][1] = 339.0000;
+  m->data[11][0] = 71.1100;  m->data[11][1] = 360.0000;
+  m->data[12][0] = 85.1500;  m->data[12][1] = 379.0000;
+  m->data[13][0] = 86.1300;  m->data[13][1] =  361.0000;
 
   initUIVector(&clusters);
   initMatrix(&centroids);
-  
+
   puts("KMeans MaxDis");
   KMeans(m, 2, 3, &clusters, &centroids, &run);
-  
+
   puts("Selections");
   PrintUIVector(clusters);
-  
+
   PrintMatrix(centroids);
-  
+
   DelUIVector(&clusters);
   DelMatrix(&centroids);
   DelMatrix(&m);
@@ -463,35 +463,35 @@ void test7()
   int run = SIGSCIENTIFICRUN;
   uivector *clusters;
   matrix *centroids;
-  
+
   NewMatrix(&m, 14, 2);
-  
-  m->data[0][0] =  84.1400;  m->data[0][1] =  357.1500;  
-  m->data[1][0] =  79.1000;  m->data[1][1] = 231.0000;  
-  m->data[2][0] =  67.0900;  m->data[2][1] = 403.0000;  
-  m->data[3][0] = 68.0700;  m->data[3][1] = 304.5500;  
-  m->data[4][0] = 68.0800;  m->data[4][1] = 529.0000;  
-  m->data[5][0] = 129.1600;  m->data[5][1] =  510.0000;  
-  m->data[6][0] = 128.1600;  m->data[6][1] =  491.0000;  
-  m->data[7][0] = 78.1118;  m->data[7][1] =  353.3000;  
-  m->data[8][0] = 202.2550;  m->data[8][1] =  666.6500;  
-  m->data[9][0] = 84.1600;  m->data[9][1] = 354.0000;  
-  m->data[10][0] = 72.1100;  m->data[10][1] = 339.0000;  
-  m->data[11][0] = 71.1100;  m->data[11][1] = 360.0000;  
-  m->data[12][0] = 85.1500;  m->data[12][1] = 379.0000;  
-  m->data[13][0] = 86.1300;  m->data[13][1] =  361.0000;  
+
+  m->data[0][0] =  84.1400;  m->data[0][1] =  357.1500;
+  m->data[1][0] =  79.1000;  m->data[1][1] = 231.0000;
+  m->data[2][0] =  67.0900;  m->data[2][1] = 403.0000;
+  m->data[3][0] = 68.0700;  m->data[3][1] = 304.5500;
+  m->data[4][0] = 68.0800;  m->data[4][1] = 529.0000;
+  m->data[5][0] = 129.1600;  m->data[5][1] =  510.0000;
+  m->data[6][0] = 128.1600;  m->data[6][1] =  491.0000;
+  m->data[7][0] = 78.1118;  m->data[7][1] =  353.3000;
+  m->data[8][0] = 202.2550;  m->data[8][1] =  666.6500;
+  m->data[9][0] = 84.1600;  m->data[9][1] = 354.0000;
+  m->data[10][0] = 72.1100;  m->data[10][1] = 339.0000;
+  m->data[11][0] = 71.1100;  m->data[11][1] = 360.0000;
+  m->data[12][0] = 85.1500;  m->data[12][1] = 379.0000;
+  m->data[13][0] = 86.1300;  m->data[13][1] =  361.0000;
 
   initUIVector(&clusters);
   initMatrix(&centroids);
-  
+
   puts("KMeans MDC");
   KMeans(m, 2, 2, &clusters, &centroids, &run);
-  
+
   puts("Selections");
   PrintUIVector(clusters);
-  
+
   PrintMatrix(centroids);
-  
+
   DelUIVector(&clusters);
   DelMatrix(&centroids);
   DelMatrix(&m);
@@ -503,35 +503,35 @@ void test6()
   int run = SIGSCIENTIFICRUN;
   uivector *clusters;
   matrix *centroids;
-  
+
   NewMatrix(&m, 14, 2);
-  
-  m->data[0][0] =  84.1400;  m->data[0][1] =  357.1500;  
-  m->data[1][0] =  79.1000;  m->data[1][1] = 231.0000;  
-  m->data[2][0] =  67.0900;  m->data[2][1] = 403.0000;  
-  m->data[3][0] = 68.0700;  m->data[3][1] = 304.5500;  
-  m->data[4][0] = 68.0800;  m->data[4][1] = 529.0000;  
-  m->data[5][0] = 129.1600;  m->data[5][1] =  510.0000;  
-  m->data[6][0] = 128.1600;  m->data[6][1] =  491.0000;  
-  m->data[7][0] = 78.1118;  m->data[7][1] =  353.3000;  
-  m->data[8][0] = 202.2550;  m->data[8][1] =  666.6500;  
-  m->data[9][0] = 84.1600;  m->data[9][1] = 354.0000;  
-  m->data[10][0] = 72.1100;  m->data[10][1] = 339.0000;  
-  m->data[11][0] = 71.1100;  m->data[11][1] = 360.0000;  
-  m->data[12][0] = 85.1500;  m->data[12][1] = 379.0000;  
-  m->data[13][0] = 86.1300;  m->data[13][1] =  361.0000;  
+
+  m->data[0][0] =  84.1400;  m->data[0][1] =  357.1500;
+  m->data[1][0] =  79.1000;  m->data[1][1] = 231.0000;
+  m->data[2][0] =  67.0900;  m->data[2][1] = 403.0000;
+  m->data[3][0] = 68.0700;  m->data[3][1] = 304.5500;
+  m->data[4][0] = 68.0800;  m->data[4][1] = 529.0000;
+  m->data[5][0] = 129.1600;  m->data[5][1] =  510.0000;
+  m->data[6][0] = 128.1600;  m->data[6][1] =  491.0000;
+  m->data[7][0] = 78.1118;  m->data[7][1] =  353.3000;
+  m->data[8][0] = 202.2550;  m->data[8][1] =  666.6500;
+  m->data[9][0] = 84.1600;  m->data[9][1] = 354.0000;
+  m->data[10][0] = 72.1100;  m->data[10][1] = 339.0000;
+  m->data[11][0] = 71.1100;  m->data[11][1] = 360.0000;
+  m->data[12][0] = 85.1500;  m->data[12][1] = 379.0000;
+  m->data[13][0] = 86.1300;  m->data[13][1] =  361.0000;
 
   initUIVector(&clusters);
   initMatrix(&centroids);
-  
+
   puts("KMeans RANDOM");
   KMeans(m, 2, 0, &clusters, &centroids, &run);
-  
+
   puts("Selections");
   PrintUIVector(clusters);
-  
+
   PrintMatrix(centroids);
-  
+
   DelUIVector(&clusters);
   DelMatrix(&centroids);
   DelMatrix(&m);
@@ -543,36 +543,36 @@ void test5()
   int run = SIGSCIENTIFICRUN;
   uivector *clusters;
   matrix *centroids;
-  
+
   NewMatrix(&m, 14, 2);
-  
-  m->data[0][0] =  84.1400;  m->data[0][1] =  357.1500;  
-  m->data[1][0] =  79.1000;  m->data[1][1] = 231.0000;  
-  m->data[2][0] =  67.0900;  m->data[2][1] = 403.0000;  
-  m->data[3][0] = 68.0700;  m->data[3][1] = 304.5500;  
-  m->data[4][0] = 68.0800;  m->data[4][1] = 529.0000;  
-  m->data[5][0] = 129.1600;  m->data[5][1] =  510.0000;  
-  m->data[6][0] = 128.1600;  m->data[6][1] =  491.0000;  
-  m->data[7][0] = 78.1118;  m->data[7][1] =  353.3000;  
-  m->data[8][0] = 202.2550;  m->data[8][1] =  666.6500;  
-  m->data[9][0] = 84.1600;  m->data[9][1] = 354.0000;  
-  m->data[10][0] = 72.1100;  m->data[10][1] = 339.0000;  
-  m->data[11][0] = 71.1100;  m->data[11][1] = 360.0000;  
-  m->data[12][0] = 85.1500;  m->data[12][1] = 379.0000;  
-  m->data[13][0] = 86.1300;  m->data[13][1] =  361.0000;  
+
+  m->data[0][0] =  84.1400;  m->data[0][1] =  357.1500;
+  m->data[1][0] =  79.1000;  m->data[1][1] = 231.0000;
+  m->data[2][0] =  67.0900;  m->data[2][1] = 403.0000;
+  m->data[3][0] = 68.0700;  m->data[3][1] = 304.5500;
+  m->data[4][0] = 68.0800;  m->data[4][1] = 529.0000;
+  m->data[5][0] = 129.1600;  m->data[5][1] =  510.0000;
+  m->data[6][0] = 128.1600;  m->data[6][1] =  491.0000;
+  m->data[7][0] = 78.1118;  m->data[7][1] =  353.3000;
+  m->data[8][0] = 202.2550;  m->data[8][1] =  666.6500;
+  m->data[9][0] = 84.1600;  m->data[9][1] = 354.0000;
+  m->data[10][0] = 72.1100;  m->data[10][1] = 339.0000;
+  m->data[11][0] = 71.1100;  m->data[11][1] = 360.0000;
+  m->data[12][0] = 85.1500;  m->data[12][1] = 379.0000;
+  m->data[13][0] = 86.1300;  m->data[13][1] =  361.0000;
 
   initUIVector(&clusters);
   initMatrix(&centroids);
-  
+
   puts("KMeans++ TEST");
   KMeans(m, 2, 1, &clusters, &centroids, &run);
-  
+
   puts("Selections");
   PrintUIVector(clusters);
-  
+
   puts("Centroids");
   PrintMatrix(centroids);
-  
+
   DelUIVector(&clusters);
   DelMatrix(&centroids);
   DelMatrix(&m);
@@ -584,36 +584,36 @@ void test4()
   matrix *m; /* Data matrix */
   int run = SIGSCIENTIFICRUN;
   uivector *selections;
-  
+
   NewMatrix(&m, 14, 2);
-  
-  m->data[0][0] =  84.1400;  m->data[0][1] =  357.1500;  
-  m->data[1][0] =  79.1000;  m->data[1][1] = 231.0000;  
-  m->data[2][0] =  67.0900;  m->data[2][1] = 403.0000;  
-  m->data[3][0] = 68.0700;  m->data[3][1] = 304.5500;  
-  m->data[4][0] = 68.0800;  m->data[4][1] = 529.0000;  
-  m->data[5][0] = 129.1600;  m->data[5][1] =  510.0000;  
-  m->data[6][0] = 128.1600;  m->data[6][1] =  491.0000;  
-  m->data[7][0] = 78.1118;  m->data[7][1] =  353.3000;  
-  m->data[8][0] = 202.2550;  m->data[8][1] =  666.6500;  
-  m->data[9][0] = 84.1600;  m->data[9][1] = 354.0000;  
-  m->data[10][0] = 72.1100;  m->data[10][1] = 339.0000;  
-  m->data[11][0] = 71.1100;  m->data[11][1] = 360.0000;  
-  m->data[12][0] = 85.1500;  m->data[12][1] = 379.0000;  
-  m->data[13][0] = 86.1300;  m->data[13][1] =  361.0000;  
+
+  m->data[0][0] =  84.1400;  m->data[0][1] =  357.1500;
+  m->data[1][0] =  79.1000;  m->data[1][1] = 231.0000;
+  m->data[2][0] =  67.0900;  m->data[2][1] = 403.0000;
+  m->data[3][0] = 68.0700;  m->data[3][1] = 304.5500;
+  m->data[4][0] = 68.0800;  m->data[4][1] = 529.0000;
+  m->data[5][0] = 129.1600;  m->data[5][1] =  510.0000;
+  m->data[6][0] = 128.1600;  m->data[6][1] =  491.0000;
+  m->data[7][0] = 78.1118;  m->data[7][1] =  353.3000;
+  m->data[8][0] = 202.2550;  m->data[8][1] =  666.6500;
+  m->data[9][0] = 84.1600;  m->data[9][1] = 354.0000;
+  m->data[10][0] = 72.1100;  m->data[10][1] = 339.0000;
+  m->data[11][0] = 71.1100;  m->data[11][1] = 360.0000;
+  m->data[12][0] = 85.1500;  m->data[12][1] = 379.0000;
+  m->data[13][0] = 86.1300;  m->data[13][1] =  361.0000;
 
   initUIVector(&selections);
-  
+
   puts("KMeansppCenters TEST");
   KMeansppCenters(m, 2, &selections, &run);
-  
+
   puts("Selections");
   PrintUIVector(selections);
-  
+
   for(i = 0; i < selections->size; i++){
     printf("%f\t%f\n", getMatrixValue(m, getUIVectorValue(selections, i), 0), getMatrixValue(m, getUIVectorValue(selections, i), 1));
   }
-  
+
   DelUIVector(&selections);
   DelMatrix(&m);
 }
@@ -624,36 +624,36 @@ void test3()
   matrix *m; /* Data matrix */
   int run = SIGSCIENTIFICRUN;
   uivector *selections;
-  
+
   NewMatrix(&m, 14, 2);
-  
-  
-  m->data[0][0] =  84.1400;  m->data[0][1] =  357.1500;  
-  m->data[1][0] =  79.1000;  m->data[1][1] = 231.0000;  
-  m->data[2][0] =  67.0900;  m->data[2][1] = 403.0000;  
-  m->data[3][0] = 68.0700;  m->data[3][1] = 304.5500;  
-  m->data[4][0] = 68.0800;  m->data[4][1] = 529.0000;  
-  m->data[5][0] = 129.1600;  m->data[5][1] =  510.0000;  
-  m->data[6][0] = 128.1600;  m->data[6][1] =  491.0000;  
-  m->data[7][0] = 78.1118;  m->data[7][1] =  353.3000;  
-  m->data[8][0] = 202.2550;  m->data[8][1] =  666.6500;  
-  m->data[9][0] = 84.1600;  m->data[9][1] = 354.0000;  
-  m->data[10][0] = 72.1100;  m->data[10][1] = 339.0000;  
-  m->data[11][0] = 71.1100;  m->data[11][1] = 360.0000;  
-  m->data[12][0] = 85.1500;  m->data[12][1] = 379.0000;  
-  m->data[13][0] = 86.1300;  m->data[13][1] =  361.0000;  
+
+
+  m->data[0][0] =  84.1400;  m->data[0][1] =  357.1500;
+  m->data[1][0] =  79.1000;  m->data[1][1] = 231.0000;
+  m->data[2][0] =  67.0900;  m->data[2][1] = 403.0000;
+  m->data[3][0] = 68.0700;  m->data[3][1] = 304.5500;
+  m->data[4][0] = 68.0800;  m->data[4][1] = 529.0000;
+  m->data[5][0] = 129.1600;  m->data[5][1] =  510.0000;
+  m->data[6][0] = 128.1600;  m->data[6][1] =  491.0000;
+  m->data[7][0] = 78.1118;  m->data[7][1] =  353.3000;
+  m->data[8][0] = 202.2550;  m->data[8][1] =  666.6500;
+  m->data[9][0] = 84.1600;  m->data[9][1] = 354.0000;
+  m->data[10][0] = 72.1100;  m->data[10][1] = 339.0000;
+  m->data[11][0] = 71.1100;  m->data[11][1] = 360.0000;
+  m->data[12][0] = 85.1500;  m->data[12][1] = 379.0000;
+  m->data[13][0] = 86.1300;  m->data[13][1] =  361.0000;
 
   initUIVector(&selections);
-  
+
   MaxDis(m, floor(0.35*m->row), 2, &selections, &run);
-  
+
   puts("Selections");
   PrintUIVector(selections);
-  
+
   for(i = 0; i < selections->size; i++){
     printf("%f\t%f\n", getMatrixValue(m, getUIVectorValue(selections, i), 0), getMatrixValue(m, getUIVectorValue(selections, i), 1));
   }
-  
+
   DelUIVector(&selections);
   DelMatrix(&m);
 }
@@ -663,38 +663,38 @@ void test2()
   size_t i;
   matrix *m; /* Data matrix */
   int run = SIGSCIENTIFICRUN;
-  
+
   uivector *selections;
-  
+
   NewMatrix(&m, 14, 2);
-  
-  
-  m->data[0][0] =  84.1400;  m->data[0][1] =  357.1500;  
-  m->data[1][0] =  79.1000;  m->data[1][1] = 231.0000;  
-  m->data[2][0] =  67.0900;  m->data[2][1] = 403.0000;  
-  m->data[3][0] = 68.0700;  m->data[3][1] = 304.5500;  
-  m->data[4][0] = 68.0800;  m->data[4][1] = 529.0000;  
-  m->data[5][0] = 129.1600;  m->data[5][1] =  510.0000;  
-  m->data[6][0] = 128.1600;  m->data[6][1] =  491.0000;  
-  m->data[7][0] = 78.1118;  m->data[7][1] =  353.3000;  
-  m->data[8][0] = 202.2550;  m->data[8][1] =  666.6500;  
-  m->data[9][0] = 84.1600;  m->data[9][1] = 354.0000;  
-  m->data[10][0] = 72.1100;  m->data[10][1] = 339.0000;  
-  m->data[11][0] = 71.1100;  m->data[11][1] = 360.0000;  
-  m->data[12][0] = 85.1500;  m->data[12][1] = 379.0000;  
-  m->data[13][0] = 86.1300;  m->data[13][1] =  361.0000;  
+
+
+  m->data[0][0] =  84.1400;  m->data[0][1] =  357.1500;
+  m->data[1][0] =  79.1000;  m->data[1][1] = 231.0000;
+  m->data[2][0] =  67.0900;  m->data[2][1] = 403.0000;
+  m->data[3][0] = 68.0700;  m->data[3][1] = 304.5500;
+  m->data[4][0] = 68.0800;  m->data[4][1] = 529.0000;
+  m->data[5][0] = 129.1600;  m->data[5][1] =  510.0000;
+  m->data[6][0] = 128.1600;  m->data[6][1] =  491.0000;
+  m->data[7][0] = 78.1118;  m->data[7][1] =  353.3000;
+  m->data[8][0] = 202.2550;  m->data[8][1] =  666.6500;
+  m->data[9][0] = 84.1600;  m->data[9][1] = 354.0000;
+  m->data[10][0] = 72.1100;  m->data[10][1] = 339.0000;
+  m->data[11][0] = 71.1100;  m->data[11][1] = 360.0000;
+  m->data[12][0] = 85.1500;  m->data[12][1] = 379.0000;
+  m->data[13][0] = 86.1300;  m->data[13][1] =  361.0000;
 
   initUIVector(&selections);
-  
+
   MDC(m, 0, 0, &selections, &run);
-  
+
   puts("Selections");
   PrintUIVector(selections);
-  
+
   for(i = 0; i < selections->size; i++){
     printf("%f\t%f\n", getMatrixValue(m, getUIVectorValue(selections, i), 0), getMatrixValue(m, getUIVectorValue(selections, i), 1));
   }
-  
+
   DelUIVector(&selections);
   DelMatrix(&m);
 }
@@ -706,9 +706,9 @@ void test1()
   matrix *m; /* Data matrix */
   uivector *selections;
   int run = SIGSCIENTIFICRUN;
-  
+
   NewMatrix(&m, 100, 2);
-    
+
   setMatrixValue(m, 0, 0, 7.651165);  setMatrixValue(m, 0, 1, 33.374403);
   setMatrixValue(m, 1, 0, 6.218197);  setMatrixValue(m, 1, 1, 69.393923);
   setMatrixValue(m, 2, 0, 9.968406);  setMatrixValue(m, 2, 1, 4.948435);
@@ -809,42 +809,42 @@ void test1()
   setMatrixValue(m, 97, 0, 7.109005);  setMatrixValue(m, 97, 1, 11.772769);
   setMatrixValue(m, 98, 0, 3.113531);  setMatrixValue(m, 98, 1, 60.972161);
   setMatrixValue(m, 99, 0, 3.855047);  setMatrixValue(m, 99, 1, 91.930780);
-  
+
   initUIVector(&selections);
-  
+
   /*MDC(m, 0, 0, &selections);*/
   MaxDis(m, floor(0.35*m->row), 0, &selections, &run);
-  
+
   puts("Selections");
-  
+
   for(i = 0; i < selections->size; i++){
     printf("%f\t%f\n", getMatrixValue(m, getUIVectorValue(selections, i), 0), getMatrixValue(m, getUIVectorValue(selections, i), 1));
   }
-  
+
   DelUIVector(&selections);
   DelMatrix(&m);
 }
 
 int main(void){
-  /* Selection Tests 
+  /* Selection Tests
   test1(); */
   test2();
-  /*test3(); 
+  /*test3();
   test4();*/
-  
-  /*Clustering Tests 
+
+  /*Clustering Tests
   test5();
   test6();
   test7();
   test8();
   test9();
   test10();
-  
+
   test11();*/
   /*test12();*/
-  
+
   /*test13();
-  
+
   test14();
   test15();*/
   /*test16();
