@@ -88,7 +88,7 @@ void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautos
   m->ny = my->col;
 
   if(eparm.algorithm == Bagging){
-    matrix *x_train, *y_train, *x_test, *y_test;
+    matrix *x_train, *y_train, *x_test, *y_test, *y_test_predicted;
     uivector *testids;
     double testsize = 1 - eparm.trainsize;
     unsigned int srand_init = mx->row *testsize + xautoscaling + yautoscaling + mx->col + my->col;
@@ -97,12 +97,17 @@ void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautos
       initMatrix(&y_train);
       initMatrix(&x_test);
       initMatrix(&y_test);
+      initMatrix(&y_test_predicted);
       initUIVector(&testids);
       train_test_split(mx, my, testsize, &x_train, &y_train, &x_test, &y_test, &testids, &srand_init);
       srand_init++;
       NewPLSModel(&m->models[it]);
       PLS(x_train, y_train, nlv, xautoscaling, yautoscaling, m->models[it], s);
+      /* MODEL SDEP will be used to apply a future prediction weight for the model */
+      PLSYPredictorAllLV(x_test, m->models[it], NULL, &y_test_predicted);
+      PLSRegressionStatistics(y_test, y_test_predicted, NULL, &m->models[it]->sdep, NULL);
       DelUIVector(&testids);
+      DelMatrix(&y_test_predicted);
       DelMatrix(&x_train);
       DelMatrix(&y_train);
       DelMatrix(&x_test);
@@ -114,7 +119,7 @@ void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautos
      * - algorithm at fixed subset size
      * - algorithm at growing subset size
      */
-     matrix *x_train, *x_subspace, *y_train, *x_test, *y_test;
+     matrix *x_train, *x_subspace, *y_train, *x_test, *y_test, *x_test_subspace, *y_test_predicted;
      uivector *testids;
      double testsize = 1;
      unsigned int srand_init = mx->row *testsize + xautoscaling + yautoscaling + mx->col + my->col;
@@ -164,17 +169,25 @@ void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautos
          initMatrix(&x_train);
          initMatrix(&y_train);
          initMatrix(&x_test);
+         initMatrix(&x_test_subspace);
          initMatrix(&y_test);
+         initMatrix(&y_test_predicted);
          initUIVector(&testids);
          train_test_split(mx, my, testsize, &x_train, &y_train, &x_test, &y_test, &testids, &srand_init);
          srand_init++;
          SubspaceMatrix(x_train, m->model_feature_ids[it], &x_subspace);
          NewPLSModel(&m->models[it]);
          PLS(x_subspace, y_train, nlv, xautoscaling, yautoscaling, m->models[it], s);
+         /* MODEL SDEP will be used to apply a future prediction weight for the model */
+         SubspaceMatrix(x_test, m->model_feature_ids[it], &x_test_subspace);
+         PLSYPredictorAllLV(x_test_subspace, m->models[it], NULL, &y_test_predicted);
+         PLSRegressionStatistics(y_test, y_test_predicted, NULL, &m->models[it]->sdep, NULL);
          DelMatrix(&x_train);
          DelMatrix(&y_train);
          DelMatrix(&x_test);
+         DelMatrix(&x_test_subspace);
          DelMatrix(&y_test);
+         DelMatrix(&y_test_predicted);
          DelUIVector(&testids);
        }
      }
@@ -197,6 +210,9 @@ void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, tensor
   ResizeMatrix(y, mx->row, m->ny*m->nlv);
 
   matrix *x_subspace;
+  matrix *tot_yweight;
+  NewMatrix(&tot_yweight, m->nlv, m->ny);
+
   initMatrix(&x_subspace);
   if(crule == Averaging){
     matrix *model_py;
@@ -217,9 +233,31 @@ void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, tensor
         TensorAppendMatrix(tscores, tscores_);
       }
 
-      for(k = 0; k < model_py->row; k++){
-        for(j = 0; j < model_py->col; j++){
-          (*y)->data[k][j] += model_py->data[k][j];
+      /* Check if a model error is calculated for a weighed average.
+       * This means that each model will contribute to the finaly y values
+       * according it's external prediction error evaluated in training phase.
+       */
+
+      if(m->models[i]->sdep->row > 0){
+        for(k = 0; k < model_py->row; k++){
+          size_t c = 0;
+          for(j = 0; j < model_py->col; j++){
+            (*y)->data[k][j] += m->models[i]->sdep->data[j][c]*model_py->data[k][j];
+            tot_yweight->data[j][c] += m->models[i]->sdep->data[j][c];
+            if(c < m->ny-1){
+              c++;
+            }
+            else{
+              c = 0;
+            }
+          }
+        }
+      }
+      else{
+        for(k = 0; k < model_py->row; k++){
+          for(j = 0; j < model_py->col; j++){
+            (*y)->data[k][j] += model_py->data[k][j];
+          }
         }
       }
       DelMatrix(&model_py);
@@ -227,9 +265,23 @@ void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, tensor
     }
 
     /* Averaging the result */
-    for(i = 0; i < (*y)->row; i++){
-      for(j = 0; j < (*y)->col; j++){
-        (*y)->data[i][j] /= (double)m->n_models;
+    if(FLOAT_EQ(tot_yweight->data[0][0], 0.f, 1e-3) == 0){
+      for(i = 0; i < (*y)->row; i++){
+        size_t c = 0;
+        for(j = 0; j < (*y)->col; j++){
+          (*y)->data[i][j] /= tot_yweight->data[j][c];
+          if(c < m->ny-1)
+            c++;
+          else
+            c = 0;
+        }
+      }
+    }
+    else{
+      for(i = 0; i < (*y)->row; i++){
+        for(j = 0; j < (*y)->col; j++){
+          (*y)->data[i][j] /= (double)m->n_models;
+        }
       }
     }
   }
@@ -273,6 +325,7 @@ void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, tensor
     return;
   }
   DelMatrix(&x_subspace);
+  DelMatrix(&tot_yweight);
 }
 
 void EPLSRegressionStatistics(matrix *my_true, matrix *my_pred, matrix** ccoeff, matrix **stdev, matrix **bias)

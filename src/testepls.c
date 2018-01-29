@@ -248,7 +248,7 @@ void TestEPLS1()
 
   ELearningParameters eparm;
   eparm.algorithm = Bagging;
-  eparm.n_models = 100;
+  eparm.n_models = 2;
   eparm.trainsize = 0.7;
   size_t nlv = 5;
   EPLS(x, y, nlv, 1, 0, m, eparm, NULL);
