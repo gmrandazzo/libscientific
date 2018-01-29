@@ -237,13 +237,13 @@ void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, tensor
        * This means that each model will contribute to the finaly y values
        * according it's external prediction error evaluated in training phase.
        */
-
+      //PrintMatrix(m->models[i]->sdep);
       if(m->models[i]->sdep->row > 0){
         for(k = 0; k < model_py->row; k++){
           size_t c = 0;
           for(j = 0; j < model_py->col; j++){
+            //printf("k: %zu, ny: %zu c(y): %zu j(lv):%zu %f %f\n", k,  m->ny, c, j, m->models[i]->sdep->data[j][c], model_py->data[k][j]);
             (*y)->data[k][j] += m->models[i]->sdep->data[j][c]*model_py->data[k][j];
-            tot_yweight->data[j][c] += m->models[i]->sdep->data[j][c];
             if(c < m->ny-1){
               c++;
             }
@@ -265,7 +265,16 @@ void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, tensor
     }
 
     /* Averaging the result */
-    if(FLOAT_EQ(tot_yweight->data[0][0], 0.f, 1e-3) == 0){
+
+    if(m->models[0]->sdep->row > 0){
+      for(i = 0; i < m->n_models; i++){
+        for(j = 0; j < m->models[i]->sdep->row; j++){
+          for(k = 0; k < m->models[i]->sdep->col; k++){
+            tot_yweight->data[j][k] += m->models[i]->sdep->data[j][k];
+          }
+        }
+      }
+
       for(i = 0; i < (*y)->row; i++){
         size_t c = 0;
         for(j = 0; j < (*y)->col; j++){
