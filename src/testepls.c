@@ -69,7 +69,7 @@ void TestEPLS3()
 
   ELearningParameters eparm;
   eparm.algorithm = BaggingRandomSubspaceMethod;
-  eparm.n_models = 1000;
+  eparm.n_models = 10000;
   eparm.r_fix = 4;
   eparm.trainsize = 0.7;
   size_t nlv = 5; /*This will ignored and set to max 4*/
@@ -83,13 +83,13 @@ void TestEPLS3()
   minpt.nlv = 4;
   minpt.xautoscaling = 1;
   minpt.yautoscaling = 0;
-  size_t nthreads = 1;
+  size_t nthreads = 4;
   initMatrix(&y_validation);
   initMatrix(&y_validation_residuals);
-  BootstrapRandomGroupsCV(&minpt, 5, 20, _EPLS_, &y_validation, &y_validation_residuals, nthreads, NULL, 2, eparm, Median);
-  //LeaveOneOut(&minpt, _EPLS_, &y_validation, &y_validation_residuals, nthreads, NULL, 2, eparm, Median);
-  //PrintMatrix(y);
-  //PrintMatrix(y_validation);
+  BootstrapRandomGroupsCV(&minpt, 5, 20, _EPLS_, &y_validation, &y_validation_residuals, nthreads, NULL, 2, eparm, Averaging);
+  //LeaveOneOut(&minpt, _EPLS_, &y_validation, &y_validation_residuals, nthreads, NULL, 2, eparm, Averaging);
+  PrintMatrix(y);
+  PrintMatrix(y_validation);
   matrix *q2;
   matrix *sdep;
   matrix *bias;
@@ -264,8 +264,8 @@ void TestEPLS1()
   size_t nthreads = 1;
   initMatrix(&y_validation);
   initMatrix(&y_validation_residuals);
-  //BootstrapRandomGroupsCV(&minpt, 5, 20, _EPLS_, &y_validation, &y_validation_residuals, nthreads, NULL, 2, eparm, Averaging);
-  LeaveOneOut(&minpt, _EPLS_, &y_validation, &y_validation_residuals, nthreads, NULL, 2, eparm, Averaging);
+  BootstrapRandomGroupsCV(&minpt, 5, 20, _EPLS_, &y_validation, &y_validation_residuals, nthreads, NULL, 2, eparm, Averaging);
+  //LeaveOneOut(&minpt, _EPLS_, &y_validation, &y_validation_residuals, nthreads, NULL, 2, eparm, Averaging);
   /*PrintMatrix(y);
   PrintMatrix(y_validation);*/
   matrix *q2;
@@ -294,7 +294,7 @@ void TestEPLS1()
 int main(void)
 {
   /*test 1- 5*/
-  TestEPLS1();
+  //TestEPLS1();
   //TestEPLS2();
-  //TestEPLS3();
+  TestEPLS3();
 }

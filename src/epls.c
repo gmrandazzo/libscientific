@@ -148,7 +148,8 @@ void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautos
        i = featureids->size;
        while(i > 1){
          i = i - 1;
-         j = randInt(0, i);
+         //j = randInt(0, i);
+         j = myrand_r(&srand_init) % i;
          double tmp = featureids->data[j];
          featureids->data[j] = featureids->data[i];
          featureids->data[i] = tmp;
@@ -237,7 +238,7 @@ void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, tensor
        * This means that each model will contribute to the finaly y values
        * according it's external prediction error evaluated in training phase.
        */
-      //PrintMatrix(m->models[i]->sdep);
+
       if(m->models[i]->sdep->row > 0){
         for(k = 0; k < model_py->row; k++){
           size_t c = 0;
@@ -265,7 +266,6 @@ void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, tensor
     }
 
     /* Averaging the result */
-
     if(m->models[0]->sdep->row > 0){
       for(i = 0; i < m->n_models; i++){
         for(j = 0; j < m->models[i]->sdep->row; j++){

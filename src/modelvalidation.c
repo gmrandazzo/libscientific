@@ -894,6 +894,7 @@ void YScrambling(MODELINPUT *input, AlgorithmType algo, ValidationArg varg, size
   dvector *corrpermobs, *coeff_int, *coeff_valid;
   mx = (*input->mx);
   my = (*input->my);
+  unsigned int srand_init = 1;
 
   initDVector(&yaverage);
   MatrixColAverage(my, &yaverage);
@@ -937,7 +938,8 @@ void YScrambling(MODELINPUT *input, AlgorithmType algo, ValidationArg varg, size
     i = randomY->row;
     while(i > 1){
       i = i - 1;
-      j = randInt(0, i);
+      //j = randInt(0, i);
+      j = myrand_r(&srand_init) % i;
       for(k = 0; k < randomY->col; k++){
         ytmp = randomY->data[j][k];
         randomY->data[j][k] = randomY->data[i][k];

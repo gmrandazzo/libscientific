@@ -470,6 +470,7 @@ void DVectorMean(dvector* d, double* mean)
 }
 
 
+
 void DVectorSDEV(dvector* d, double* sdev)
 {
   size_t i;
