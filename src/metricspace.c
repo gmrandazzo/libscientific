@@ -192,13 +192,13 @@ double MahalanobisDistance(matrix* g1, matrix* g2)
  *
  * N.B.: If two points have different y but share same x the algorithm will fail
  */
-void cubic_spline_interpolation(matrix *xy, size_t npoints, matrix **interp_xy)
+
+void cubic_spline_interpolation(matrix *xy, matrix **S)
 {
   size_t i;
   int j;
   size_t np1 = xy->row;
   size_t n = np1-1;
-  double xmin, xmax, dx, x, xi, y;
   dvector *a, *b, *d, *h, *alpha, *c, *l, *u, *z;
   NewDVector(&a, np1);
   for(i = 0; i < np1; i++)
@@ -216,8 +216,8 @@ void cubic_spline_interpolation(matrix *xy, size_t npoints, matrix **interp_xy)
     alpha->data[i] = 3.f/h->data[i]*(a->data[i+1]-a->data[i]) - 3.f/h->data[i-1]*(a->data[i]-a->data[i-1]);
   }
 
-  PrintDVector(h);
-  PrintDVector(alpha);
+  /*PrintDVector(h);
+  PrintDVector(alpha);*/
 
   NewDVector(&c, np1);
   NewDVector(&l, np1);
@@ -243,32 +243,17 @@ void cubic_spline_interpolation(matrix *xy, size_t npoints, matrix **interp_xy)
         d->data[j] = (c->data[j+1]-c->data[j])/(3.f*h->data[j]);
     }
 
-    puts("SPLINE EQUATIONS");
+    /* Write SPLINE EQUATIONS
+     * first column is the x range
+     * second is a, then b,c and d.
+     */
+    ResizeMatrix(S, n, 5);
     for(i = 0; i < n; i++){
-      printf("%f %f %f %f %f\n", xy->data[i][0], a->data[i], b->data[i], c->data[i], d->data[i]);
-    }
-
-    ResizeMatrix(interp_xy, npoints, 2);
-    MatrixColumnMinMax(xy, 0,&xmin, &xmax);
-    dx = (xmax-xmin)/(double)(npoints-1);
-    x = xmin;
-    for(i = 0; i < npoints; i++){
-      y = -9999;
-      for(j = 0; j < n; j++){
-        xi = xy->data[j][0];
-        if((x > xi || FLOAT_EQ(x, xi, 1e-2)) &&
-        (x < xy->data[j+1][0] || FLOAT_EQ(x, xy->data[j+1][0], 1e-2))){
-          //printf("for %f selecting %d\n", x, j);
-          y = a->data[j] + b->data[j]*(x-xi) + c->data[j]*(x-xi)*(x-xi) + d->data[j]*(x-xi)*(x-xi)*(x-xi);
-          break;
-        }
-        else{
-          continue;
-        }
-      }
-      (*interp_xy)->data[i][0] = x;
-      (*interp_xy)->data[i][1] = y;
-      x+=dx;
+      (*S)->data[i][0] = xy->data[i][0];
+      (*S)->data[i][1] = a->data[i];
+      (*S)->data[i][2] = b->data[i];
+      (*S)->data[i][3] = c->data[i];
+      (*S)->data[i][4] = d->data[i];
     }
 
     DelDVector(&a);
@@ -282,6 +267,66 @@ void cubic_spline_interpolation(matrix *xy, size_t npoints, matrix **interp_xy)
     DelDVector(&z);
 }
 
+void cubic_spline_predict(dvector *x_, matrix *S, dvector **y_pred)
+{
+  size_t i, j, n;
+  double x, xi, y;
+  n = S->row-1;
+  DVectorResize(y_pred, x_->size);
+  /* Now interpolate using the equations:
+   * Sj(x) = aj + bj(x − xj) + cj(x − xj)^2 + dj(x − xj)^3
+   * for xj ≤ x ≤ xj+1)
+   */
+  for(i = 0; i < x_->size; i++){
+    x = x_->data[i];
+    for(j = 0; j < n; j++){
+      xi = S->data[j][0];
+      if((x > xi || FLOAT_EQ(x, xi, 1e-2)) &&
+      (x < S->data[j+1][0] || FLOAT_EQ(x, S->data[j+1][0], 1e-2))){
+        //printf("for %f selecting %d\n", x, j);
+        y = S->data[j][1] + S->data[j][2]*(x-xi) + S->data[j][3]*(x-xi)*(x-xi) + S->data[j][4]*(x-xi)*(x-xi)*(x-xi);
+        break;
+      }
+      else{
+        continue;
+      }
+    }
+    (*y_pred)->data[i] = y;
+  }
+}
+
+void interpolate(matrix *xy, size_t npoints, matrix **interp_xy)
+{
+  size_t i;
+  double x, dx, xmin, xmax;
+  matrix *S;
+  dvector *x_interp, *y_pred;
+  initMatrix(&S);
+  cubic_spline_interpolation(xy, &S);
+
+  ResizeMatrix(interp_xy, npoints, 2);
+  MatrixColumnMinMax(xy, 0, &xmin, &xmax);
+  dx = (xmax-xmin)/(double)(npoints-1);
+  x = xmin;
+  NewDVector(&x_interp, npoints);
+  for(i = 0; i < npoints; i++){
+    x_interp->data[i] = x;
+    x+=dx;
+  }
+
+  initDVector(&y_pred);
+  cubic_spline_predict(x_interp, S, &y_pred);
+  for(i = 0; i < x_interp->size; i++){
+    (*interp_xy)->data[i][0] = x_interp->data[i];
+    (*interp_xy)->data[i][1] = y_pred->data[i];
+  }
+
+  DelDVector(&x_interp);
+  DelDVector(&y_pred);
+  DelMatrix(&S);
+}
+
+
 /*
  * area of the curve via the  trapezoid rule
  */
@@ -293,7 +338,7 @@ double curve_area(matrix *xy, size_t intervals)
   /*If intervals > 0 interpolate with natural cubic splines to have more fine area */
   if(intervals > 0){
     /* If two points have different y but share same x the algorithm will fail*/
-    cubic_spline_interpolation(xy, intervals, &interp_xy);
+    interpolate(xy, intervals, &interp_xy);
   }
   else{
     MatrixCopy(xy, &interp_xy);

@@ -469,8 +469,6 @@ void DVectorMean(dvector* d, double* mean)
   (*mean) /= d->size;
 }
 
-
-
 void DVectorSDEV(dvector* d, double* sdev)
 {
   size_t i;

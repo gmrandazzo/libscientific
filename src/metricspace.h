@@ -37,8 +37,14 @@ void CosineDistance(matrix *m1, matrix *m2, matrix** distances);
 /* Description: calculate the malanobis distance between two matrix with the same column number */
 double MahalanobisDistance(matrix* g1, matrix* g2);
 
-/* Description: cubic spline interpolation */
-void cubic_spline_interpolation(matrix *xy, size_t npoints, matrix **interp_xy);
+/* Description: calculate the natural cubic spline interpolation equations */
+void cubic_spline_interpolation(matrix *xy, matrix **S);
+
+/* Description: predict using the  natural cubic spline interpolation equations a vector of x */
+void cubic_spline_predict(dvector *x_, matrix *S, dvector **y_pred);
+
+/* Description: interpolate x and y using the natural cubic spline equations and get directly the interpolation. */
+void interpolate(matrix *xy, size_t npoints, matrix **interp_xy);
 
 /* Description: calculate area of a curve.
  * If intervals > 0 will interpolate the curve

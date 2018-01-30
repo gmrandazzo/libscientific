@@ -23,6 +23,7 @@
 
 void test3()
 {
+  puts("Test3: ROC and Precision-Recall test.");
   /* ROC curve test */
   dvector *y_score, *y_true;
   matrix *roc, *pr;
@@ -73,7 +74,7 @@ void test3()
   PrecisionRecall(y_true, y_score,  &pr, &ap);
   PrintMatrix(pr);
 
-  if(FLOAT_EQ(ap, 0.904762, 1e-6)){
+  if(FLOAT_EQ(ap, 0.900425, 1e-6)){
     printf("AVERAGE PRECISION-RECALL OK!\n");
   }else{
     printf("AVERAGE PRECISION-RECALL ERROR!\n");
@@ -88,6 +89,7 @@ void test3()
 
 void test2()
 {
+  puts("Test2: Natural Cubic spline interpolation and area under the curve tests.");
   /* Natural Cubic spline interpolation and area under the curve tests */
   matrix *xy, *interp_xy;
 
@@ -109,9 +111,9 @@ void test2()
   xy->data[5][1] = 0.19;
 
   initMatrix(&interp_xy);
-  cubic_spline_interpolation(xy, 10, &interp_xy);
+  interpolate(xy, 10, &interp_xy);
   double area = curve_area(xy, 10);
-  if(FLOAT_EQ(area, 1.816975, 1e-6)){
+  if(FLOAT_EQ(area, 1.822294, 1e-6)){
     printf("Area calculation OK!\n");
   }else{
     printf("Area calculation ERROR!\n");
@@ -128,6 +130,7 @@ void test2()
 
 void test1()
 {
+  printf("Test1: Euclidean distance between two matrix.");
   /* Euclidean distance between two matrix test */
   matrix *m;
   matrix *dist;

@@ -67,6 +67,12 @@ void shrink(matrix *x, double delta)
   }
 }
 
+/*
+ * Implementing the Nelder-Mead simplex algorithm with adaptive parameters
+ * Fuchang Gao, Lixing Han
+ * Comput Optim Appl
+ * DOI 10.1007/s10589-010-9329-3
+ */
 double NelderMeadSimplex(double (*func)(), dvector *x0, dvector *step, double xtol, size_t iter, dvector **best)
 {
   size_t i, j, iter_;
