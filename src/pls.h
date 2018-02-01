@@ -43,7 +43,7 @@ typedef struct{
   matrix *predicted_y;
   matrix *pred_residuals;
   /* Regression variables */
-  matrix *r2y_model; /* each column correspond to an y dependent variable and each row correspond to a principal component*/
+  matrix *r2y_recalculated; /* each column correspond to an y dependent variable and each row correspond to a principal component*/
   matrix *r2y_validation;
   matrix *q2y;
   matrix *sdep; /* Standard Deviation over Prediction */
@@ -51,13 +51,13 @@ typedef struct{
   matrix *bias;
 
   /* Discriminant Analyisis variables */
-  tensor *roc_model;
+  tensor *roc_recalculated;
   tensor *roc_validation;
-  matrix *roc_auc_model;
+  matrix *roc_auc_recalculated;
   matrix *roc_auc_validation;
-  tensor *precision_recall_model;
+  tensor *precision_recall_recalculated;
   tensor *precision_recall_validation;
-  matrix *precision_recall_ap_model;
+  matrix *precision_recall_ap_recalculated;
   matrix *precision_recall_ap_validation;
 
   matrix *yscrambling;

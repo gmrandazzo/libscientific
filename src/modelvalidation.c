@@ -795,14 +795,14 @@ void PLSRegressionYScramblingPipeline(matrix *mx, matrix *my, size_t xautoscalin
 
   initMatrix(&yrec);
   PLSYPredictorAllLV(mx, tmpmod, NULL, &yrec);
-  PLSRegressionStatistics(my, yrec, &(tmpmod->r2y_model), NULL, NULL);
+  PLSRegressionStatistics(my, yrec, &(tmpmod->r2y_recalculated), NULL, NULL);
 
   /* Calculate y real vs yscrambled and add other r2 q2 */
-  size_t r2cutoff = GetLVCCutoff(tmpmod->r2y_model);
+  size_t r2cutoff = GetLVCCutoff(tmpmod->r2y_recalculated);
   size_t q2cutoff = GetLVCCutoff(tmpq2);
 
   for(i = 0; i < my->col; i++){
-    (*r2)->data[i] = tmpmod->r2y_model->data[r2cutoff][i];
+    (*r2)->data[i] = tmpmod->r2y_recalculated->data[r2cutoff][i];
     (*q2)->data[i] = tmpq2->data[q2cutoff][i];
   }
 

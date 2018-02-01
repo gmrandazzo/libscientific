@@ -46,7 +46,7 @@ void NewPLSModel(PLSMODEL** m)
   initMatrix(&(*m)->predicted_y);
   initMatrix(&(*m)->pred_residuals);
   /* Regression variables */
-  initMatrix(&(*m)->r2y_model); /* each column correspond to an y dependent variable and each row correspond to a principal component*/
+  initMatrix(&(*m)->r2y_recalculated); /* each column correspond to an y dependent variable and each row correspond to a principal component*/
   initMatrix(&(*m)->r2y_validation);
   initMatrix(&(*m)->q2y);
   initMatrix(&(*m)->sdep); /* Standard Deviation over Prediction */
@@ -54,10 +54,10 @@ void NewPLSModel(PLSMODEL** m)
   initMatrix(&(*m)->bias);
 
   /* Discriminant Analyisis variables */
-  initTensor(&(*m)->roc_model);
-  initMatrix(&(*m)->roc_auc_model);
-  initTensor(&(*m)->precision_recall_model);
-  initMatrix(&(*m)->precision_recall_ap_model);
+  initTensor(&(*m)->roc_recalculated);
+  initMatrix(&(*m)->roc_auc_recalculated);
+  initTensor(&(*m)->precision_recall_recalculated);
+  initMatrix(&(*m)->precision_recall_ap_recalculated);
   initTensor(&(*m)->roc_validation);
   initMatrix(&(*m)->roc_auc_validation);
   initTensor(&(*m)->precision_recall_validation);
@@ -86,7 +86,7 @@ void DelPLSModel(PLSMODEL** m)
   DelMatrix(&(*m)->predicted_y);
   DelMatrix(&(*m)->pred_residuals);
   /* Regression variables */
-  DelMatrix(&(*m)->r2y_model); /* each column correspond to an y dependent variable and each row correspond to a principal component*/
+  DelMatrix(&(*m)->r2y_recalculated); /* each column correspond to an y dependent variable and each row correspond to a principal component*/
   DelMatrix(&(*m)->r2y_validation);
   DelMatrix(&(*m)->q2y);
   DelMatrix(&(*m)->sdep); /* Standard Deviation over Prediction */
@@ -94,10 +94,10 @@ void DelPLSModel(PLSMODEL** m)
   DelMatrix(&(*m)->bias);
 
   /* Discriminant Analyisis variables */
-  DelTensor(&(*m)->roc_model);
-  DelMatrix(&(*m)->roc_auc_model);
-  DelTensor(&(*m)->precision_recall_model);
-  DelMatrix(&(*m)->precision_recall_ap_model);
+  DelTensor(&(*m)->roc_recalculated);
+  DelMatrix(&(*m)->roc_auc_recalculated);
+  DelTensor(&(*m)->precision_recall_recalculated);
+  DelMatrix(&(*m)->precision_recall_ap_recalculated);
   DelTensor(&(*m)->roc_validation);
   DelMatrix(&(*m)->roc_auc_validation);
   DelTensor(&(*m)->precision_recall_validation);
