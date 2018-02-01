@@ -281,6 +281,7 @@ void cubic_spline_predict(dvector *x_, matrix *S, dvector **y_pred)
     x = x_->data[i];
     for(j = 0; j < n; j++){
       xi = S->data[j][0];
+      y = 0.f;
       if((x > xi || FLOAT_EQ(x, xi, 1e-2)) &&
       (x < S->data[j+1][0] || FLOAT_EQ(x, S->data[j+1][0], 1e-2))){
         //printf("for %f selecting %d\n", x, j);

@@ -240,16 +240,19 @@ void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, tensor
        */
 
       if(m->models[i]->sdep->row > 0){
+        /*printf("ny %zu\n", m->ny);
+        printf("nlv %zu\n", m->nlv);
+        puts("SDEP");
+        PrintMatrix(m->models[i]->sdep);
+        printf("y rows: %zu cols:%zu = (nlv*ny)\n", model_py->row, model_py->col);*/
         for(k = 0; k < model_py->row; k++){
-          size_t c = 0;
-          for(j = 0; j < model_py->col; j++){
-            //printf("k: %zu, ny: %zu c(y): %zu j(lv):%zu %f %f\n", k,  m->ny, c, j, m->models[i]->sdep->data[j][c], model_py->data[k][j]);
-            (*y)->data[k][j] += m->models[i]->sdep->data[j][c]*model_py->data[k][j];
-            if(c < m->ny-1){
+          size_t lv, ycol, c;
+          c = 0;
+          for(lv = 0; lv < m->models[i]->sdep->row; lv++){
+            for(ycol = 0; ycol < m->models[i]->sdep->col; ycol++){
+              //printf("ycol: %zu lv:%zu %zu (%f, %f)\n", ycol, lv, c, m->models[i]->sdep->data[lv][ycol], model_py->data[k][c]);
+              (*y)->data[k][c] += m->models[i]->sdep->data[lv][ycol]*model_py->data[k][c];
               c++;
-            }
-            else{
-              c = 0;
             }
           }
         }
@@ -268,21 +271,21 @@ void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, tensor
     /* Averaging the result */
     if(m->models[0]->sdep->row > 0){
       for(i = 0; i < m->n_models; i++){
-        for(j = 0; j < m->models[i]->sdep->row; j++){
-          for(k = 0; k < m->models[i]->sdep->col; k++){
+        for(j = 0; j < m->models[i]->sdep->row; j++){ //lv
+          for(k = 0; k < m->models[i]->sdep->col; k++){ //y
             tot_yweight->data[j][k] += m->models[i]->sdep->data[j][k];
           }
         }
       }
 
       for(i = 0; i < (*y)->row; i++){
-        size_t c = 0;
-        for(j = 0; j < (*y)->col; j++){
-          (*y)->data[i][j] /= tot_yweight->data[j][c];
-          if(c < m->ny-1)
+        size_t c, lv, ycol;
+        c = 0;
+        for(lv = 0; lv < tot_yweight->row; lv++){
+          for(ycol = 0; ycol < tot_yweight->col; ycol++){
+            (*y)->data[i][c] /= tot_yweight->data[lv][ycol];
             c++;
-          else
-            c = 0;
+          }
         }
       }
     }
