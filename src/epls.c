@@ -251,7 +251,7 @@ void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, tensor
           for(lv = 0; lv < m->models[i]->sdep->row; lv++){
             for(ycol = 0; ycol < m->models[i]->sdep->col; ycol++){
               //printf("ycol: %zu lv:%zu %zu (%f, %f)\n", ycol, lv, c, m->models[i]->sdep->data[lv][ycol], model_py->data[k][c]);
-              (*y)->data[k][c] += m->models[i]->sdep->data[lv][ycol]*model_py->data[k][c];
+              (*y)->data[k][c] += (1.f/m->models[i]->sdep->data[lv][ycol])*model_py->data[k][c];
               c++;
             }
           }
@@ -273,7 +273,7 @@ void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, tensor
       for(i = 0; i < m->n_models; i++){
         for(j = 0; j < m->models[i]->sdep->row; j++){ //lv
           for(k = 0; k < m->models[i]->sdep->col; k++){ //y
-            tot_yweight->data[j][k] += m->models[i]->sdep->data[j][k];
+            tot_yweight->data[j][k] += (1.f/m->models[i]->sdep->data[j][k]);
           }
         }
       }
