@@ -89,11 +89,24 @@ void train_test_split(matrix *x, matrix *y, double testsize, matrix **x_train, m
  * Description: Calculate the Bootstrap Random group cross validation.
  * Possible algorithms
  */
-
 void BootstrapRandomGroupsCV(MODELINPUT *input, size_t group, size_t iterations, AlgorithmType algo,
                              matrix **predicted_y, matrix **pred_residuals, size_t nthreads, ssignal *s, int arg, ...);
 
+/*
+ * Description:
+ * Leave one object/instance out cross validation.
+ */
 void LeaveOneOut(MODELINPUT *input, AlgorithmType algo, matrix** predicted_y, matrix **pred_residuals, size_t nthreads, ssignal *s, int arg, ...);
+
+/*
+ * Description:
+ * Group cross validation.
+ * After the groups definition (uivector *groups), the algorithm will leave out
+ * step by step a group, compute a model and predict the out group.
+ * This methodology should be prefered when similar instances are present in the dataset
+ */
+void KFoldCV(MODELINPUT *input, uivector *groups, AlgorithmType algo,
+            matrix **predicted_y, matrix **pred_residuals, size_t nthreads, ssignal *s, int arg, ...);
 
 void YScrambling(MODELINPUT *input, AlgorithmType algo, ValidationArg varg, size_t iterations,
                  matrix **ccoeff_yscrambling, size_t nthreads, ssignal *s);

@@ -25,6 +25,117 @@
 #include <time.h>
 
 
+void TestPLS18()
+{
+  matrix *x, *y;
+  uivector *groups;
+
+  PLSMODEL *m;
+
+  matrix *xpred;
+  matrix *xpredscores;
+
+  matrix *ypred;
+
+  size_t nobj = 100;
+  size_t nobj_to_pred = 50;
+  size_t nfeats = 250;
+  size_t ntarg = 1;
+  NewMatrix(&x, nobj, nfeats);
+  NewMatrix(&xpred, nobj_to_pred, nfeats);
+  NewMatrix(&y, nobj, ntarg);
+  NewUIVector(&groups, nobj);
+
+  srand(nobj+nfeats+ntarg);
+  for(size_t i = 0; i < nobj; i++){
+    for(size_t j = 0; j < nfeats; j++){
+      setMatrixValue(x, i, j, randDouble(-100,100));
+    }
+
+    double y_ = 0.f;
+    for(size_t j = 0; j < nfeats; j++){
+      y_ += x->data[i][j];
+    }
+    y_ /= (double)x->row;
+
+    for(size_t j = 0; j < ntarg; j++){
+      setMatrixValue(y, i, j, y_);
+      //setMatrixValue(y, i, j, randDouble(0, 2));
+    }
+    groups->data[i] = randInt(0, 6);
+    //groups->data[i] = randInt(0, 6);
+  }
+
+  for(size_t i = 0; i < nobj_to_pred; i++){
+    for(size_t j = 0; j < nfeats; j++){
+      setMatrixValue(xpred, i, j, randDouble(-100,100));
+    }
+  }
+
+
+  puts("Test 18 - PLS Regression Model and validation via KFoldCV");
+  /*Allocate the final output*/
+  NewPLSModel(&m);
+
+  /*puts("X:");
+  PrintMatrix(x);
+
+  puts("Y:");
+  PrintMatrix(y);*/
+
+  ssignal run = SIGSCIENTIFICRUN;
+  PLS(x, y, 4, 1, 0, m, &run);
+
+
+  /*VALIDATE THE MODEL */
+  MODELINPUT minpt;
+  minpt.mx = &x;
+  minpt.my = &y;
+  minpt.nlv = 4;
+  minpt.xautoscaling = 1;
+  minpt.yautoscaling = 0;
+
+  KFoldCV(&minpt, groups, _PLS_, &m->predicted_y, &m->pred_residuals, 4, NULL, 0);
+
+  //PrintMatrix(m->predicted_y);
+
+  PLSRegressionStatistics(y, m->predicted_y, &m->q2y, &m->sdep, &m->bias);
+
+  /*PrintMatrix(y);
+  PrintMatrix(m->predicted_y);*/
+  puts("Q2 Cross Validation");
+  PrintMatrix(m->q2y);
+  puts("SDEP Cross Validation");
+  PrintMatrix(m->sdep);
+  puts("BIAS Cross Validation");
+  PrintMatrix(m->bias);
+
+  initMatrix(&xpredscores);
+  initMatrix(&ypred);
+
+  PLSScorePredictor(xpred, m, 2, &xpredscores);
+
+  PLSYPredictor(xpredscores, m, 1, &ypred);
+
+  /*puts("\nPrediction scores...");
+  puts("x");
+  PrintMatrix(xpredscores);
+
+  puts("Extimated Y:");
+  PrintMatrix(ypred);
+  */
+
+  DelPLSModel(&m);
+  DelMatrix(&x);
+  DelMatrix(&y);
+  DelUIVector(&groups);
+  DelMatrix(&xpredscores);
+
+  DelMatrix(&xpred);
+  DelMatrix(&ypred);
+
+}
+
 void TestPLS17()
 {
   matrix *x, *y;
@@ -1464,8 +1575,9 @@ int main(void)
 //TestPLS11();
   //TestPLS12();
   /*TestPLS13();*/
-  TestPLS14();
-//TestPLS15();
-//TestPLS17();
+  //TestPLS14();
+  TestPLS15();
+  TestPLS17();
+  TestPLS18();
   return 0;
 }

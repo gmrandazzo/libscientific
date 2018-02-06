@@ -12,8 +12,9 @@
 
 void random_kfold_group_generator(matrix **gid, size_t ngroups, size_t nobj, unsigned int *srand_init)
 {
+  /*equal distribution of objects*/
   ResizeMatrix(gid, ngroups, (size_t)ceil(nobj/(double)ngroups));
-  MatrixSet((*gid), -1);
+  MatrixSet((*gid), -1); /*default is -1*/
   size_t i, j, k = 0, n;
   for(i = 0; i <  (*gid)->row; i++){
     for(j = 0; j <  (*gid)->col; j++){
@@ -756,6 +757,218 @@ void LeaveOneOut(MODELINPUT *input, AlgorithmType algo, matrix** predicted_y, ma
   }
   else{
     fprintf(stderr, "Error!! Unable to compute PLS Leave One Out Validation!!\n");
+  }
+}
+
+
+void KFoldCV(MODELINPUT *input, uivector *groups, AlgorithmType algo,
+             matrix **predicted_y, matrix **pred_residuals, size_t nthreads, ssignal *s, int arg, ...)
+{
+  matrix *mx = (*input->mx);
+  matrix *my = (*input->my);
+  size_t nlv;
+  size_t xautoscaling = input->xautoscaling;
+  size_t yautoscaling = input->yautoscaling;
+  ELearningParameters eparm;
+  CombinationRule crule = Averaging;
+  matrix *y_predicted;
+
+
+  if(input->nlv > mx->col){
+    nlv = mx->col;
+  }
+  else{
+    nlv = input->nlv;
+  }
+
+  if(arg > 0){
+    va_list valist;
+    va_start(valist, arg);
+    for (size_t i = 0; i < arg; i++){
+      if(i == 0)
+        eparm = va_arg(valist, ELearningParameters);
+      else if(i == 1)
+        crule = va_arg(valist, CombinationRule);
+      else
+        continue;
+    }
+    /* clean memory reserved for valist */
+    va_end(valist);
+  }
+
+  if(mx->row == my->row && groups->size > 0){
+    size_t th, it, i, j;
+    pthread_t *threads;
+    loocv_th_arg *kcv_arg;
+    matrix *gid;
+
+    size_t scol;
+    if(nlv > 0){
+      if(nlv > mx->col){
+        nlv = mx->col;
+      }
+      scol = my->col*nlv;  /* each component have my->col ypsilon */
+    }
+    else{
+      nlv = 1;
+      scol = my->col;
+    }
+
+    /* Create groups matrix */
+    size_t gmax = groups->data[0];
+    for(i = 1; i < groups->size; i++){
+      if(groups->data[i] > gmax)
+        gmax = groups->data[i];
+      else
+        continue;
+    }
+    gmax++;
+
+    size_t objgmax = 0, objgmax_tmp;
+    for(i = 0; i < gmax; i++){
+      objgmax_tmp = 0;
+      for(j = 0; j < groups->size; j++){
+        if(groups->data[j] == i){
+          objgmax_tmp++;
+        }
+        else{
+          continue;
+        }
+      }
+      if(objgmax_tmp > objgmax){
+        objgmax = objgmax_tmp;
+      }
+      else{
+        continue;
+      }
+    }
+
+    NewMatrix(&gid, gmax, objgmax);
+    MatrixSet(gid, -1);
+    uivector *indx;
+    NewUIVector(&indx, gmax);
+    for(j = 0; j < groups->size; j++){
+      size_t g = groups->data[j];
+      gid->data[g][indx->data[g]] = j;
+      indx->data[g] += 1;
+    }
+    DelUIVector(&indx);
+
+
+    /* each thread have its argument type */
+    threads = xmalloc(sizeof(pthread_t)*nthreads);
+    kcv_arg = xmalloc(sizeof(loocv_th_arg)*nthreads);
+    NewMatrix(&y_predicted, my->row, scol);
+
+    for(it = 0; it < gmax; it += nthreads){
+      if(s != NULL && (*s) == SIGSCIENTIFICSTOP){
+        break;
+      }
+      else{
+        /* Create independent threads each of which will execute function */
+        for(th = 0; th < nthreads; th++){
+          if(it+th >= gmax){
+            break;
+          }
+          else{
+            kcv_arg[th].eparm = eparm;
+            kcv_arg[th].crule = crule;
+            kcv_arg[th].nlv = nlv;
+            kcv_arg[th].xautoscaling = xautoscaling;
+            kcv_arg[th].yautoscaling = yautoscaling;
+            initMatrix(&kcv_arg[th].x_train);
+            initMatrix(&kcv_arg[th].y_train);
+            initMatrix(&kcv_arg[th].x_test);
+            initMatrix(&kcv_arg[th].y_test);
+            initMatrix(&kcv_arg[th].y_test_predicted);
+            kfold_group_train_test_split(mx, my, gid, it+th, &kcv_arg[th].x_train, &kcv_arg[th].y_train, &kcv_arg[th].x_test, &kcv_arg[th].y_test);
+
+            if(algo == _PLS_ || algo == _PLS_DA_){
+              pthread_create(&threads[th], NULL, PLSLOOModel_, (void*) &kcv_arg[th]);
+            }
+            else if(algo == _MLR_){
+              pthread_create(&threads[th], NULL, MLRLOOModel_, (void*) &kcv_arg[th]);
+            }
+            else if(algo == _EPLS_ || algo == _EPLS_DA_){
+              pthread_create(&threads[th], NULL, EPLSLOOModel_, (void*) &kcv_arg[th]);
+            }
+            else{
+              continue;
+            }
+          }
+        }
+
+        /* Wait till threads are complete before main continues. Unless we  */
+        /* wait we run the risk of executing an exit which will terminate   */
+        /* the process and all threads before the threads have completed.   */
+        for(th = 0; th < nthreads; th++){
+          if(it+th >= gmax){
+            break;
+          }
+          else{
+            pthread_join(threads[th], NULL);
+          }
+        }
+
+
+        /* finalize thread outputs and free the memory.....*/
+        for(th = 0; th < nthreads; th++){
+          if(it+th >= gmax){
+            break;
+          }
+          else{
+            for(i = 0; i < kcv_arg[th].y_test_predicted->row; i++){
+              size_t id = (size_t)gid->data[th+it][i];
+              for(j = 0; j < kcv_arg[th].y_test_predicted->col; j++){
+                y_predicted->data[id][j] = kcv_arg[th].y_test_predicted->data[i][j];
+                //setMatrixValue(y_predicted, id, j, kcv_arg[th].y_test_predicted->data[i][j]);
+              }
+            }
+
+            DelMatrix(&kcv_arg[th].x_train);
+            DelMatrix(&kcv_arg[th].y_train);
+            DelMatrix(&kcv_arg[th].x_test);
+            DelMatrix(&kcv_arg[th].y_test);
+            DelMatrix(&kcv_arg[th].y_test_predicted);
+          }
+        }
+      }
+    }
+
+    /*Finalize the output by dividing for the number of times that the object was predicted*/
+
+    if(predicted_y != NULL){
+      MatrixCopy(y_predicted, predicted_y);
+    }
+
+    if(pred_residuals != NULL){
+      ResizeMatrix(pred_residuals, my->row, my->col*nlv); /* each component have my->col ypsilon */
+
+      for(i = 0; i < y_predicted->row; i++){
+        for(j = 0; j < y_predicted->col; j++){
+          (*pred_residuals)->data[i][j] = y_predicted->data[i][j] - my->data[i][(size_t)floor(j/nlv)];
+        }
+      }
+    }
+
+
+    DelMatrix(&y_predicted);
+    DelMatrix(&gid);
+    xfree(threads);
+    xfree(kcv_arg);
+  }
+  else{
+    char *algo_;
+    if(algo == _PLS_)
+      algo_ = "PLS";
+    else if(algo == _PLS_DA_)
+      algo_ = "PLS-DA";
+    else if(algo == _MLR_)
+      algo_ = "MLR";
+    else
+      algo_ = "LDA";
+
+    fprintf(stderr, "Error!! Unable to compute Random Group Cross Validation for %s\n", algo_);
   }
 }
 
