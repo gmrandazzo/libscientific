@@ -105,7 +105,7 @@ void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautos
       PLS(x_train, y_train, nlv, xautoscaling, yautoscaling, m->models[it], s);
       /* MODEL SDEP will be used to apply a future prediction weight for the model */
       PLSYPredictorAllLV(x_test, m->models[it], NULL, &y_test_predicted);
-      PLSRegressionStatistics(y_test, y_test_predicted, NULL, &m->models[it]->sdep, NULL);
+      PLSRegressionStatistics(y_test, y_test_predicted, NULL, &m->models[it]->sdep, &m->models[it]->bias);
       DelUIVector(&testids);
       DelMatrix(&y_test_predicted);
       DelMatrix(&x_train);
@@ -182,7 +182,7 @@ void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautos
          /* MODEL SDEP will be used to apply a future prediction weight for the model */
          SubspaceMatrix(x_test, m->model_feature_ids[it], &x_test_subspace);
          PLSYPredictorAllLV(x_test_subspace, m->models[it], NULL, &y_test_predicted);
-         PLSRegressionStatistics(y_test, y_test_predicted, NULL, &m->models[it]->sdep, NULL);
+         PLSRegressionStatistics(y_test, y_test_predicted, NULL, &m->models[it]->sdep, &m->models[it]->bias);
          DelMatrix(&x_train);
          DelMatrix(&y_train);
          DelMatrix(&x_test);
@@ -251,7 +251,12 @@ void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, tensor
           for(lv = 0; lv < m->models[i]->sdep->row; lv++){
             for(ycol = 0; ycol < m->models[i]->sdep->col; ycol++){
               //printf("ycol: %zu lv:%zu %zu (%f, %f)\n", ycol, lv, c, m->models[i]->sdep->data[lv][ycol], model_py->data[k][c]);
-              (*y)->data[k][c] += (1.f/m->models[i]->sdep->data[lv][ycol])*model_py->data[k][c];
+              /* Since Error(Y_pred) = Var(Y) + bias^2(Y) + Var(Ymean)
+               * the error on y could not be reduced... however...
+               * bias^2(y_mean) + var(y_mean) could be reduced!
+               */
+              double weight = pow(1.f/(m->models[i]->sdep->data[lv][ycol]*pow(m->models[i]->bias->data[lv][ycol],2)), 4);
+              (*y)->data[k][c] +=  weight*model_py->data[k][c];
               c++;
             }
           }
@@ -273,7 +278,8 @@ void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, tensor
       for(i = 0; i < m->n_models; i++){
         for(j = 0; j < m->models[i]->sdep->row; j++){ //lv
           for(k = 0; k < m->models[i]->sdep->col; k++){ //y
-            tot_yweight->data[j][k] += (1.f/m->models[i]->sdep->data[j][k]);
+            double weight = pow(1.f/(m->models[i]->sdep->data[j][k]*pow(m->models[i]->bias->data[j][k],2)), 4);
+            tot_yweight->data[j][k] += weight;
           }
         }
       }

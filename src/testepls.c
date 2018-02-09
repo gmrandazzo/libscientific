@@ -103,9 +103,9 @@ void TestEPLS5()
   size_t nthreads = 1;
   initMatrix(&y_validation);
   initMatrix(&y_validation_residuals);
-  //BootstrapRandomGroupsCV(&minpt, 5, 20, _EPLS_, &y_validation, &y_validation_residuals, nthreads, NULL, 2, eparm, Averaging);
+  BootstrapRandomGroupsCV(&minpt, 5, 20, _EPLS_, &y_validation, &y_validation_residuals, nthreads, NULL, 2, eparm, Averaging);
   //LeaveOneOut(&minpt, _EPLS_, &y_validation, &y_validation_residuals, nthreads, NULL, 2, eparm, Averaging);
-  KFoldCV(&minpt, groups, _EPLS_, &y_validation, &y_validation_residuals, nthreads, NULL, 2, eparm, Averaging);
+  //KFoldCV(&minpt, groups, _EPLS_, &y_validation, &y_validation_residuals, nthreads, NULL, 2, eparm, Averaging);
   PrintMatrix(y);
   PrintMatrix(y_validation);
   matrix *q2;

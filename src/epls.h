@@ -61,8 +61,8 @@ void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautos
 
 typedef enum{
   Averaging = 0, /* Hard voting */
-  Median = 1 /* Hard voting */
-  /*WeightedMedian = 2  Soft voting */
+  Median = 1, /* Hard voting */
+  WeightAverageOptimization = 2
 } CombinationRule;
 
 void EPLSGetSXScore(EPLSMODEL *m, CombinationRule crule, matrix *sxscores);

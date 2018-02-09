@@ -55,6 +55,8 @@ void LDA(matrix *mx, uivector *y, LDAMODEL *lda);
  */
 void LDAPrediction(matrix *mx, LDAMODEL *lda, matrix **pfeatures, matrix **probability, matrix **mnpdf, uivector **prediction);
 
+void LDAStatistics(dvector *y_true, dvector *y_score, matrix **roc, double *roc_auc, matrix **precision_recal, double *pr_auc);
+
 void LDARandomGroupsCV(matrix *mx, uivector *my, size_t group, size_t iterations, dvector **sens, dvector **spec, dvector **ppv, dvector **npv, dvector **acc, size_t nthreads, ssignal *s);
 
 void LDALOOCV(matrix* mx, uivector* my, dvector** sens, dvector** spec, dvector** ppv, dvector** npv, dvector **acc, size_t nthreads, ssignal *s);

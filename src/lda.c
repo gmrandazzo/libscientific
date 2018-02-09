@@ -644,6 +644,12 @@ void LDAError(matrix *mx, uivector *my, LDAMODEL *lda, dvector **sens, dvector *
   DelUIVector(&classprediction);
 }
 
+void LDAStatistics(dvector *y_true, dvector *y_score, matrix **roc, double *roc_auc, matrix **precision_recal, double *pr_auc)
+{
+  ROC(y_true, y_score,  roc, roc_auc);
+  PrecisionRecall(y_true, y_score,  precision_recal, pr_auc);
+}
+
 
 typedef struct{
   matrix *mx;
