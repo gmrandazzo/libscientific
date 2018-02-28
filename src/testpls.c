@@ -1560,7 +1560,7 @@ void TestPLS1()
 int main(void)
 {
   /*test 1- 5*/
-  //TestPLS1();
+  TestPLS1();
   /*TestPLS2();
   TestPLS3();
   TestPLS4();
@@ -1576,8 +1576,8 @@ int main(void)
   //TestPLS12();
   /*TestPLS13();*/
   //TestPLS14();
-  TestPLS15();
+  /*TestPLS15();
   TestPLS17();
-  TestPLS18();
+  TestPLS18();*/
   return 0;
 }

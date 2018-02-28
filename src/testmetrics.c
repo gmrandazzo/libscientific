@@ -21,6 +21,46 @@
 #include "numeric.h"
 #include "matrix.h"
 
+void test4()
+{
+  puts("Test4: cubic spline interpolation.");
+  matrix *xy;
+  NewMatrix(&xy, 4, 2);
+  xy->data[0][0] = 0.1; xy->data[0][1] = -0.62049958;
+  xy->data[1][0] = 0.2; xy->data[1][1] = -0.28398668;
+  xy->data[2][0] = 0.3; xy->data[2][1] = -0.00660095;
+  xy->data[3][0] = 0.4; xy->data[3][1] = -0.24842440;
+
+  matrix *S;
+  initMatrix(&S);
+  cubic_spline_interpolation(xy, &S);
+
+
+  PrintMatrix(S);
+  if(FLOAT_EQ(S->data[0][1], -0.620, 1e-3) == 1 &&
+      FLOAT_EQ(S->data[0][2], 3.177, 1e-3) == 1 &&
+      FLOAT_EQ(S->data[0][3], 0.000, 1e-3) == 1 &&
+      FLOAT_EQ(S->data[0][4], 18.847, 1e-3) == 1 &&
+
+      FLOAT_EQ(S->data[1][1], -0.284, 1e-3) == 1 &&
+      FLOAT_EQ(S->data[1][2], 3.742, 1e-3) == 1 &&
+      FLOAT_EQ(S->data[1][3], 5.654, 1e-3) == 1 &&
+      FLOAT_EQ(S->data[1][4], -153.361, 1e-3) == 1 &&
+
+      FLOAT_EQ(S->data[2][1], -0.007, 1e-3) == 1 &&
+      FLOAT_EQ(S->data[2][2], 0.272, 1e-3) == 1 &&
+      FLOAT_EQ(S->data[2][3], -40.354, 1e-3) == 1 &&
+      FLOAT_EQ(S->data[2][4], 134.514, 1e-3) == 1){
+    printf("OK!\n");
+  }
+  else{
+    printf("ERROR\n");
+  }
+
+  DelMatrix(&S);
+  DelMatrix(&xy);
+}
+
 void test3()
 {
   puts("Test3: ROC and Precision-Recall test.");
@@ -158,4 +198,5 @@ int main(void)
   test1();
   test2();
   test3();
+  test4();
 }
