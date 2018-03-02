@@ -255,12 +255,10 @@ set_target_properties(libscientific PROPERTIES OUTPUT_NAME "scientific")
 #target_link_libraries(libscientific m pthread ${STATICLIBQUADMATH} ${STATICLIBGCC} ${STATICGFORTRAN})
 target_link_libraries(libscientific m pthread)
 
-install(TARGETS libscientific LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-                      ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-                      RUNTIME DESTINATION bin)
+install(TARGETS libscientific LIBRARY DESTINATION lib)
 
-install(FILES ${Scientific_C_H} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/scientific)
-install(FILES scientific.h DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
+install(FILES ${Scientific_C_H} DESTINATION include/scientific)
+install(FILES scientific.h DESTINATION include)
 
 
 add_executable(teststrvector ${StrVectorTest_SRC})
