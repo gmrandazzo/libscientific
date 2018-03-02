@@ -38,8 +38,8 @@
     return dup;
 }
 
- */
-extern char *strdup(const char *s);
+
+extern char *strdup(const char *s);*/
 
 void initStrVector(strvector** s){
     (*s) = xmalloc(sizeof(strvector));
