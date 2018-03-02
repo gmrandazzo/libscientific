@@ -255,7 +255,7 @@ set_target_properties(libscientific PROPERTIES OUTPUT_NAME "scientific")
 #target_link_libraries(libscientific m pthread ${STATICLIBQUADMATH} ${STATICLIBGCC} ${STATICGFORTRAN})
 target_link_libraries(libscientific m pthread)
 
-install(TARGETS libscientific LIBRARY DESTINATION lib)
+install(TARGETS libscientific LIBRARY DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR})
 
 install(FILES ${Scientific_C_H} DESTINATION include/scientific)
 install(FILES scientific.h DESTINATION include)

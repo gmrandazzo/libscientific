@@ -57,6 +57,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
 
 message(STATUS "Build Type: ${CMAKE_BUILD_TYPE}")
 
+include(GNUInstallDirs)
 add_subdirectory(src)
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
