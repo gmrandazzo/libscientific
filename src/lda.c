@@ -20,6 +20,7 @@
 #include <math.h>
 #include "lda.h"
 #include "memwrapper.h"
+#include "metricspace.h"
 #include "numeric.h"
 #include "tensor.h"
 #include <pthread.h>
