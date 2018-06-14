@@ -22,6 +22,52 @@
 
 #include "vector.h"
 
+/* Allocate the vector by using the NewDVector function and remove element by element using DVectorRemoveAt */
+void test6()
+{
+  int i;
+  dvector *v;
+
+  printf("Test 6\n");
+
+  NewDVector(&v, 21);
+
+  for(i = 0; i < 21; i++){
+    v->data[i] = i;
+  }
+
+  printf("Appending 123.4 to vector\n");
+  DVectorAppend(&v, 123.4);
+
+  printf("The current output\n");
+  for(i = 0; i < v->size; i++){
+   printf("%f\n", v->data[i]);
+  }
+
+  printf("Removing the 19 elemen");
+  DVectorRemoveAt(&v, 19);
+  for(i = 0; i < v->size; i++){
+   printf("%f\n", v->data[i]);
+  }
+
+  printf("Removing all the element one by one");
+  while(v->size > 0){
+    DVectorRemoveAt(&v, 0);
+    for(i = 0; i < v->size; i++){
+     printf("%f\n", v->data[i]);
+    }
+    printf("---------\n");
+  }
+
+  printf("Final output\n");
+  for(i = 0; i < v->size; i++){
+   printf("%f\n", v->data[i]);
+  }
+
+  DelDVector(&v);
+
+}
+
 /*sort a random vector*/
 void test5()
 {
@@ -141,8 +187,6 @@ void test2()
 
 }
 
-
-
 /* Allocate the vector by using the NewDVector function */
 void test1()
 {
@@ -171,10 +215,11 @@ void test1()
 
 int main(void)
 {
-  test1();
+  /*test1();
   test2();
   test3();
   test4();
-  test5();
+  test5();*/
+  test6();
   return 0;
 }

@@ -44,6 +44,11 @@ void StrVectorAppend(strvector **s, char *str);
 void StrVectorAppendInt(strvector **s, int val);
 void StrVectorAppendDouble(strvector **s, double val);
 
+/* Remove a string tu strvector
+UNSAFE!
+void StrVectorRemoveAt(strvector **d, size_t indx);
+*/
+
 void setStr(strvector *s, size_t i, char *str);
 char* getStr(strvector *s, size_t i);
 
@@ -79,6 +84,9 @@ void PrintDVector(dvector *v);
 
 /* Append a value to a dvector */
 void DVectorAppend(dvector **d, double val);
+
+/* Remove a value to a dvector */
+void DVectorRemoveAt(dvector **d, size_t indx);
 
 /* Copy a Dvector from dsrc: source to ddst: destination */
 void DVectorCopy(dvector *dsrc, dvector **ddst);
@@ -123,6 +131,9 @@ void DelIVector(ivector **d);
 /* Append a ivector */
 void IVectorAppend(ivector **d, int val);
 
+/* Remove a value to a ivector */
+void IVectorRemoveAt(ivector **d, size_t indx);
+
 /* Append to a ivector an other ivector */
 ivector *IVectorExtend(ivector *d1, ivector *d2);
 
@@ -152,6 +163,9 @@ void PrintUIVector(uivector *v);
 
 /* Append a uivector */
 void UIVectorAppend(uivector **d, size_t val);
+
+/* Remove a value to uivector */
+void UIVectorRemoveAt(uivector **d, size_t indx);
 
 /* Append to a uivector an other uivector */
 uivector *UIVectorExtend(uivector *d1, uivector *d2);

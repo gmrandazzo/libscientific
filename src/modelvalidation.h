@@ -112,8 +112,5 @@ void YScrambling(MODELINPUT *input, AlgorithmType algo, ValidationArg varg, size
                  matrix **ccoeff_yscrambling, size_t nthreads, ssignal *s);
 
 
-/*
- * Description: Calculate the leave one out cross validation.
- */
 
 #endif

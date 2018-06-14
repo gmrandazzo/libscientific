@@ -38,7 +38,6 @@ void test3()
   }
 
 
-
   printf("Creating v2\n");
   NewUIVector(&v2, 100);
 
@@ -53,6 +52,8 @@ void test3()
   for(i = 0; i < v1v2->size; i++){
    printf("%u\n", (unsigned int)v1v2->data[i]);
   }
+
+  UIVectorRemoveAt(&v1, 48);
 
   DelUIVector(&v1v2);
   DelUIVector(&v2);

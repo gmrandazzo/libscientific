@@ -108,6 +108,19 @@ void StrVectorAppend(strvector **s, char *str)
   DelStrVector(&tmp);
 }
 
+/* UNSAFE!
+void StrVectorRemoveAt(strvector **d, size_t indx)
+{
+  if(indx < (*d)->size){
+    int elements_to_move = (*d)->size - indx - 1;
+    memmove( &(*d)->data[indx], &(*d)->data[indx+1], elements_to_move * sizeof(char));
+    (*d)->size -=1;
+  }
+  else{
+    return;
+  }
+}*/
+
 void StrVectorAppendInt(strvector** s, int val)
 {
   size_t size = (*s)->size+1;
@@ -253,6 +266,19 @@ void DVectorAppend(dvector **d, double val)
   (*d)->data = xrealloc((*d)->data, sizeof(double)*size);
   (*d)->size += 1;
   (*d)->data[size-1] = val;
+}
+
+void DVectorRemoveAt(dvector **d, size_t indx)
+{
+  if(indx < (*d)->size){
+    // assuming that sizeOfArray is the count of valid elements in the array
+    int elements_to_move = (*d)->size - indx - 1;
+    memmove( &(*d)->data[indx], &(*d)->data[indx+1], elements_to_move * sizeof(double));
+    (*d)->size -=1;
+  }
+  else{
+    return;
+  }
 }
 
 void DVectorCopy(dvector* dsrc, dvector** ddst)
@@ -520,6 +546,19 @@ void IVectorAppend(ivector **d, int val)
   (*d)->data[(*d)->size-1] = val;
 }
 
+void IVectorRemoveAt(ivector **d, size_t indx)
+{
+  if(indx < (*d)->size){
+    // assuming that sizeOfArray is the count of valid elements in the array
+    int elements_to_move = (*d)->size - indx - 1;
+    memmove( &(*d)->data[indx], &(*d)->data[indx+1], elements_to_move * sizeof(int));
+    (*d)->size -=1;
+  }
+  else{
+    return;
+  }
+}
+
 ivector *IVectorExtend(ivector *d1, ivector *d2)
 {
   int i;
@@ -635,6 +674,18 @@ void UIVectorAppend(uivector **d, size_t val)
   (*d)->data = xrealloc((*d)->data, sizeof(size_t)*size);
   (*d)->size += 1;
   (*d)->data[(*d)->size-1] = val;
+}
+
+void UIVectorRemoveAt(uivector **d, size_t indx)
+{
+  if(indx < (*d)->size){
+    int elements_to_move = (*d)->size - indx - 1;
+    memmove( &(*d)->data[indx], &(*d)->data[indx+1], elements_to_move * sizeof(size_t));
+    (*d)->size -=1;
+  }
+  else{
+    return;
+  }
 }
 
 uivector *UIVectorExtend(uivector *d1, uivector *d2)
