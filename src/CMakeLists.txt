@@ -257,12 +257,14 @@ target_link_libraries(libscientific m pthread)
 
 if(WIN32)
   install(TARGETS libscientific ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib COMPONENT library)
+  install(FILES ${Scientific_C_H} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/scientific)
+  install(FILES scientific.h DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
 else()
   install(TARGETS libscientific LIBRARY DESTINATION ${CMAKE_INSTALL_FULL_LIBDIR})
+  install(FILES ${Scientific_C_H} DESTINATION include/scientific)
+  install(FILES scientific.h DESTINATION include)
 endif()
 
-install(FILES ${Scientific_C_H} DESTINATION include/scientific)
-install(FILES scientific.h DESTINATION include)
 
 
 add_executable(teststrvector ${StrVectorTest_SRC})
