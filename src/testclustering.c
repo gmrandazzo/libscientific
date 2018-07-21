@@ -59,7 +59,8 @@ void test17()
 void test16()
 {
   matrix *m;
-  uivector *clusters;
+  uivector *bins_id;
+  HyperGridModel *hgm;
 
   NewMatrix(&m, 10, 2);
 
@@ -74,10 +75,16 @@ void test16()
   setMatrixValue(m, 8, 0, 4.3323122);       setMatrixValue(m, 8, 1, 9.0220105);
   setMatrixValue(m, 9, 0, 6.955182);        setMatrixValue(m, 9, 1, 7.0026549);
 
-  initUIVector(&clusters);
-  HyperGridMap(m, 4, 5, &clusters, SIGSCIENTIFICRUN);
-  DelUIVector(&clusters);
-
+  initUIVector(&bins_id);
+  NewHyperGridMap(&hgm);
+  HyperGridMap(m, 4, &bins_id, &hgm);
+  printf("Total number of bins : %zu\n", hgm->bsize);
+  printf("Bins apparteinance id\n");
+  PrintUIVector(bins_id);
+  printf("Grid Map\n");
+  PrintMatrix(hgm->gmap);
+  PrintDVector(hgm->mult);
+  DelHyperGridMap(&hgm);
   DelMatrix(&m);
 }
 
@@ -827,8 +834,8 @@ void test1()
 
 int main(void){
   /* Selection Tests
-  test1(); */
-  test2();
+  test1();
+  test2();*/
   /*test3();
   test4();*/
 
@@ -847,7 +854,7 @@ int main(void){
 
   test14();
   test15();*/
-  /*test16();
-  test17();*/
+  test16();
+  /*test17();*/
   return 0;
 }

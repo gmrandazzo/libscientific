@@ -361,88 +361,100 @@ void MaxDis(matrix* m, size_t n, int metric, uivector** selections, ssignal *s)
   DelMatrix(&m2);
 }
 
-typedef struct{
-  uivector *id; /* each index is the step id... */
-} OBJ;
-
-
-void HyperGridMap(matrix* m, size_t step, size_t n, uivector** selections, ssignal *s)
+void NewHyperGridMap(HyperGridModel **hgm)
 {
-  size_t i, j, k, step_;
-  matrix *maxminstep, *membership;
-  uivector *population;
+  (*hgm) = xmalloc(sizeof(HyperGridModel));
+  initMatrix(&((*hgm)->gmap));
+  initDVector(&((*hgm)->mult));
+  (*hgm)->gsize = 0;
+  (*hgm)->bsize = 0;
 
-  OBJ *objs = xmalloc(sizeof(OBJ)*m->row);
+}
 
-  NewMatrix(&maxminstep, m->col, 3);
+void DelHyperGridMap(HyperGridModel **hgm)
+{
+  DelDVector(&((*hgm)->mult));
+  DelMatrix(&((*hgm)->gmap));
+  xfree((*hgm));
+}
 
+void HyperGridMap(matrix* m, size_t grid_size, uivector** bins_id, HyperGridModel **hgm)
+{
+  size_t i, j;
 
-  step_ = step;
+  matrix *gmap = (*hgm)->gmap;
+  dvector *mult = (*hgm)->mult;
+  (*hgm)->gsize = grid_size;
+  (*hgm)->bsize = 1;
+  /*Allocate a matrix of min, max, N. bins*/
+  ResizeMatrix(&gmap, m->col, 3);
 
   /* get the max and min for each column.... */
   for(j = 0; j < m->col; j++){
-    MatrixColumnMinMax(m, j, &maxminstep->data[j][0], &maxminstep->data[j][1]);
-    setMatrixValue(maxminstep, j, 2, (getMatrixValue(maxminstep, j, 1)-getMatrixValue(maxminstep, j, 0)) / step_);
+    MatrixColumnMinMax(m, j, &gmap->data[j][0], &gmap->data[j][1]);
+    gmap->data[j][2] = (gmap->data[j][1]-gmap->data[j][0])/(double)grid_size;
+    (*hgm)->bsize *= grid_size;
   }
 
-  /* for each object check what is the bin membership and store in de id vector OJB.id */
-  for(i = 0; i < m->row; i++){
-    NewUIVector(&objs[i].id, m->col);
+  UIVectorResize(bins_id, m->row);
+  /*Create two vectors: one for the multiplier, the other for the index id.
+   * The formula to get the bin id of each point is the following:
+   *  id1*mult1 + id2*mult2 + ... + idN*multN = bin ID
+   */
+  DVectorResize(&mult, m->col);
 
-    for(j = 0; j < m->col; j++){
-      setUIVectorValue(objs[i].id, j, (size_t) floor((getMatrixValue(m, i, j) - getMatrixValue(maxminstep, j, 0)) / getMatrixValue(maxminstep, j, 2)));
-    }
+  double mult_ = (double)grid_size;
+
+  mult->data[0] = 1.f;
+  for(j = 1; j < m->col; j++){
+    mult->data[j] = mult_;
+    mult_ *= (double)grid_size;
   }
 
-  for(i = 0; i < m->row; i++){
-    PrintUIVector(objs[i].id); /* the value objs[i].id[j]+1 multiplied for the j step maxminstep[j][2]
-    is equal to the min bin....*/
-    puts("##############################");
-  }
-
-  /* Build the membership square matrix */
-  NewMatrix(&membership, m->row, m->row);
-  NewUIVector(&population, m->row);
-
-  for(i = 0; i < m->row; i++){
-    setMatrixValue(membership, i, i, i+1);
-    for(j = i+1; j < m->row; j++){
-      for(k = 0; k < objs[i].id->size; k++){
-        if(getUIVectorValue(objs[i].id, k) == getUIVectorValue(objs[j].id, k)){
-          continue;
+  if(bins_id != NULL){
+    /* for each object check what is the bin membership and store in the id bins_id */
+    for(i = 0; i < m->row; i++){
+      for(j = 0; j < m->col; j++){
+        if(FLOAT_EQ(m->data[i][j], gmap->data[j][0], EPSILON)){
+          /* if is the minumum then is on 0 */
+          (*bins_id)->data[i] += 0*mult->data[j];
+        }
+        else if(FLOAT_EQ(m->data[i][j], gmap->data[j][1], EPSILON)){
+          /* if is the maximum then is on max of the grid position in this axis */
+          (*bins_id)->data[i] += (grid_size-1)*mult->data[j];
         }
         else{
-          break;
+          (*bins_id)->data[i] += floor((m->data[i][j] - gmap->data[j][0])/gmap->data[j][2])*mult->data[j];
         }
-      }
-
-      if(k == objs[i].id->size){ /* j object in the same beans of i and so mark with 1*/
-        setMatrixValue(membership, i, j, 1.f);
-        setMatrixValue(membership, j, i, 1.f);
-        setUIVectorValue(population, i, getUIVectorValue(population, i)+1);
-      }
-      else{ /* not in the same beans then mark with 0*/
-        setMatrixValue(membership, i, j, 0.f);
-        setMatrixValue(membership, j, i, 0.f);
       }
     }
   }
-
-  PrintMatrix(membership);
-
-  DelUIVector(&population);
-
-  DelMatrix(&membership);
-
-  for(i = 0; i < m->row; i++){
-    DelUIVector(&objs[i].id);
-  }
-
-//   xfree(&objs);
-
-  DelMatrix(&maxminstep);
 }
 
+
+void HyperGridMapObjects(matrix *m, HyperGridModel *hgm, uivector **bins_id)
+{
+  size_t i, j;
+  matrix *gmap = hgm->gmap;
+  dvector *mult = hgm->mult;
+
+  /* for each object check what is the bin membership and store in the id bins_id */
+  for(i = 0; i < m->row; i++){
+    for(j = 0; j < m->col; j++){
+      if(FLOAT_EQ(m->data[i][j], gmap->data[j][0], EPSILON)){
+        /* if is the minumum then is on 0 */
+        (*bins_id)->data[i] += 0*mult->data[j];
+      }
+      else if(FLOAT_EQ(m->data[i][j], gmap->data[j][1], EPSILON)){
+        /* if is the maximum then is on max of the grid position in this axis */
+        (*bins_id)->data[i] += (hgm->gsize-1)*mult->data[j];
+      }
+      else{
+        (*bins_id)->data[i] += floor((m->data[i][j] - gmap->data[j][0])/gmap->data[j][2])*mult->data[j];
+      }
+    }
+  }
+}
 
 /*
  * David Arthur KMeans++ init centers

@@ -52,17 +52,43 @@ void MDC(matrix *m, size_t n, int metric, uivector **selections, ssignal *s);
  */
 void MaxDis(matrix* m, size_t n, int metric, uivector** selections, ssignal *s);
 
+
 /*
  * HyperGrid Map Selections
  *
  * Input:
- * - m: matrix of data in coordinate
- * - n: number of object to select.
+ * - m: N-Dimensional matrix of objects
+ * - grid_size: grid size
  *
  * Output:
- * - selections: vector of id selected
+ * - bins_id: for each object we define the hyper grid bin of appartenaince
+ * - HyperGridModel: Specific model
+ *
+ * Bins numbering:
+ *   ___ ___ ___ ___
+ *  |_8_|_9_|_10|_11|
+ *  |_4_|_5_|_6_|_7_|
+ *  |_0_|_1_|_2_|_3_|
  */
-void HyperGridMap(matrix* m, size_t step, size_t n, uivector** selections, ssignal *s);
+
+typedef struct{
+  matrix *gmap;  /* grid map (min, max, step)*/
+  dvector *mult; /* multiplier */
+  size_t gsize;  /* grid size*/
+  size_t bsize;  /* total number of bins */
+} HyperGridModel;
+
+/* Allocate the model */
+void NewHyperGridMap(HyperGridModel **hgm);
+
+/* Delete the model */
+void DelHyperGridMap(HyperGridModel **hgm);
+
+/*Create the HyperGridMap */
+void HyperGridMap(matrix* m, size_t grid_size, uivector** bins_id, HyperGridModel **hgm);
+
+/*Extract an object from hypergridmap*/
+void HyperGridMapObjects(matrix *m, HyperGridModel *hgm, uivector **bins_id);
 
 /*
  * KMeans++ Centers Method

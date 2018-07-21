@@ -20,8 +20,7 @@
 
 #define major_ 0
 #define minor_ 8
-#define patch_ 1
-
+#define patch_ 2
 
 void ScientificVersion()
 {
