@@ -738,6 +738,20 @@ int UIVectorHasValue(uivector* u, size_t id)
   return 1;
 }
 
+int UIVectorIndexOf(uivector *u, size_t id)
+{
+  size_t i;
+  for(i = 0; i < u->size; i++){
+    if(u->data[i] == id){
+      return i;
+    }
+    else{
+      continue;
+    }
+  }
+  return -1;
+}
+
 void UIVectorSet(uivector* d, size_t val)
 {
   size_t i;

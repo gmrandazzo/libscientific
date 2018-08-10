@@ -178,6 +178,7 @@ size_t getUIVectorValue(uivector *d, size_t id);
  *                   return 0, else return 1
  */
 int UIVectorHasValue(uivector *u, size_t id);
+int UIVectorIndexOf(uivector *u, size_t id);
 
 void UIVectorSet(uivector *d, size_t val);
 void SortUIVector(uivector *d);
