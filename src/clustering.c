@@ -685,79 +685,6 @@ void PruneResults(matrix *m, matrix *centroids, size_t nmaxobj, int type, uivect
   DelUIVector(&clusters_);
 }
 
-
-void RecalcCenctroids(matrix *m, matrix *G, matrix *centroids)
-{
-  size_t i, j, k, n, l, q;
-  double sum;
-  matrix *tmp;
-
-  for(i = 0; i < centroids->row; i++){
-    for(k = 0; k < m->col; k++){
-      sum = 0.f;
-      n = 0;
-      for(j = 0; j< m->row; j++){
-        if((int)getMatrixValue(G, i, j) == 1){
-          sum += getMatrixValue(m, j, k);
-          n++;
-        }
-        else{
-          continue;
-        }
-      }
-
-      if(n != 0){
-        setMatrixValue(centroids, i, k, (double)sum/(double)n);
-      }
-      else{
-        /* Remove the i centroid and remove the cluster i in the group matrix G */
-        initMatrix(&tmp);
-        MatrixCopy(centroids, &tmp);
-        ResizeMatrix(&centroids, centroids->row-1, centroids->col);
-        q = 0;
-        for(l = 0; l < tmp->row; l++){
-          if(l != i){
-            for(j = 0; j < tmp->col; j++){
-              setMatrixValue(centroids, q, j, getMatrixValue(tmp, l, j));
-            }
-            q++;
-          }
-          else{
-            continue;
-          }
-        }
-
-        ResizeMatrix(&tmp, G->row, G->col);
-
-        for(l = 0; l < G->row; l++){
-          for(j = 0; j < G->col; j++){
-            setMatrixValue(tmp, l, j, getMatrixValue(G, l, j));
-          }
-        }
-
-        ResizeMatrix(&G, G->row-1, G->col);
-
-        q = 0;
-        for(l = 0; l < tmp->row; l++){
-          if(l != i){
-            for(j = 0; j < tmp->col; j++){
-              setMatrixValue(G, q, j, getMatrixValue(tmp, l, j));
-            }
-            q++;
-          }
-          else{
-            continue;
-          }
-        }
-
-        DelMatrix(&tmp);
-        i = 0;
-        break;
-      }
-    }
-  }
-}
-
 /*
  * 1. Random Centroid made by kmeans++ step 1 algorithm
  * 2. Distance object-centroids
@@ -765,167 +692,168 @@ void RecalcCenctroids(matrix *m, matrix *G, matrix *centroids)
  * 4. If no object moved to group stop; else recompute new centroids and go to step 2
 */
 
-void KMeans(matrix* m, size_t nclusters, int initializer, uivector** clusters, matrix **_centroids_, ssignal *s)
+int shouldStop(matrix *centroids, matrix *oldcentroids, size_t iterations, size_t max_iterations)
 {
-  size_t i, j, k, iter;
-  int iterate = 1;
-  uivector *selections;
-  matrix *G, *G_old,  *distmx, *centroids_, **centroids;
-
-  NewMatrix(&G, nclusters, m->row); /* These are int matrix */
-  NewMatrix(&G_old, nclusters, m->row); /* These are int matrix */
-
-  if(_centroids_ == NULL){
-    centroids = &centroids_;
-    NewMatrix(centroids, nclusters, m->col);
+  size_t i, j;
+  if(iterations > max_iterations){
+    return 1;
   }
   else{
-    centroids = _centroids_;
-    ResizeMatrix(centroids, nclusters, m->col);
-  }
-
-  initUIVector(&selections);
-
-  /* Step 1. Select start centroids */
-  if(initializer == 0){ /* Random */
-    for(i = 0; i < nclusters; i++){
-      srand(m->col+m->row+nclusters+i);
-      UIVectorAppend(&selections, rand() % m->row);
-    }
-  }
-  else if(initializer == 1){ /* KMeansppCenters */
-    KMeansppCenters(m, nclusters, &selections, s);
-  }
-  else if(initializer == 2){ /* MDC */
-    MDC(m, nclusters, 0, &selections, s);
-  }
-  else{ /*if(initializer == 3){  MaxDis */
-    MaxDis(m, nclusters, 0, &selections, s);
-  }
-
-  /* else personal centroid configuration */
-
-  for(i = 0; i < selections->size; i++){
-    for(j = 0; j < m->col; j++){
-      setMatrixValue((*centroids), i, j, getMatrixValue(m, getUIVectorValue(selections, i), j));
-    }
-  }
-
-  DelUIVector(&selections);
-
-
-  #ifdef DEBUG
-  puts("Start Centroids");
-  PrintMatrix((*centroids));
-  #endif
-
-  iter = 0;
-  while(iterate == 1){
-    if(s != NULL && (*s) == SIGSCIENTIFICSTOP){
-      break;
+    if(centroids->row != oldcentroids->row){
+      return 0;
     }
     else{
-      /* Step 2. Distance all object from (*centroids) */
-      initMatrix(&distmx);
-      EuclideanDistance(m, (*centroids), &distmx);
-
-      if((*centroids)->row != G_old->row){ /*If one cluster was excluded from the previoys recalculation of centroid then resize the Group matrix */
-        ResizeMatrix(&G, G_old->row, m->row);
-      }
-
-      /* Step 3. Group based on minimum distance. G is the Group matrix mark with 1 if is inside the cluster */
-      for(j = 0; j < distmx->col; j++ ){
-        k = 0;
-        for(i = 1; i < distmx->row; i++ ){
-          if(getMatrixValue(distmx, i, j) < getMatrixValue(distmx, k, j)){
-            k = i;
-          }
-          else{
+      for(i = 0; i < centroids->row; i++){
+        for(j = 0; j < centroids->col; j++){
+          if(FLOAT_EQ(centroids->data[i][j], oldcentroids->data[i][j], EPSILON)){
             continue;
           }
+          else{
+            return 0;
+          }
         }
-        setMatrixValue(G, k, j, 1.0);
       }
+      return 1;
+    }
+  }
+}
 
-      DelMatrix(&distmx);
-
-      #ifdef DEBUG
-      puts("Group Matrix");
-      PrintMatrix(G);
-      #endif
-
-
-      /* Step 4. If no object moved to group stop; else recompute new (*centroids) and go to step 2 */
-      if(iter != 0){ /* for first iteration store onle G in G_old */
-        for(i = 0; i < G->row; i++){
-          for(j = 0; j < G->col; j++)
-            if((int)getMatrixValue(G, i, j) != (int)getMatrixValue(G_old, i, j)){
-              iterate = 1;
-            }
-            else{
-              iterate = 0;
-            }
-        }
-        iter++;
+/* For each element in the dataset, chose the closest centroid.
+ * Make that centroid the element's label.
+ */
+void getLabels(matrix *m, matrix *centroids, uivector *labels)
+{
+  size_t i, j, k;
+  int c_point; /*closest centroid id*/
+  double c_dst; /* closest centroid distance */
+  for(i = 0; i < m->row; i++){
+    c_point = -1;
+    for(k = 0; k < centroids->row; k++){
+      double t_dst = 0.f;
+      for(j = 0; j < m->col; j++){
+        t_dst += (m->data[i][j]-centroids->data[k][j])*(m->data[i][j]-centroids->data[k][j]);
+      }
+      t_dst = sqrt(t_dst);
+      if(c_point == -1){
+        c_point = 0;
+        c_dst = t_dst;
       }
       else{
-        iter++;
-      }
-
-      /* store in G G_old for next iteration and reset G*/
-      for(i = 0; i < G->row; i++){
-        for(j = 0; j < G->col; j++){
-          setMatrixValue(G_old, i, j, getMatrixValue(G, i, j));
-          setMatrixValue(G, i, j, 0.f);
-        }
-      }
-
-      #ifdef DEBUG
-      puts("Old Centroid coordinate");
-      PrintMatrix((*centroids));
-      #endif
-
-      /* recompute (*centroids) */
-      RecalcCenctroids(m, G_old, (*centroids));
-
-      #ifdef DEBUG
-      puts("New Centroid Coordinate");
-      PrintMatrix((*centroids));
-      #endif
-    }
-  }
-
-  if(s != NULL && (*s) == SIGSCIENTIFICSTOP){
-    DelMatrix(&G);
-    DelMatrix(&G_old);
-    if(_centroids_ == NULL){
-      DelMatrix(centroids);
-    }
-  }
-  else{
-    /* End Kmeans and store centroids coordinate and cluster number for each row */
-    /* recompute final centroids to insert in the output file */
-    RecalcCenctroids(m, G_old, (*centroids));
-
-    UIVectorResize(clusters, m->row);
-
-    for(i = 0; i < G_old->row; i++){
-      for(j = 0; j < G_old->col; j++){
-        if(getMatrixValue(G_old, i, j) == 1){
-          setUIVectorValue((*clusters), j, i+1);
+        if(t_dst < c_dst){
+          c_point = k;
+          c_dst = t_dst;
         }
         else{
           continue;
         }
       }
     }
+    labels->data[i] = c_point;
+  }
+}
 
-    DelMatrix(&G);
-    DelMatrix(&G_old);
-    if(_centroids_ == NULL){
-      DelMatrix(centroids);
+/* Calculate centroids
+ * Each centroid is the geometric mean of the points that
+ * have that centroid's label. Important: If a centroid is empty (no points have
+ * that centroid's label) you should randomly re-initialize it.
+ */
+void getCentroids(matrix *m, uivector *cluster_labels, matrix **centroids)
+{
+  size_t i, j, c_indx;
+  matrix *new_centroids;
+  uivector *cluster_points;
+  NewMatrix(&new_centroids, (*centroids)->row, (*centroids)->col);
+  NewUIVector(&cluster_points, (*centroids)->row);
+  for(i = 0; i < cluster_labels->size; i++){
+    c_indx = cluster_labels->data[i];
+    for(j = 0; j < m->col; j++){
+      new_centroids->data[c_indx][j] += m->data[i][j];
+    }
+    cluster_points->data[c_indx]+=1;
+  }
+
+  /*Check if there are 0 points in one cluster.
+    If yes then pick a random point from mx
+    else divide the centroid for the number of points on the cluster*/
+  for(i = 0; i < cluster_points->size; i++){
+    if(cluster_points->data[i] > 0){
+      for(j = 0; j < m->col; j++){
+        new_centroids->data[i][j] /= (double)cluster_points->data[i];
+      }
+    }
+    else{
+      c_indx = rand() % m->row;
+      for(j = 0; j < m->col; j++){
+        new_centroids->data[i][j] = m->data[c_indx][j];
+      }
     }
   }
+
+  DelUIVector(&cluster_points);
+  MatrixCopy(new_centroids, centroids);
+  DelMatrix(&new_centroids);
+}
+
+void KMeans(matrix* m, size_t nclusters, int initializer, uivector** cluster_labels, matrix **_centroids_, ssignal *s)
+{
+  size_t i, j, it;
+  matrix *centroids, *oldcentroids;
+  uivector *pre_centroids;
+
+  if(_centroids_ == NULL){
+    NewMatrix(&centroids, nclusters, m->col);
+  }
+  else{
+    centroids = (*_centroids_);
+    ResizeMatrix(&centroids, nclusters, m->col);
+  }
+
+  NewMatrix(&oldcentroids, centroids->row, centroids->col);
+
+  initUIVector(&pre_centroids);
+
+  /* Step 1. Select start centroids */
+  if(initializer == 0){ /* Random */
+    for(i = 0; i < nclusters; i++){
+      srand(m->col+m->row+nclusters+i);
+      UIVectorAppend(&pre_centroids, rand() % m->row);
+    }
+  }
+  else if(initializer == 1){ /* KMeansppCenters */
+    KMeansppCenters(m, nclusters, &pre_centroids, s);
+  }
+  else if(initializer == 2){ /* MDC */
+    MDC(m, nclusters, 0, &pre_centroids, s);
+  }
+  else{ /*if(initializer == 3){  MaxDis */
+    MaxDis(m, nclusters, 0, &pre_centroids, s);
+  }
+
+  /* else personal centroid configuration */
+
+  for(i = 0; i < pre_centroids->size; i++){
+    for(j = 0; j < m->col; j++){
+      centroids->data[i][j] = m->data[pre_centroids->data[i]][j];
+    }
+  }
+
+  DelUIVector(&pre_centroids);
+
+  UIVectorResize(cluster_labels, m->row);
+
+  it = 0;
+  while(shouldStop(centroids, oldcentroids, it, 100) == 0)
+  {
+    MatrixCopy(centroids, &oldcentroids);
+    getLabels(m, centroids, (*cluster_labels));
+    getCentroids(m, (*cluster_labels), &centroids);
+    it++;
+  }
+
+  if(_centroids_ == NULL){
+    DelMatrix(&centroids);
+  }
+  DelMatrix(&oldcentroids);
 }
 
 void KMeansRandomGroupsCV(matrix* m, size_t maxnclusters, int initializer, size_t groups, size_t iterations, dvector** ssdist, ssignal *s)

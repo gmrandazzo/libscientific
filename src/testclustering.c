@@ -293,10 +293,10 @@ void test10()
   puts("Selections");
   PrintUIVector(clusters);
 
-  PruneResults(m, centroids, 3, 0, clusters);
+  //PruneResults(m, centroids, 3, 0, clusters);
 
-  puts("New Selections");
-  PrintUIVector(clusters);
+  /*puts("New Selections");
+  PrintUIVector(clusters);*/
 
   DelUIVector(&clusters);
   DelMatrix(&centroids);
@@ -839,22 +839,22 @@ int main(void){
   /*test3();
   test4();*/
 
-  /*Clustering Tests
+  /*Clustering Tests*/
   test5();
-  test6();
+  /*test6();
   test7();
   test8();
   test9();
-  test10();
+  test10();*/
 
-  test11();*/
+  //test11();
   /*test12();*/
 
   /*test13();
 
   test14();
   test15();*/
-  test16();
+  //test16();
   /*test17();*/
   return 0;
 }
