@@ -178,7 +178,7 @@ void test13()
   initMatrix(&centroids);
 
   puts("KMeans ++");
-  KMeans(m, 2, 1, &clusters, &centroids, NULL);
+  KMeans(m, 2, 1, &clusters, &centroids, 4, NULL);
 
   puts("Centroids");
   PrintMatrix(centroids);
@@ -212,7 +212,7 @@ void test12()
 
   initDVector(&ssdist);
   puts("KMeans ++ Cross Validation");
-  KMeansRandomGroupsCV(m, 15, 1, 3, 10, &ssdist, &run);
+  KMeansRandomGroupsCV(m, 15, 1, 3, 10, &ssdist, 4, &run);
 
   puts("ssdist");
   PrintDVector(ssdist);
@@ -248,7 +248,7 @@ void test11()
   puts("KMeans ++ Cross Validation");
   /*KMeansRandomGroupsCV(m, 9, 1, 3, 20, &ssdist, &run);*/
 
-  KMeansJumpMethod(m, 9, 1, &ssdist, &run);
+  KMeansJumpMethod(m, 9, 1, &ssdist, 4, &run);
 
   puts("ssdist");
   PrintDVector(ssdist);
@@ -285,7 +285,7 @@ void test10()
   initMatrix(&centroids);
 
   puts("KMeans ++");
-  KMeans(m, 3, 1, &clusters, &centroids, &run);
+  KMeans(m, 3, 1, &clusters, &centroids, 4, &run);
 
   puts("Centroids");
   PrintMatrix(centroids);
@@ -415,7 +415,7 @@ void test9()
   initUIVector(&clusters);
 
 
-  KMeans(m, 10, 3, &clusters, NULL, &run);
+  KMeans(m, 10, 3, &clusters, NULL, 4, &run);
 
   puts("Selections");
   PrintUIVector(clusters);
@@ -452,7 +452,7 @@ void test8()
   initMatrix(&centroids);
 
   puts("KMeans MaxDis");
-  KMeans(m, 2, 3, &clusters, &centroids, &run);
+  KMeans(m, 2, 3, &clusters, &centroids, 4, &run);
 
   puts("Selections");
   PrintUIVector(clusters);
@@ -492,7 +492,7 @@ void test7()
   initMatrix(&centroids);
 
   puts("KMeans MDC");
-  KMeans(m, 2, 2, &clusters, &centroids, &run);
+  KMeans(m, 2, 2, &clusters, &centroids, 4, &run);
 
   puts("Selections");
   PrintUIVector(clusters);
@@ -532,7 +532,7 @@ void test6()
   initMatrix(&centroids);
 
   puts("KMeans RANDOM");
-  KMeans(m, 2, 0, &clusters, &centroids, &run);
+  KMeans(m, 2, 0, &clusters, &centroids, 4, &run);
 
   puts("Selections");
   PrintUIVector(clusters);
@@ -572,7 +572,7 @@ void test5()
   initMatrix(&centroids);
 
   puts("KMeans++ TEST");
-  KMeans(m, 2, 1, &clusters, &centroids, &run);
+  KMeans(m, 2, 1, &clusters, &centroids, 4, &run);
 
   puts("Selections");
   PrintUIVector(clusters);

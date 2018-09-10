@@ -21,6 +21,7 @@
 #include <math.h>
 #include <string.h>
 #include <ctype.h>
+#include <pthread.h>
 
 #include "scientificinfo.h"
 #include "clustering.h"
@@ -718,6 +719,77 @@ int shouldStop(matrix *centroids, matrix *oldcentroids, size_t iterations, size_
   }
 }
 
+typedef struct{
+  matrix *m;
+  matrix *centroids;
+  int from, to;
+  uivector *labels;
+} labels_th_arg;
+
+void *getLabelsWorker(void *arg_)
+{
+  labels_th_arg *a = (labels_th_arg*) arg_;
+  size_t i, j, k;
+  int c_point; /*closest centroid id*/
+  double c_dst; /* closest centroid distance */
+  /* parallelize this part! */
+  for(i = a->from; i < a->to; i++){
+    c_point = -1;
+    for(k = 0; k < a->centroids->row; k++){
+      double t_dst = 0.f;
+      for(j = 0; j < a->m->col; j++){
+        t_dst += (a->m->data[i][j]-a->centroids->data[k][j])*(a->m->data[i][j]-a->centroids->data[k][j]);
+      }
+      t_dst = sqrt(t_dst);
+      if(c_point == -1){
+        c_point = 0;
+        c_dst = t_dst;
+      }
+      else{
+        if(t_dst < c_dst){
+          c_point = k;
+          c_dst = t_dst;
+        }
+        else{
+          continue;
+        }
+      }
+    }
+    a->labels->data[i] = c_point;
+  }
+  return 0;
+}
+
+void getLabels_(matrix *m, matrix *centroids, uivector *labels, int nthreads)
+{
+  size_t i, from;
+  pthread_t *threads = xmalloc(sizeof(pthread_t)*nthreads);
+  labels_th_arg *arg = xmalloc(sizeof(labels_th_arg)*nthreads);
+  int nobj = ceil(m->row/(double)nthreads);
+  from = 0;
+  for(i = 0; i < nthreads; i++){
+    arg[i].m = m;
+    arg[i].centroids = centroids;
+    arg[i].labels = labels;
+    arg[i].from = from;
+    if(from+nobj > m->row){
+      from = m->row;
+    }
+    else{
+      from += nobj;
+    }
+    arg[i].to = from;
+    pthread_create(&threads[i], NULL, getLabelsWorker, (void*) &arg[i]);
+  }
+
+  for(i = 0; i < nthreads; i++){
+    pthread_join(threads[i], NULL);
+  }
+
+  xfree(threads);
+  xfree(arg);
+}
+
 /* For each element in the dataset, chose the closest centroid.
  * Make that centroid the element's label.
  */
@@ -726,6 +798,7 @@ void getLabels(matrix *m, matrix *centroids, uivector *labels)
   size_t i, j, k;
   int c_point; /*closest centroid id*/
   double c_dst; /* closest centroid distance */
+  /* parallelize this part! */
   for(i = 0; i < m->row; i++){
     c_point = -1;
     for(k = 0; k < centroids->row; k++){
@@ -794,7 +867,7 @@ void getCentroids(matrix *m, uivector *cluster_labels, matrix **centroids)
   DelMatrix(&new_centroids);
 }
 
-void KMeans(matrix* m, size_t nclusters, int initializer, uivector** cluster_labels, matrix **_centroids_, ssignal *s)
+void KMeans(matrix* m, size_t nclusters, int initializer, uivector** cluster_labels, matrix **_centroids_, size_t nthreads, ssignal *s)
 {
   size_t i, j, it;
   matrix *centroids, *oldcentroids;
@@ -845,7 +918,8 @@ void KMeans(matrix* m, size_t nclusters, int initializer, uivector** cluster_lab
   while(shouldStop(centroids, oldcentroids, it, 100) == 0)
   {
     MatrixCopy(centroids, &oldcentroids);
-    getLabels(m, centroids, (*cluster_labels));
+    //getLabels(m, centroids, (*cluster_labels));
+    getLabels_(m, centroids, (*cluster_labels), nthreads);
     getCentroids(m, (*cluster_labels), &centroids);
     it++;
   }
@@ -856,7 +930,7 @@ void KMeans(matrix* m, size_t nclusters, int initializer, uivector** cluster_lab
   DelMatrix(&oldcentroids);
 }
 
-void KMeansRandomGroupsCV(matrix* m, size_t maxnclusters, int initializer, size_t groups, size_t iterations, dvector** ssdist, ssignal *s)
+void KMeansRandomGroupsCV(matrix* m, size_t maxnclusters, int initializer, size_t groups, size_t iterations, dvector** ssdist, size_t nthreads, ssignal *s)
 {
 
   size_t i, j, k, g, n, a, iterations_;
@@ -978,7 +1052,7 @@ void KMeansRandomGroupsCV(matrix* m, size_t maxnclusters, int initializer, size_
           initMatrix(&centroids);
           initUIVector(&clusters);
 
-          KMeans(subm, j, initializer, &clusters, &centroids, s);
+          KMeans(subm, j, initializer, &clusters, &centroids, nthreads, s);
 
           initMatrix(&distances);
           EuclideanDistance(centroids, predm, &distances);
@@ -1050,7 +1124,7 @@ void KMeansRandomGroupsCV(matrix* m, size_t maxnclusters, int initializer, size_
     Define J(i) = D[i] - D[i-1]
     Return the k between 1 and n that maximizes J(k)
 */
-void KMeansJumpMethod(matrix* m, size_t maxnclusters, int initializer, dvector** jumps, ssignal *s)
+void KMeansJumpMethod(matrix* m, size_t maxnclusters, int initializer, dvector** jumps, size_t nthreads, ssignal *s)
 {
   size_t k, i;
   double dist,  y, min, max;
@@ -1071,7 +1145,7 @@ void KMeansJumpMethod(matrix* m, size_t maxnclusters, int initializer, dvector**
     initUIVector(&clusters);
     initMatrix(&centroids);
 
-    KMeans(m, k, initializer, &clusters, &centroids, s);
+    KMeans(m, k, initializer, &clusters, &centroids, nthreads, s);
 
     dist = MahalanobisDistance(m, centroids);
 

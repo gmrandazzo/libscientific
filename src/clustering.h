@@ -115,13 +115,13 @@ void KMeansppCenters(matrix *m, size_t n, uivector **selections, ssignal *s);
  * Output:
  * - clusters: vector of size m->row where for each object is defined the cluster membership
  */
-void KMeans(matrix* m, size_t nclusters, int initializer, uivector** clusters, matrix **centroids, ssignal *s);
+void KMeans(matrix* m, size_t nclusters, int initializer, uivector** clusters, matrix **centroids, size_t nthreads, ssignal *s);
 
 void PruneResults(matrix *m, matrix *centroids, size_t nmaxobj, int type, uivector* clusters);
 
-void KMeansRandomGroupsCV(matrix* m, size_t maxnclusters, int initializer, size_t groups, size_t iterations, dvector **ssdist, ssignal *s);
+void KMeansRandomGroupsCV(matrix* m, size_t maxnclusters, int initializer, size_t groups, size_t iterations, dvector **ssdist, size_t nthreads, ssignal *s);
 
-void KMeansJumpMethod(matrix* m, size_t maxnclusters, int initializer, dvector** jumps, ssignal *s);
+void KMeansJumpMethod(matrix* m, size_t maxnclusters, int initializer, dvector** jumps, size_t nthreads, ssignal *s);
 
 enum LinkageType {
   single_linkage = 0,
