@@ -23,6 +23,71 @@
 #include "clustering.h"
 #include "metricspace.h"
 
+void test19()
+{
+  size_t i, j, maxrow, maxcol;
+  matrix *m; /* Data matrix */
+  int run = SIGSCIENTIFICRUN;
+
+  uivector *selections;
+
+  NewMatrix(&m, 14, 2);
+
+
+  maxrow = 1000;
+  maxcol = 50;
+
+  NewMatrix(&m, maxrow, maxcol);
+
+  srand(maxrow+maxcol);
+  for(i = 0; i < maxrow; i++){
+    for(j = 0; j < maxcol; j++){
+      setMatrixValue(m, i, j, rand() % 100);
+    }
+  }
+
+  initUIVector(&selections);
+
+  clock_t t = clock();
+  MDC(m, 0, 0, &selections, &run);
+  t = clock() - t;
+  printf("MDC time: %f\n", ((double)t)/CLOCKS_PER_SEC);
+
+  DelUIVector(&selections);
+  DelMatrix(&m);
+}
+
+void test18()
+{
+  matrix *m, *centroids;
+  int run = SIGSCIENTIFICRUN;
+  uivector *clusters;
+
+  size_t i, j, maxrow, maxcol;
+  maxrow = 10000;
+  maxcol = 20;
+
+  NewMatrix(&m, maxrow, maxcol);
+
+  srand(maxrow+maxcol);
+  for(i = 0; i < maxrow; i++){
+    for(j = 0; j < maxcol; j++){
+      setMatrixValue(m, i, j, rand() % 100);
+    }
+  }
+
+  initUIVector(&clusters);
+  initMatrix(&centroids);
+  puts("KMeans++ Clustering");
+
+  KMeans(m, 1000, 0, &clusters, &centroids, 4, &run);
+
+
+  DelUIVector(&clusters);
+  DelMatrix(&centroids);
+  DelMatrix(&m);
+}
+
 void test17()
 {
   matrix *m, *centroids;
@@ -48,8 +113,9 @@ void test17()
 
   HierarchicalClustering(m, 3, &clusters, &centroids, NULL, 0, &run);
 
-  puts("clusters");
+  /*puts("clusters");
   PrintUIVector(clusters);
+  */
 
   DelUIVector(&clusters);
   DelMatrix(&centroids);
@@ -59,7 +125,7 @@ void test17()
 void test16()
 {
   matrix *m;
-  uivector *bins_id;
+  dvector *bins_id;
   HyperGridModel *hgm;
 
   NewMatrix(&m, 10, 2);
@@ -75,17 +141,18 @@ void test16()
   setMatrixValue(m, 8, 0, 4.3323122);       setMatrixValue(m, 8, 1, 9.0220105);
   setMatrixValue(m, 9, 0, 6.955182);        setMatrixValue(m, 9, 1, 7.0026549);
 
-  initUIVector(&bins_id);
+  initDVector(&bins_id);
   NewHyperGridMap(&hgm);
   HyperGridMap(m, 4, &bins_id, &hgm);
-  printf("Total number of bins : %zu\n", hgm->bsize);
+  printf("Total number of bins : %lf\n", hgm->bsize);
   printf("Bins apparteinance id\n");
-  PrintUIVector(bins_id);
+  PrintDVector(bins_id);
   printf("Grid Map\n");
   PrintMatrix(hgm->gmap);
   PrintDVector(hgm->mult);
   DelHyperGridMap(&hgm);
   DelMatrix(&m);
+  DelDVector(&bins_id);
 }
 
 void test15()
@@ -125,6 +192,7 @@ void test15()
   DelMatrix(&centroids);
   DelMatrix(&m);
 }
+
 void test14()
 {
   matrix *m1, *m2;
@@ -195,6 +263,7 @@ void test13()
   DelMatrix(&centroids);
   DelMatrix(&m);
 }
+
 void test12()
 {
   size_t i, j;
@@ -612,7 +681,7 @@ void test4()
   initUIVector(&selections);
 
   puts("KMeansppCenters TEST");
-  KMeansppCenters(m, 2, &selections, &run);
+  KMeansppCenters(m, 2, &selections, 1, &run);
 
   puts("Selections");
   PrintUIVector(selections);
@@ -854,7 +923,9 @@ int main(void){
 
   test14();
   test15();*/
-  //test16();
+  test16();
   /*test17();*/
+  //test18();
+  test19();
   return 0;
 }

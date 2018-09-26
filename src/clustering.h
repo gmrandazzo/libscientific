@@ -75,7 +75,7 @@ typedef struct{
   matrix *gmap;  /* grid map (min, max, step)*/
   dvector *mult; /* multiplier */
   size_t gsize;  /* grid size*/
-  size_t bsize;  /* total number of bins */
+  double bsize;  /* total number of bins */
 } HyperGridModel;
 
 /* Allocate the model */
@@ -85,10 +85,10 @@ void NewHyperGridMap(HyperGridModel **hgm);
 void DelHyperGridMap(HyperGridModel **hgm);
 
 /*Create the HyperGridMap */
-void HyperGridMap(matrix* m, size_t grid_size, uivector** bins_id, HyperGridModel **hgm);
+void HyperGridMap(matrix* m, size_t grid_size, dvector** bins_id, HyperGridModel **hgm);
 
 /*Extract an object from hypergridmap*/
-void HyperGridMapObjects(matrix *m, HyperGridModel *hgm, uivector **bins_id);
+void HyperGridMapObjects(matrix *m, HyperGridModel *hgm, dvector **bins_id);
 
 /*
  * KMeans++ Centers Method
@@ -100,7 +100,7 @@ void HyperGridMapObjects(matrix *m, HyperGridModel *hgm, uivector **bins_id);
  * Output:
  * - selections: vector of id selected
  */
-void KMeansppCenters(matrix *m, size_t n, uivector **selections, ssignal *s);
+void KMeansppCenters(matrix *m, size_t n, uivector **selections, int nthreads, ssignal *s);
 
 /*
  * KMeans Clustering

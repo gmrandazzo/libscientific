@@ -23,12 +23,17 @@
 #include <ctype.h>
 #include <pthread.h>
 
+//#ifdef DEBUG
+#include <time.h>
+//#endif
+
 #include "scientificinfo.h"
 #include "clustering.h"
 #include "metricspace.h"
 #include "numeric.h"
 #include "matrix.h"
 #include "memwrapper.h"
+
 
 void MDC(matrix* m, size_t n, int metric, uivector** selections, ssignal *s)
 {
@@ -42,6 +47,7 @@ void MDC(matrix* m, size_t n, int metric, uivector** selections, ssignal *s)
   DVectorSet(vectinfo, 0.f);
   NewMatrix(&tmprank, m->row, 2);
 
+  /*TODO: PARALLELIZE THIS BOTTLENECK*/
   for(i = 0; i < m->row; i++){
     for(k = 0; k < m->row; k++){
       dist = 0.f;
@@ -156,8 +162,6 @@ void MDC(matrix* m, size_t n, int metric, uivector** selections, ssignal *s)
           }
           tmprank->data[k][0] = dist/(sqrt(d_a)*sqrt(d_b)); tmprank->data[k][1] = k;
         }
-
-//         setDVectorValue(tmp, k, sqrt(dist));
       }
 
       /*
@@ -379,25 +383,23 @@ void DelHyperGridMap(HyperGridModel **hgm)
   xfree((*hgm));
 }
 
-void HyperGridMap(matrix* m, size_t grid_size, uivector** bins_id, HyperGridModel **hgm)
+void HyperGridMap(matrix* m, size_t grid_size, dvector** bins_id, HyperGridModel **hgm)
 {
-  size_t i, j;
-
+  size_t j;
   matrix *gmap = (*hgm)->gmap;
   dvector *mult = (*hgm)->mult;
   (*hgm)->gsize = grid_size;
-  (*hgm)->bsize = 1;
-  /*Allocate a matrix of min, max, N. bins*/
+  (*hgm)->bsize = 1.f;
+  /*Allocate a matrix of min, max, step_size*/
   ResizeMatrix(&gmap, m->col, 3);
 
   /* get the max and min for each column.... */
   for(j = 0; j < m->col; j++){
     MatrixColumnMinMax(m, j, &gmap->data[j][0], &gmap->data[j][1]);
     gmap->data[j][2] = (gmap->data[j][1]-gmap->data[j][0])/(double)grid_size;
-    (*hgm)->bsize *= grid_size;
+    (*hgm)->bsize *= (double)grid_size;
   }
 
-  UIVectorResize(bins_id, m->row);
   /*Create two vectors: one for the multiplier, the other for the index id.
    * The formula to get the bin id of each point is the following:
    *  id1*mult1 + id2*mult2 + ... + idN*multN = bin ID
@@ -414,48 +416,39 @@ void HyperGridMap(matrix* m, size_t grid_size, uivector** bins_id, HyperGridMode
 
   if(bins_id != NULL){
     /* for each object check what is the bin membership and store in the id bins_id */
-    for(i = 0; i < m->row; i++){
-      for(j = 0; j < m->col; j++){
-        if(FLOAT_EQ(m->data[i][j], gmap->data[j][0], EPSILON)){
-          /* if is the minumum then is on 0 */
-          (*bins_id)->data[i] += 0*mult->data[j];
-        }
-        else if(FLOAT_EQ(m->data[i][j], gmap->data[j][1], EPSILON)){
-          /* if is the maximum then is on max of the grid position in this axis */
-          (*bins_id)->data[i] += (grid_size-1)*mult->data[j];
-        }
-        else{
-          (*bins_id)->data[i] += floor((m->data[i][j] - gmap->data[j][0])/gmap->data[j][2])*mult->data[j];
-        }
-      }
-    }
+    HyperGridMapObjects(m, (*hgm), bins_id);
   }
 }
 
 
-void HyperGridMapObjects(matrix *m, HyperGridModel *hgm, uivector **bins_id)
+void HyperGridMapObjects(matrix *m, HyperGridModel *hgm, dvector **bins_id)
 {
   size_t i, j;
   matrix *gmap = hgm->gmap;
   dvector *mult = hgm->mult;
 
-  /* for each object check what is the bin membership and store in the id bins_id */
+  DVectorResize(bins_id, m->row);
+  /* for each object check what is the bin membership and store in the id bins_id
+   * The formula to get the bin id of each point is the following:
+   * id1*mult1 + id2*mult2 + ... + idN*multN = bin ID
+   */
   for(i = 0; i < m->row; i++){
     for(j = 0; j < m->col; j++){
       if(FLOAT_EQ(m->data[i][j], gmap->data[j][0], EPSILON)){
-        /* if is the minumum then is on 0 */
+        /* if x is the minimum then is on 0 */
         (*bins_id)->data[i] += 0*mult->data[j];
       }
       else if(FLOAT_EQ(m->data[i][j], gmap->data[j][1], EPSILON)){
-        /* if is the maximum then is on max of the grid position in this axis */
+        /* if x is the maximum then is on max of the grid position in this axis */
         (*bins_id)->data[i] += (hgm->gsize-1)*mult->data[j];
       }
       else{
-        (*bins_id)->data[i] += floor((m->data[i][j] - gmap->data[j][0])/gmap->data[j][2])*mult->data[j];
+        (*bins_id)->data[i] += (floor((m->data[i][j] - gmap->data[j][0]) /gmap->data[j][2])*mult->data[j]);
       }
     }
   }
 }
+
 
 /*
  * David Arthur KMeans++ init centers
@@ -492,17 +485,66 @@ Q: Why bother with randomness? Wouldn't it just be better to choose x_i with max
        Randomness is a GOOD thing for k-means.
 */
 
-void KMeansppCenters(matrix *m, size_t n, uivector **selections, ssignal *s)
+typedef struct
+{
+  matrix *m;
+  uivector *selections;
+  dvector *D;
+  size_t from, to;
+} kmpp_th_args;
+
+void *kmppDistanceWorker(void *arg_)
 {
   size_t i, j, k;
+  double dist;
+  dvector *D_min;
+  kmpp_th_args *a = (kmpp_th_args*) arg_;
+
+  for(i = a->from; i < a->to; i++){
+    initDVector(&D_min);
+    for(k = 0; k < a->selections->size; k++){
+      dist = 0.f;
+      for(j = 0; j < a->m->col; j++){
+        dist += (a->m->data[i][j] - a->m->data[a->selections->data[k]][j])*(a->m->data[i][j] - a->m->data[a->selections->data[k]][j]);
+      }
+      DVectorAppend(&D_min, sqrt(dist));
+    }
+
+    /* get the min value distance of the point x_i from C */
+    dist = D_min->data[0];
+    for(k = 1; k < D_min->size; k++){
+      if(D_min->data[k] < dist){
+        dist = D_min->data[k];
+      }
+      else{
+        continue;
+      }
+    }
+
+    a->D->data[i] = dist;
+    DelDVector(&D_min);
+  }
+
+  return 0;
+}
+
+void KMeansppCenters(matrix *m, size_t n, uivector **selections, int nthreads, ssignal *s)
+{
+  size_t i, j;
   double dist, tmp, y, A, B;
-  dvector *D, *D_min, *D_square;
+  dvector *D, *D_square;
   size_t q = n; /*get the number of clusters*/
 
+  pthread_t *threads = xmalloc(sizeof(pthread_t)*nthreads);
+  kmpp_th_args *arg = xmalloc(sizeof(kmpp_th_args)*nthreads);
+
+  NewDVector(&D, m->row); /* vettore distanza di tutti i punti. Per ogni punto c'è un valore di distanza */
+  NewDVector(&D_square, m->row); /* vettore distanza di tutti i punti al quadrato.*/
   /* Step 1 Set Random Function
   srand(time(0));*/
   srand(m->col+m->row+n);
   UIVectorAppend(selections, rand() % m->row); /* random point from 0 to the max data points */
+
 
   /* Step 2 */
   while(q > 1){
@@ -510,40 +552,65 @@ void KMeansppCenters(matrix *m, size_t n, uivector **selections, ssignal *s)
       break;
     }
     else{
-      initDVector(&D); /* vettore distanza di tutti i punti. Per ogni punto c'è un valore di distanza */
+      /*
+      SINGLE THREAD
       for(i = 0; i < m->row; i++){
         initDVector(&D_min);
         for(k = 0; k < (*selections)->size; k++){
           dist = 0.f;
           for(j = 0; j < m->col; j++ ){
-            dist += square(getMatrixValue(m, i, j) - getMatrixValue(m, getUIVectorValue((*selections), k), j));
+            dist += (m->data[i][j] - m->data[(*selections)->data[k]][j])*(m->data[i][j] - m->data[(*selections)->data[k]][j]);
           }
           DVectorAppend(&D_min, sqrt(dist));
         }
 
-        /* get the min value distance of the point x_i from C */
-        dist = getDVectorValue(D_min, 0);
+
+        //get the min value distance of the point x_i from C
+        dist = D_min->data[0];
         for(k = 1; k < D_min->size; k++){
-          if(getDVectorValue(D_min, k) < dist){
-            dist = getDVectorValue(D_min, k);
+          if(D_min->data[k] < dist){
+            dist = D_min->data[k];
           }
           else{
             continue;
           }
         }
 
-        DVectorAppend(&D, dist);
+        D->data[i] = dist;
+        //DVectorAppend(&D, dist);
         DelDVector(&D_min);
+      }
+      */
+      size_t nobj = ceil(m->row/(double)nthreads);
+      size_t from = 0;
+      for(i = 0; i < nthreads; i++){
+        arg[i].m = m;
+        arg[i].selections = (*selections);
+        arg[i].D = D;
+        arg[i].from = from;
+        if(from+nobj > m->row){
+          from = m->row;
+        }
+        else{
+          from += nobj;
+        }
+        arg[i].to = from;
+        pthread_create(&threads[i], NULL, kmppDistanceWorker, (void*) &arg[i]);
+      }
+
+      for(i = 0; i < nthreads; i++){
+        pthread_join(threads[i], NULL);
       }
 
       /* Step 3 Calculate the square of distances and store in
       * a vector and in a sum (dist)
       */
+
+
       dist = 0.f;
-      initDVector(&D_square);
       for(i = 0; i < D->size; i++){
-        tmp = square(getDVectorValue(D, i));
-        DVectorAppend(&D_square, tmp);
+        tmp = square(D->data[i]);
+        D_square->data[i] = tmp;
         dist += tmp;
       }
 
@@ -578,10 +645,13 @@ void KMeansppCenters(matrix *m, size_t n, uivector **selections, ssignal *s)
           }
         }
       }
-      DelDVector(&D_square);
-      DelDVector(&D);
+
     }
   }
+  DelDVector(&D);
+  DelDVector(&D_square);
+  xfree(threads);
+  xfree(arg);
 }
 
 /*This function rank and get the nmaxobj near or far from centroids */
@@ -760,6 +830,9 @@ void *getLabelsWorker(void *arg_)
   return 0;
 }
 
+/* For each element in the dataset, chose the closest centroid.
+ * Make that centroid the element's label.
+ */
 void getLabels_(matrix *m, matrix *centroids, uivector *labels, int nthreads)
 {
   size_t i, from;
@@ -792,6 +865,7 @@ void getLabels_(matrix *m, matrix *centroids, uivector *labels, int nthreads)
 
 /* For each element in the dataset, chose the closest centroid.
  * Make that centroid the element's label.
+ * SINGLE THREAD
  */
 void getLabels(matrix *m, matrix *centroids, uivector *labels)
 {
@@ -893,7 +967,7 @@ void KMeans(matrix* m, size_t nclusters, int initializer, uivector** cluster_lab
     }
   }
   else if(initializer == 1){ /* KMeansppCenters */
-    KMeansppCenters(m, nclusters, &pre_centroids, s);
+    KMeansppCenters(m, nclusters, &pre_centroids, nthreads, s);
   }
   else if(initializer == 2){ /* MDC */
     MDC(m, nclusters, 0, &pre_centroids, s);
@@ -917,10 +991,36 @@ void KMeans(matrix* m, size_t nclusters, int initializer, uivector** cluster_lab
   it = 0;
   while(shouldStop(centroids, oldcentroids, it, 100) == 0)
   {
+    #ifdef DEBUG
+    clock_t t = clock();
+    #endif
+
     MatrixCopy(centroids, &oldcentroids);
+
+    #ifdef DEBUG
+    t = clock() - t;
+    printf("Matrix copy: %f\n", ((double)t)/CLOCKS_PER_SEC);
+    t = clock();
+    #endif
+
     //getLabels(m, centroids, (*cluster_labels));
     getLabels_(m, centroids, (*cluster_labels), nthreads);
+
+    #ifdef DEBUG
+    t = clock() - t;
+    #endif
+
+    #ifdef DEBUG
+    printf("getLabels_: %f\n", ((double)t)/CLOCKS_PER_SEC);
+    t = clock();
+    #endif
+
     getCentroids(m, (*cluster_labels), &centroids);
+
+    #ifdef DEBUG
+    t = clock() - t;
+    printf("getCentroids: %f\n", ((double)t)/CLOCKS_PER_SEC);
+    #endif
     it++;
   }
 
