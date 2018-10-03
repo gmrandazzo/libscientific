@@ -556,22 +556,19 @@ void MatrixDVectorDotProduct(matrix *mx, dvector *v, dvector *p)
 
 /* MultiThreadMatrixDVectorDotProduct for large data! */
 typedef struct{
-  size_t thnum, nthreads; /*used for slicing*/
+  size_t from, to; /*used for slicing*/
   matrix *mx; /* shared between threads */
   dvector *v; /* shared between threads */
   dvector *res; /* value modified in thread */
 } tharg;
 
-void *SumMatrixDvectorDotProduct(void *arg_){
+void *MatrixDVectorDotProductWorker(void *arg_){
   tharg *arg;
   double res;
   arg = (tharg*) arg_;
-  /*Slicing...*/
-  size_t from = (arg->thnum * arg->mx->row)/arg->nthreads;
-  size_t to = ((arg->thnum + 1) * arg->mx->row)/arg->nthreads;
   size_t i, j;
 
-  for(i = from; i < to; i++){
+  for(i = arg->from; i < arg->to; i++){
     arg->res->data[i] = 0.f;
     for(j = 0; j < arg->mx->col; j++){
       res = arg->mx->data[i][j] * arg->v->data[j];
@@ -586,32 +583,36 @@ void *SumMatrixDvectorDotProduct(void *arg_){
   return NULL;
 }
 
-void MultiThreadMatrixDVectorDotProduct(matrix *mx, dvector *v, dvector *p, size_t nthreads_)
+void MT_MatrixDVectorDotProduct(matrix *mx, dvector *v, dvector *p)
 {
   if(mx->col == v->size){
     /* (mx*vect) where t is a column vector not transposed
       the size of the "vect" vector must be equal to the number of matrix row*/
-    size_t th, nthreads = nthreads_;
-
+    size_t th, nthreads;
+    GetNProcessor(&nthreads, NULL);
+    nthreads -= 2;
     pthread_t *threads = xmalloc(sizeof(pthread_t)*nthreads);
     tharg *arg = xmalloc(sizeof(tharg)*nthreads);
 
     /* initialize threads arguments.. */
+    size_t step = (size_t)ceil((double)mx->row/(double)nthreads);
+    size_t from = 0, to = step;
     for(th = 0; th < nthreads; th++){
       arg[th].mx = mx; /*SHARE THIS MATRIX. N.B.: THIS MATRIX MUST BE NOT MODIFIED DURING THE CALCULATION */
       arg[th].v = v; /*SHARE THIS VECTOR. N.B.: THIS VECTOR MUST BE NOT MODIFIED DURING THE CALCULATION */
       arg[th].res = p;
-      arg[th].thnum = th;
-      arg[th].nthreads = nthreads;
-    }
+      arg[th].from = from;
+      arg[th].to = to;
+      pthread_create(&threads[th], NULL, MatrixDVectorDotProductWorker, (void*) &arg[th]);
 
-    for(th = 0; th < nthreads; th++){
-      if(pthread_create(&threads[th], NULL, SumMatrixDvectorDotProduct, (void*) &arg[th]) != 0){
-        perror("Can't create thread");
-        xfree(threads);
-        xfree(arg);
-        exit(-1);
+      from = to;
+      if(from+step > mx->row){
+        to = mx->row;
       }
+      else{
+        to+=step;
+      }
+
     }
 
     for(th = 0; th < nthreads; th++){
@@ -649,6 +650,76 @@ void DVectorMatrixDotProduct(matrix *mx, dvector *v, dvector *p)
         }
       }
     }
+  }
+  else{
+    fprintf(stdout,"DVectorMatrixDotProduct Error while calculating product of a (v'*X)!!\n The transposed column vector size must be equal to the matrix row size.\n");
+    fflush(stdout);
+    abort();
+  }
+}
+
+
+void *DVectorMatrixDotProductWorker(void *arg_)
+{
+  tharg *arg;
+  double res;
+  arg = (tharg*) arg_;
+  size_t i, j;
+
+  for(j = arg->from; j < arg->to; j++){
+    for(i = 0; i < arg->mx->row; i++){
+      res = arg->v->data[i] * arg->mx->data[i][j];
+      if(_isnan_(res) || _isinf_(res)){
+        continue;
+      }
+      else{
+        arg->res->data[j] += res;
+      }
+    }
+  }
+  return NULL;
+}
+
+ /*
+ * p[j] =   Σ v[i] * mx[i][j]
+ */
+void MT_DVectorMatrixDotProduct(matrix *mx, dvector *v, dvector *p)
+{
+  /* (vect'*mx) where vect is colunm vector transposed
+     the size of the "vect" vector must be equal to the number of matrix column */
+  if(mx->row == v->size){
+    size_t th, nthreads;
+    GetNProcessor(&nthreads, NULL);
+    nthreads -= 2;
+    pthread_t *threads = xmalloc(sizeof(pthread_t)*nthreads);
+    tharg *arg = xmalloc(sizeof(tharg)*nthreads);
+
+    /* initialize threads arguments.. */
+    size_t step = (size_t)ceil((double)mx->col/(double)nthreads);
+    size_t from = 0, to = step;
+    for(th = 0; th < nthreads; th++){
+      arg[th].mx = mx; /*SHARE THIS MATRIX. N.B.: THIS MATRIX MUST BE NOT MODIFIED DURING THE CALCULATION */
+      arg[th].v = v; /*SHARE THIS VECTOR. N.B.: THIS VECTOR MUST BE NOT MODIFIED DURING THE CALCULATION */
+      arg[th].res = p;
+      arg[th].from = from;
+      arg[th].to = to;
+      pthread_create(&threads[th], NULL, DVectorMatrixDotProductWorker, (void*) &arg[th]);
+
+      from = to;
+      if(from+step > mx->col){
+        to = mx->col;
+      }
+      else{
+        to+=step;
+      }
+    }
+
+    for(th = 0; th < nthreads; th++){
+      pthread_join(threads[th], NULL);
+    }
+
+    xfree(threads);
+    xfree(arg);
   }
   else{
     fprintf(stdout,"DVectorMatrixDotProduct Error while calculating product of a (v'*X)!!\n The transposed column vector size must be equal to the matrix row size.\n");

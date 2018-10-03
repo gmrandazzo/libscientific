@@ -34,54 +34,98 @@
 #include "matrix.h"
 #include "memwrapper.h"
 
+typedef struct{
+  matrix *m;
+  matrix *tmprank;
+  size_t from, to;
+  size_t mdc, metric;
+} mdc_th_args;
 
-void MDC(matrix* m, size_t n, int metric, uivector** selections, ssignal *s)
+void *MDCWorker(void *arg_)
 {
-  size_t i, j, k, l, mdc, nmdc;
-  double d, dist, d_a, d_b;
+  size_t k, j;
+  double dist;
+  mdc_th_args *arg = (mdc_th_args*) arg_;
+
+  for(k = arg->from; k < arg->to; k++){
+    dist = 0.f;
+    // EUCLIDEAN DISTANCE
+    if(arg->metric == 0){
+      for(j = 0; j < arg->m->col; j++){
+        dist += square(arg->m->data[arg->mdc][j] - arg->m->data[k][j]);
+      }
+      dist = sqrt(dist);
+    }
+    // MANHATAN DISTANCE
+    else if(arg->metric == 1){
+      for(j = 0; j < arg->m->col; j++){
+        dist += fabs(arg->m->data[arg->mdc][j] - arg->m->data[k][j]);
+      }
+    }
+    // COSINE DISTANCE
+    else{
+      double d_a, d_b;
+      d_a = d_b = 0.f;
+      for(j = 0; j < arg->m->col; j++){
+        dist += arg->m->data[arg->mdc][j] * arg->m->data[k][j];
+        d_a += square(arg->m->data[arg->mdc][j]);
+        d_b += square(arg->m->data[k][j]);
+      }
+      dist = dist/(sqrt(d_a)*sqrt(d_b));
+    }
+    arg->tmprank->data[k][0] = dist;
+    arg->tmprank->data[k][1] = k;
+  }
+  return 0;
+}
+
+void MDC(matrix* m, size_t n, int metric, uivector** selections, size_t nthreads, ssignal *s)
+{
+  size_t i, j, k, l, mdc, nmdc, th;
+  double d, dist;
   dvector *vectinfo, *rankvector;
   matrix *tmprank;
+
+  pthread_t *threads;
+  mdc_th_args *args;
 
   NewDVector(&vectinfo, m->row);
   NewDVector(&rankvector, m->row);
   DVectorSet(vectinfo, 0.f);
   NewMatrix(&tmprank, m->row, 2);
 
-  /*TODO: PARALLELIZE THIS BOTTLENECK*/
+
+  threads = xmalloc(sizeof(pthread_t)*nthreads);
+  args = xmalloc(sizeof(mdc_th_args)*nthreads);
+  /* reference some memory data */
+  for(th = 0; th < nthreads; th++){
+    args[th].m = m;
+    args[th].tmprank = tmprank;
+    args[th].metric = metric;
+  }
+
+  /* MULTI THREAD IMPLEMENTATION */
+  matrix *dm;
+  NewMatrix(&dm, m->row, m->row);
+  if(metric == 0){
+    EuclideanDistance(m, m, &dm, nthreads);
+  }
+  else if(metric == 1){
+    ManhattanDistance(m, m, &dm, nthreads);
+  }
+  else{
+    CosineDistance(m, m, &dm, nthreads);
+  }
+
   for(i = 0; i < m->row; i++){
     for(k = 0; k < m->row; k++){
-      dist = 0.f;
-        if(metric == 0){ /* EUCLIDEAN DISTANCE */
-        for(j = 0; j < m->col; j++){ /* is the same of for(j = 0; j < m2->col; j++){ */
-          dist += square(m->data[i][j] - m->data[k][j]);
-        }
-        tmprank->data[k][0] = sqrt(dist); tmprank->data[k][1] = k;
-      }
-      else if(metric == 1){ /*Manhattan DISTANCE*/
-        for(j = 0; j < m->col; j++){ /* is the same of for(j = 0; j < m2->col; j++){ */
-          dist += fabs(m->data[i][j] - m->data[k][j]);
-        }
-        tmprank->data[k][0] = sqrt(dist); tmprank->data[k][1] = k;
-      }
-      else{ /* COSINE DISTANCE */
-        d_a = d_b = 0.f;
-        for(j = 0; j < m->col; j++){ /* is the same of for(j = 0; j < m2->col; j++){ */
-          dist += (m->data[i][j] * m->data[k][j]);
-          d_a += square(m->data[i][j]);
-          d_b += square(m->data[k][j]);
-        }
-        tmprank->data[k][0] = dist/(sqrt(d_a)*sqrt(d_b)); tmprank->data[k][1] = k;
-      }
+      tmprank->data[k][0] = dm->data[k][i];
+      tmprank->data[k][1] = k;
     }
 
     MatrixSort(tmprank, 0);
 
-    /*
-    PrintMatrix(tmprank);
-    */
-    /*
-    * Calculate the reciprocal of the rank
-    */
+    //Calculate the reciprocal of the rank
     d = 2;
     for(k = 0; k < tmprank->row; k++){
       if(k == i){
@@ -94,6 +138,60 @@ void MDC(matrix* m, size_t n, int metric, uivector** selections, ssignal *s)
       }
     }
   }
+  DelMatrix(&dm);
+
+  /* SINGLE THREAD IMPLEMENTATION
+
+  for(i = 0; i < m->row; i++){
+    for(k = 0; k < m->row; k++){
+      dist = 0.f;
+      // EUCLIDEAN DISTANCE
+      if(metric == 0){
+        for(j = 0; j < m->col; j++){
+          dist += square(m->data[i][j] - m->data[k][j]);
+        }
+        tmprank->data[k][0] = sqrt(dist); tmprank->data[k][1] = k;
+      }
+      //Manhattan DISTANCE
+      else if(metric == 1){
+        for(j = 0; j < m->col; j++){
+          dist += fabs(m->data[i][j] - m->data[k][j]);
+        }
+        tmprank->data[k][0] = sqrt(dist); tmprank->data[k][1] = k;
+      }
+      //  COSINE DISTANCE
+      else{
+        double d_a, d_b;
+        d_a = d_b = 0.f;
+        for(j = 0; j < m->col; j++){
+          dist += (m->data[i][j] * m->data[k][j]);
+          d_a += square(m->data[i][j]);
+          d_b += square(m->data[k][j]);
+        }
+        tmprank->data[k][0] = dist/(sqrt(d_a)*sqrt(d_b)); tmprank->data[k][1] = k;
+      }
+    }
+
+    MatrixSort(tmprank, 0);
+
+    // PrintMatrix(tmprank);
+
+
+    // Calculate the reciprocal of the rank
+    d = 2;
+    for(k = 0; k < tmprank->row; k++){
+      if(k == i){
+        vectinfo->data[k] += 1;
+      }
+      else{
+        j = tmprank->data[k][1];
+        vectinfo->data[j] += 1/d;
+        d += 1;
+      }
+    }
+  }
+  */
+
 
   /*
   puts("vectinifo");
@@ -137,41 +235,67 @@ void MDC(matrix* m, size_t n, int metric, uivector** selections, ssignal *s)
 
       UIVectorAppend(selections, mdc);
       /*Recalculate the disances of the MDC to all the other compounds and the reciprocal ranks as aboce subtract these reciprocal ranks from 1 and store in the rank vector R*/
+      /* MULTITHREAD IMPLEMENTATION */
+      size_t step = (size_t)ceil((double)m->row/(double)nthreads);
+      size_t from = 0, to = step;
+      for(th = 0; th < nthreads; th++){
+        args[th].from = from;
+        args[th].to = to;
+        args[th].mdc = mdc;
+        pthread_create(&threads[th], NULL, MDCWorker, (void*) &args[th]);
 
+        from = to;
+        if(from+step > m->row){
+          to = m->row;
+        }
+        else{
+          to+=step;
+        }
+      }
+
+      for(th = 0; th < nthreads; th++){
+        pthread_join(threads[th], NULL);
+      }
+
+      /* SINGLE TRHEAD IMPLEMENTATION
       for(k = 0; k < m->row; k++){
         dist = 0.f;
-
-        if(metric == 0){ /* EUCLIDEAN DISTANCE */
-          for(j = 0; j < m->col; j++){ /* is the same of for(j = 0; j < m2->col; j++){ */
+        // EUCLIDEAN DISTANCE
+        if(metric == 0){
+          for(j = 0; j < m->col; j++){
             dist += square(m->data[mdc][j] - m->data[k][j]);
           }
-          tmprank->data[k][0] = sqrt(dist); tmprank->data[k][1] = k;
+          dist = sqrt(dist);
         }
-        else if(metric == 1){ /*Manhattan DISTANCE*/
-          for(j = 0; j < m->col; j++){ /* is the same of for(j = 0; j < m2->col; j++){ */
+        // MANHATAN DISTANCE
+        else if(metric == 1){
+          for(j = 0; j < m->col; j++){
             dist += fabs(m->data[mdc][j] - m->data[k][j]);
           }
-          tmprank->data[k][0] = sqrt(dist); tmprank->data[k][1] = k;
         }
-        else{ /* COSINE DISTANCE */
+        // COSINE DISTANCE
+        else{
+          double d_a, d_b;
           d_a = d_b = 0.f;
-          for(j = 0; j < m->col; j++){ /* is the same of for(j = 0; j < m2->col; j++){ */
+          for(j = 0; j < m->col; j++){
             dist += m->data[mdc][j] * m->data[k][j];
             d_a += square(m->data[mdc][j]);
             d_b += square(m->data[k][j]);
           }
-          tmprank->data[k][0] = dist/(sqrt(d_a)*sqrt(d_b)); tmprank->data[k][1] = k;
+          dist = dist/(sqrt(d_a)*sqrt(d_b)); tmprank->data[k][1] = k;
         }
+        tmprank->data[k][0] = dist; tmprank->data[k][1] = k;
       }
+      */
 
       /*
       puts("tmpvector wich is rankvector");
       PrintDVector(tmp);
       */
-
       MatrixSort(tmprank, 0);
 
-      d = 2;
+
+      d = 2.;
       for(i = 0; i < tmprank->row; i++){
         j = tmprank->data[i][1];
         if(j == mdc){
@@ -238,13 +362,14 @@ void MDC(matrix* m, size_t n, int metric, uivector** selections, ssignal *s)
     }
   }
 
-
+  xfree(threads);
+  xfree(args);
   DelMatrix(&tmprank);
   DelDVector(&rankvector);
   DelDVector(&vectinfo);
 }
 
-void MaxDis(matrix* m, size_t n, int metric, uivector** selections, ssignal *s)
+void MaxDis(matrix* m, size_t n, int metric, uivector** selections, size_t nthreads, ssignal *s)
 {
   size_t i, j, l, nobj, ntotobj;
   double dis;
@@ -255,7 +380,45 @@ void MaxDis(matrix* m, size_t n, int metric, uivector** selections, ssignal *s)
   initMatrix(&m2);
 
   initUIVector(&idselection);
-  MDC(m, 1, metric, &idselection, s);
+
+  /* select the faraway compound */
+  dvector *c;
+  NewDVector(&c, m->col);
+  for(i = 0; i < m->row; i++){
+    for(j = 0; j < m->col; j++){
+      c->data[j] += m->data[i][j];
+    }
+  }
+
+  for(j = 0; j < m->col; j++){
+    c->data[j] /= (double)m->row;
+  }
+
+  int far_away = -1;
+  double far = 0.f;
+  for(i = 0; i < m->row; i++){
+    double dst = 0.f;
+    for(j = 0; j < m->col; j++){
+      dst += square(c->data[j] - m->data[i][j]);
+    }
+    dst = sqrt(dst);
+    if(far_away > -1){
+      far = dst;
+    }
+    else{
+      if(dst > far){
+        far = dst;
+        far_away = i;
+      }
+    }
+  }
+  DelDVector(&c);
+
+  UIVectorAppend(&idselection, far_away);
+
+  /* OLD IMPLEMENTATION SELECTED THE FIRST COMPOUND AS MDC
+   * MDC(m, 1, metric, &idselection, nthreads, s);
+   */
 
   /* 1. Initialise Subset by transferring to it a componund */
   if(s != NULL && (*s) == SIGSCIENTIFICRUN){
@@ -298,13 +461,13 @@ void MaxDis(matrix* m, size_t n, int metric, uivector** selections, ssignal *s)
         initMatrix(&distances);
 
         if(metric == 0){
-          EuclideanDistance(m1, m2, &distances);
+          EuclideanDistance(m1, m2, &distances, nthreads);
         }
         else if(metric == 1){
-          ManhattanDistance(m1, m2, &distances);
+          ManhattanDistance(m1, m2, &distances, nthreads);
         }
         else{
-          CosineDistance(m1, m2, &distances);
+          CosineDistance(m1, m2, &distances, nthreads);
         }
 
         /*
@@ -318,16 +481,16 @@ void MaxDis(matrix* m, size_t n, int metric, uivector** selections, ssignal *s)
 
         /* Select the minumum distances from all distances */
         for(j = 0; j < distances->col; j++){ /*for each molecule remaining in database */
-          dis = getMatrixValue(distances, 0, j);
+          dis = distances->data[0][j];
           for(i = 1; i < distances->row; i++){
-            if(getMatrixValue(distances, i, j) < dis){
-              dis = getMatrixValue(distances, i, j);
+            if(distances->data[i][j] < dis){
+              dis = distances->data[i][j];
             }
             else{
               continue;
             }
           }
-          setDVectorValue(mindists, j, dis);
+          mindists->data[j] = dis;
         }
 
 
@@ -335,7 +498,7 @@ void MaxDis(matrix* m, size_t n, int metric, uivector** selections, ssignal *s)
 
         l = 0;
         for(i = 1; i < mindists->size; i++){
-          if(getDVectorValue(mindists, i) > getDVectorValue(mindists, l)){
+          if(mindists->data[i] > mindists->data[l]){
             l = i;
           }
           else{
@@ -655,7 +818,7 @@ void KMeansppCenters(matrix *m, size_t n, uivector **selections, int nthreads, s
 }
 
 /*This function rank and get the nmaxobj near or far from centroids */
-void PruneResults(matrix *m, matrix *centroids, size_t nmaxobj, int type, uivector* clusters)
+void PruneResults(matrix *m, matrix *centroids, size_t nmaxobj, int type, uivector* clusters, size_t nthreads)
 {
   size_t i, j, n, k, l;
   double var;
@@ -689,7 +852,7 @@ void PruneResults(matrix *m, matrix *centroids, size_t nmaxobj, int type, uivect
     }
 
     initMatrix(&distmx);
-    EuclideanDistance(subcentroid, submx, &distmx);
+    EuclideanDistance(subcentroid, submx, &distmx, nthreads);
 
     if(type == 0){ /* Near Object */
       for(j = 0; j < nmaxobj; j++){
@@ -970,10 +1133,10 @@ void KMeans(matrix* m, size_t nclusters, int initializer, uivector** cluster_lab
     KMeansppCenters(m, nclusters, &pre_centroids, nthreads, s);
   }
   else if(initializer == 2){ /* MDC */
-    MDC(m, nclusters, 0, &pre_centroids, s);
+    MDC(m, nclusters, 0, &pre_centroids, nthreads, s);
   }
   else{ /*if(initializer == 3){  MaxDis */
-    MaxDis(m, nclusters, 0, &pre_centroids, s);
+    MaxDis(m, nclusters, 0, &pre_centroids, nthreads, s);
   }
 
   /* else personal centroid configuration */
@@ -1155,7 +1318,7 @@ void KMeansRandomGroupsCV(matrix* m, size_t maxnclusters, int initializer, size_
           KMeans(subm, j, initializer, &clusters, &centroids, nthreads, s);
 
           initMatrix(&distances);
-          EuclideanDistance(centroids, predm, &distances);
+          EuclideanDistance(centroids, predm, &distances, nthreads);
 
           #ifdef DEBUG
           puts("Centroids");
@@ -1278,7 +1441,7 @@ void KMeansJumpMethod(matrix* m, size_t maxnclusters, int initializer, dvector**
 }
 
 /*hierarchical clustering with different linkage criterion*/
-void HierarchicalClustering(matrix* _m, size_t nclusters, uivector** _clusters, matrix **_centroids_, strvector **dendogram, enum LinkageType linktype, ssignal *s)
+void HierarchicalClustering(matrix* _m, size_t nclusters, uivector** _clusters, matrix **_centroids_, strvector **dendogram, enum LinkageType linktype, size_t nthreads, ssignal *s)
 {
   size_t i, j, k, l, m, min_i, min_j;
   char buffer[MAXCHARSIZE];
@@ -1293,10 +1456,10 @@ void HierarchicalClustering(matrix* _m, size_t nclusters, uivector** _clusters, 
   initDVector(&clusterdist);
 
   if(linktype > 2){
-    SquaredEuclideanDistance(_m, _m, &distmx);
+    SquaredEuclideanDistance(_m, _m, &distmx, nthreads);
   }
   else{
-    EuclideanDistance(_m, _m, &distmx);
+    EuclideanDistance(_m, _m, &distmx, nthreads);
   }
 
   for(i = 0; i < _m->row; i++){

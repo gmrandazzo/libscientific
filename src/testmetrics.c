@@ -21,6 +21,29 @@
 #include "numeric.h"
 #include "matrix.h"
 
+void test5()
+{
+  size_t i, j, maxrow, maxcol;
+  matrix *m, *dist;
+
+  maxrow = 10000;
+  maxcol = 50;
+
+  NewMatrix(&m, maxrow, maxcol);
+
+  srand(maxrow+maxcol);
+  for(i = 0; i < maxrow; i++){
+    for(j = 0; j < maxcol; j++){
+      setMatrixValue(m, i, j, rand() % 100);
+    }
+  }
+
+  initMatrix(&dist);
+  EuclideanDistance(m, m, &dist, 4);
+  DelMatrix(&m);
+  DelMatrix(&dist);
+}
+
 void test4()
 {
   puts("Test4: cubic spline interpolation.");
@@ -182,7 +205,7 @@ void test1()
   m->data[3][0] = 9; m->data[3][1] = 10; m->data[3][2] = 12;
 
   initMatrix(&dist);
-  EuclideanDistance(m, m, &dist);
+  EuclideanDistance(m, m, &dist, 4);
 
   puts("Matrix");
   PrintMatrix(m);
@@ -195,8 +218,9 @@ void test1()
 
 int main(void)
 {
-  test1();
+  /*test1();
   test2();
   test3();
-  test4();
+  test4();*/
+  test5();
 }

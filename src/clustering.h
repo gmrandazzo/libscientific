@@ -37,7 +37,7 @@ typedef struct{
  * Output:
  *  - selecttions: vector of id selected..
  */
-void MDC(matrix *m, size_t n, int metric, uivector **selections, ssignal *s);
+void MDC(matrix* m, size_t n, int metric, uivector** selections, size_t nthreads, ssignal *s);
 
 
 /*
@@ -50,7 +50,7 @@ void MDC(matrix *m, size_t n, int metric, uivector **selections, ssignal *s);
  * Output:
  * - selections: vector of id selected
  */
-void MaxDis(matrix* m, size_t n, int metric, uivector** selections, ssignal *s);
+void MaxDis(matrix* m, size_t n, int metric, uivector** selections, size_t nthreads, ssignal *s);
 
 
 /*
@@ -117,7 +117,7 @@ void KMeansppCenters(matrix *m, size_t n, uivector **selections, int nthreads, s
  */
 void KMeans(matrix* m, size_t nclusters, int initializer, uivector** clusters, matrix **centroids, size_t nthreads, ssignal *s);
 
-void PruneResults(matrix *m, matrix *centroids, size_t nmaxobj, int type, uivector* clusters);
+void PruneResults(matrix *m, matrix *centroids, size_t nmaxobj, int type, uivector* clusters, size_t nthreads);
 
 void KMeansRandomGroupsCV(matrix* m, size_t maxnclusters, int initializer, size_t groups, size_t iterations, dvector **ssdist, size_t nthreads, ssignal *s);
 
@@ -130,6 +130,6 @@ enum LinkageType {
   ward_linkage = 3
 };
 
-void HierarchicalClustering(matrix* _m, size_t nclusters, uivector** _clusters, matrix **_centroids_, strvector **dendogram, enum LinkageType linktype, ssignal *s);
+void HierarchicalClustering(matrix* _m, size_t nclusters, uivector** _clusters, matrix **_centroids_, strvector **dendogram, enum LinkageType linktype, size_t nthreads, ssignal *s);
 
 #endif

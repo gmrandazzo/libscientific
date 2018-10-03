@@ -949,7 +949,7 @@ void Test5_bis()
   printf("time_spent(MatrixDVectorDotProduct) %f\n", time_spent);
 
   begin = clock();
-  MultiThreadMatrixDVectorDotProduct(m, v, r_bis, 4);
+  MT_MatrixDVectorDotProduct(m, v, r_bis);
   end = clock();
   time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
   printf("time_spent(MultiThreadMatrixDVectorDotProduct) %f\n", time_spent);
@@ -992,7 +992,7 @@ void Test5()
 
   MatrixDVectorDotProduct(m, v, r);
 
-  MultiThreadMatrixDVectorDotProduct(m, v, r_bis, 4);
+  MT_MatrixDVectorDotProduct(m, v, r_bis);
 
   printf("Test 5: Product Matrix x Row Vector \n");
   printf("The Matrix\n");
@@ -1163,8 +1163,8 @@ int main(void)
   Test14();
   Test15();
   Test16();*/
-  /*Test17();
-  Test18();*/
+  /*Test17();*/
+  Test18();
   /*Test19();*/
   /*Test20();
   Test21();*/

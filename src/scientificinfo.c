@@ -18,9 +18,9 @@
 
 #include "scientificinfo.h"
 
-#define major_ 0
-#define minor_ 8
-#define patch_ 4
+#define major_ 1
+#define minor_ 0
+#define patch_ 0
 
 
 void ScientificVersion()

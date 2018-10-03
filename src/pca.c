@@ -273,7 +273,7 @@ void PCA(matrix *mx, size_t scaling, size_t npc, PCAMODEL* model, ssignal *s)
       /* Step 1: select the column vector t with the largest column variance */
       j = 0;
       for(i = 1; i < E->col; i++){
-        if(getDVectorValue(colvar, i) > getDVectorValue(colvar, j))
+        if(colvar->data[i] > colvar->data[j])
           j = i;
         else
           continue;
@@ -289,7 +289,7 @@ void PCA(matrix *mx, size_t scaling, size_t npc, PCAMODEL* model, ssignal *s)
 
       while(1){
         /* Step 2: projection of t' in E (t'*E) */
-        DVectorMatrixDotProduct(E, t, p);
+        MT_DVectorMatrixDotProduct(E, t, p);
         /* calc the vectors product t'*t = Sum(t[i]^2) */
         mod_t_old = DVectorDVectorDotProd(t, t);
 
@@ -307,7 +307,7 @@ void PCA(matrix *mx, size_t scaling, size_t npc, PCAMODEL* model, ssignal *s)
 
         /* Step 4: t_new = (X*p)/(p'*p) */
         DVectorSet(t, 0.f);
-        MatrixDVectorDotProduct(E, p, t);
+        MT_MatrixDVectorDotProduct(E, p, t);
 
         /* p'*p = Sum(p[i]^2) */
         mod_p = DVectorDVectorDotProd(p, p);
@@ -477,7 +477,7 @@ void PCAScorePredictor(matrix *mx, PCAMODEL *model, size_t npc, matrix **pscores
 
     mod_p = DVectorDVectorDotProd(p, p);
 
-    MatrixDVectorDotProduct(E, p, t);
+    MT_MatrixDVectorDotProduct(E, p, t);
 
     /* p'*p = Sum(p[i]^2) */
     mod_p = DVectorDVectorDotProd(p, p);

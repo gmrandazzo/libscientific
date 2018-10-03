@@ -48,11 +48,8 @@ void test19()
 
   initUIVector(&selections);
 
-  clock_t t = clock();
-  MDC(m, 0, 0, &selections, &run);
-  t = clock() - t;
-  printf("MDC time: %f\n", ((double)t)/CLOCKS_PER_SEC);
-
+  MDC(m, 0, 0, &selections, 8, &run);
+  printf("Selected compounds %lu\n", selections->size);
   DelUIVector(&selections);
   DelMatrix(&m);
 }
@@ -111,7 +108,7 @@ void test17()
   initMatrix(&centroids);
   puts("Hierarchical Clustering");
 
-  HierarchicalClustering(m, 3, &clusters, &centroids, NULL, 0, &run);
+  HierarchicalClustering(m, 3, &clusters, &centroids, NULL, 0, 4, &run);
 
   /*puts("clusters");
   PrintUIVector(clusters);
@@ -180,7 +177,7 @@ void test15()
   initStrVector(&dendogram);
   puts("Hierarchical Clustering");
 
-  HierarchicalClustering(m, 3, &clusters, &centroids, &dendogram, average_linkage, &run);
+  HierarchicalClustering(m, 3, &clusters, &centroids, &dendogram, average_linkage, 4, &run);
 
   puts("clusters");
   PrintUIVector(clusters);
@@ -721,7 +718,7 @@ void test3()
 
   initUIVector(&selections);
 
-  MaxDis(m, floor(0.35*m->row), 2, &selections, &run);
+  MaxDis(m, floor(0.35*m->row), 2, &selections, 4, &run);
 
   puts("Selections");
   PrintUIVector(selections);
@@ -762,7 +759,7 @@ void test2()
 
   initUIVector(&selections);
 
-  MDC(m, 0, 0, &selections, &run);
+  MDC(m, 0, 0, &selections, 4, &run);
 
   puts("Selections");
   PrintUIVector(selections);
@@ -888,8 +885,8 @@ void test1()
 
   initUIVector(&selections);
 
-  /*MDC(m, 0, 0, &selections);*/
-  MaxDis(m, floor(0.35*m->row), 0, &selections, &run);
+  /*MDC(m, 0, 0, &selections, 4, &run);*/
+  MaxDis(m, floor(0.35*m->row), 0, &selections, 4, &run);
 
   puts("Selections");
 
@@ -903,13 +900,13 @@ void test1()
 
 int main(void){
   /* Selection Tests
-  test1();
-  test2();*/
+  test1();*/
+  test2();
   /*test3();
   test4();*/
 
   /*Clustering Tests*/
-  test5();
+  // test5();
   /*test6();
   test7();
   test8();
@@ -923,7 +920,7 @@ int main(void){
 
   test14();
   test15();*/
-  test16();
+  // test16();
   /*test17();*/
   //test18();
   test19();

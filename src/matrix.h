@@ -129,14 +129,18 @@ void MatrixAppendUIRow(matrix **mx, uivector *row);
  * i.e.: X(10x5) * d(5x1) = r(10x1)
  */
 void MatrixDVectorDotProduct(matrix *m, dvector *v, dvector *r);
-/*The standard serial is much faster OBSOLETE*/
-void MultiThreadMatrixDVectorDotProduct(matrix *mx, dvector *v, dvector *p, size_t nthreads_);
+
+/* Multithread version of MatrixDVectorDotProduct */
+void MT_MatrixDVectorDotProduct(matrix *mx, dvector *v, dvector *p);
 
 /* Description:
  * column double vector - matrix product: the result is a column double vector
  * i.e.: d(1x5) * X(5x10) = r(1x10)
  */
 void DVectorMatrixDotProduct(matrix *mx, dvector *v, dvector *p);
+
+/* Multithread version of DVectorMatrixDotProduct */
+void MT_DVectorMatrixDotProduct(matrix *mx, dvector *v, dvector *p);
 
 /* Description:
  * transposed double vector - double vecrtor product: the result is a matrix
