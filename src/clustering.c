@@ -533,7 +533,6 @@ void NewHyperGridMap(HyperGridModel **hgm)
 {
   (*hgm) = xmalloc(sizeof(HyperGridModel));
   initMatrix(&((*hgm)->gmap));
-  initDVector(&((*hgm)->mult));
   (*hgm)->gsize = 0;
   (*hgm)->bsize = 0;
 
@@ -541,16 +540,14 @@ void NewHyperGridMap(HyperGridModel **hgm)
 
 void DelHyperGridMap(HyperGridModel **hgm)
 {
-  DelDVector(&((*hgm)->mult));
   DelMatrix(&((*hgm)->gmap));
   xfree((*hgm));
 }
 
-void HyperGridMap(matrix* m, size_t grid_size, dvector** bins_id, HyperGridModel **hgm)
+void HyperGridMap(matrix* m, size_t grid_size, hgmbins** bins_id, HyperGridModel **hgm)
 {
   size_t j;
   matrix *gmap = (*hgm)->gmap;
-  dvector *mult = (*hgm)->mult;
   (*hgm)->gsize = grid_size;
   (*hgm)->bsize = 1.f;
   /*Allocate a matrix of min, max, step_size*/
@@ -566,8 +563,12 @@ void HyperGridMap(matrix* m, size_t grid_size, dvector** bins_id, HyperGridModel
   /*Create two vectors: one for the multiplier, the other for the index id.
    * The formula to get the bin id of each point is the following:
    *  id1*mult1 + id2*mult2 + ... + idN*multN = bin ID
+   * This approach is ok for small dataset. However for large dataset
+   * is better to have an hash long as the number of features for each bin like:
+   * 135712736.
    */
-  DVectorResize(&mult, m->col);
+
+  /*DVectorResize(&mult, m->col);
 
   double mult_ = (double)grid_size;
 
@@ -575,7 +576,7 @@ void HyperGridMap(matrix* m, size_t grid_size, dvector** bins_id, HyperGridModel
   for(j = 1; j < m->col; j++){
     mult->data[j] = mult_;
     mult_ *= (double)grid_size;
-  }
+  }*/
 
   if(bins_id != NULL){
     /* for each object check what is the bin membership and store in the id bins_id */
@@ -584,13 +585,19 @@ void HyperGridMap(matrix* m, size_t grid_size, dvector** bins_id, HyperGridModel
 }
 
 
-void HyperGridMapObjects(matrix *m, HyperGridModel *hgm, dvector **bins_id)
+void HyperGridMapObjects(matrix *m, HyperGridModel *hgm, hgmbins **bins_id)
 {
   size_t i, j;
   matrix *gmap = hgm->gmap;
-  dvector *mult = hgm->mult;
 
-  DVectorResize(bins_id, m->row);
+  (*bins_id) = xmalloc(sizeof(hgmbins));
+  (*bins_id)->nobj = m->row;
+  (*bins_id)->hash_size = m->col;
+  (*bins_id)->hash = xmalloc(sizeof(size_t*)*m->row);
+  for(i = 0; i < (*bins_id)->nobj; i++){
+    (*bins_id)->hash[i] = xmalloc(sizeof(size_t)*m->col);
+  }
+
   /* for each object check what is the bin membership and store in the id bins_id
    * The formula to get the bin id of each point is the following:
    * id1*mult1 + id2*mult2 + ... + idN*multN = bin ID
@@ -599,17 +606,38 @@ void HyperGridMapObjects(matrix *m, HyperGridModel *hgm, dvector **bins_id)
     for(j = 0; j < m->col; j++){
       if(FLOAT_EQ(m->data[i][j], gmap->data[j][0], EPSILON)){
         /* if x is the minimum then is on 0 */
-        (*bins_id)->data[i] += 0*mult->data[j];
+        (*bins_id)->hash[i][j] = 0;
       }
       else if(FLOAT_EQ(m->data[i][j], gmap->data[j][1], EPSILON)){
         /* if x is the maximum then is on max of the grid position in this axis */
-        (*bins_id)->data[i] += (hgm->gsize-1)*mult->data[j];
+        (*bins_id)->hash[i][j] = (hgm->gsize-1);
       }
       else{
-        (*bins_id)->data[i] += (floor((m->data[i][j] - gmap->data[j][0]) /gmap->data[j][2])*mult->data[j]);
+        (*bins_id)->hash[i][j] = (size_t)floor((m->data[i][j] - gmap->data[j][0])/gmap->data[j][2]);
       }
     }
   }
+}
+
+void PrintHGMBins(hgmbins *bins_id)
+{
+  size_t i, j;
+  for(i = 0; i < bins_id->nobj; i++){
+    for(j = 0; j < bins_id->hash_size-1; j++){
+      printf("%lu", bins_id->hash[i][j]);
+    }
+    printf("%lu\n", bins_id->hash[i][bins_id->hash_size-1]);
+  }
+}
+
+void DelHGMBins(hgmbins **bins_id)
+{
+  size_t i;
+  for(i = 0; i < (*bins_id)->nobj; i++){
+    xfree((*bins_id)->hash[i]);
+  }
+  xfree((*bins_id)->hash);
+  xfree(*bins_id);
 }
 
 

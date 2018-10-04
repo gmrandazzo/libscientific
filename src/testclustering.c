@@ -122,7 +122,7 @@ void test17()
 void test16()
 {
   matrix *m;
-  dvector *bins_id;
+  hgmbins *bins_id;
   HyperGridModel *hgm;
 
   NewMatrix(&m, 10, 2);
@@ -138,18 +138,16 @@ void test16()
   setMatrixValue(m, 8, 0, 4.3323122);       setMatrixValue(m, 8, 1, 9.0220105);
   setMatrixValue(m, 9, 0, 6.955182);        setMatrixValue(m, 9, 1, 7.0026549);
 
-  initDVector(&bins_id);
   NewHyperGridMap(&hgm);
   HyperGridMap(m, 4, &bins_id, &hgm);
   printf("Total number of bins : %lf\n", hgm->bsize);
   printf("Bins apparteinance id\n");
-  PrintDVector(bins_id);
+  PrintHGMBins(bins_id);
   printf("Grid Map\n");
   PrintMatrix(hgm->gmap);
-  PrintDVector(hgm->mult);
   DelHyperGridMap(&hgm);
   DelMatrix(&m);
-  DelDVector(&bins_id);
+  DelHGMBins(&bins_id);
 }
 
 void test15()

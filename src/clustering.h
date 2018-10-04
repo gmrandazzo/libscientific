@@ -73,10 +73,14 @@ void MaxDis(matrix* m, size_t n, int metric, uivector** selections, size_t nthre
 
 typedef struct{
   matrix *gmap;  /* grid map (min, max, step)*/
-  dvector *mult; /* multiplier */
   size_t gsize;  /* grid size*/
   double bsize;  /* total number of bins */
 } HyperGridModel;
+
+typedef struct{
+  size_t **hash;
+  size_t nobj, hash_size;
+} hgmbins;
 
 /* Allocate the model */
 void NewHyperGridMap(HyperGridModel **hgm);
@@ -85,10 +89,14 @@ void NewHyperGridMap(HyperGridModel **hgm);
 void DelHyperGridMap(HyperGridModel **hgm);
 
 /*Create the HyperGridMap */
-void HyperGridMap(matrix* m, size_t grid_size, dvector** bins_id, HyperGridModel **hgm);
+void HyperGridMap(matrix* m, size_t grid_size, hgmbins** bins_id, HyperGridModel **hgm);
 
 /*Extract an object from hypergridmap*/
-void HyperGridMapObjects(matrix *m, HyperGridModel *hgm, dvector **bins_id);
+void HyperGridMapObjects(matrix *m, HyperGridModel *hgm, hgmbins **bins_id);
+
+void PrintHGMBins(hgmbins *bins_id);
+
+void DelHGMBins(hgmbins **bins_id);
 
 /*
  * KMeans++ Centers Method
