@@ -73,6 +73,8 @@ void MaxDis(matrix* m, size_t n, int metric, uivector** selections, size_t nthre
 
 typedef struct{
   matrix *gmap;  /* grid map (min, max, step)*/
+  dvector *colaverage;
+  dvector *colscaling;
   size_t gsize;  /* grid size*/
   double bsize;  /* total number of bins */
 } HyperGridModel;

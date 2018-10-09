@@ -533,6 +533,8 @@ void NewHyperGridMap(HyperGridModel **hgm)
 {
   (*hgm) = xmalloc(sizeof(HyperGridModel));
   initMatrix(&((*hgm)->gmap));
+  initDVector(&((*hgm)->colaverage));
+  initDVector(&((*hgm)->colscaling));
   (*hgm)->gsize = 0;
   (*hgm)->bsize = 0;
 
@@ -541,17 +543,32 @@ void NewHyperGridMap(HyperGridModel **hgm)
 void DelHyperGridMap(HyperGridModel **hgm)
 {
   DelMatrix(&((*hgm)->gmap));
+  DelDVector(&((*hgm)->colaverage));
+  DelDVector(&((*hgm)->colscaling));
   xfree((*hgm));
 }
 
 void HyperGridMap(matrix* m, size_t grid_size, hgmbins** bins_id, HyperGridModel **hgm)
 {
-  size_t j;
+  size_t i, j;
   matrix *gmap = (*hgm)->gmap;
+  dvector *colaverage = (*hgm)->colaverage;
+  dvector *colscaling = (*hgm)->colscaling;
   (*hgm)->gsize = grid_size;
   (*hgm)->bsize = 1.f;
+
   /*Allocate a matrix of min, max, step_size*/
   ResizeMatrix(&gmap, m->col, 3);
+
+  /* Centering and Scaling to unit variance */
+  MatrixColAverage(m, &colaverage);
+  MatrixColSDEV(m, &colscaling);
+
+  for(j = 0; j < m->col; j++){
+    for(i = 0; i < m->row; i++){
+      m->data[i][j] = (m->data[i][j]-colaverage->data[j])/colscaling->data[j];
+    }
+  }
 
   /* get the max and min for each column.... */
   for(j = 0; j < m->col; j++){
