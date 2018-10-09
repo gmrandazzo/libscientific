@@ -125,7 +125,7 @@ void test16()
   hgmbins *bins_id;
   HyperGridModel *hgm;
 
-  NewMatrix(&m, 10, 2);
+  NewMatrix(&m, 10, 3);
 
   setMatrixValue(m, 0, 0, 1.9063449);       setMatrixValue(m, 0, 1, 4.7654846);
   setMatrixValue(m, 1, 0, 4.8621579);       setMatrixValue(m, 1, 1, 8.7060234);
@@ -899,7 +899,7 @@ void test1()
 int main(void){
   /* Selection Tests
   test1();*/
-  test2();
+  //test2();
   /*test3();
   test4();*/
 
@@ -918,9 +918,9 @@ int main(void){
 
   test14();
   test15();*/
-  // test16();
+   test16();
   /*test17();*/
   //test18();
-  test19();
+  //test19();
   return 0;
 }

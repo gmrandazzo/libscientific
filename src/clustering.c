@@ -566,7 +566,12 @@ void HyperGridMap(matrix* m, size_t grid_size, hgmbins** bins_id, HyperGridModel
 
   for(j = 0; j < m->col; j++){
     for(i = 0; i < m->row; i++){
-      m->data[i][j] = (m->data[i][j]-colaverage->data[j])/colscaling->data[j];
+      if(FLOAT_EQ(colscaling->data[j], 0.f, EPSILON)){
+        m->data[i][j] = 0.f;
+      }
+      else{
+        m->data[i][j] = (m->data[i][j]-colaverage->data[j])/colscaling->data[j];
+      }
     }
   }
 
