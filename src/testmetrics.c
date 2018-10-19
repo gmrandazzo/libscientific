@@ -23,6 +23,31 @@
 #include "matrix.h"
 
 
+void test8()
+{
+  size_t i, j, maxrow, maxcol;
+  matrix *m;
+  dvector *dist;
+
+  maxrow = 60000;
+  maxcol = 784;
+
+  NewMatrix(&m, maxrow, maxcol);
+
+  srand(maxrow+maxcol);
+  for(i = 0; i < maxrow; i++){
+    for(j = 0; j < maxcol; j++){
+      setMatrixValue(m, i, j, rand() % 100);
+    }
+  }
+
+  initDVector(&dist);
+  MahalanobisDistance(m, NULL, NULL, &dist);
+
+  DelMatrix(&m);
+  DelDVector(&dist);
+}
+
 void test7()
 {
   size_t i, j;
@@ -491,4 +516,5 @@ int main(void)
   test5();*/
   //test6();
   test7();
+  //test8();
 }
