@@ -1445,7 +1445,7 @@ void TestPLS2()
   PrintMatrix(y);
 
 
-  MatrixGetMaxValue(m->sdep, &row, &col);
+  MatrixGetMaxValueIndex(m->sdep, &row, &col);
 
   printf("cutoff : %lu  %lu\n", row, col);
 

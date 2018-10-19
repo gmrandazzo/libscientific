@@ -1008,6 +1008,33 @@ void MatrixPseudoinversion(matrix *m, matrix **m_inv)
   DelMatrix(&V_T);
 }
 
+
+void MatrixMoorePenrosePseudoinverse(matrix *m, matrix **inv)
+{
+  /*A+ = (A'A)-1 A'*/
+  matrix *m_T, *m_t_m, *i_m_t_m;
+
+  /*A'*/
+  NewMatrix(&m_T, m->col, m->row);
+  MatrixTranspose(m, m_T);
+
+  /*A'A*/
+  NewMatrix(&m_t_m, m_T->row, m->col);
+  MatrixDotProduct(m_T, m, m_t_m);
+
+  /*(A'A)-1*/
+  NewMatrix(&i_m_t_m, m_t_m->row, m_t_m->col);
+  MatrixLUInversion(m_t_m, &i_m_t_m);
+  DelMatrix(&m_t_m);
+
+  /*(A'A)-1 A*/
+  ResizeMatrix(inv, i_m_t_m->row, m_T->col);
+  MatrixDotProduct(i_m_t_m, m_T, (*inv));
+
+  DelMatrix(&i_m_t_m);
+  DelMatrix(&m_T);
+}
+
 void GenIdentityMatrix(matrix **m)
 {
   size_t i;
@@ -1477,7 +1504,7 @@ void MatrixSVNScaling(matrix *mx_in, matrix **mx_out)
 
 
 /*
- * ||X|| = the square root of the sum of the suqres of all the elements in the matrix
+ * ||X|| = the square root of the sum of the squares of all the elements in the matrix
  */
 double Matrixnorm(matrix *mx)
 {
@@ -1655,7 +1682,7 @@ void MatrixReverseSort(matrix* mx, size_t col_n)
   }
 }
 
-void MatrixGetMaxValue(matrix* mx, size_t* row, size_t* col)
+void MatrixGetMaxValueIndex(matrix* mx, size_t* row, size_t* col)
 {
   size_t i, j;
   double tmp_value, best_value;
@@ -1684,7 +1711,7 @@ void MatrixGetMaxValue(matrix* mx, size_t* row, size_t* col)
 }
 
 
-void MatrixGetMinValue(matrix* mx, size_t* row, size_t* col)
+void MatrixGetMinValueIndex(matrix* mx, size_t* row, size_t* col)
 {
   size_t i, j;
   double tmp_value, best_value;

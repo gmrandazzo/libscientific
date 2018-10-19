@@ -151,17 +151,66 @@ void DVectorTrasposedDVectorDotProduct(dvector *v1, dvector *v2, matrix *m);
 
 /* r = v/mx  = (inv(mx^T)*v^T)^T*/
 void DVectorTransposedMatrixDivision(dvector *v, matrix *mx, dvector *r);
+
+/*
+ * Description:
+ * Calculate the matrix matrix product
+ */
 void MatrixDotProduct(matrix *m_t, matrix *m, matrix *r);
 void RowColOuterProduct(dvector *a, dvector *b, matrix *m);
+
+/*
+ * Description:
+ * Generate a transpose matrix of m
+ */
 void MatrixTranspose(matrix *m, matrix *r);
-/* Matrix inversion using the LU decomposition */
-void MatrixLUInversion(matrix *m, matrix **m_inv);
-/* Matrix inversion using the Gauss-Jordan algorithm */
+
+/*
+ * Description:
+ * Matrix inversion using the Gauss-Jordan algorithm
+ */
 void MatrixInversion(matrix *m, matrix **m_inv);
+
+/*
+ * Description:
+ * Matrix inversion using the LU decompositio
+ */
+void MatrixLUInversion(matrix *m, matrix **m_inv);
+
+/*
+ * Description:
+ * Matrix pseudo inversion using the SVD algorithm
+ */
 void MatrixPseudoinversion(matrix *m, matrix **m_inv);
+
+/*
+ * Description:
+ * Matrix pseudo inversion using the Moore-Penrose pseudoinverse
+ */
+void MatrixMoorePenrosePseudoinverse(matrix *m, matrix **inv);
+
+/*
+ * Description:
+ * Generate the identity matrix
+ */
 void GenIdentityMatrix(matrix **m);
+
+/*
+ * Description:
+ * Calculate the mean centered matrix
+ */
 void MeanCenteredMatrix(matrix *mx, matrix *mxc);
+
+/*
+ * Description:
+ * Calculate the pearson correlation matrix
+ */
 void PearsonCorrelMatrix(matrix *mxsrc, matrix *mxdst);
+
+/*
+ * Description:
+ * Calculate the spearmann correlation matrix
+ */
 void SpearmanCorrelMatrix(matrix *mxsrc, matrix *mxdst);
 
 /*Calculate the column Average for the matrix mx*/
@@ -207,49 +256,134 @@ void Matrix2SQRTMatrix(matrix *mx_in, matrix **mx_out);
 /* Transform a matrix into ABS matrix */
 void Matrix2ABSMatrix(matrix *mx_in, matrix **mx_out);
 
-/* Develop an interaction factors matrix
+/*
+ * Description:
+ * Develop an interaction factors matrix
  * Es. Use in DOE
  */
 void Matrix2IntFactorsMatrix(matrix *mx_in, size_t factors, matrix **mx_out);
 
-/* Transform a matrix into a row centered scaled matrix
+/*
+ * Description:
+ * Transform a matrix into a row centered scaled matrix
  * Es. Use in Spectroscopy
  */
 void MatrixRowCenterScaling(matrix *mx_in, matrix **mx_out);
 
-/* Transform a matrix into a SVN row scaled matrix
+/*
+ * Description:
+ * Transform a matrix into a SVN row scaled matrix
  * Es. Use in Spectroscopy
  */
 void MatrixSVNScaling(matrix *mx_in, matrix **mx_out);
 
-
+/*
+ * Description:
+ * calculate the square root of the sum of the squares
+ * of all the elements in the matrix
+ * ||X|| = double
+ */
 double Matrixnorm(matrix *mx);
 double Matrix1norm(matrix *mx);
-double MatrixDeterminant(matrix *mx);
-void MatrixNorm(matrix *mx, matrix *nmx);
-void MatrixColumnMinMax(matrix* mx, size_t col, double* min, double* max);
-void MatrixSort(matrix *mx, size_t col_n);
-void MatrixReverseSort(matrix* mx, size_t col_n);
-void MatrixGetMaxValue(matrix *mx, size_t *row, size_t *col);
-void MatrixGetMinValue(matrix *mx, size_t *row, size_t *col);
 
-/* Singular Value Decomposition
-*/
+/*
+ * Description:
+ * calculate the determinant of a matrix
+ */
+double MatrixDeterminant(matrix *mx);
+
+/*
+ * Description:
+ * Normalize the matrix for the Matrixnorm value.
+ * Each value of mx is divided by double Matrixnorm(matrix *mx);
+ */
+void MatrixNorm(matrix *mx, matrix *nmx);
+
+/*
+ * Description:
+ * Find the minimum and maximum of a column in matrix
+ */
+void MatrixColumnMinMax(matrix* mx, size_t col, double* min, double* max);
+
+/*
+ * Description:
+ * Sort of a matrix ba a column number col_n
+ */
+void MatrixSort(matrix *mx, size_t col_n);
+
+/*
+ * Description:
+ * Reverse sort of a matrix by a column number col_n
+ */
+void MatrixReverseSort(matrix* mx, size_t col_n);
+
+/*
+ * Description:
+ * find the maximum value in matrix and return the row and col indexes
+ */
+void MatrixGetMaxValueIndex(matrix *mx, size_t *row, size_t *col);
+
+/*
+ * Description:
+ * find the minimum value in matrix and return the row and col indexes
+ */
+void MatrixGetMinValueIndex(matrix *mx, size_t *row, size_t *col);
+
+
+/*
+ * Description:
+ * Singular Value Decomposition local implementation
+ */
 void SVD(matrix* mx, matrix **U, matrix **S, matrix **VT);
+
+/*
+ * Description:
+ * Singular Value Decomposition lapack implementation
+ */
 void SVDlapack(matrix *mx, matrix **u, matrix **s, matrix **vt);
 
-/* Eigenvectors and Eigenvalues with the QR Method */
+/*
+ * Description:
+ * Eigenvectors and Eigenvalues with the QR Method
+ */
 void EVectEval(matrix *mx, dvector **eval, matrix **evect);
 
-/* QR Decomposition with the householder method */
+/*
+ * Description:
+ * QR Decomposition with the householder method
+ */
 void QRDecomposition(matrix *mx, matrix **Q, matrix **R);
+
+/*
+ * Description:
+ * LU Decomposition with the householder method
+ */
 void LUDecomposition(matrix *mx, matrix **L, matrix **U);
 
+/*
+ * Description:
+ * Householder Reflector vector
+ */
 void HouseReflectorVect(dvector *x, dvector *u);
+
+/*
+ * Description:
+ * Householder Vector Matrix Multiplication
+ */
 void HouseholderVectMatrixProduct(dvector *h, matrix *A, matrix *P);
+
+/*
+ * Description:
+ * Householder matrix
+ */
 void HouseholderMatrix(dvector *v, matrix *h);
 
-/*These function reduce a matri to an hessenberg form*/
+/*
+ * Description:
+ *  Reduce a matrix to an Hessenberg form
+ * - Householder implementation
+ * - Cholesky implementation
+ */
 void HouseholderReduction(matrix *mx);
 void CholeskyReduction(matrix *m);
 
