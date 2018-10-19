@@ -215,7 +215,7 @@ void test14()
   setMatrixValue(m2, 3, 0, 5);    setMatrixValue(m2, 3, 1, 6);
   setMatrixValue(m2, 4, 0, 5);    setMatrixValue(m2, 4, 1, 4);
 
-  dist = MahalanobisDistance(m1, m2);
+  dist = MatrixMahalanobisDistance(m1, m2);
 
   printf("dist %f\n", dist);
 

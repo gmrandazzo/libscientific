@@ -585,6 +585,7 @@ void HyperGridMap(matrix* m, size_t grid_size, hgmbins** bins_id, HyperGridModel
   /*Create two vectors: one for the multiplier, the other for the index id.
    * The formula to get the bin id of each point is the following:
    *  id1*mult1 + id2*mult2 + ... + idN*multN = bin ID
+   * if grid_size is 4 mult1 = 4, mult2 = 16, mult3 = 64 ...
    * This approach is ok for small dataset. However for large dataset
    * is better to have an hash long as the number of features for each bin like:
    * 135712736.
@@ -620,19 +621,29 @@ void HyperGridMapObjects(matrix *m, HyperGridModel *hgm, hgmbins **bins_id)
     (*bins_id)->hash[i] = xmalloc(sizeof(size_t)*m->col);
   }
 
-  /* for each object check what is the bin membership and store in the id bins_id
+  /*Create two vectors: one for the multiplier, the other for the index id.
    * The formula to get the bin id of each point is the following:
-   * id1*mult1 + id2*mult2 + ... + idN*multN = bin ID
+   *  id1*mult1 + id2*mult2 + ... + idN*multN = bin ID
+   * if grid_size is 4 mult1 = 4, mult2 = 16, mult3 = 64 ...
+   * This approach is ok for small dataset. However for large dataset
+   * is better to have an hash long as the number of features for each bin like:
+   * 135712736.
    */
   for(i = 0; i < m->row; i++){
     for(j = 0; j < m->col; j++){
-      if(FLOAT_EQ(m->data[i][j], gmap->data[j][0], EPSILON)){
-        /* if x is the minimum then is on 0 */
+      /*if(FLOAT_EQ(m->data[i][j], gmap->data[j][0], EPSILON)){
+        // if x is the minimum then is on 0
         (*bins_id)->hash[i][j] = 0;
       }
       else if(FLOAT_EQ(m->data[i][j], gmap->data[j][1], EPSILON)){
-        /* if x is the maximum then is on max of the grid position in this axis */
+        // if x is the maximum then is on max of the grid position in this axis
         (*bins_id)->hash[i][j] = (hgm->gsize-1);
+      }
+      else{
+        (*bins_id)->hash[i][j] = (size_t)floor((m->data[i][j] - gmap->data[j][0])/gmap->data[j][2]);
+      }*/
+      if(FLOAT_EQ(gmap->data[j][2], 0.f, EPSILON)){
+        (*bins_id)->hash[i][j] = 0;
       }
       else{
         (*bins_id)->hash[i][j] = (size_t)floor((m->data[i][j] - gmap->data[j][0])/gmap->data[j][2]);
@@ -1460,7 +1471,7 @@ void KMeansJumpMethod(matrix* m, size_t maxnclusters, int initializer, dvector**
 
     KMeans(m, k, initializer, &clusters, &centroids, nthreads, s);
 
-    dist = MahalanobisDistance(m, centroids);
+    dist = MatrixMahalanobisDistance(m, centroids);
 
     printf("dist %f  %f\n", dist, pow(dist, -y));
 

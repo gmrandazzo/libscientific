@@ -361,7 +361,7 @@ void CosineDistance(matrix* m1, matrix* m2, matrix** distances, size_t nthreads)
   }
 }
 
-double MahalanobisDistance(matrix* g1, matrix* g2)
+double MatrixMahalanobisDistance(matrix* g1, matrix* g2)
 {
   if(g1->col == g2->col){
     size_t i, j;
@@ -422,6 +422,90 @@ double MahalanobisDistance(matrix* g1, matrix* g2)
     return 0.f;
   }
 }
+
+void MahalanobisDistance(matrix* m, dvector **dists)
+{
+  size_t i, j;
+  dvector *x;
+  dvector *p;
+  dvector *colavg;
+  initDVector(&colavg);
+  MatrixColAverage(m, &colavg);
+
+  matrix *covmx;
+  NewMatrix(&covmx, m->col, m->col);
+  MatrixCovariance(m, &covmx);
+
+  matrix *inv_cov;
+  NewMatrix(&inv_cov, m->col, m->col);
+  MatrixInversion(covmx, &inv_cov);
+  DelMatrix(&covmx);
+
+  DVectorResize(dists, m->row);
+
+  NewDVector(&x, m->col);
+  NewDVector(&p, m->col);
+
+  for(i = 0; i < m->row; i++){
+    for(j = 0; j < m->col; j++){
+      x->data[j] = m->data[i][j]-colavg->data[j];
+    }
+
+    MT_DVectorMatrixDotProduct(inv_cov, x, p);
+    (*dists)->data[i] = sqrt(DVectorDVectorDotProd(p, x));
+    DVectorSet(p, 0.f);
+  }
+
+  DelDVector(&p);
+  DelDVector(&x);
+  DelMatrix(&inv_cov);
+  DelDVector(&colavg);
+}
+
+void CovarianceDistanceMap(matrix* mi, matrix **mo)
+{
+  size_t i, j;
+  dvector *x;
+  dvector *p;
+  dvector *colavg;
+  initDVector(&colavg);
+  MatrixColAverage(mi, &colavg);
+
+
+  matrix *covmx;
+  NewMatrix(&covmx, mi->col, mi->col);
+  MatrixCovariance(mi, &covmx);
+
+  matrix *inv_cov;
+  NewMatrix(&inv_cov, mi->col, mi->col);
+  MatrixInversion(covmx, &inv_cov);
+  DelMatrix(&covmx);
+
+  ResizeMatrix(mo, mi->row, mi->col);
+
+  NewDVector(&x, mi->col);
+  NewDVector(&p, mi->col);
+
+  for(i = 0; i < mi->row; i++){
+    for(j = 0; j < mi->col; j++){
+      x->data[j] = mi->data[i][j]-colavg->data[j];
+    }
+
+    MT_DVectorMatrixDotProduct(inv_cov, x, p);
+
+    for(j = 0; j < mi->col; j++){
+      (*mo)->data[i][j] = p->data[j];
+    }
+
+    DVectorSet(p, 0.f);
+  }
+
+  DelDVector(&p);
+  DelDVector(&x);
+  DelMatrix(&inv_cov);
+  DelDVector(&colavg);
+}
+
 
 /* algorithm taken from:
  * Natural Cubic Spline: Numerical Analysis book Richard L. Burden and J. Douglas Faires

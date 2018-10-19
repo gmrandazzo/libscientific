@@ -34,8 +34,14 @@ void ManhattanDistance(matrix *m1, matrix *m2, matrix** distances, size_t nthrea
 /* Description: calculate the cosine distance between two matrix with the same column number */
 void CosineDistance(matrix *m1, matrix *m2, matrix** distances, size_t nthreads);
 
-/* Description: calculate the malanobis distance between two matrix with the same column number */
-double MahalanobisDistance(matrix* g1, matrix* g2);
+/* Description: calculate the Mahalanobis distance between two matrix with the same column number */
+double MatrixMahalanobisDistance(matrix* g1, matrix* g2);
+
+/* Description: calculate the Mahalanobis distance of each point function of its distribution */
+void MahalanobisDistance(matrix* m1, dvector **dists);
+
+/* Description: convert the matrix mi (mxn) into a covariance distance map (mxn) */
+void CovarianceDistanceMap(matrix* mi, matrix **mo);
 
 /* Description: calculate the natural cubic spline interpolation equations */
 void cubic_spline_interpolation(matrix *xy, matrix **S);

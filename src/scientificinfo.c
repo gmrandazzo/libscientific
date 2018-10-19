@@ -19,7 +19,7 @@
 #include "scientificinfo.h"
 
 #define major_ 1
-#define minor_ 0
+#define minor_ 1
 #define patch_ 0
 
 
