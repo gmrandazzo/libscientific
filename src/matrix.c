@@ -856,7 +856,7 @@ extern void dgetri_(int* N, double* A, int* lda, int* IPIV, double* WORK, int* l
 /*
  * Matrix Inversion according to the LU decomposition
  */
-void MatrixInversion2(matrix *m, matrix **m_inv)
+void MatrixLUInversion(matrix *m, matrix **m_inv)
 {
   int N = m->row;
   double *M = xmalloc(sizeof(double)*m->row*m->col);
@@ -892,7 +892,7 @@ void MatrixInversion2(matrix *m, matrix **m_inv)
  * 1) If the first row have the first element 0, then excange this with an other row that have the first element != 0. If all the row have the first element 0 go to the step 3.
  * 2) For each row (*AT)i with the first element != 0, except the first row considered, multiply the first row for a coefficient c that must
  *
- * Italian explanation:
+ * Spiegazione in italiano:
  * Per ogni riga Ai con primo elemento non nullo, eccetto la prima (i > 1), moltiplica la prima riga per un coefficiente scelto in maniera tale che
  * la somma tra la prima riga e Ai abbia il primo elemento nullo (quindi coefficiente = − Ai1 / A11). Sostituisci Ai con la somma appena ricavata.
  *

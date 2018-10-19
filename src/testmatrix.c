@@ -791,7 +791,7 @@ void Test9()
   setMatrixValue(m1, 1, 0, 2.0);   setMatrixValue(m1, 1, 1, 1.0);   setMatrixValue(m1, 1, 2, 3.0);
   setMatrixValue(m1, 2, 0, 6.0);   setMatrixValue(m1, 2, 1, 9.0);   setMatrixValue(m1, 2, 2, 4.0);
 
-  MatrixInversion2(m1, &m2);
+  MatrixLUInversion(m1, &m2);
 
   puts("Matrix to invert");
   PrintMatrix(m1);

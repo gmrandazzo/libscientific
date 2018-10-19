@@ -155,7 +155,7 @@ void MatrixDotProduct(matrix *m_t, matrix *m, matrix *r);
 void RowColOuterProduct(dvector *a, dvector *b, matrix *m);
 void MatrixTranspose(matrix *m, matrix *r);
 /* Matrix inversion using the LU decomposition */
-void MatrixInversion2(matrix *m, matrix **m_inv);
+void MatrixLUInversion(matrix *m, matrix **m_inv);
 /* Matrix inversion using the Gauss-Jordan algorithm */
 void MatrixInversion(matrix *m, matrix **m_inv);
 void MatrixPseudoinversion(matrix *m, matrix **m_inv);
