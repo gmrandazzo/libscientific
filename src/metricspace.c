@@ -450,7 +450,8 @@ void MahalanobisDistance(matrix* m, matrix **invcov, dvector **mu, dvector **dis
       abort();
     }
   }
-  puts("Calc InvCov");
+
+
   if(invcov == NULL){
     matrix *covmx;
     NewMatrix(&covmx, m->col, m->col);
@@ -458,8 +459,8 @@ void MahalanobisDistance(matrix* m, matrix **invcov, dvector **mu, dvector **dis
     NewMatrix(&inv_cov, m->col, m->col);
     /*MatrixInversion(covmx, &inv_cov);
     MatrixLUInversion(covmx, &inv_cov);*/
-    /*MatrixPseudoinversion(covmx, &inv_cov);*/
-    MatrixMoorePenrosePseudoinverse(covmx, &inv_cov);
+    MatrixPseudoinversion(covmx, &inv_cov);
+    /*MatrixMoorePenrosePseudoinverse(covmx, &inv_cov);*/
     DelMatrix(&covmx);
   }
   else{
@@ -473,9 +474,9 @@ void MahalanobisDistance(matrix* m, matrix **invcov, dvector **mu, dvector **dis
       MatrixCovariance(m, &covmx);
       ResizeMatrix(&inv_cov, m->col, m->col);
       /*MatrixInversion(covmx, &inv_cov);
-        MatrixLUInversion(covmx, &inv_cov);*/
-      /*MatrixPseudoinversion(covmx, &inv_cov);*/
-      MatrixMoorePenrosePseudoinverse(covmx, &inv_cov);
+      MatrixLUInversion(covmx, &inv_cov);*/
+      MatrixPseudoinversion(covmx, &inv_cov);
+      /*MatrixMoorePenrosePseudoinverse(covmx, &inv_cov);*/
       DelMatrix(&covmx);
     }
     else{
@@ -484,7 +485,6 @@ void MahalanobisDistance(matrix* m, matrix **invcov, dvector **mu, dvector **dis
       abort();
     }
   }
-  puts("Done");
 
   DVectorResize(dists, m->row);
 

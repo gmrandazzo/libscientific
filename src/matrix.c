@@ -986,13 +986,14 @@ void MatrixPseudoinversion(matrix *m, matrix **m_inv)
   initMatrix(&V_T);
   SVD(m, &U, &S, &V_T);
 
-  /*puts("U");
+  /*
+  puts("U");
   PrintMatrix(U);
   puts("S");
   PrintMatrix(S);
   puts("VT");
-  PrintMatrix(V_T);*/
-
+  PrintMatrix(V_T);
+  */
   matrix *Sinv;
   NewMatrix(&Sinv, S->col, S->row);
   MatrixInversion(S, &Sinv);
@@ -1024,7 +1025,8 @@ void MatrixMoorePenrosePseudoinverse(matrix *m, matrix **inv)
 
   /*(A'A)-1*/
   NewMatrix(&i_m_t_m, m_t_m->row, m_t_m->col);
-  MatrixLUInversion(m_t_m, &i_m_t_m);
+  //MatrixLUInversion(m_t_m, &i_m_t_m);
+  MatrixPseudoinversion(m_t_m, &i_m_t_m);
   DelMatrix(&m_t_m);
 
   /*(A'A)-1 A*/
@@ -1824,6 +1826,12 @@ extern void dgesvd_( char* jobu, char* jobvt, int* m, int* n, double* a,
                 int* lda, double* s, double* u, int* ldu, double* vt, int* ldvt,
                 double* work, int* lwork, int* info);
 
+
+/* DGESDD prototype */
+extern void dgesdd_( char* jobz, int* m, int* n, double* a,
+                int* lda, double* s, double* u, int* ldu, double* vt, int* ldvt,
+                double* work, int* lwork, int* iwork, int* info );
+
 void conv2matrix(int m, int n, double* a, int lda, matrix **mx)
 {
   size_t i, j;
@@ -1855,15 +1863,24 @@ void SVDlapack(matrix *mx, matrix **u, matrix **s, matrix **vt)
     }
   }
 
+  /* dgesvd_ implementation */
   /* Query and allocate the optimal workspace */
-  lwork = -1;
+  /*lwork = -1;
   dgesvd_("All", "All", &m, &n, a, &lda, s_, u_, &ldu, vt_, &ldvt, &wkopt, &lwork, &info);
-  /*dgesdd_( "Singular vectors", &m, &n, a, &lda, s_, u_, &ldu, vt_, &ldvt, &wkopt, &lwork, iwork, &info );*/
   lwork = (int)wkopt;
-  work = xmalloc(lwork*sizeof(double));
+  work = xmalloc(lwork*sizeof(double));*/
   /* Compute SVD */
-  dgesvd_("All", "All", &m, &n, a, &lda, s_, u_, &ldu, vt_, &ldvt, work, &lwork, &info);
-  /*dgesdd_( "Singular vectors", &m, &n, a, &lda, s_, u_, &ldu, vt_, &ldvt, work, &lwork, iwork, &info );*/
+  //dgesvd_("All", "All", &m, &n, a, &lda, s_, u_, &ldu, vt_, &ldvt, work, &lwork, &info);
+
+  /* dgesdd_ implementation */
+  int iwork[8*n];
+  lwork = -1;
+  /* U * SIGMA * V^H */
+  dgesdd_( "Singular vectors", &m, &n, a, &lda, s_, u_, &ldu, vt_, &ldvt, &wkopt, &lwork, iwork, &info );
+  lwork = (int)wkopt;
+  work = (double*)malloc( lwork*sizeof(double) );
+  /* Compute SVD */
+  dgesdd_( "Singular vectors", &m, &n, a, &lda, s_, u_, &ldu, vt_, &ldvt, work, &lwork, iwork, &info );
 
   if(info > 0) {
     printf("SVD convergence failed!\n" );

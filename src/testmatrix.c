@@ -159,11 +159,14 @@ void Test28BIS()
   matrix *m, *U, *S, *V_T;
   puts("Test 28: Computing Singular Value Decomposition");
 
-  NewMatrix(&m, 3, 3);
+  /*NewMatrix(&m, 3, 3);
   m->data[0][0] = 15.629; m->data[0][1] = -6.399; m->data[0][2] = -4.843;
   m->data[1][0] = 5.305; m->data[1][1] = 14.513; m->data[1][2] = -3.903;
-  m->data[2][0] = 2.822; m->data[2][1] = -1.792; m->data[2][2] = -4.535;
+  m->data[2][0] = 2.822; m->data[2][1] = -1.792; m->data[2][2] = -4.535;*/
 
+  NewMatrix(&m, 2, 2);
+  m->data[0][0] = 7; m->data[0][1] = 2;
+  m->data[1][0] = 3; m->data[1][1] = 4;
 
   puts("INIT MATRIX");
   PrintMatrix(m);
