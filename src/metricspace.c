@@ -416,30 +416,70 @@ double MatrixMahalanobisDistance(matrix* g1, matrix* g2)
     return dist;
   }
   else{
-    fprintf(stderr, "Unable to compute Euclidean Distance. The number of variables differ\n");
+    fprintf(stderr, "Unable to compute MatrixMahalanobisDistance. The number of variables differ\n");
     fflush(stderr);
     abort();
     return 0.f;
   }
 }
 
-void MahalanobisDistance(matrix* m, dvector **dists)
+void MahalanobisDistance(matrix* m, matrix **invcov, dvector **mu, dvector **dists)
 {
   size_t i, j;
   dvector *x;
   dvector *p;
+
   dvector *colavg;
-  initDVector(&colavg);
-  MatrixColAverage(m, &colavg);
-
-  matrix *covmx;
-  NewMatrix(&covmx, m->col, m->col);
-  MatrixCovariance(m, &covmx);
-
   matrix *inv_cov;
-  NewMatrix(&inv_cov, m->col, m->col);
-  MatrixInversion(covmx, &inv_cov);
-  DelMatrix(&covmx);
+
+  if(mu == NULL){
+    initDVector(&colavg);
+    MatrixColAverage(m, &colavg);
+  }
+  else{
+    if((*mu)->size == m->col){
+      colavg = (*mu);
+    }
+    else if((*mu)->size == 0){
+      colavg = (*mu);
+      MatrixColAverage(m, &colavg);
+    }
+    else{
+      fprintf(stderr, "Unable to compute MahalanobisDistance. The size of mu differ from the matrix colum size \n");
+      fflush(stderr);
+      abort();
+    }
+  }
+
+
+
+  if(invcov == NULL){
+    matrix *covmx;
+    NewMatrix(&covmx, m->col, m->col);
+    MatrixCovariance(m, &covmx);
+    NewMatrix(&inv_cov, m->col, m->col);
+    MatrixInversion(covmx, &inv_cov);
+    DelMatrix(&covmx);
+  }
+  else{
+    if((*invcov)->row == m->col && (*invcov)->col == m->col){
+      inv_cov = (*invcov);
+    }
+    else if((*invcov)->row == 0 && (*invcov)->col == 0){
+      inv_cov = (*invcov);
+      matrix *covmx;
+      NewMatrix(&covmx, m->col, m->col);
+      MatrixCovariance(m, &covmx);
+      ResizeMatrix(&inv_cov, m->col, m->col);
+      MatrixInversion(covmx, &inv_cov);
+      DelMatrix(&covmx);
+    }
+    else{
+      fprintf(stderr, "Unable to compute MahalanobisDistance. The size of inverse covariance matrix differ from the matrix colum size \n");
+      fflush(stderr);
+      abort();
+    }
+  }
 
   DVectorResize(dists, m->row);
 
@@ -458,8 +498,14 @@ void MahalanobisDistance(matrix* m, dvector **dists)
 
   DelDVector(&p);
   DelDVector(&x);
-  DelMatrix(&inv_cov);
-  DelDVector(&colavg);
+
+  if(invcov == NULL){
+    DelMatrix(&inv_cov);
+  }
+
+  if(mu == NULL){
+    DelDVector(&colavg);
+  }
 }
 
 void CovarianceDistanceMap(matrix* mi, matrix **mo)

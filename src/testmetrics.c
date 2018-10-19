@@ -133,7 +133,16 @@ void test7()
   m->data[99][0] = 3.058209; m->data[99][1] = 3.857030;
 
   initDVector(&mdst);
-  MahalanobisDistance(m, &mdst);
+  dvector *mu;
+  matrix *invcov;
+  initDVector(&mu);
+  initMatrix(&invcov);
+  MahalanobisDistance(m, &invcov, &mu, &mdst);
+
+  PrintMatrix(invcov);
+  PrintDVector(mu);
+  DelMatrix(&invcov);
+  DelDVector(&mu);
 
   NewMatrix(&c, 1, 2);
 

@@ -38,7 +38,7 @@ void CosineDistance(matrix *m1, matrix *m2, matrix** distances, size_t nthreads)
 double MatrixMahalanobisDistance(matrix* g1, matrix* g2);
 
 /* Description: calculate the Mahalanobis distance of each point function of its distribution */
-void MahalanobisDistance(matrix* m1, dvector **dists);
+void MahalanobisDistance(matrix* m, matrix **invcov, dvector **mu, dvector **dists);
 
 /* Description: convert the matrix mi (mxn) into a covariance distance map (mxn) */
 void CovarianceDistanceMap(matrix* mi, matrix **mo);
