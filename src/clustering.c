@@ -1186,7 +1186,8 @@ void KMeans(matrix* m, size_t nclusters, int initializer, uivector** cluster_lab
   /* Step 1. Select start centroids */
   if(initializer == 0){ /* Random */
     for(i = 0; i < nclusters; i++){
-      srand(m->col+m->row+nclusters+i);
+      //srand(m->col+m->row+nclusters+i);
+      srand(time(NULL));
       UIVectorAppend(&pre_centroids, rand() % m->row);
     }
   }
