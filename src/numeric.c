@@ -24,6 +24,8 @@
 
 #include "numeric.h"
 #include "vector.h"
+#include "matrix.h"
+#include "interpolate.h"
 
 /* Random Generator
  * No thread safe....
@@ -178,4 +180,34 @@ void Combinations(uivector *num, matrix **comb)
       MatrixAppendUIRow(comb, num);
     }
   }
+}
+
+/*
+ * area of the curve via the  trapezoid rule
+ */
+double curve_area(matrix *xy, size_t intervals)
+{
+  size_t i;
+  matrix *interp_xy;
+  initMatrix(&interp_xy);
+  /*If intervals > 0 interpolate with natural cubic splines to have more fine area */
+  if(intervals > 0){
+    /* If two points have different y but share same x the algorithm will fail*/
+    interpolate(xy, intervals, &interp_xy);
+  }
+  else{
+    MatrixCopy(xy, &interp_xy);
+    intervals = xy->row;
+  }
+
+  double base, height;
+  double area = 0.f;
+  for(i = 0; i < intervals-1; i++){
+      /* Trapezoidal method */
+      base = interp_xy->data[i+1][0]-interp_xy->data[i][0];
+      height = ((interp_xy->data[i][1]+interp_xy->data[i+1][1])/2.f);
+      area += base*height;
+  }
+  DelMatrix(&interp_xy);
+  return area;
 }

@@ -183,6 +183,7 @@ set(Scientific_C_SRCS memwrapper.c
                    algebra.c
                    statistic.c
                    metricspace.c
+                   interpolate.c
                    pca.c
                    pls.c
                    epls.c
@@ -207,6 +208,7 @@ set(Scientific_C_H
                 algebra.h
                 statistic.h
                 metricspace.h
+                interpolate.h
                 pca.h
                 pls.h
                 epls.h
@@ -237,6 +239,7 @@ set(MLRTest_SRC testmlr.c)
 set(SVDTest_SRC testsvd.c)
 set(CLASSIFIERTest_SRC testlda.c)
 set(METRICSPACETest_SRC testmetrics.c)
+set(INTERPOLATETest_SRC testinterpolate.c)
 set(GRAPHSTest_SRC testgraphs.c)
 set(OptimizationTest_SRC testoptimization.c)
 
@@ -319,6 +322,9 @@ target_link_libraries(testlda libscientific)
 
 add_executable(testmetricspace ${METRICSPACETest_SRC})
 target_link_libraries(testmetricspace libscientific)
+
+add_executable(testinterpolate ${INTERPOLATETest_SRC})
+target_link_libraries(testinterpolate libscientific)
 
 add_executable(testgraphs ${GRAPHSTest_SRC})
 target_link_libraries(testgraphs libscientific)

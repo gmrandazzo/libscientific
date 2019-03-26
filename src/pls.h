@@ -119,11 +119,11 @@ void PLSYPredictorAllLV(matrix *mx, PLSMODEL *model, matrix **tscores, matrix **
 
 /*
  * Description: Calculate the correlation coefficient (ccoeff),
- *              the standard deviation of the prediction (stdev),
+ *              the root mean square error of the prediction (rmse),
  *              the bias of the prediction (bias) in a regression model.
  *              mx and my could be the training or the test datasets.
  */
-void PLSRegressionStatistics(matrix *my_true, matrix *my_pred, matrix** ccoeff, matrix **stdev, matrix **bias);
+void PLSRegressionStatistics(matrix *my_true, matrix *my_pred, matrix** ccoeff, matrix **rmse, matrix **bias);
 
 /*
  * Description: Calculate the roc curve, the auc, the precision recall curve,

@@ -43,24 +43,4 @@ void MahalanobisDistance(matrix* m, matrix **invcov, dvector **mu, dvector **dis
 /* Description: convert the matrix mi (mxn) into a covariance distance map (mxn) */
 void CovarianceDistanceMap(matrix* mi, matrix **mo);
 
-/* Description: calculate the natural cubic spline interpolation equations */
-void cubic_spline_interpolation(matrix *xy, matrix **S);
-
-/* Description: predict using the  natural cubic spline interpolation equations a vector of x */
-void cubic_spline_predict(dvector *x_, matrix *S, dvector **y_pred);
-
-/* Description: interpolate x and y using the natural cubic spline equations and get directly the interpolation. */
-void interpolate(matrix *xy, size_t npoints, matrix **interp_xy);
-
-/* Description: calculate area of a curve.
- * If intervals > 0 will interpolate the curve
- */
-double curve_area(matrix *xy, size_t intervals);
-
-/* Description: calculate the ROC curve giving an y_true and an y_score */
-void ROC(dvector *y_true, dvector *y_score, matrix **roc, double *auc);
-
-/* Description: calculate the Precision-Recall curve giving an y_true and an y_score */
-void PrecisionRecall(dvector *y_true, dvector *y_score,  matrix **pr, double *ap);
-
 #endif

@@ -51,6 +51,7 @@ void MDC(matrix* m, size_t n, int metric, uivector** selections, size_t nthreads
  * - selections: vector of id selected
  */
 void MaxDis(matrix* m, size_t n, int metric, uivector** selections, size_t nthreads, ssignal *s);
+void MaxDis_DEPRECATED(matrix* m, size_t n, int metric, uivector** selections, size_t nthreads, ssignal *s);
 
 
 /*

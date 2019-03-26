@@ -63,4 +63,9 @@ void RouletteWheelselection(dvector *fitness, size_t nselect, size_t init, uivec
 
 void Combinations(uivector *num, matrix **comb);
 
+/* Description: calculate area of a curve.
+ * If intervals > 0 will interpolate the curve
+ */
+double curve_area(matrix *xy, size_t intervals);
+
 #endif

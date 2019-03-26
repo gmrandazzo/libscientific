@@ -907,7 +907,7 @@ void PLSYPredictorAllLV(matrix *mx, PLSMODEL *model, matrix **tscores, matrix **
   }
 }
 
-void PLSRegressionStatistics(matrix *my_true, matrix *my_pred, matrix** ccoeff, matrix **stdev, matrix **bias)
+void PLSRegressionStatistics(matrix *my_true, matrix *my_pred, matrix** ccoeff, matrix **rmse, matrix **bias)
 {
   size_t lv, i, j;
   dvector *ymean;
@@ -917,8 +917,8 @@ void PLSRegressionStatistics(matrix *my_true, matrix *my_pred, matrix** ccoeff, 
   if(ccoeff != NULL)
     ResizeMatrix(ccoeff, nlv, my_true->col);
 
-  if(stdev != NULL)
-    ResizeMatrix(stdev, nlv, my_true->col);
+  if(rmse != NULL)
+    ResizeMatrix(rmse, nlv, my_true->col);
 
   if(bias != NULL)
     ResizeMatrix(bias, nlv, my_true->col);
@@ -931,7 +931,7 @@ void PLSRegressionStatistics(matrix *my_true, matrix *my_pred, matrix** ccoeff, 
       double ssreg = 0.f;
       double sstot = 0.f;
       for(i = 0; i < my_true->row; i++){
-        ssreg += square(my_pred->data[i][my_true->col*lv+j] - my_true->data[i][j]);
+	      ssreg += square(my_pred->data[i][my_true->col*lv+j] - my_true->data[i][j]);
         sstot += square(my_true->data[i][j] - ymean->data[j]);
       }
 
@@ -950,8 +950,8 @@ void PLSRegressionStatistics(matrix *my_true, matrix *my_pred, matrix** ccoeff, 
       if(ccoeff != NULL)
         (*ccoeff)->data[lv][j] = 1.f - (ssreg/sstot);
 
-      if(stdev != NULL)
-        (*stdev)->data[lv][j] = sqrt(ssreg/(double)my_true->row);
+      if(rmse != NULL)
+        (*rmse)->data[lv][j] = sqrt(ssreg/(double)my_true->row);
     }
 
   }

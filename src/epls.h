@@ -26,6 +26,7 @@
 typedef struct{
   PLSMODEL **models;
   uivector **model_feature_ids;
+  matrix **Sintrps;
   size_t n_models;
   size_t nlv;
   size_t ny;
@@ -61,8 +62,7 @@ void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautos
 
 typedef enum{
   Averaging = 0, /* Hard voting */
-  Median = 1, /* Hard voting */
-  WeightAverageOptimization = 2
+  Median = 1 /* Hard voting */
 } CombinationRule;
 
 void EPLSGetSXScore(EPLSMODEL *m, CombinationRule crule, matrix *sxscores);

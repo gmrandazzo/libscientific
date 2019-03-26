@@ -30,6 +30,7 @@ void NewEPLSModel(EPLSMODEL** m)
 {
   (*m) = xmalloc(sizeof(EPLSMODEL));
   (*m)->models = NULL;
+  (*m)->Sintrps = NULL;
   (*m)->model_feature_ids = NULL;
   (*m)->n_models = 0;
   (*m)->nlv = 0;
@@ -41,6 +42,7 @@ void DelEPLSModel(EPLSMODEL** m)
   size_t i;
   for(i = 0; i < (*m)->n_models; i++){
     DelPLSModel(&(*m)->models[i]);
+    DelMatrix(&(*m)->Sintrps[i]);
     if((*m)->model_feature_ids != NULL)
       DelUIVector(&(*m)->model_feature_ids[i]);
   }
@@ -103,7 +105,9 @@ void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautos
       srand_init++;
       NewPLSModel(&m->models[it]);
       PLS(x_train, y_train, nlv, xautoscaling, yautoscaling, m->models[it], s);
-      /* MODEL SDEP will be used to apply a future prediction weight for the model */
+      /*
+       * MODEL SDEP will be used to apply a future prediction weight for the model
+       */
       PLSYPredictorAllLV(x_test, m->models[it], NULL, &y_test_predicted);
       PLSRegressionStatistics(y_test, y_test_predicted, NULL, &m->models[it]->sdep, &m->models[it]->bias);
       DelUIVector(&testids);
@@ -340,6 +344,8 @@ void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, tensor
     DelTensor(&model_py);
   }
   else{
+    DelMatrix(&x_subspace);
+    DelMatrix(&tot_yweight);
     return;
   }
   DelMatrix(&x_subspace);

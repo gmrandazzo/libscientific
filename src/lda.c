@@ -23,6 +23,7 @@
 #include "metricspace.h"
 #include "numeric.h"
 #include "tensor.h"
+#include "statistic.h"
 #include <pthread.h>
 
 /* extern int rand_r(unsigned int *seedp);*/

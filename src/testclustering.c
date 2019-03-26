@@ -714,6 +714,7 @@ void test3()
   m->data[12][0] = 85.1500;  m->data[12][1] = 379.0000;
   m->data[13][0] = 86.1300;  m->data[13][1] =  361.0000;
 
+  PrintMatrix(m);
   initUIVector(&selections);
 
   MaxDis(m, floor(0.35*m->row), 2, &selections, 4, &run);
@@ -900,8 +901,8 @@ int main(void){
   /* Selection Tests
   test1();*/
   //test2();
-  /*test3();
-  test4();*/
+  test3();
+  /*test4();*/
 
   /*Clustering Tests*/
   // test5();
@@ -918,7 +919,7 @@ int main(void){
 
   test14();
   test15();*/
-   test16();
+   // test16(); HERE LAST TIME
   /*test17();*/
   //test18();
   //test19();

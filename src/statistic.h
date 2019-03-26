@@ -25,7 +25,7 @@
 /*
  * TP = True PositivePredictedValue
  * FN = False Negative
- * 
+ *
  * Sensitivity = TP / TP + FN
  */
 void Sensitivity(dvector *tp, double thmin, double thmax, double thstep, matrix **s);
@@ -33,14 +33,13 @@ void Sensitivity(dvector *tp, double thmin, double thmax, double thstep, matrix 
 /*
  * TP = True Positive
  * FP = False Positive
- * 
+ *
  * PPV = TP / TP + FP
  */
 void PositivePredictedValue(dvector *dtp, dvector *dtn, double thmin, double thmax, double thstep, matrix **p);
 
-
 /*
- * This function code the matrix to a sign matrix 
+ * This function code the matrix to a sign matrix
  */
 void MatrixCode(matrix *inmx, matrix *outmx);
 
@@ -50,5 +49,11 @@ void BifactorialMatrixExpansion(matrix* inmx, matrix* outmx);
  * This function study the variable effect through the yates algorithm
  */
 void YatesVarEffect(matrix *mx, dvector *veff);
+
+/* Description: calculate the ROC curve giving an y_true and an y_score */
+void ROC(dvector *y_true, dvector *y_score, matrix **roc, double *auc);
+
+/* Description: calculate the Precision-Recall curve giving an y_true and an y_score */
+void PrecisionRecall(dvector *y_true, dvector *y_score,  matrix **pr, double *ap);
 
 #endif

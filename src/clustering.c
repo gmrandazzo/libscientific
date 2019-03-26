@@ -79,6 +79,9 @@ void *MDCWorker(void *arg_)
   return 0;
 }
 
+/*
+ *
+ */
 void MDC(matrix* m, size_t n, int metric, uivector** selections, size_t nthreads, ssignal *s)
 {
   size_t i, j, k, l, mdc, nmdc, th;
@@ -369,7 +372,10 @@ void MDC(matrix* m, size_t n, int metric, uivector** selections, size_t nthreads
   DelDVector(&vectinfo);
 }
 
-void MaxDis(matrix* m, size_t n, int metric, uivector** selections, size_t nthreads, ssignal *s)
+/*
+ * OLD TIME CONSUMING MaxDis object selection.
+ */
+void MaxDis_DEPRECATED(matrix* m, size_t n, int metric, uivector** selections, size_t nthreads, ssignal *s)
 {
   size_t i, j, l, nobj, ntotobj;
   double dis;
@@ -381,7 +387,7 @@ void MaxDis(matrix* m, size_t n, int metric, uivector** selections, size_t nthre
 
   initUIVector(&idselection);
 
-  /* select the faraway compound */
+  /* select the faraway compound from centroid */
   dvector *c;
   NewDVector(&c, m->col);
   for(i = 0; i < m->row; i++){
@@ -527,6 +533,142 @@ void MaxDis(matrix* m, size_t n, int metric, uivector** selections, size_t nthre
   }
 
   DelMatrix(&m2);
+}
+
+void MaxDis(matrix* m, size_t n, int metric, uivector** selections, size_t nthreads, ssignal *s)
+{
+  size_t i, j, nobj;
+  double dis;
+  matrix *distances, *subdistances;
+  uivector *id;
+  dvector *c, *tmp, *mindists;
+
+  NewUIVector(&id, m->row);
+  /* Store into the id array the original point positions */
+  for(i = 0; i < m->row; i++)
+    id->data[i] = i;
+
+  initMatrix(&distances);
+  /*
+   * Calculate a square distance matrix
+   * Slow process!
+   */
+  if(metric == 0){
+    EuclideanDistance(m, m, &distances, nthreads);
+  }
+  else if(metric == 1){
+    ManhattanDistance(m, m, &distances, nthreads);
+  }
+  else{
+    CosineDistance(m, m, &distances, nthreads);
+  }
+
+  /* select the faraway compound from centroid */
+  NewDVector(&c, m->col);
+  for(i = 0; i < m->row; i++){
+    for(j = 0; j < m->col; j++){
+      c->data[j] += m->data[i][j];
+    }
+  }
+
+  for(j = 0; j < m->col; j++){
+    c->data[j] /= (double)m->row;
+  }
+
+  int far_away = -1;
+  double far = 0.f;
+  for(i = 0; i < m->row; i++){
+    double dst = 0.f;
+    for(j = 0; j < m->col; j++){
+      dst += square(c->data[j] - m->data[i][j]);
+    }
+
+    dst = sqrt(dst);
+
+    if(far_away > -1){
+      far = dst;
+    }
+    else{
+      if(dst > far){
+        far = dst;
+        far_away = i;
+      }
+      else{
+        continue;
+      }
+    }
+  }
+  DelDVector(&c);
+
+  /* Append the far away compound to the final selection */
+  UIVectorAppend(selections, far_away);
+
+  /*
+   * Now copy the column of the far away compound to an other matrix
+   */
+  initMatrix(&subdistances);
+  tmp = getMatrixColumn(distances, far_away);
+  MatrixAppendCol(&subdistances, tmp);
+  DelDVector(&tmp);
+
+  /* Remove the selected point from the position list */
+  UIVectorRemoveAt(&id, far_away);
+
+  /*
+   * The next object to be selected is always as distant as possible
+   * from already selected objects. Hence iterate in the subdistances matrix
+   * using the remaining ids.
+   */
+
+  /* ntob = 1 because we have already selected the first object, the far away objcet*/
+  for(nobj = 1; nobj < n; nobj++){
+    if(s != NULL && (*s) == SIGSCIENTIFICRUN){
+      /* Select the minumum distance of all remaining objects
+       * from the already selected points
+       */
+      NewDVector(&mindists, id->size);
+      for(i = 0; i < id->size; i++){
+        size_t ii = id->data[i];
+        size_t jj = (*selections)->data[0];
+        dis = distances->data[ii][jj];
+        for(j = 1; j < (*selections)->size; j++){
+          jj = (*selections)->data[j];
+          if(distances->data[ii][jj] < dis){
+            dis = distances->data[ii][jj];
+          }
+          else{
+            continue;
+          }
+        }
+        mindists->data[i] = dis;
+      }
+
+      /*
+       * From the final smallest distance list select the maximum distant objects
+       */
+      j = 0;
+      for(i = 1; i < mindists->size; i++){
+        if(mindists->data[i] > mindists->data[j]){
+          j = i;
+        }
+        else{
+          continue;
+        }
+      }
+
+      /* l is the max min object to select */
+      UIVectorAppend(selections, id->data[j]);
+      tmp = getMatrixColumn(distances, id->data[j]);
+      MatrixAppendCol(&subdistances, tmp);
+      UIVectorRemoveAt(&id, j);
+      DelDVector(&tmp);
+    }
+    else{
+      break;
+    }
+  }
+  DelMatrix(&subdistances);
+  DelMatrix(&distances);
 }
 
 void NewHyperGridMap(HyperGridModel **hgm)

@@ -1,6 +1,6 @@
-/* scientificinfo.c
+/* interpolate.h
 *
-* Copyright (C) <2016>  Giuseppe Marco Randazzo
+* Copyright (C) <2018>  Giuseppe Marco Randazzo
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -16,21 +16,19 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "scientificinfo.h"
+#ifndef INTERPOLATE_H
+#define INTERPOLATE_H
 
-#define major_ 1
-#define minor_ 1
-#define patch_ 1
+#include "matrix.h"
+#include "vector.h"
 
+/* Description: calculate the natural cubic spline interpolation equations */
+void cubic_spline_interpolation(matrix *xy, matrix **S);
 
-void ScientificVersion()
-{
-  printf("Scientific Library was writen by Giuseppe Marco Randazzo <gmrandazzo@gmail.com>\nVersion: %d.%d.%d\n", major_, minor_, patch_);
-}
+/* Description: predict using the  natural cubic spline interpolation equations a vector of x */
+void cubic_spline_predict(dvector *x_, matrix *S, dvector **y_pred);
 
-const char *GetScientificVersion()
-{
-  static char c[10];
-  sprintf(c, "%d.%d.%d", (int)major_, (int)minor_, (int)patch_);
-  return c;
-}
+/* Description: interpolate x and y using the natural cubic spline equations and get directly the interpolation. */
+void interpolate(matrix *xy, size_t npoints, matrix **interp_xy);
+
+#endif
