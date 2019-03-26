@@ -655,6 +655,7 @@ void MaxDis(matrix* m, size_t n, int metric, uivector** selections, size_t nthre
     else{
       break;
     }
+    DelDVector(&mindists);
   }
   DelMatrix(&distances);
   DelUIVector(&id);
