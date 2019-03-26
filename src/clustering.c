@@ -539,9 +539,9 @@ void MaxDis(matrix* m, size_t n, int metric, uivector** selections, size_t nthre
 {
   size_t i, j, nobj;
   double dis;
-  matrix *distances, *subdistances;
+  matrix *distances;
   uivector *id;
-  dvector *c, *tmp, *mindists;
+  dvector *c, *mindists;
 
   NewUIVector(&id, m->row);
   /* Store into the id array the original point positions */
@@ -603,20 +603,12 @@ void MaxDis(matrix* m, size_t n, int metric, uivector** selections, size_t nthre
   /* Append the far away compound to the final selection */
   UIVectorAppend(selections, far_away);
 
-  /*
-   * Now copy the column of the far away compound to an other matrix
-   */
-  initMatrix(&subdistances);
-  tmp = getMatrixColumn(distances, far_away);
-  MatrixAppendCol(&subdistances, tmp);
-  DelDVector(&tmp);
-
   /* Remove the selected point from the position list */
   UIVectorRemoveAt(&id, far_away);
 
   /*
    * The next object to be selected is always as distant as possible
-   * from already selected objects. Hence iterate in the subdistances matrix
+   * from already selected objects. Hence iterate in the distance matrix
    * using the remaining ids.
    */
 
@@ -658,17 +650,14 @@ void MaxDis(matrix* m, size_t n, int metric, uivector** selections, size_t nthre
 
       /* l is the max min object to select */
       UIVectorAppend(selections, id->data[j]);
-      tmp = getMatrixColumn(distances, id->data[j]);
-      MatrixAppendCol(&subdistances, tmp);
       UIVectorRemoveAt(&id, j);
-      DelDVector(&tmp);
     }
     else{
       break;
     }
   }
-  DelMatrix(&subdistances);
   DelMatrix(&distances);
+  DelUIVector(&id);
 }
 
 void NewHyperGridMap(HyperGridModel **hgm)
