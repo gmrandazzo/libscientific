@@ -22,6 +22,8 @@
 #include "matrix.h"
 #include "vector.h"
 
+
+
 /* Description: calculate the euclidean distance between two matrix with the same column number */
 void EuclideanDistance(matrix* m1, matrix* m2, matrix **distances, size_t nthreads);
 
@@ -42,5 +44,23 @@ void MahalanobisDistance(matrix* m, matrix **invcov, dvector **mu, dvector **dis
 
 /* Description: convert the matrix mi (mxn) into a covariance distance map (mxn) */
 void CovarianceDistanceMap(matrix* mi, matrix **mo);
+
+/*
+ * Distance matrix caalculation in a fast and less memory consuming way
+ */
+/* Description: calculate the index from square to condensed form giving the row and column position*/
+size_t square_to_condensed_index(size_t i, size_t j, size_t n);
+
+/* Description: calculate the euclidean distance matrix in a condensed way */
+void EuclideanDistanceCondensed(matrix* m, dvector **distances, size_t nthreads);
+
+/* Description: calculate the square euclidean distance in a condensed way */
+void SquaredEuclideanDistanceCondensed(matrix *m, dvector **distances, size_t nthreads);
+
+/* Description: calculate the manhattan distance in a condensed way */
+void ManhattanDistanceCondensed(matrix *m, dvector **distances, size_t nthreads);
+
+/* Description: calculate the cosine distance in a condensed way */
+void CosineDistanceCondensed(matrix *m, dvector **distances, size_t nthreads);
 
 #endif

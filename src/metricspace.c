@@ -25,6 +25,7 @@
 typedef struct{
   matrix *m1, *m2;
   matrix **distances;
+  dvector **condensed_distances;
   size_t r_from, r_to;
 } dst_th_arg;
 
@@ -316,7 +317,7 @@ void CosineDistance(matrix* m1, matrix* m2, matrix** distances, size_t nthreads)
       args[th].r_from = from;
       args[th].r_to = to;
 
-      pthread_create(&threads[th], NULL, SquaredEuclideanWorker, (void*) &args[th]);
+      pthread_create(&threads[th], NULL, CosineWorker, (void*) &args[th]);
       from = to;
       if(from+step > m1->row){
         to = m1->row;
@@ -555,4 +556,286 @@ void CovarianceDistanceMap(matrix* mi, matrix **mo)
   DelDVector(&x);
   DelMatrix(&inv_cov);
   DelDVector(&colavg);
+}
+
+size_t square_to_condensed_index(size_t i, size_t j, size_t n)
+{
+  if(i == j)
+    return n+1;
+  else{
+    size_t ii;
+    size_t jj;
+    if(i < j){
+      ii = j;
+      jj = i;
+    }
+    else{
+      ii = i;
+      jj = j;
+    }
+    return n*jj - jj*(jj+1)/2 + ii - 1 - jj;
+  }
+}
+
+typedef struct{
+  matrix *m;
+  dvector **distances;
+  size_t r_from, r_to;
+} cdst_th_arg;
+
+void *EuclideanCondensedWorker(void *arg_)
+{
+  size_t i, j, k;
+  double dist;
+  cdst_th_arg *arg = (cdst_th_arg*) arg_;
+  for(i = arg->r_from; i < arg->r_to; i++){
+    for(k = i+1; k < arg->m->row; k++){
+      dist = 0.f;
+      for(j = 0; j < arg->m->col; j++){
+        dist += square(arg->m->data[i][j] - arg->m->data[k][j]);
+      }
+      size_t indx = square_to_condensed_index(i, k, arg->m->row);
+      (*arg->distances)->data[indx] = sqrt(dist);
+    }
+  }
+  return 0;
+}
+
+void EuclideanDistanceCondensed(matrix* m, dvector **distances, size_t nthreads)
+{
+  pthread_t *threads;
+  cdst_th_arg *args;
+  size_t th;
+
+  /*
+   * m->row*m->row is the normal square matrix
+   * with -m->row you remove the diagonal
+   * dividing the result by 2 you get the half part of
+   * the square matrix!
+   */
+  DVectorResize(distances, ((m->row*m->row)-m->row)/2);
+
+  threads = xmalloc(sizeof(pthread_t)*nthreads);
+  args = xmalloc(sizeof(cdst_th_arg)*nthreads);
+
+  size_t step = (size_t)ceil((double)m->row/(double)nthreads);
+  size_t from = 0, to = step;
+
+
+  for(th = 0; th < nthreads; th++){
+    args[th].m = m;
+    args[th].distances = distances;
+    args[th].r_from = from;
+    args[th].r_to = to;
+
+    from = to;
+    if(from+step > m->row){
+      to = m->row;
+    }
+    else{
+      to+=step;
+    }
+    pthread_create(&threads[th], NULL, EuclideanCondensedWorker, (void*) &args[th]);
+  }
+
+  for(th = 0; th < nthreads; th++){
+    pthread_join(threads[th], NULL);
+  }
+
+  xfree(threads);
+  xfree(args);
+}
+
+void *SquareEuclideanCondensedWorker(void *arg_)
+{
+  size_t i, j, k;
+  double dist;
+  cdst_th_arg *arg = (cdst_th_arg*) arg_;
+  for(i = arg->r_from; i < arg->r_to; i++){
+    for(k = i+1; k < arg->m->row; k++){
+      dist = 0.f;
+      for(j = 0; j < arg->m->col; j++){
+        dist += square(arg->m->data[i][j] - arg->m->data[k][j]);
+      }
+      size_t indx = square_to_condensed_index(i, k, arg->m->row);
+      (*arg->distances)->data[indx] = dist;
+    }
+  }
+  return 0;
+}
+
+/* Description: calculate the square euclidean distance in a condensed way */
+void SquaredEuclideanDistanceCondensed(matrix *m, dvector **distances, size_t nthreads)
+{
+  pthread_t *threads;
+  cdst_th_arg *args;
+  size_t th;
+
+  /*
+   * m->row*m->row is the normal square matrix
+   * with -m->row you remove the diagonal
+   * dividing the result by 2 you get the half part of
+   * the square matrix!
+   */
+  DVectorResize(distances, ((m->row*m->row)-m->row)/2);
+
+  threads = xmalloc(sizeof(pthread_t)*nthreads);
+  args = xmalloc(sizeof(cdst_th_arg)*nthreads);
+
+  size_t step = (size_t)ceil((double)m->row/(double)nthreads);
+  size_t from = 0, to = step;
+
+
+  for(th = 0; th < nthreads; th++){
+    args[th].m = m;
+    args[th].distances = distances;
+    args[th].r_from = from;
+    args[th].r_to = to;
+
+    from = to;
+    if(from+step > m->row){
+      to = m->row;
+    }
+    else{
+      to+=step;
+    }
+    pthread_create(&threads[th], NULL, SquareEuclideanCondensedWorker, (void*) &args[th]);
+  }
+
+  for(th = 0; th < nthreads; th++){
+    pthread_join(threads[th], NULL);
+  }
+
+  xfree(threads);
+  xfree(args);
+}
+
+void *ManhattanCondensedWorker(void *arg_)
+{
+  size_t i, j, k;
+  double dist;
+  cdst_th_arg *arg = (cdst_th_arg*) arg_;
+  for(i = arg->r_from; i < arg->r_to; i++){
+    for(k = i+1; k < arg->m->row; k++){
+      dist = 0.f;
+      for(j = 0; j < arg->m->col; j++){
+        dist += fabs(arg->m->data[i][j] - arg->m->data[k][j]);
+      }
+      size_t indx = square_to_condensed_index(i, k, arg->m->row);
+      (*arg->distances)->data[indx] = dist;
+    }
+  }
+  return 0;
+}
+
+/* Description: calculate the manhattan distance in a condensed way */
+void ManhattanDistanceCondensed(matrix *m, dvector **distances, size_t nthreads)
+{
+  pthread_t *threads;
+  cdst_th_arg *args;
+  size_t th;
+
+  /*
+   * m->row*m->row is the normal square matrix
+   * with -m->row you remove the diagonal
+   * dividing the result by 2 you get the half part of
+   * the square matrix!
+   */
+  DVectorResize(distances, ((m->row*m->row)-m->row)/2);
+
+  threads = xmalloc(sizeof(pthread_t)*nthreads);
+  args = xmalloc(sizeof(cdst_th_arg)*nthreads);
+
+  size_t step = (size_t)ceil((double)m->row/(double)nthreads);
+  size_t from = 0, to = step;
+
+
+  for(th = 0; th < nthreads; th++){
+    args[th].m = m;
+    args[th].distances = distances;
+    args[th].r_from = from;
+    args[th].r_to = to;
+
+    from = to;
+    if(from+step > m->row){
+      to = m->row;
+    }
+    else{
+      to+=step;
+    }
+    pthread_create(&threads[th], NULL, ManhattanCondensedWorker, (void*) &args[th]);
+  }
+
+  for(th = 0; th < nthreads; th++){
+    pthread_join(threads[th], NULL);
+  }
+
+  xfree(threads);
+  xfree(args);
+}
+
+void *CosineCondensedWorker(void *arg_)
+{
+  size_t i, j, k;
+  double n, d_a, d_b;
+  cdst_th_arg *arg = (cdst_th_arg*) arg_;
+  for(i = arg->r_from; i < arg->r_to; i++){
+    for(k = i+1; k < arg->m->row; k++){
+      n = 0.f; d_a = 0.f; d_b = 0.f;
+      for(j = 0; j < arg->m->col; j++){
+        n += arg->m->data[i][j] * arg->m->data[k][j];
+        d_a += square(arg->m->data[i][j]);
+        d_b += square(arg->m->data[k][j]);
+      }
+      size_t indx = square_to_condensed_index(i, k, arg->m->row);
+      (*arg->distances)->data[indx] = n/(sqrt(d_a)*sqrt(d_b));
+    }
+  }
+  return 0;
+}
+
+/* Description: calculate the cosine distance in a condensed way */
+void CosineDistanceCondensed(matrix *m, dvector **distances, size_t nthreads)
+{
+  pthread_t *threads;
+  cdst_th_arg *args;
+  size_t th;
+
+  /*
+   * m->row*m->row is the normal square matrix
+   * with -m->row you remove the diagonal
+   * dividing the result by 2 you get the half part of
+   * the square matrix!
+   */
+  DVectorResize(distances, ((m->row*m->row)-m->row)/2);
+
+  threads = xmalloc(sizeof(pthread_t)*nthreads);
+  args = xmalloc(sizeof(cdst_th_arg)*nthreads);
+
+  size_t step = (size_t)ceil((double)m->row/(double)nthreads);
+  size_t from = 0, to = step;
+
+
+  for(th = 0; th < nthreads; th++){
+    args[th].m = m;
+    args[th].distances = distances;
+    args[th].r_from = from;
+    args[th].r_to = to;
+
+    from = to;
+    if(from+step > m->row){
+      to = m->row;
+    }
+    else{
+      to+=step;
+    }
+    pthread_create(&threads[th], NULL, CosineCondensedWorker, (void*) &args[th]);
+  }
+
+  for(th = 0; th < nthreads; th++){
+    pthread_join(threads[th], NULL);
+  }
+
+  xfree(threads);
+  xfree(args);
 }

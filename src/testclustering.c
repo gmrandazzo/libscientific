@@ -717,7 +717,7 @@ void test3()
   PrintMatrix(m);
   initUIVector(&selections);
 
-  MaxDis(m, floor(0.35*m->row), 2, &selections, 4, &run);
+  MaxDis(m, floor(0.35*m->row), 0, &selections, 4, &run);
 
   puts("Selections");
   PrintUIVector(selections);

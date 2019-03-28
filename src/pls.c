@@ -23,6 +23,7 @@
 #include "pca.h" /*Using: MatrixAutoScaling(); and calcVarExpressed(); */
 #include "numeric.h" /* Using:  if(FLOAT_EQ(NumOne, NumTwo));*/
 #include "metricspace.h"
+#include "statistic.h"
 #include <math.h>
 #include <pthread.h>
 

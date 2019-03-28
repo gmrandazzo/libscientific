@@ -373,9 +373,9 @@ void MDC(matrix* m, size_t n, int metric, uivector** selections, size_t nthreads
 }
 
 /*
- * OLD TIME CONSUMING MaxDis object selection.
+ * MaxDis object selection.
  */
-void MaxDis_DEPRECATED(matrix* m, size_t n, int metric, uivector** selections, size_t nthreads, ssignal *s)
+void MaxDis(matrix* m, size_t n, int metric, uivector** selections, size_t nthreads, ssignal *s)
 {
   size_t i, j, l, nobj, ntotobj;
   double dis;
@@ -473,7 +473,9 @@ void MaxDis_DEPRECATED(matrix* m, size_t n, int metric, uivector** selections, s
           ManhattanDistance(m1, m2, &distances, nthreads);
         }
         else{
+          printf("Ciao\n");
           CosineDistance(m1, m2, &distances, nthreads);
+          PrintMatrix(distances);
         }
 
         /*
@@ -535,11 +537,14 @@ void MaxDis_DEPRECATED(matrix* m, size_t n, int metric, uivector** selections, s
   DelMatrix(&m2);
 }
 
-void MaxDis(matrix* m, size_t n, int metric, uivector** selections, size_t nthreads, ssignal *s)
+/*
+ * Fast implementation but can pose some memory problems with large datasets!
+ */
+void MaxDis_Fast(matrix* m, size_t n, int metric, uivector** selections, size_t nthreads, ssignal *s)
 {
-  size_t i, j, nobj;
+  size_t i, j, indx, nobj;
   double dis;
-  matrix *distances;
+  dvector *distances;
   uivector *id;
   dvector *c, *mindists;
 
@@ -548,19 +553,19 @@ void MaxDis(matrix* m, size_t n, int metric, uivector** selections, size_t nthre
   for(i = 0; i < m->row; i++)
     id->data[i] = i;
 
-  initMatrix(&distances);
+  initDVector(&distances);
   /*
    * Calculate a square distance matrix
    * Slow process!
    */
   if(metric == 0){
-    EuclideanDistance(m, m, &distances, nthreads);
+    EuclideanDistanceCondensed(m, &distances, nthreads);
   }
   else if(metric == 1){
-    ManhattanDistance(m, m, &distances, nthreads);
+    ManhattanDistanceCondensed(m, &distances, nthreads);
   }
   else{
-    CosineDistance(m, m, &distances, nthreads);
+    CosineDistanceCondensed(m, &distances, nthreads);
   }
 
   /* select the faraway compound from centroid */
@@ -622,11 +627,13 @@ void MaxDis(matrix* m, size_t n, int metric, uivector** selections, size_t nthre
       for(i = 0; i < id->size; i++){
         size_t ii = id->data[i];
         size_t jj = (*selections)->data[0];
-        dis = distances->data[ii][jj];
+        indx = square_to_condensed_index(ii, jj, m->row);
+        dis = distances->data[indx];
         for(j = 1; j < (*selections)->size; j++){
           jj = (*selections)->data[j];
-          if(distances->data[ii][jj] < dis){
-            dis = distances->data[ii][jj];
+          indx = square_to_condensed_index(ii, jj, m->row);
+          if(distances->data[indx] < dis){
+            dis = distances->data[indx];
           }
           else{
             continue;
@@ -657,7 +664,7 @@ void MaxDis(matrix* m, size_t n, int metric, uivector** selections, size_t nthre
     }
     DelDVector(&mindists);
   }
-  DelMatrix(&distances);
+  DelDVector(&distances);
   DelUIVector(&id);
 }
 

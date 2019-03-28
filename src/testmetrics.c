@@ -23,6 +23,33 @@
 #include "matrix.h"
 #include "statistic.h"
 
+void test7()
+{
+  size_t i, j, indx;
+  matrix *m;
+  dvector *dist;
+  NewMatrix(&m, 4, 4);
+  m->data[0][0] = 0; m->data[0][1] = 1;
+  m->data[1][0] = 1; m->data[1][1] = 1;
+  m->data[2][0] = 3; m->data[2][1] = 5;
+  m->data[3][0] = 15; m->data[3][1] = 5;
+  initDVector(&dist);
+  CosineDistanceCondensed(m, &dist, 2);
+  for(i = 0; i < 4; i++){
+    for(j = 0; j < 4; j++){
+      if(i == j){
+        printf(" 0.00");
+      }
+      else{
+        indx = square_to_condensed_index(i, j, m->row);
+        printf(" %.2f", (dist->data[indx]));
+      }
+    }
+    printf("\n");
+  }
+  DelDVector(&dist);
+  DelMatrix(&m);
+}
 
 void test6()
 {
@@ -429,10 +456,12 @@ void test1()
 
 int main(void)
 {
-  /**/test1();
+  /*
+  test1();
   test2();
   test3();
   test4();
   test5();
-  test6();
+  test6();*/
+  test7();
 }
