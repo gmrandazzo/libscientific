@@ -82,13 +82,13 @@ void MatrixSet(matrix *m, double val);
 /* Description:
  * Initialize the matrix elements to a random integer
  */
-void MatrixInitRandomInt(matrix *m, int low, int high);
+void MatrixInitRandomInt(matrix *m, int low, int high, size_t srand_init);
 
 
 /* Description:
  * Initialize the matrix elements to a random float
  */
-void MatrixInitRandomFloat(matrix *m, double low, double high);
+void MatrixInitRandomFloat(matrix *m, double low, double high, size_t srand_init);
 
 /* Description:
  * Copy a matrix from a source "msrc" to a destination matrix "mdst"
