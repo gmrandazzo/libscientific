@@ -78,6 +78,18 @@ int ValInMatrix(matrix *m, double val);
  */
 void MatrixSet(matrix *m, double val);
 
+
+/* Description:
+ * Initialize the matrix elements to a random integer
+ */
+void MatrixInitRandomInt(matrix *m, int low, int high);
+
+
+/* Description:
+ * Initialize the matrix elements to a random float
+ */
+void MatrixInitRandomFloat(matrix *m, double low, double high);
+
 /* Description:
  * Copy a matrix from a source "msrc" to a destination matrix "mdst"
  */

@@ -166,6 +166,26 @@ void MatrixSet(matrix *m, double val)
   }
 }
 
+void MatrixInitRandomInt(matrix *m, int low, int high)
+{
+  size_t i, j;
+  for(i = 0; i < m->row; i++){
+    for(j = 0; j < m->col; j++){
+      m->data[i][j] = (double)randInt(low, high);
+    }
+  }
+}
+
+void MatrixInitRandomFloat(matrix *m, double low, double high)
+{
+  size_t i, j;
+  for(i = 0; i < m->row; i++){
+    for(j = 0; j < m->col; j++){
+      m->data[i][j] = randDouble(low, high);
+    }
+  }
+}
+
 void MatrixCopy(matrix *msrc, matrix **mdst)
 {
   size_t i, j;
