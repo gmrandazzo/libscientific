@@ -166,9 +166,8 @@ void MatrixSet(matrix *m, double val)
   }
 }
 
-void MatrixInitRandomInt(matrix *m, int low, int high, size_t srand_init)
+void MatrixInitRandomInt(matrix *m, int low, int high)
 {
-  srand(srand_init);
   size_t i, j;
   for(i = 0; i < m->row; i++){
     for(j = 0; j < m->col; j++){
@@ -177,9 +176,8 @@ void MatrixInitRandomInt(matrix *m, int low, int high, size_t srand_init)
   }
 }
 
-void MatrixInitRandomFloat(matrix *m, double low, double high, size_t srand_init)
+void MatrixInitRandomFloat(matrix *m, double low, double high)
 {
-  srand(srand_init);
   size_t i, j;
   for(i = 0; i < m->row; i++){
     for(j = 0; j < m->col; j++){
