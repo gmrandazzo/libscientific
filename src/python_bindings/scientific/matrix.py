@@ -67,7 +67,10 @@ def NewMatrix(a):
 
     for i in range(nrows):
         for j in range(ncols):
-            lsci.setMatrixValue(m, i, j, a[i][j])
+            if isinstance(a[i][j], str):
+                setMissingMatrixValue(m, i, j)
+            else:
+                lsci.setMatrixValue(m, i, j, a[i][j])
     return m
 
 
@@ -226,6 +229,14 @@ def MatrixToList(m):
 
 def MatrixFromNumpy(npm):
     return NewMatrix(npm.tolist())
+
+
+lsci.missing_value.argtypes = None
+lsci.missing_value.restype = ctypes.c_double
+
+
+def setMissingMatrixValue(m, row, col):
+    m[0].data[row][col] = lsci.missing_value()
 
 
 """
@@ -527,6 +538,14 @@ class Matrix(object):
         del self.mx
         self.mx = None
 
+    def __getitem__(self, keys):
+        i, j = keys
+        return self.data_ptr()[i][j]
+
+    def __setitem__(self, keys, value):
+        i, j = keys
+        setMatrixValue(self.mx, i, j, value)
+
     def nrow(self):
         return self.mx[0].row
 
@@ -557,8 +576,11 @@ if __name__ in "__main__":
     from random import random
     a = [[random() for j in range(2)] for i in range(10)]
     a[4][1] = "aiuasd"
-    print(a)
     m = Matrix(a)
+    print("Get value example")
+    print(m[1, 1])
+    print("Set value example")
+    m[1, 1] = -2.
     m.debug()
     mlst = m.tolist()
     for row in mlst:

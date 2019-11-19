@@ -206,10 +206,14 @@ class DVector(object):
         self.d = NewDVector(d_)
 
     def __del__(self):
-        if self.d is not None:
-            DelDVector(self.d)
-            del self.d
-        self.d = None
+        DelDVector(self.d)
+        del self.d
+
+    def __getitem__(self, key):
+        return self.data_ptr()[key]
+
+    def __setitem__(self, key, value):
+        setDVectorValue(self.d, key, value)
 
     def size(self):
         return self.d[0].size
@@ -234,6 +238,10 @@ if __name__ in "__main__":
     a = [random() for j in range(10)]
     d = DVector(a)
     d.debug()
+    print("get value")
+    print(d[1])
+    print("set value")
+    d[1] = -2
     dlst = d.tolist()
     for item in dlst:
         print(item)
