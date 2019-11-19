@@ -102,6 +102,13 @@ double calcObjectDistance(matrix *m)
  *                              else store the score and loadings to an output and follow the step 6.
  * 6.  E := E - tp'             Remove the estimated PCA component (the product of the scores and the loadings) from E.
  *                              In order to estimate the other PCA components repeat this procedure from step 1 using the matrix E -tp' as the new E
+ *
+ * This algorithm deal with missing values.
+ * Indeed when a missing value on X input matrix is found,
+ * will be skipped on the calculation of p and t.
+ * See page 1 of the following document:
+ * https://cran.r-project.org/web/packages/nipals/vignettes/nipals_algorithm.pdf
+ *
  */
 void PCA(matrix *mx, size_t scaling, size_t npc, PCAMODEL* model, ssignal *s)
 {
@@ -116,13 +123,19 @@ void PCA(matrix *mx, size_t scaling, size_t npc, PCAMODEL* model, ssignal *s)
   matrix *E; /* data matrix of autoscaled / mean centred object */
   NewMatrix(&E, mx->row, mx->col);
 
+  /* check if matrix have nan or infinite and convert them to MISSING */
   MatrixCheck(mx);
 
   /*CENTERING */
   MatrixColAverage(mx, &(model->colaverage));
   for(j = 0; j < mx->col; j++){
     for(i = 0; i < mx->row; i++){
-      E->data[i][j] = mx->data[i][j] - model->colaverage->data[j];
+      if(FLOAT_EQ(mx->data[i][j], MISSING, 1e-1)){
+        continue;
+      }
+      else{
+        E->data[i][j] = mx->data[i][j] - model->colaverage->data[j];
+      }
     }
   }
 
@@ -162,7 +175,12 @@ void PCA(matrix *mx, size_t scaling, size_t npc, PCAMODEL* model, ssignal *s)
       }
       else{
         for(i = 0; i < E->row; i++){
-          E->data[i][j] /= model->colscaling->data[j];
+          if(FLOAT_EQ(E->data[i][j], MISSING, 1e-1)){
+            continue;
+          }
+          else{
+            E->data[i][j] /= model->colscaling->data[j];
+          }
         }
       }
     }
@@ -516,7 +534,12 @@ void PCAScorePredictor(matrix *mx, PCAMODEL *model, size_t npc, matrix **pscores
 /*
  *  X = t*p
  */
-void PCAIndVarPredictor(matrix* t, matrix* p, dvector* colaverage, dvector* colscaling, size_t npc, matrix** mx)
+void PCAIndVarPredictor(matrix* t,
+                        matrix* p,
+                        dvector* colaverage,
+                        dvector* colscaling,
+                        size_t npc,
+                        matrix** mx)
 {
 
   size_t pc, i, j;

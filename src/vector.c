@@ -369,8 +369,15 @@ double DVectorDVectorDotProd(dvector *v1, dvector *v2)
      the vors must have the same size */
   size_t i;
   double p  = +0.f;
-  for(i = 0; i < v1->size; i++)
-    p += v1->data[i]*v2->data[i];
+  for(i = 0; i < v1->size; i++){
+    if(FLOAT_EQ(v1->data[i], MISSING, 1e-1) ||
+       FLOAT_EQ(v2->data[i], MISSING, 1e-1)){
+      continue;
+    }
+    else{
+      p += v1->data[i]*v2->data[i];
+    }
+  }
   return p;
 }
 
@@ -378,8 +385,14 @@ double DvectorModule(dvector *v)
 {
   size_t i;
   double sum = +0.f;
-  for(i = 0; i < v->size; i++)
-    sum += v->data[i]*v->data[i];
+  for(i = 0; i < v->size; i++){
+    if(FLOAT_EQ(v->data[i], MISSING, 1e-1)){
+      continue;
+    }
+    else{
+      sum += v->data[i]*v->data[i];
+    }
+  }
   return sqrt(sum);/* module of the for v */
 }
 
@@ -392,7 +405,12 @@ void DVectNorm(dvector *v, dvector *nv)
 
   if((*nv).size != 0 && (*nv).size <= v->size){ /* store the normalized vor value to an other vor named n_v */
     for(i = 0; i < v->size; i++){
-      nv->data[i] = v->data[i]/mod;
+      if(FLOAT_EQ(v->data[i], MISSING, 1e-1)){
+        nv->data[i] = MISSING;
+      }
+      else{
+        nv->data[i] = v->data[i]/mod;
+      }
     }
   }
   else{
@@ -407,7 +425,7 @@ void DVectorDVectorDiff(dvector* v1, dvector* v2, dvector **v3)
   size_t i;
   if(v1->size == v2->size){
     for(i = 0; i < v1->size; i++)
-      DVectorAppend(v3, getDVectorValue(v1, i)-getDVectorValue(v2, i));
+      DVectorAppend(v3, v1->data[i]-v2->data[i]);
   }
   else{
     fprintf(stderr, "Error! Unable to compute DVectorDVectorDiff. Different Vector size.\n");
@@ -476,7 +494,7 @@ int cmp(const void *a, const void *b)
 
 void DVectorMedian(dvector* d, double *median)
 {
-  (*median) = -9999.f;
+  (*median) = MISSING;
   qsort(d->data, d->size, sizeof(double), cmp);
 
   if (d->size%2 == 0){
@@ -591,7 +609,7 @@ int getIVectorValue(ivector* d, size_t id)
     fprintf(stdout,"getIVectorValue Error: vector id %d out of range\n.", (int)id);
     fflush(stdout);
     abort();
-    return -99999;
+    return MISSING;
   }
 }
 
@@ -720,7 +738,7 @@ size_t getUIVectorValue(uivector* d, size_t id)
     fprintf(stdout,"getUIVectorValue Error: vector id %u out of range. Max range: %u\n.", (unsigned int)id, (unsigned int)d->size);
     fflush(stdout);
     abort();
-    return -99999;
+    return MISSING;
   }
 }
 

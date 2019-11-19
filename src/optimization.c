@@ -106,7 +106,7 @@ double NelderMeadSimplex(double (*func)(), dvector *x0, dvector *step, double xt
           x->data[i][j] = x0->data[j];
         }
       }
-      x->data[i][x->col-1] = 9999.f; /* value of function */
+      x->data[i][x->col-1] = MISSING; /* value of function */
     }
   }
   else{
@@ -119,7 +119,7 @@ double NelderMeadSimplex(double (*func)(), dvector *x0, dvector *step, double xt
           x->data[i][j] = x0->data[j];
         }
       }
-      x->data[i][x->col-1] = 9999.f; /* value of function */
+      x->data[i][x->col-1] = MISSING; /* value of function */
     }
   }
 

@@ -39,15 +39,45 @@ void DelPCAModel(PCAMODEL **m);
 void calcVarExpressed(double ss, dvector *eval, dvector **varexp);
 double calcObjectDistance(matrix *m);
 
-void PCA(matrix *mx, size_t scaling, size_t npc, PCAMODEL *model, ssignal *s);
+/*
+ * Calculate a principal component analysis
+ */
+void PCA(matrix *mx,
+         size_t scaling,
+         size_t npc,
+         PCAMODEL *model,
+         ssignal *s);
 
-void PCAScorePredictor(matrix *mx, PCAMODEL *model, size_t npc, matrix **pscores);
+/*
+ * Predict scores given a principal component analysis and a matrix as input
+ */
+void PCAScorePredictor(matrix *mx,
+                       PCAMODEL *model,
+                       size_t npc,
+                       matrix **pscores);
 
-void PCAIndVarPredictor(matrix *t, matrix *p, dvector *colaverage, dvector *colsdev,  size_t npc, matrix **mx);
+/*
+ * Reconstruct the original matrix from PCA model, scores and loadings
+ */
+void PCAIndVarPredictor(matrix *t,
+                        matrix *p,
+                        dvector *colaverage,
+                        dvector *colsdev,
+                        size_t npc,
+                        matrix **mx);
 
-void PCARSquared(matrix *mx, PCAMODEL *model, size_t npc, dvector** r2);
+void PCARSquared(matrix *mx,
+                 PCAMODEL *model,
+                 size_t npc,
+                 dvector** r2);
 
-void PCARankValidation(matrix *mx, size_t npc, size_t scaling, size_t group, size_t iterations, dvector **r, ssignal *s);
+void PCARankValidation(matrix *mx,
+                       size_t npc,
+                       size_t scaling,
+                       size_t group,
+                       size_t iterations,
+                       dvector **r,
+                       ssignal *s);
 
 /*Compute the residual matrix for a specific number of component.
  * mx = matrix of origin model

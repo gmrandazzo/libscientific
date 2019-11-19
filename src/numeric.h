@@ -33,6 +33,8 @@
 #define _isinf_(a) (!_isnan_(a) && _isnan_(a - a))
 #define _pi_ 3.14159265358979323846264338327950288419716939937510
 
+#define MISSING 99999999
+
 /* use this like:
  *    NumOne and NumTwo are the number to compare
  *         if(FLOAT_EQ(NumOne, NumTwo, EPSILON))...

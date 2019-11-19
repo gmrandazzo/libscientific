@@ -1070,11 +1070,11 @@ void PruneResults(matrix *m, matrix *centroids, size_t nmaxobj, int type, uivect
           }
         }
 
-        if(FLOAT_EQ(var, 99999, EPSILON)){
-          setMatrixValue(distmx, l, 0, 99999);
+        if(FLOAT_EQ(var, MISSING, EPSILON)){
+          setMatrixValue(distmx, l, 0, MISSING);
         }
         else{
-          setMatrixValue(distmx, l, 0, 99999);
+          setMatrixValue(distmx, l, 0, MISSING);
           setUIVectorValue(clusters_, k, n+1);
         }
 

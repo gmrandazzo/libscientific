@@ -1,7 +1,7 @@
 project(libscientific C Fortran)
 cmake_minimum_required(VERSION 2.6)
 set(AUTHOR "Giuseppe Marco Randazzo")
-set(VERSION "0.6.0")
+set(VERSION "1.2.0")
 
 
 if(NOT CMAKE_BUILD_TYPE)

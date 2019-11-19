@@ -101,7 +101,7 @@ void MatrixCheck(matrix *m)
   for(i = 0; i < m->row; i++){
     for(j = 0; j < m->col; j++){
       if(_isnan_(m->data[i][j]) || !isfinite(m->data[i][j])){
-        m->data[i][j] = 0.f;
+        m->data[i][j] = MISSING;
       }
     }
   }
@@ -226,7 +226,12 @@ void MatrixCopy(matrix *msrc, matrix **mdst)
 void setMatrixValue(matrix *m, size_t row, size_t col, double val)
 {
   if(row < m->row && col < m->col){
-    (*m).data[row][col] = val;
+    if(_isnan_(val) || _isinf_(val)){
+      (*m).data[row][col] = MISSING;
+    }
+    else{
+      (*m).data[row][col] = val;
+    }
   }
   else{
     fprintf(stdout,"setMatrixValue Error: row to set: %u row max: %u; column to set %u; colum max: %u out of range.\n", (unsigned int)row, (unsigned int)m->row-1, (unsigned int)col, (unsigned int)m->col-1);
@@ -557,12 +562,18 @@ void MatrixDVectorDotProduct(matrix *mx, dvector *v, dvector *p)
   if(mx->col == v->size){
     for(i = 0; i < mx->row; i++){
       for(j = 0; j < mx->col; j++){
-        res = mx->data[i][j] * v->data[j];
-        if(_isnan_(res) || _isinf_(res)){
+        if(FLOAT_EQ(mx->data[i][j], MISSING, 1e-1) ||
+           FLOAT_EQ(v->data[j], MISSING, 1e-1)){
           continue;
         }
         else{
-          p->data[i] += res;
+          res = mx->data[i][j] * v->data[j];
+          if(_isnan_(res) || _isinf_(res)){
+            continue;
+          }
+          else{
+            p->data[i] += res;
+          }
         }
       }
     }
@@ -591,12 +602,18 @@ void *MatrixDVectorDotProductWorker(void *arg_){
   for(i = arg->from; i < arg->to; i++){
     arg->res->data[i] = 0.f;
     for(j = 0; j < arg->mx->col; j++){
-      res = arg->mx->data[i][j] * arg->v->data[j];
-      if(_isnan_(res) || _isinf_(res)){
+      if(FLOAT_EQ(arg->mx->data[i][j], MISSING, 1e-1) ||
+         FLOAT_EQ(arg->v->data[j], MISSING, 1e-1)){
         continue;
       }
       else{
-        arg->res->data[i] += res;
+        res = arg->mx->data[i][j] * arg->v->data[j];
+        if(_isnan_(res) || _isinf_(res)){
+          continue;
+        }
+        else{
+          arg->res->data[i] += res;
+        }
       }
     }
   }
@@ -661,12 +678,18 @@ void DVectorMatrixDotProduct(matrix *mx, dvector *v, dvector *p)
   if(mx->row == v->size){
     for(j = 0; j < mx->col; j++){
       for(i = 0; i < mx->row; i++){
-        res = v->data[i] * mx->data[i][j];
-        if(_isnan_(res) || _isinf_(res)){
+        if(FLOAT_EQ(v->data[i], MISSING, 1e-1) ||
+           FLOAT_EQ(mx->data[i][j], MISSING, 1e-1)){
           continue;
         }
         else{
-          p->data[j] += res;
+          res = v->data[i] * mx->data[i][j];
+          if(_isnan_(res) || _isinf_(res)){
+            continue;
+          }
+          else{
+            p->data[j] += res;
+          }
         }
       }
     }
@@ -688,12 +711,18 @@ void *DVectorMatrixDotProductWorker(void *arg_)
 
   for(j = arg->from; j < arg->to; j++){
     for(i = 0; i < arg->mx->row; i++){
-      res = arg->v->data[i] * arg->mx->data[i][j];
-      if(_isnan_(res) || _isinf_(res)){
-        continue;
+      if(FLOAT_EQ(arg->v->data[i], MISSING, 1e-1) ||
+         FLOAT_EQ(arg->mx->data[i][j], MISSING, 1e-1)){
+           continue;
       }
       else{
-        arg->res->data[j] += res;
+        res = arg->v->data[i] * arg->mx->data[i][j];
+        if(_isnan_(res) || _isinf_(res)){
+          continue;
+        }
+        else{
+          arg->res->data[j] += res;
+        }
       }
     }
   }
@@ -757,7 +786,13 @@ void DVectorTrasposedDVectorDotProduct(dvector *v1, dvector *v2, matrix *m)
 
   for(i = 0; i < v1->size; i++){
     for(j = 0; j < v2->size; j++){
-      m->data[i][j] = v1->data[i]*v2->data[j];
+      if(FLOAT_EQ(v1->data[i], MISSING, 1e-1) ||
+         FLOAT_EQ(v2->data[i], MISSING, 1e-1)){
+        m->data[i][j] = MISSING;
+      }
+      else{
+        m->data[i][j] = v1->data[i]*v2->data[j];
+      }
     }
   }
 }
@@ -816,12 +851,18 @@ void MatrixDotProduct(matrix *a, matrix *b, matrix *c)
     for(i = 0; i < a->row; i++){ /* m */
       for(j = 0; j < b->col; j++){ /* p */
         for(k = 0; k < a->col; k++){ /* n */
-          res = a->data[i][k] * b->data[k][j];
-          if(_isnan_(res) || _isinf_(res)){
-            c->data[i][j] +=  +0.f;
+          if(FLOAT_EQ(a->data[i][k], MISSING, 1e-1) ||
+             FLOAT_EQ(b->data[k][j], MISSING, 1e-1)){
+            continue;
           }
           else{
-            c->data[i][j] +=  res;
+            res = a->data[i][k] * b->data[k][j];
+            if(_isnan_(res) || _isinf_(res)){
+              c->data[i][j] +=  +0.f;
+            }
+            else{
+              c->data[i][j] +=  res;
+            }
           }
         }
       }
@@ -848,12 +889,18 @@ void RowColOuterProduct(dvector *a, dvector *b, matrix *m)
   double res;
   for(i = 0; i < a->size; i++){
     for(j = 0; j < b->size; j++){
-      res = a->data[i] * b->data[j];
-      if(_isnan_(res) || _isinf_(res)){
-        m->data[i][j] = +0.f;
+      if(FLOAT_EQ(a->data[i], MISSING, 1e-1) ||
+         FLOAT_EQ(b->data[j], MISSING, 1e-1)){
+        m->data[i][j] = MISSING;
       }
       else{
-        m->data[i][j] = res;
+        res = a->data[i] * b->data[j];
+        if(_isnan_(res) || _isinf_(res)){
+          m->data[i][j] = +0.f;
+        }
+        else{
+          m->data[i][j] = res;
+        }
       }
     }
   }
@@ -1069,25 +1116,37 @@ void GenIdentityMatrix(matrix **m)
 
 void MeanCenteredMatrix(matrix *mx, matrix *mxc)
 {
-  size_t i, j;
+  size_t i, j, n;
   double average, res;
   for(j = 0; j < mx->col; j++){
     if(mx->row > 1){
-
       /*Calculate the average */
       average = +0.f;
-      for( i=0; i<mx->row; i++ ){
-        average += mx->data[i][j];
-      }
-      average /= mx->row;
-
-      for(i = 0; i < mx->row; i++){
-        res = mx->data[i][j] - average;
-        if(_isnan_(res) || _isinf_(res)){
-          (*mxc).data[i][j] = +0.f;
+      n = 0;
+      for(i = 0; i < mx->row; i++ ){
+        if(FLOAT_EQ(mx->data[i][j], MISSING, 1e-1)){
+          continue;
         }
         else{
-          (*mxc).data[i][j] = res;
+          average += mx->data[i][j];
+          n++;
+        }
+      }
+
+      average /= (double)n;
+
+      for(i = 0; i < mx->row; i++){
+        if(FLOAT_EQ(mx->data[i][j], MISSING, 1e-1)){
+          continue;
+        }
+        else{
+          res = mx->data[i][j] - average;
+          if(_isnan_(res) || _isinf_(res)){
+            (*mxc).data[i][j] = +0.f;
+          }
+          else{
+            (*mxc).data[i][j] = res;
+          }
         }
       }
     }
@@ -1203,60 +1262,83 @@ void SpearmanCorrelMatrix(matrix* mxsrc, matrix* mxdst)
 
 void MatrixColAverage(matrix *mx, dvector **colaverage)
 {
-  size_t i, j;
+  size_t i, j, n;
 
   double average;
   for(j = 0; j < mx->col; j++){
     /*Calculate the average */
     average = +0.f;
+    n = 0;
     for(i = 0; i < mx->row; i++){
-      average += mx->data[i][j];
+      if(FLOAT_EQ(mx->data[i][j], MISSING, 1e-1))
+        continue;
+      else{
+        average += mx->data[i][j];
+        n++;
+      }
     }
 
     if(FLOAT_EQ(average, 0.f, 1e-6))
         average = 0.f;
     else
-        average /= mx->row;
+        average /= (double)n;
     DVectorAppend(colaverage, average);
   }
 }
 
 void MatrixRowAverage(matrix *mx, dvector **rowaverage)
 {
-  size_t i, j;
+  size_t i, j, n;
 
   double average;
   for(i = 0; i < mx->row; i++){
     /*Calculate the average */
     average = +0.f;
+    n = 0;
     for(j = 0; j < mx->col; j++){
-      average += mx->data[i][j];
+      if(FLOAT_EQ(mx->data[i][j], MISSING, 1e-1))
+        continue;
+      else{
+        average += mx->data[i][j];
+        n++;
+      }
     }
-    average /= mx->col;
+    average /= (double)n;
     DVectorAppend(rowaverage, average);
   }
 }
 
 void MatrixColSDEV(matrix* mx, dvector** colsdev)
 {
-  size_t i, j;
+  size_t i, j, n;
   double var, average;
   for(j = 0; j < mx->col; j++){
     average=+0.f;
+    n = 0;
     for(i = 0; i < mx->row; i++){
-      average += mx->data[i][j];
+      if(FLOAT_EQ(mx->data[i][j], MISSING, 1e-1))
+        continue;
+      else{
+        average += mx->data[i][j];
+        n++;
+      }
     }
 
     /* average of the column j;*/
-    average /= mx->row;
+    average /= (double)n;
 
     var = +0.f;
+    n = 0;
     for(i = 0; i< mx->row; i++){
-      var += square(mx->data[i][j] - average);
+      if(FLOAT_EQ(mx->data[i][j], MISSING, 1e-1))
+        continue;
+      else{
+        var += square(mx->data[i][j] - average);
+        n++;
+      }
     }
     /* sample variance: is used whe the average of data is not known so you need to extimate the data average */
-    var = var/(mx->row-1);
-    /*var = var/(mx->row);*/
+    var = var/(n-1);
 
     /* standard deviation calculation */
     DVectorAppend(colsdev, sqrt(var));
@@ -1265,17 +1347,23 @@ void MatrixColSDEV(matrix* mx, dvector** colsdev)
 
 void MatrixColRMS(matrix* mx, dvector** colrms)
 {
-  size_t i, j;
+  size_t i, j, n;
   double a;
 
   for(j = 0; j < mx->col; j++){
     a = +0.f;
+    n = 0;
     for(i = 0; i < mx->row; i++){
-      a += square(mx->data[i][j]);
+      if(FLOAT_EQ(mx->data[i][j], MISSING, 1e-1))
+        continue;
+      else{
+        a += square(mx->data[i][j]);
+        n++;
+      }
     }
 
     /* average of the column j;*/
-    a /= mx->row;
+    a /= (double)n;
     /* standard deviation calculation */
     DVectorAppend(colrms, sqrt(a));
   }
@@ -1283,24 +1371,36 @@ void MatrixColRMS(matrix* mx, dvector** colrms)
 
 void MatrixColVar(matrix* mx, dvector** colvar)
 {
-  size_t i, j;
+  size_t i, j, n;
   double var, average;
   for(j = 0; j < mx->col; j++){
-    average=+0.f;
+    average = +0.f;
+    n = 0;
     for(i = 0; i < mx->row; i++){
-      average += mx->data[i][j];
+      if(FLOAT_EQ(mx->data[i][j], MISSING, 1e-1))
+        continue;
+      else{
+        average += mx->data[i][j];
+        n++;
+      }
     }
 
     /* average of the column j;*/
-    average /= (float)mx->row;
+    average /= (double)n;
 
     var = +0.f;
+    n = 0;
     for(i = 0; i<mx->row; i++){
-      double a = (mx->data[i][j] - average);
-      var += a*a;
+      if(FLOAT_EQ(mx->data[i][j], MISSING, 1e-1))
+        continue;
+      else{
+        double a = (mx->data[i][j] - average);
+        var += a*a;
+        n++;
+      }
     }
     /* sample variance: is used whe the average of data is not known so you need to extimate the data average */
-    var = var/(mx->row-1);
+    var = var/(double)(n-1);
 
     /* standard deviation calculation */
     DVectorAppend(colvar, var);
@@ -1320,11 +1420,13 @@ void MatrixColVar(matrix* mx, dvector** colvar)
  *  - Coefficient of variation Population (CV)
  *  - Coefficient of variation Sample (CV)
  *  - N. zeros
+ *  - N. missing values
  */
 void MatrixColDescStat(matrix *mx, matrix **ds)
 {
-  int i, j;
+  int i, j, n;
   size_t n_zeros;
+  size_t n_missing;
   double avg = 0.f;
   double median = 0.f;
   double armonic = 0.f;
@@ -1332,7 +1434,8 @@ void MatrixColDescStat(matrix *mx, matrix **ds)
   double min = 0.f, max = 0.f;
   dvector *v;
 
-  ResizeMatrix(ds, mx->col, 12);
+  /* n = mx->row if no MISSING value */
+  ResizeMatrix(ds, mx->col, 13);
   NewDVector(&v, mx->row);
 
   for(j = 0; j < mx->col; j++){
@@ -1346,37 +1449,52 @@ void MatrixColDescStat(matrix *mx, matrix **ds)
      */
     min = max = mx->data[0][j];
     n_zeros = 0;
+    n_missing = 0;
+    n = 0;
     for(i = 0; i < mx->row; i++){
       if(FLOAT_EQ(mx->data[i][j], 0.f, 1e-6))
         n_zeros++;
-      avg += mx->data[i][j];
-      armonic += 1.f/mx->data[i][j];
-      v->data[i] = mx->data[i][j];
-      if(mx->data[i][j] > max)
-        max = mx->data[i][j];
 
-      if(mx->data[i][j] < min)
-        min = mx->data[i][j];
+      if(FLOAT_EQ(mx->data[i][j], MISSING, 1e-1)){
+        n_missing++;
+      }
+      else{
+        avg += mx->data[i][j];
+        armonic += 1.f/mx->data[i][j];
+        v->data[i] = mx->data[i][j];
+        if(mx->data[i][j] > max)
+          max = mx->data[i][j];
+
+        if(mx->data[i][j] < min)
+          min = mx->data[i][j];
+        n++;
+      }
     }
-    avg /= (float)mx->row;
+    avg /= (double)n;
 
     DVectorMedian(v, &median);
     for(i = 0; i < mx->row; i++){
-      var += square(mx->data[i][j] - avg);
+      if(FLOAT_EQ(mx->data[i][j], MISSING, 1e-1)){
+        continue;
+      }
+      else{
+        var += square(mx->data[i][j] - avg);
+      }
     }
 
     (*ds)->data[j][0] = avg;
     (*ds)->data[j][1] = median;
-    (*ds)->data[j][2] = (float)(mx->row)/armonic;
-    (*ds)->data[j][3] = var/(float)mx->row;
-    (*ds)->data[j][4] = var/(float)(mx->row-1);
-    (*ds)->data[j][5] = sqrt(var/(float)mx->row);
-    (*ds)->data[j][6] = sqrt(var/(float)(mx->row-1));
+    (*ds)->data[j][2] = (double)(mx->row)/armonic;
+    (*ds)->data[j][3] = var/(double)n;
+    (*ds)->data[j][4] = var/(double)(n-1);
+    (*ds)->data[j][5] = sqrt(var/(double)n);
+    (*ds)->data[j][6] = sqrt(var/(double)(n-1));
     (*ds)->data[j][7] = (*ds)->data[j][5]/avg * 100;
     (*ds)->data[j][8] = (*ds)->data[j][6]/avg * 100;
     (*ds)->data[j][9] = min;
     (*ds)->data[j][10] = max;
     (*ds)->data[j][11] = n_zeros;
+    (*ds)->data[j][12] = n_missing;
   }
   DelDVector(&v);
 }
@@ -1412,9 +1530,11 @@ void Matrix2LogMatrix(matrix *mx_in, matrix **mx_out)
 {
   ResizeMatrix(mx_out, mx_in->row, mx_in->col);
   size_t i, j;
-  for(i = 0; i < mx_in->row; i++)
-    for(j = 0; j < mx_in->col; j++)
+  for(i = 0; i < mx_in->row; i++){
+    for(j = 0; j < mx_in->col; j++){
       (*mx_out)->data[i][j] = log10(mx_in->data[i][j]+1);
+    }
+  }
 }
 
 /* Transform a matrix into a SQUARE matrix */
@@ -1566,7 +1686,7 @@ double MatrixDeterminant(matrix *mx1)
     matrix *mx2;
 
     if (mx1->row < 1){
-      return 9999;
+      return MISSING;
     }
     else if(mx1->row == 1){
       d = mx1->data[0][0];
@@ -1597,7 +1717,7 @@ double MatrixDeterminant(matrix *mx1)
   }
   else{
     /* Error! */
-    return 9999;
+    return MISSING;
   }
 }
 
@@ -1608,7 +1728,7 @@ double MatrixDeterminant(matrix *mx)
     return Determinant(mx->data, mx->row);
   }
   else{
-    return 9999;
+    return MISSING;
   }
 }
 */
@@ -1648,19 +1768,24 @@ void MatrixColumnMinMax(matrix* mx, size_t col, double* min, double* max)
     (*min) = (*max) = mx->data[0][col];
     for(i = 1; i < mx->row; i++){
       a = mx->data[i][col];
-      if(a < (*min)){
-        (*min) = a;
+      if(FLOAT_EQ(a, MISSING, 1e-1)){
+        continue;
       }
+      else{
+        if(a < (*min)){
+          (*min) = a;
+        }
 
-      if(a > (*max)){
-        (*max) = a;
+        if(a > (*max)){
+          (*max) = a;
+        }
       }
     }
   }
   else{
     fprintf(stdout,"Get Column Max Min Error!\n");
     fflush(stdout);
-    (*min) = (*max) = -1;
+    (*min) = (*max) = MISSING;
   }
 }
 

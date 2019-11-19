@@ -1,3 +1,7 @@
+# Directory
+build/
+build/*
+
 # Object files
 *.o
 *.ko

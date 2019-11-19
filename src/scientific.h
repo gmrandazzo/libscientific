@@ -1,6 +1,6 @@
 /* scientific.h
 *
-* Copyright (C) <2016>  Giuseppe Marco Randazzo
+* Copyright (C) <2012>  Giuseppe Marco Randazzo <gmrandazzo@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -16,13 +16,6 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/*
- * scientific.h
- *
- * Copyright (c) 2012 Giuseppe Marco Randazzo <gmrandazzo@gmail.com>
- *
- * $Id: scientific.h  2012-01-27 17:09:27 gmrandazzo $
- */
 
 #ifndef SCIENTIFIC_H
 #define SCIENTIFIC_H

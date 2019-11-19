@@ -103,7 +103,7 @@ double BackPropagate(dvector *yrow, NNModel *nn, double lr, double mf, int regre
 {
   if(yrow->size != nn->no){
     fprintf(seterr, "wrong number of y\n");
-    return 99999999;
+    return MISSING;
   }
   else{
     size_t i, j, k;

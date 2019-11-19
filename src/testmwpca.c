@@ -111,7 +111,7 @@ void test3()
   PrintTensor(tpred);
 
   initMatrix(&predscore);
-  UPCAScorePredictor(tpred, m, 9999, &predscore);
+  UPCAScorePredictor(tpred, m, 12345, &predscore);
 
   puts("Predicted Scores");
   PrintMatrix(predscore);

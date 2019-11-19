@@ -1059,7 +1059,7 @@ void PLSVIP(PLSMODEL *model, matrix **vip)
 
 int GetLVCCutoff_(matrix *rq2y){
   size_t i, j, cutoff = 0;
-  double prev, next, max = -9999;
+  double prev, next, max = MISSING;
 
   for(i = 0; i < rq2y->row-1; i += 2){
     prev = next = 0.f;
