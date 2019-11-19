@@ -25,7 +25,9 @@ def LoadLibrary():
     """
     library = util.find_library("scientific")
     if library is None:
-        print("Please install libscientific. see https://github.com/gmrandazzo/libscientific")
+        message = "Please install libscientific. "
+        message += "Go to https://github.com/gmrandazzo/libscientific"
+        print(message)
         return 0
     else:
         lsci = ctypes.cdll.LoadLibrary(library)

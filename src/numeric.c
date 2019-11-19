@@ -27,10 +27,12 @@
 #include "matrix.h"
 #include "interpolate.h"
 
+
+double missing_value(){ return MISSING; }
+
 /* Random Generator
  * No thread safe....
  */
-
 //#ifdef WIN32
 int myrand_r (unsigned int *seed)
 {

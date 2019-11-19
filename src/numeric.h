@@ -40,6 +40,8 @@
  *         if(FLOAT_EQ(NumOne, NumTwo, EPSILON))...
  * END FLOATING POINT NUMBER PRECISION */
 
+double missing_value();
+
 // #ifdef WIN32
 int myrand_r(unsigned int *seed);
 // #endif
