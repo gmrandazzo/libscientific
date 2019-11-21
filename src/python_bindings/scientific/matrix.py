@@ -56,10 +56,12 @@ def NewMatrix(a):
     ncols = None
     try:
         nrows = len(a)
-        ncols = len(a[0])
+        try:
+            ncols = len(a[0])
+        except IndexError:
+            ncols = 0
     except IndexError:
         nrows = 0
-        ncols = 0
     m = ctypes.POINTER(matrix)()
     lsci.NewMatrix(ctypes.pointer(m),
                    nrows,
@@ -67,10 +69,16 @@ def NewMatrix(a):
 
     for i in range(nrows):
         for j in range(ncols):
-            if isinstance(a[i][j], str):
+            val = None
+            try:
+                val = float(a[i][j])
+            except ValueError:
+                val = None
+
+            if val is None:
                 setMissingMatrixValue(m, i, j)
             else:
-                lsci.setMatrixValue(m, i, j, a[i][j])
+                lsci.setMatrixValue(m, i, j, val)
     return m
 
 
