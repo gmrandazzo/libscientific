@@ -17,6 +17,7 @@
 #
 import ctypes
 from scientific.loadlibrary import LoadLibrary
+from scientific import misc
 
 lsci = LoadLibrary()
 
@@ -60,7 +61,15 @@ def NewDVector(vlst):
     lsci.NewDVector(ctypes.pointer(d), size)
 
     for i in range(size):
-        lsci.setDVectorValue(d, i, vlst[i])
+        val = None
+        try:
+            val = float(vlst[i])
+        except ValueError:
+            val = None
+        if val is None:
+            lsci.setDVectorValue(d, i, misc.missing_value())
+        else:
+            lsci.setDVectorValue(d, i, val)
     return d
 
 

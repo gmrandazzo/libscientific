@@ -129,10 +129,13 @@ class PCA(object):
         self.mpca = None
 
     def fit(self, m_):
-        m = mx.NewMatrix(m_)
-        PCA_(m, self.scaling, self.npc, self.mpca)
-        mx.DelMatrix(m)
-        del m
+        if "Matrix" in str(type(m_)):
+            PCA_(m_, self.scaling, self.npc, self.mpca)
+        else:
+            m = mx.NewMatrix(m_)
+            PCA_(m, self.scaling, self.npc, self.mpca)
+            mx.DelMatrix(m)
+            del m
 
     def get_scores(self):
         return mx.MatrixToList(self.mpca[0].scores)
@@ -141,7 +144,7 @@ class PCA(object):
         return mx.MatrixToList(self.mpca[0].loadings)
 
     def get_exp_variance(self):
-        return self.mpca[0].varexp.tolist()
+        return vect.DVectorToList(self.mpca[0].varexp)
 
     def predict(self, m_):
         m = mx.NewMatrix(m_)
@@ -200,6 +203,7 @@ if __name__ == '__main__':
     print("Showing the PCA loadings")
     loadings = model.get_loadings()
     mx_to_video(loadings, 3)
+    print(model.get_exp_variance())
     print("Reconstruct the original PCA matrix using the PCA Model")
     ra = model.reconstruct_original_matrix()
     mx_to_video(ra)

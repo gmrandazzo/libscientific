@@ -17,6 +17,7 @@
 #
 import ctypes
 from scientific.loadlibrary import LoadLibrary
+from scientific import misc
 
 lsci = LoadLibrary()
 
@@ -48,10 +49,15 @@ lsci.NewMatrix.argtypes = [ctypes.POINTER(ctypes.POINTER(matrix)),
 lsci.NewMatrix.restype = None
 
 
-def NewMatrix(a):
+def NewMatrix(a_):
     """
     NewMatrix: Allocate in memory a libscientific matrix from a list of lists
     """
+    a = None
+    if "numpy" in str(type(a_)):
+        a = a_.tolist()
+    else:
+        a = a_
     nrows = None
     ncols = None
     try:
@@ -239,12 +245,8 @@ def MatrixFromNumpy(npm):
     return NewMatrix(npm.tolist())
 
 
-lsci.missing_value.argtypes = None
-lsci.missing_value.restype = ctypes.c_double
-
-
 def setMissingMatrixValue(m, row, col):
-    m[0].data[row][col] = lsci.missing_value()
+    m[0].data[row][col] = misc.missing_value()
 
 
 """
