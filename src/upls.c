@@ -1467,7 +1467,7 @@ void UPLSRandomGroupsCV(tensor *X_, tensor *Y_, size_t xautoscaling, size_t yaut
           for(i = 0, l = 0; i < gid->row; i++){
             if(i != g){
               for(j = 0; j < gid->col; j++){
-                size_t a =  (size_t)getMatrixValue(gid, i, j); /* get the row index */
+                int a =  (int)getMatrixValue(gid, i, j); /* get the row index */
                 if(a != -1){
                   for(k = 0; k < subX->order; k++){
                     for(n = 0; n < X_->m[k]->col; n++){
@@ -1493,7 +1493,7 @@ void UPLSRandomGroupsCV(tensor *X_, tensor *Y_, size_t xautoscaling, size_t yaut
 
           /* copy the objects to predict into predictmx*/
           for(j = 0, l = 0; j < gid->col; j++){
-            size_t a = (size_t)getMatrixValue(gid, g, j);
+            int a = (int)getMatrixValue(gid, g, j);
             if(a != -1){
               for(k = 0; k < predictX->order; k++){
                 for(n = 0; n < X_->m[k]->col; n++){
@@ -1563,7 +1563,7 @@ void UPLSRandomGroupsCV(tensor *X_, tensor *Y_, size_t xautoscaling, size_t yaut
 
             if(predicted_y != NULL){
               for(j = 0, l = 0; j < gid->col; j++){
-                size_t a = (size_t)getMatrixValue(gid, g, j);
+                int a = (int)getMatrixValue(gid, g, j);
                 if(a != -1){
                   setUIVectorValue(predictcount, a, getUIVectorValue(predictcount, a)+1);
                   for(k = 0; k < predicty->order; k++){
@@ -1605,7 +1605,7 @@ void UPLSRandomGroupsCV(tensor *X_, tensor *Y_, size_t xautoscaling, size_t yaut
 
             if(predicted_y != NULL){
               for(j = 0, l = 0; j < gid->col; j++){
-                size_t a = (size_t)getMatrixValue(gid, g, j);
+                int a = (int)getMatrixValue(gid, g, j);
                 if(a != -1){
                   setUIVectorValue(predictcount, a, getUIVectorValue(predictcount, a)+1);
                   for(k = 0; k < predicty->order; k++){

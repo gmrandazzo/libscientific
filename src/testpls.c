@@ -1517,7 +1517,7 @@ void TestPLS1()
   minpt.xautoscaling = 0;
   minpt.yautoscaling = 0;
 
-  BootstrapRandomGroupsCV(&minpt, 3, 100, _PLS_, &m->predicted_y, &m->pred_residuals, 4, NULL, 0);
+  BootstrapRandomGroupsCV(&minpt, 5, 100, _PLS_, &m->predicted_y, &m->pred_residuals, 8, NULL, 0);
   //LeaveOneOut(&minpt, _PLS_, &m->predicted_y, &m->pred_residuals, 4, NULL, 0);
   PLSRegressionStatistics(y, m->predicted_y, &m->q2y, &m->sdep, &m->bias);
   PrintMatrix(m->predicted_y);
