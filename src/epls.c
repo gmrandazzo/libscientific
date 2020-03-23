@@ -42,8 +42,7 @@ void DelEPLSModel(EPLSMODEL** m)
   size_t i;
   for(i = 0; i < (*m)->n_models; i++){
     DelPLSModel(&(*m)->models[i]);
-    if((*m)->Sintrps != NULL)
-      DelMatrix(&(*m)->Sintrps[i]);
+    DelMatrix(&(*m)->Sintrps[i]);
     if((*m)->model_feature_ids != NULL)
       DelUIVector(&(*m)->model_feature_ids[i]);
   }
@@ -135,6 +134,7 @@ void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautos
      for(i = 0; i < featureids->size; i++){
        featureids->data[i] = i;
      }
+
 
      m->model_feature_ids = xmalloc(sizeof(uivector*)*eparm.n_models);
 

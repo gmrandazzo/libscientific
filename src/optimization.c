@@ -97,8 +97,8 @@ double NelderMeadSimplex(double (*func)(), dvector *x0, dvector *step, double xt
   /*1) create k+1 steps with  k+1 value in wich the last column is the fval result! */
   NewMatrix(&x, x0->size+1, x0->size+1);
   if(step != NULL){
-    for(int i = 0; i < x0->size+1; i++){
-      for(int j = 0; j < x0->size; j++){
+    for(i = 0; i < x0->size+1; i++){
+      for(j = 0; j < x0->size; j++){
         if(i-1 == j){
           x->data[i][j] = x0->data[j] + step->data[j];
         }
@@ -110,8 +110,8 @@ double NelderMeadSimplex(double (*func)(), dvector *x0, dvector *step, double xt
     }
   }
   else{
-    for(int i = 0; i < x0->size+1; i++){
-      for(int j = 0; j < x0->size; j++){
+    for(i = 0; i < x0->size+1; i++){
+      for(j = 0; j < x0->size; j++){
         if(i-1 == j){
           x->data[i][j] = x0->data[j] + 0.5;
         }

@@ -162,7 +162,7 @@ void PCA(matrix *mx, size_t scaling, size_t npc, PCAMODEL* model, ssignal *s)
       DVectorCopy(model->colaverage, &model->colscaling);
     }
     else{
-      for(int i = 0; i < model->colaverage->size; i++){
+      for(i = 0; i < model->colaverage->size; i++){
         DVectorAppend(&model->colscaling, 1.0);
       }
     }

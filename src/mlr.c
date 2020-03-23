@@ -684,7 +684,7 @@ void MLRRandomGroupsCV(matrix *mx, matrix *my,
       for(j = 0; j < my->col; j++){
         double sum_xi = 0.f, sum_yi = 0.f;
         /*ypredaverage /= (double)my->row;*/
-        for(size_t i = 0; i < my->row; i++){
+        for(i = 0; i < my->row; i++){
           sum_yi+=(_predicted_y_->data[i][j]*(my->data[i][j]-ymean->data[j]));
           sum_xi+=(my->data[i][j]*(my->data[i][j]-ymean->data[j]));
         }
@@ -713,7 +713,7 @@ void MLRLOOCV(matrix *mx, matrix *my,
                         dvector **q2y, dvector **sdep, dvector **bias, matrix **predicted_y, matrix **pred_residuals, ssignal *s)
 {
  if(mx->row == my->row){
-    size_t j, k, l, model;
+    size_t i, j, k, l, model;
 
     /* Matrix for compute the PLS models for groups */
     matrix *subX;
@@ -826,7 +826,7 @@ void MLRLOOCV(matrix *mx, matrix *my,
       for(j = 0; j < my->col; j++){
         double sum_xi = 0.f, sum_yi = 0.f;
         /*ypredaverage /= (double)my->row;*/
-        for(size_t i = 0; i < my->row; i++){
+        for(i = 0; i < my->row; i++){
           if(predicted_y != NULL)
             sum_yi+=((*predicted_y)->data[i][j]*(my->data[i][j]-ymean->data[j]));
           else

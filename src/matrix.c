@@ -627,37 +627,40 @@ void MT_MatrixDVectorDotProduct(matrix *mx, dvector *v, dvector *p)
       the size of the "vect" vector must be equal to the number of matrix row*/
     size_t th, nthreads;
     GetNProcessor(&nthreads, NULL);
-    nthreads -= 2;
-    pthread_t *threads = xmalloc(sizeof(pthread_t)*nthreads);
-    tharg *arg = xmalloc(sizeof(tharg)*nthreads);
-
-    /* initialize threads arguments.. */
-    size_t step = (size_t)ceil((double)mx->row/(double)nthreads);
-    size_t from = 0, to = step;
-    for(th = 0; th < nthreads; th++){
-      arg[th].mx = mx; /*SHARE THIS MATRIX. N.B.: THIS MATRIX MUST BE NOT MODIFIED DURING THE CALCULATION */
-      arg[th].v = v; /*SHARE THIS VECTOR. N.B.: THIS VECTOR MUST BE NOT MODIFIED DURING THE CALCULATION */
-      arg[th].res = p;
-      arg[th].from = from;
-      arg[th].to = to;
-      pthread_create(&threads[th], NULL, MatrixDVectorDotProductWorker, (void*) &arg[th]);
-
-      from = to;
-      if(from+step > mx->row){
-        to = mx->row;
-      }
-      else{
-        to+=step;
-      }
-
+    if(nthreads == 1){
+        /* Redirect to the single thread version */
+        MatrixDVectorDotProduct(mx, v, p);
     }
+    else{
+        pthread_t *threads = xmalloc(sizeof(pthread_t)*nthreads);
+        tharg *arg = xmalloc(sizeof(tharg)*nthreads);
+        /* initialize threads arguments.. */
+        size_t step = (size_t)ceil((double)mx->row/(double)nthreads);
+        size_t from = 0, to = step;
+        for(th = 0; th < nthreads; th++){
+        arg[th].mx = mx; /*SHARE THIS MATRIX. N.B.: THIS MATRIX MUST BE NOT MODIFIED DURING THE CALCULATION */
+        arg[th].v = v; /*SHARE THIS VECTOR. N.B.: THIS VECTOR MUST BE NOT MODIFIED DURING THE CALCULATION */
+        arg[th].res = p;
+        arg[th].from = from;
+        arg[th].to = to;
+        pthread_create(&threads[th], NULL, MatrixDVectorDotProductWorker, (void*) &arg[th]);
 
-    for(th = 0; th < nthreads; th++){
-      pthread_join(threads[th], NULL);
+        from = to;
+        if(from+step > mx->row){
+            to = mx->row;
+        }
+        else{
+            to+=step;
+        } 
+        }
+
+        for(th = 0; th < nthreads; th++){
+        pthread_join(threads[th], NULL);
+        }
+
+        xfree(threads);
+        xfree(arg);
     }
-
-    xfree(threads);
-    xfree(arg);
   }
   else{
     fprintf(stdout,"MatrixDVectorDotProduct Error while calculating product (X*v)!!\n The column vector size must be equal to the matrix column size.\n");
@@ -2098,8 +2101,8 @@ void SVD(matrix* mx, matrix **U, matrix **S, matrix **VT)
     (*S)->data[i][0] = s[i];
 
   ResizeMatrix(VT, n, n);
-  for(int i = 0; i < n; i++){
-    for (int j = 0; j < n; j++){
+  for(i = 0; i < n; i++){
+    for(j = 0; j < n; j++){
       (*VT)->data[i][j] = vt[j*n + i];
     }
   }
@@ -2698,7 +2701,7 @@ void HouseholderReduction(matrix *mx){
 }
 
 void Cholesky(matrix *mx){
-  size_t i, j, n = mx->row;
+  size_t i, j, k, n = mx->row;
   double s;
   dvector *A, *L;
   NewDVector(&A, n*n);
@@ -2713,7 +2716,7 @@ void Cholesky(matrix *mx){
   for(i = 0; i < n; i++)
     for(j = 0; j < (i+1); j++){
       s = 0;
-      for (int k = 0; k < j; k++)
+      for(k = 0; k < j; k++)
         s += L->data[i * n + k] * L->data[j * n + k];
       L->data[i * n + j] = (i == j) ? sqrt(A->data[i * n + i] - s) : (1.0 / L->data[j * n + j] * (A->data[i * n + j] - s));
     }

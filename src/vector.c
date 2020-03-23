@@ -25,7 +25,7 @@
 #include <math.h>
 #include <ctype.h>
 
-/*strdup is not standard so add an exter or add this code:
+/* strdup is not standard so add this code to copy a string to another place dynamically
 
  char *strdup(const char *str)
 {
@@ -38,8 +38,8 @@
     return dup;
 }
 
-
-extern char *strdup(const char *s);*/
+extern char *strdup(const char *s);
+*/
 
 void initStrVector(strvector** s){
     (*s) = xmalloc(sizeof(strvector));

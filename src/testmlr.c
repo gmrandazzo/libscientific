@@ -121,6 +121,7 @@ void test3()
 
 void test2()
 {
+  size_t i;
   matrix *mx, *my;
   MLRMODEL *m;
   ssignal s = SIGSCIENTIFICRUN;
@@ -131,7 +132,7 @@ void test2()
   NewMatrix(&my, 17, 1);
 
   srand(17);
-  for(size_t i = 0; i < 17; i++){
+  for( i = 0; i < 17; i++){
     setMatrixValue(mx, i, 0, randDouble(0,20));
     setMatrixValue(my, i, 0, randDouble(0,1));
   }

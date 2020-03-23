@@ -465,7 +465,7 @@ void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautosc
           DVectorCopy(model->xcolaverage, &model->xcolscaling);
         }
         else{
-          for(int i = 0; i < model->xcolaverage->size; i++){
+          for(i = 0; i < model->xcolaverage->size; i++){
             DVectorAppend(&model->xcolscaling, 1.0);
           }
         }
@@ -519,7 +519,7 @@ void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautosc
           DVectorCopy(model->ycolaverage, &model->ycolscaling);
         }
         else{
-          for(int i = 0; i < model->ycolaverage->size; i++){
+          for(i = 0; i < model->ycolaverage->size; i++){
             DVectorAppend(&model->ycolscaling, 1.0);
           }
         }
@@ -678,13 +678,14 @@ void PLSBetasCoeff(PLSMODEL *model, size_t nlv, dvector **betas)
    Wstar = W *(P'*W)^(-1);
    B = Wstar*b’;
   */
+  size_t i, j;
   matrix *W, *P_, *B_;
   NewMatrix(&W, model->xweights->row, nlv);
   NewMatrix(&P_, nlv, model->xweights->row);
   NewMatrix(&B_, nlv, 1);;
 
-  for(size_t j = 0; j < nlv; j++){
-    for(size_t i = 0; i < model->xweights->row; i++){
+  for(j = 0; j < nlv; j++){
+    for(i = 0; i < model->xweights->row; i++){
       W->data[i][j] = model->xweights->data[i][j];
       P_->data[j][i] = model->xloadings->data[i][j];
     }
@@ -711,7 +712,7 @@ void PLSBetasCoeff(PLSMODEL *model, size_t nlv, dvector **betas)
   MatrixDotProduct(WStar, B_, betas_);
 
   DVectorResize(betas, model->xweights->row);
-  for(size_t i = 0; i < betas_->row; i++){
+  for(i = 0; i < betas_->row; i++){
     (*betas)->data[i] = betas_->data[i][0];
   }
   // PrintDVector((*betas));
