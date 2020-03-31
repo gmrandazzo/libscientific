@@ -628,16 +628,16 @@ void MT_MatrixDVectorDotProduct(matrix *mx, dvector *v, dvector *p)
     size_t th, nthreads;
     GetNProcessor(&nthreads, NULL);
     if(nthreads == 1){
-        /* Redirect to the single thread version */
-        MatrixDVectorDotProduct(mx, v, p);
+      /* Redirect to the single thread version */
+      MatrixDVectorDotProduct(mx, v, p);
     }
     else{
-        pthread_t *threads = xmalloc(sizeof(pthread_t)*nthreads);
-        tharg *arg = xmalloc(sizeof(tharg)*nthreads);
-        /* initialize threads arguments.. */
-        size_t step = (size_t)ceil((double)mx->row/(double)nthreads);
-        size_t from = 0, to = step;
-        for(th = 0; th < nthreads; th++){
+      pthread_t *threads = xmalloc(sizeof(pthread_t)*nthreads);
+      tharg *arg = xmalloc(sizeof(tharg)*nthreads);
+      /* initialize threads arguments.. */
+      size_t step = (size_t)ceil((double)mx->row/(double)nthreads);
+      size_t from = 0, to = step;
+      for(th = 0; th < nthreads; th++){
         arg[th].mx = mx; /*SHARE THIS MATRIX. N.B.: THIS MATRIX MUST BE NOT MODIFIED DURING THE CALCULATION */
         arg[th].v = v; /*SHARE THIS VECTOR. N.B.: THIS VECTOR MUST BE NOT MODIFIED DURING THE CALCULATION */
         arg[th].res = p;
@@ -647,19 +647,19 @@ void MT_MatrixDVectorDotProduct(matrix *mx, dvector *v, dvector *p)
 
         from = to;
         if(from+step > mx->row){
-            to = mx->row;
+          to = mx->row;
         }
         else{
-            to+=step;
+          to+=step;
         } 
-        }
+      }
 
-        for(th = 0; th < nthreads; th++){
+      for(th = 0; th < nthreads; th++){
         pthread_join(threads[th], NULL);
-        }
+      }
 
-        xfree(threads);
-        xfree(arg);
+      xfree(threads);
+      xfree(arg);
     }
   }
   else{
@@ -742,36 +742,39 @@ void MT_DVectorMatrixDotProduct(matrix *mx, dvector *v, dvector *p)
   if(mx->row == v->size){
     size_t th, nthreads;
     GetNProcessor(&nthreads, NULL);
-    nthreads -= 2;
-    pthread_t *threads = xmalloc(sizeof(pthread_t)*nthreads);
-    tharg *arg = xmalloc(sizeof(tharg)*nthreads);
-
-    /* initialize threads arguments.. */
-    size_t step = (size_t)ceil((double)mx->col/(double)nthreads);
-    size_t from = 0, to = step;
-    for(th = 0; th < nthreads; th++){
-      arg[th].mx = mx; /*SHARE THIS MATRIX. N.B.: THIS MATRIX MUST BE NOT MODIFIED DURING THE CALCULATION */
-      arg[th].v = v; /*SHARE THIS VECTOR. N.B.: THIS VECTOR MUST BE NOT MODIFIED DURING THE CALCULATION */
-      arg[th].res = p;
-      arg[th].from = from;
-      arg[th].to = to;
-      pthread_create(&threads[th], NULL, DVectorMatrixDotProductWorker, (void*) &arg[th]);
-
-      from = to;
-      if(from+step > mx->col){
-        to = mx->col;
-      }
-      else{
-        to+=step;
-      }
+    if(nthreads == 1){
+      DVectorMatrixDotProduct(mx, v, p);
     }
+    else{
+      pthread_t *threads = xmalloc(sizeof(pthread_t)*nthreads);
+      tharg *arg = xmalloc(sizeof(tharg)*nthreads);
 
-    for(th = 0; th < nthreads; th++){
-      pthread_join(threads[th], NULL);
-    }
+      /* initialize threads arguments.. */
+      size_t step = (size_t)ceil((double)mx->col/(double)nthreads);
+      size_t from = 0, to = step;
+      for(th = 0; th < nthreads; th++){
+        arg[th].mx = mx; /*SHARE THIS MATRIX. N.B.: THIS MATRIX MUST BE NOT MODIFIED DURING THE CALCULATION */
+        arg[th].v = v; /*SHARE THIS VECTOR. N.B.: THIS VECTOR MUST BE NOT MODIFIED DURING THE CALCULATION */
+        arg[th].res = p;
+        arg[th].from = from;
+        arg[th].to = to;
+        pthread_create(&threads[th], NULL, DVectorMatrixDotProductWorker, (void*) &arg[th]);
 
-    xfree(threads);
-    xfree(arg);
+        from = to;
+        if(from+step > mx->col){
+          to = mx->col;
+        }
+        else{
+          to+=step;
+        }
+      }
+
+      for(th = 0; th < nthreads; th++){
+        pthread_join(threads[th], NULL);
+      }
+
+      xfree(threads);
+      xfree(arg);
   }
   else{
     fprintf(stdout,"DVectorMatrixDotProduct Error while calculating product of a (v'*X)!!\n The transposed column vector size must be equal to the matrix row size.\n");
