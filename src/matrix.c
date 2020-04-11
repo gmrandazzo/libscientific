@@ -775,6 +775,7 @@ void MT_DVectorMatrixDotProduct(matrix *mx, dvector *v, dvector *p)
 
       xfree(threads);
       xfree(arg);
+    }
   }
   else{
     fprintf(stdout,"DVectorMatrixDotProduct Error while calculating product of a (v'*X)!!\n The transposed column vector size must be equal to the matrix row size.\n");

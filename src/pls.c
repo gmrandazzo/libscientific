@@ -273,7 +273,7 @@ void LVCalc(matrix **X, matrix **Y, dvector **t, dvector **u, dvector **p, dvect
     else{
       deltat = 0.f;
       for(i = 0; i < t_->size; i++){
-        deltat = (t_->data[i] - t_old->data[i]) * (t_->data[i] - t_old->data[i]);
+        deltat += (t_->data[i] - t_old->data[i]) * (t_->data[i] - t_old->data[i]);
         t_old->data[i] = t_->data[i];
       }
       deltat = sqrt(deltat);

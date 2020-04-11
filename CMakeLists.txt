@@ -1,7 +1,7 @@
 project(libscientific C Fortran)
 cmake_minimum_required(VERSION 2.6)
 set(AUTHOR "Giuseppe Marco Randazzo")
-set(VERSION "1.2.1")
+set(VERSION "1.2.2")
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: Debug Release" FORCE)
