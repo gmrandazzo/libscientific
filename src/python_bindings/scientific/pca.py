@@ -60,7 +60,7 @@ lsci.PCA.argtypes = [ctypes.POINTER(mx.matrix),
                      ctypes.c_size_t,
                      ctypes.c_size_t,
                      ctypes.POINTER(PCAMODEL),
-                     ctypes.c_int]
+                     ctypes.POINTER(ctypes.c_int)]
 lsci.PCA.restype = None
 
 
@@ -68,7 +68,8 @@ def PCA_(m, scaling, npc, mpca):
     """
     PCA: Calculate the PCA model for a matrix m using the NIPALS algorithm
     """
-    lsci.PCA(m, scaling, npc, mpca, 0)
+    ssignal = ctypes.c_int(0)
+    lsci.PCA(m, scaling, npc, mpca, ssignal)
 
 
 lsci.PCAScorePredictor.argtypes = [ctypes.POINTER(mx.matrix),

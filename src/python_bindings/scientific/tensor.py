@@ -17,7 +17,7 @@
 #
 import ctypes
 from scientific.loadlibrary import LoadLibrary
-from scientific.matrix import matrix as mx
+from scientific import matrix as mx
 from scientific import misc
 
 lsci = LoadLibrary()
@@ -54,7 +54,7 @@ lsci.NewTensorMatrix.restype = None
 lsci.AddTensorMatrix.argtypes = [ctypes.POINTER(ctypes.POINTER(tensor)),
                                  ctypes.c_size_t,
                                  ctypes.c_size_t]
-lsci.NewTeAddTensorMatrixnsorMatrix.restype = None
+lsci.AddTensorMatrix.restype = None
 
 lsci.NewTensor.argtypes = [ctypes.POINTER(ctypes.POINTER(tensor)),
                            ctypes.c_size_t]
@@ -104,10 +104,7 @@ def NewTensor(a_):
     return m
 
 
-void DelTensor(tensor**t);
-
-
-lsci.ResizeMatrix.argtypes = [ctypes.POINTER(ctypes.POINTER(matrix)),
+lsci.ResizeMatrix.argtypes = [ctypes.POINTER(ctypes.POINTER(mx.matrix)),
                               ctypes.c_size_t,
                               ctypes.c_size_t]
 lsci.ResizeMatrix.restype = None
@@ -121,7 +118,7 @@ def ResizeMatrix(m, nrows, ncols):
     lsci.ResizeMatrix(ctypes.pointer(m), nrows, ncols)
 
 
-lsci.DelMatrix.argtypes = [ctypes.POINTER(ctypes.POINTER(matrix))]
+lsci.DelMatrix.argtypes = [ctypes.POINTER(ctypes.POINTER(mx.matrix))]
 lsci.DelMatrix.restype = None
 
 
@@ -132,7 +129,7 @@ def DelMatrix(m):
     lsci.DelMatrix(ctypes.pointer(m))
 
 
-lsci.MatrixCheck.argtypes = [ctypes.POINTER(matrix)]
+lsci.MatrixCheck.argtypes = [ctypes.POINTER(mx.matrix)]
 lsci.MatrixCheck.restype = None
 
 
@@ -144,7 +141,7 @@ def MatrixCheck(m):
     lsci.DelMatrix(ctypes.pointer(m))
 
 
-lsci.PrintMatrix.argtypes = [ctypes.POINTER(matrix)]
+lsci.PrintMatrix.argtypes = [ctypes.POINTER(mx.matrix)]
 lsci.PrintMatrix.restype = None
 
 
@@ -155,7 +152,7 @@ def PrintMatrix(m):
     lsci.PrintMatrix(m)
 
 
-lsci.ValInMatrix.argtypes = [ctypes.POINTER(matrix), ctypes.c_double]
+lsci.ValInMatrix.argtypes = [ctypes.POINTER(mx.matrix), ctypes.c_double]
 lsci.ValInMatrix.restype = ctypes.c_int
 
 
@@ -167,7 +164,7 @@ def ValInMatrix(m, val):
     return lsci.ValInMatrix(m, val)
 
 
-lsci.MatrixSet.argtypes = [ctypes.POINTER(matrix), ctypes.c_double]
+lsci.MatrixSet.argtypes = [ctypes.POINTER(mx.matrix), ctypes.c_double]
 lsci.MatrixSet.restype = None
 
 
@@ -178,8 +175,8 @@ def MatrixSet(m, val):
     lsci.MatrixSet(m, val)
 
 
-lsci.MatrixCopy.argtypes = [ctypes.POINTER(matrix),
-                            ctypes.POINTER(ctypes.POINTER(matrix))]
+lsci.MatrixCopy.argtypes = [ctypes.POINTER(mx.matrix),
+                            ctypes.POINTER(ctypes.POINTER(mx.matrix))]
 lsci.MatrixCopy.restype = None
 
 
@@ -190,7 +187,7 @@ def MatrixCopy(msrc, mdst):
     lsci.MatrixCopy(msrc, ctypes.pointer(mdst))
 
 
-lsci.setMatrixValue.argtypes = [ctypes.POINTER(matrix),
+lsci.setMatrixValue.argtypes = [ctypes.POINTER(mx.matrix),
                                 ctypes.c_size_t,
                                 ctypes.c_size_t,
                                 ctypes.c_double]
@@ -205,7 +202,7 @@ def setMatrixValue(m, irow, jcol, value):
     lsci.setMatrixValue(m, irow, jcol, value)
 
 
-lsci.getMatrixValue.argtypes = [ctypes.POINTER(matrix),
+lsci.getMatrixValue.argtypes = [ctypes.POINTER(mx.matrix),
                                 ctypes.c_size_t,
                                 ctypes.c_size_t]
 lsci.getMatrixValue.restype = ctypes.c_double

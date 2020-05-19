@@ -18,6 +18,7 @@ import ctypes
 import scientific.matrix as mx
 import scientific.vector as vect
 import scientific.tensor as t
+from scientific import pca
 from scientific.loadlibrary import LoadLibrary
 
 lsci = LoadLibrary()
@@ -85,133 +86,210 @@ def DelPLSModel(mpls):
 
 
 lsci.PLS.argtypes = [ctypes.POINTER(mx.matrix),
+                     ctypes.POINTER(mx.matrix),
                      ctypes.c_size_t,
                      ctypes.c_size_t,
-                     ctypes.POINTER(PCAMODEL),
-                     ctypes.c_int]
-lsci.PCA.restype = None
+                     ctypes.c_size_t,
+                     ctypes.POINTER(PLSMODEL),
+                     ctypes.POINTER(ctypes.c_int)]
+lsci.PLS.restype = None
 
 
-def PCA_(m, scaling, npc, mpca):
+def PLS_(x, y, nlv, xscaling, yscaling, mpls):
     """
-    PCA: Calculate the PCA model for a matrix m using the NIPALS algorithm
+    PLS: Calculate the PLS model using a matrix x and a matrix y according to the NIPALS algorithm
+    
+    PLS(matrix *mx,
+        matrix *my,
+        size_t nlv,
+        size_t xautoscaling,
+        size_t yautoscaling,
+        PLSMODEL* model,
+        ssignal *s)
     """
-    lsci.PCA(m, scaling, npc, mpca, 0)
+    print(nlv)
+    ssignal = ctypes.c_int(0)
+    lsci.PLS(x,
+             y,
+             nlv,
+             xscaling,
+             yscaling,
+             mpls,
+             ctypes.pointer(ssignal))
 
 
-lsci.PCAScorePredictor.argtypes = [ctypes.POINTER(mx.matrix),
-                                   ctypes.POINTER(PCAMODEL),
-                                   ctypes.c_size_t,
-                                   ctypes.POINTER(ctypes.POINTER(mx.matrix))]
-lsci.PCAScorePredictor.restype = None
+lsci.PLSBetasCoeff.argtypes = [ctypes.POINTER(PLSMODEL),
+                               ctypes.c_size_t,
+                               ctypes.POINTER(ctypes.POINTER(vect.dvector))]
+lsci.PLSBetasCoeff.restype = None
 
 
-def PCAScorePredictor(m, mpca, npc, pscores):
-    """
-    PCAScorePredictor: Predict scores for a matrix m in the computed PCA modes
-    """
-    lsci.PCAScorePredictor(m,
-                           mpca,
-                           npc,
-                           ctypes.pointer(ctypes.pointer(m)))
-
-
-lsci.PCAIndVarPredictor.argtypes = [ctypes.POINTER(mx.matrix),
-                                    ctypes.POINTER(mx.matrix),
-                                    ctypes.POINTER(vect.dvector),
-                                    ctypes.POINTER(vect.dvector),
-                                    ctypes.c_size_t,
-                                    ctypes.POINTER(ctypes.POINTER(mx.matrix))]
-lsci.PCAIndVarPredictor.restype = None
-
-
-def PCAIndVarPredictor(t, p, colaverage, colscaling, npc, iv):
+def PLSBetasCoeff(mpls, nlv, bcoeff):
     """
     PCAIndVarPredictor: Reconstruct the original matrix from PCA model,
                         scores and loadings
     """
-    lsci.PCAIndVarPredictor(t, p, colaverage, colscaling, npc, ctypes.pointer(iv))
+    lsci.PLSBetasCoeff(mpls, nlv, ctypes.pointer(ctypes.pointer(bcoeff)))
 
 
-lsci.PrintPCA.argtypes = [ctypes.POINTER(PCAMODEL)]
-lsci.PrintPCA.restype = None
+
+lsci.PLSScorePredictor.argtypes = [ctypes.POINTER(mx.matrix),
+                                   ctypes.POINTER(PLSMODEL),
+                                   ctypes.c_size_t,
+                                   ctypes.POINTER(ctypes.POINTER(mx.matrix))]
+lsci.PLSScorePredictor.restype = None
 
 
-def PrintPCA(mpca):
+def PLSScorePredictor(x, mpls, nlv, pscores):
     """
-    PrintPCA: Print to video the PCA Model
+    PLSScorePredictor: Predict scores for a matrix m in the computed PLS modes
     """
-    lsci.PrintPCA(mpca)
+    lsci.PLSScorePredictor(x,
+                           mpls,
+                           nlv,
+                           ctypes.pointer(pscores))
 
 
-class PCA(object):
-    def __init__(self, scaling, npc):
-        self.mpca = NewPCAModel()
-        self.scaling = scaling
-        self.npc = npc
+# void PLSYPredictor(matrix *tscore, PLSMODEL *model, size_t nlv, matrix **y);
+
+lsci.PLSYPredictor.argtypes = [ctypes.POINTER(mx.matrix),
+                               ctypes.POINTER(PLSMODEL),
+                               ctypes.c_size_t,
+                               ctypes.POINTER(ctypes.POINTER(mx.matrix))]
+lsci.PLSYPredictor.restype = None
+
+
+def PLSYPredictor(xscores, mpls, nlv, predicted_y):
+    """
+    PLSYPredictor: Predict the Y according the predicted scores and the calculated pls model.
+                   This function is dependent on PLSScorePredictor.
+    """
+    lsci.PLSYPredictor(xscores, mpls, nlv, ctypes.pointer(ctypes.pointer(predicted_y)))
+
+
+# void PLSYPredictorAllLV(matrix *mx, PLSMODEL *model, matrix **tscores, matrix **y);
+
+lsci.PLSYPredictorAllLV.argtypes = [ctypes.POINTER(mx.matrix),
+                               ctypes.POINTER(PLSMODEL),
+                               ctypes.POINTER(ctypes.POINTER(mx.matrix)),
+                               ctypes.POINTER(ctypes.POINTER(mx.matrix))]
+lsci.PLSYPredictorAllLV.restype = None
+
+
+def PLSYPredictorAllLV(x, mpls, predicted_scores, predicted_y):
+    """
+    PLSYPredictorAllLV: Predict the Y according the original feature matrix and the calculated pls model.
+                   This function is NOT dependent on PLSScorePredictor.
+    """
+    lsci.PLSYPredictorAllLV(x,
+                            mpls,
+                            ctypes.pointer(ctypes.pointer(predicted_scores)),
+                            ctypes.pointer(ctypes.pointer(predicted_y)))
+
+
+
+lsci.PrintPLSModel.argtypes = [ctypes.POINTER(PLSMODEL)]
+lsci.PrintPLSModel.restype = None
+
+
+def PrintPLS(mpls):
+    """
+    PrintPLS: Print to video the PLS Model
+    """
+    lsci.PrintPLSModel(mpls)
+
+
+class PLS(object):
+    """
+    Partial least squares
+        Arguments:
+            nlv (int) : number of latent variable
+            xscaling (int) : scaling type for x matrix
+            yscaling (int) : scaling type for y matrix
+            N.B.: xscaling and yscaling can be:
+                0 -> No scaling
+                1 -> Standard deviation scaling
+                2 -> Root mean squared scaling
+                3 -> Pareto scaling
+                4 -> Range scaling
+                5 -> Level scaling
+    """
+    def __init__(self, nlv, xscaling=1, yscaling=0):
+        self.mpls = NewPLSModel()
+        self.nlv = nlv
+        self.xscaling = xscaling
+        self.yscaling = yscaling
 
     def __del__(self):
-        if self.mpca is not None:
-            DelPCAModel(self.mpca)
-            del self.mpca
-        self.mpca = None
-
-    def fit(self, m_):
-        if "Matrix" in str(type(m_)):
-            PCA_(m_, self.scaling, self.npc, self.mpca)
+        if self.mpls is not None:
+            DelPLSModel(self.mpls)
+            del self.mpls
+        self.mpls = None
+        
+    def fit(self, x_, y_):
+        x = None
+        xalloc = False
+        if "Matrix" not in str(type(x_)):
+            x = mx.NewMatrix(x_)
+            xalloc = True
         else:
-            m = mx.NewMatrix(m_)
-            PCA_(m, self.scaling, self.npc, self.mpca)
-            mx.DelMatrix(m)
-            del m
+            x = x_
+        
+        y = None
+        yalloc = False
+        if "Matrix" not in str(type(y_)):
+            y = mx.NewMatrix(y_)
+            yalloc = True
+        else:
+            y = y_
+        PLS_(x,
+             y,
+             self.nlv,
+             self.xscaling,
+             self.yscaling,
+             self.mpls)
+        
+        if xalloc is True:
+            mx.DelMatrix(x)
+            del x
+        
+        if yalloc is True:
+            mx.DelMatrix(y)
+            del y
+    
+    def get_tscores(self):
+        return mx.MatrixToList(self.mpls[0].xscores)
 
-    def get_scores(self):
-        return mx.MatrixToList(self.mpca[0].scores)
+    def get_uscores(self):
+        return mx.MatrixToList(self.mpls[0].yscores)
+    
+    def get_ploadings(self):
+        return mx.MatrixToList(self.mpls[0].xloadings)
 
-    def get_loadings(self):
-        return mx.MatrixToList(self.mpca[0].loadings)
-
+    def get_qloadings(self):
+        return mx.MatrixToList(self.mpls[0].yloadings)
+    
+    def get_weights(self):
+        return mx.MatrixToList(self.mpls[0].xweights)
+    
     def get_exp_variance(self):
-        return vect.DVectorToList(self.mpca[0].varexp)
+        return vect.DVectorToList(self.mpls[0].xvarexp)
 
-    def predict(self, m_):
-        m = mx.NewMatrix(m_)
+    def predict(self, x_, nlv_=None):
+        x = mx.NewMatrix(x_)
         pscores_ = mx.initMatrix()
-        PCAScorePredictor(m, self.mpca, self.npc, ctypes.pointer(pscores_))
-        pscores = pscores_.tolist()
-        mx.DelMatrix(m)
-        del m
+        nlv = None
+        if nlv_ is None:
+            nlv = self.nlv
+        else:
+            nlv = self.nlv
+        PLSScorePredictor(x, self.mpls, nlv, pscores_)
+        pscores = mx.MatrixToList(pscores_)
+        mx.DelMatrix(x)
+        del x
         mx.DelMatrix(pscores_)
         del pscores_
         return pscores
-
-    def reconstruct_original_matrix(self,
-                                    npc_=None,
-                                    scores_=None):
-        npc = None
-        if npc_ is None:
-            npc = self.npc
-        else:
-            npc = npc_
-
-        scores = None
-        if scores_ is None:
-            scores = self.mpca[0].scores
-        else:
-            scores = scores_
-
-        ivals = mx.initMatrix()
-        PCAIndVarPredictor(scores,
-                           self.mpca[0].loadings,
-                           self.mpca[0].colaverage,
-                           self.mpca[0].colscaling,
-                           npc,
-                           ivals)
-        omx = mx.MatrixToList(ivals)
-        mx.DelMatrix(ivals)
-        del ivals
-        return omx
-
 
 if __name__ == '__main__':
     def mx_to_video(m, decimals=5):
@@ -219,19 +297,37 @@ if __name__ == '__main__':
             print("\t".join([str(round(x, decimals)) for x in row]))
     import random
     random.seed(123456)
-    a = [[random.random() for j in range(4)] for i in range(10)]
+    x = [[random.random() for j in range(4)] for i in range(10)]
+    y = [[random.random() for j in range(1)] for i in range(10)]
+    xp = [[random.random() for j in range(4)] for i in range(10)]
+    
     print("Original Matrix")
-    mx_to_video(a)
-    print("Computing PCA ...")
-    model = PCA(1, 2)
-    model.fit(a)
-    print("Showing the PCA scores")
-    scores = model.get_scores()
-    mx_to_video(scores, 3)
-    print("Showing the PCA loadings")
-    loadings = model.get_loadings()
-    mx_to_video(loadings, 3)
+    print("X")
+    mx_to_video(x)
+    print("Y")
+    mx_to_video(y)
+    print("XP")
+    mx_to_video(xp)
+    print("Computing PLS ...")
+    model = PLS(nlv=2, xscaling=1, yscaling=0)
+    model.fit(x, y)
+    print("Showing the PLS T scores")
+    tscores = model.get_tscores()
+    mx_to_video(tscores, 3)
+    
+    print("Showing the PLS U scores")
+    uscores = model.get_uscores()
+    mx_to_video(uscores, 3)
+    
+    print("Showing the PLS P loadings")
+    ploadings = model.get_ploadings()
+    mx_to_video(ploadings, 3)
+    
+    print("Showing the X Variance")
     print(model.get_exp_variance())
-    print("Reconstruct the original PCA matrix using the PCA Model")
-    ra = model.reconstruct_original_matrix()
-    mx_to_video(ra)
+
+    
+    print("Predict XP")
+    pscores = model.predict(xp)
+    mx_to_video(pscores, 3)
+

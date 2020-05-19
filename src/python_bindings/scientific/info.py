@@ -21,14 +21,12 @@ from scientific.loadlibrary import LoadLibrary
 lsci = LoadLibrary()
 
 lsci.GetScientificVersion.argtypes = (None)
-lsci.initMatrix.restype = ctypes.c_char_p
+lsci.GetScientificVersion.restype = ctypes.c_char_p
 
 
 class Scientific(object):
     def __init__(self):
-        # ctypes.cast(lsci.GetScientificVersion(), ctypes.c_char_p)
-        self.__version__ = "1.2.0"
-
+        self.__version__ = str(lsci.GetScientificVersion().decode('UTF-8'))
 
 if __name__ == '__main__':
     libscientific = Scientific()
