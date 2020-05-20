@@ -170,9 +170,9 @@ def PLSYPredictor(xscores, mpls, nlv, predicted_y):
 # void PLSYPredictorAllLV(matrix *mx, PLSMODEL *model, matrix **tscores, matrix **y);
 
 lsci.PLSYPredictorAllLV.argtypes = [ctypes.POINTER(mx.matrix),
-                               ctypes.POINTER(PLSMODEL),
-                               ctypes.POINTER(ctypes.POINTER(mx.matrix)),
-                               ctypes.POINTER(ctypes.POINTER(mx.matrix))]
+                                    ctypes.POINTER(PLSMODEL),
+                                    ctypes.POINTER(ctypes.POINTER(mx.matrix)),
+                                    ctypes.POINTER(ctypes.POINTER(mx.matrix))]
 lsci.PLSYPredictorAllLV.restype = None
 
 
@@ -183,8 +183,8 @@ def PLSYPredictorAllLV(x, mpls, predicted_scores, predicted_y):
     """
     lsci.PLSYPredictorAllLV(x,
                             mpls,
-                            ctypes.pointer(ctypes.pointer(predicted_scores)),
-                            ctypes.pointer(ctypes.pointer(predicted_y)))
+                            ctypes.pointer(predicted_scores),
+                            ctypes.pointer(predicted_y))
 
 
 
@@ -278,18 +278,24 @@ class PLS(object):
     def predict(self, x_, nlv_=None):
         x = mx.NewMatrix(x_)
         pscores_ = mx.initMatrix()
+        py_ = mx.initMatrix()
+        
         nlv = None
         if nlv_ is None:
             nlv = self.nlv
         else:
             nlv = self.nlv
-        PLSScorePredictor(x, self.mpls, nlv, pscores_)
+            
+        PLSYPredictorAllLV(x, self.mpls, pscores_, py_)
         pscores = mx.MatrixToList(pscores_)
+        py = mx.MatrixToList(py_)
         mx.DelMatrix(x)
         del x
         mx.DelMatrix(pscores_)
         del pscores_
-        return pscores
+        mx.DelMatrix(py_)
+        del py_
+        return py, pscores
 
 if __name__ == '__main__':
     def mx_to_video(m, decimals=5):
@@ -328,6 +334,9 @@ if __name__ == '__main__':
 
     
     print("Predict XP")
-    pscores = model.predict(xp)
+    py, pscores = model.predict(xp)
+    print("Predicted Y for all LVs")
+    mx_to_video(py, 3)
+    print("Predicted Scores")
     mx_to_video(pscores, 3)
 
