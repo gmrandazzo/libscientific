@@ -424,15 +424,23 @@ void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautosc
         nlv = mx->col;
 
       NewMatrix(&X, mx->row, mx->col);
-      /* MeanCenteredMatrix(mx, X);
-      * We need to do the centered matrix manually here because these parameters could be useful for prediction.
-      */
+      /*
+       * First we have to detect if in the X or Y there are missing values.
+       */
       MatrixCheck(mx);
+      /* MatrixColAverage skip missing value marked with MISSING
+       * These values are automatically detected by MatrixCheck
+       */
       MatrixColAverage(mx, &(model->xcolaverage));
 
       for(j = 0; j < mx->col; j++){
         for(i = 0; i < mx->row; i++){
-          X->data[i][j] = mx->data[i][j] - model->xcolaverage->data[j];
+          if(FLOAT_EQ(mx->data[i][j], MISSING, 1e-1)){
+            continue;
+          }
+          else{
+            X->data[i][j] = mx->data[i][j] - model->xcolaverage->data[j];
+          }
         }
       }
 
@@ -470,16 +478,20 @@ void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautosc
           }
         }
 
-
         for(j = 0; j < X->col; j++){
-          if(model->xcolscaling->data[j] == 0){
+          if(FLOAT_EQ(getDVectorValue(model->xcolscaling, j), 0, EPSILON)){
             for(i = 0; i< X->row; i++){
               X->data[i][j] = 0.f;
             }
           }
           else{
             for(i = 0; i < X->row; i++){
-              X->data[i][j] /= model->xcolscaling->data[j];
+              if(FLOAT_EQ(X->data[i][j], MISSING, 1e-1)){
+                continue;
+              }
+              else{
+                X->data[i][j] /= model->xcolscaling->data[j];
+              }
             }
           }
         }
@@ -487,14 +499,24 @@ void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautosc
 
       NewMatrix(&Y, my->row, my->col);
 
+      /*
+       * Check in in the my matrix there are missing values.
+       */
+      MatrixCheck(my);
+      
       /*mean centering the y matrix*/
       MatrixColAverage(my, &(model->ycolaverage));
+      
       for(j = 0; j < my->col; j++){
         for(i = 0; i < my->row; i++){
-          Y->data[i][j] = my->data[i][j] - model->ycolaverage->data[j];
+          if(FLOAT_EQ(my->data[i][j], MISSING, 1e-1)){
+            continue;
+          }
+          else{
+            Y->data[i][j] = my->data[i][j] - model->ycolaverage->data[j];
+          }
         }
       }
-
 
       if(yautoscaling > 0){
         if(yautoscaling == 1){ /* RMS Scaling: Divite for the Standar Deviation Column */
@@ -524,15 +546,21 @@ void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautosc
           }
         }
 
+        
         for(j = 0; j < Y->col; j++){
-          if(model->ycolscaling->data[j] == 0){
+          if(FLOAT_EQ(getDVectorValue(model->ycolscaling, j), 0, EPSILON)){
             for(i = 0; i< Y->row; i++){
               Y->data[i][j] = 0.f;
             }
           }
           else{
             for(i = 0; i < Y->row; i++){
-              Y->data[i][j] /= model->ycolscaling->data[j];
+              if(FLOAT_EQ(Y->data[i][j], MISSING, 1e-1)){
+                continue;
+              }
+              else{
+                Y->data[i][j] /= model->ycolscaling->data[j];
+              }
             }
           }
         }

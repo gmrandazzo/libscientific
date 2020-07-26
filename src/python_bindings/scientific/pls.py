@@ -226,7 +226,7 @@ class PLS(object):
             del self.mpls
         self.mpls = None
         
-    def fit(self, x_, y_):
+    def fit(self, x_, y_, cross_validation=None):
         x = None
         xalloc = False
         if "Matrix" not in str(type(x_)):
