@@ -97,7 +97,7 @@ void cubic_spline_predict(dvector *x_, matrix *S, dvector **y_pred)
    */
   for(i = 0; i < x_->size; i++){
     x = x_->data[i];
-    y = 0.f;
+    y = MISSING;
     for(j = 0; j < n; j++){
       xi = S->data[j][0];
       if((x > xi || FLOAT_EQ(x, xi, 1e-2)) &&
@@ -110,6 +110,17 @@ void cubic_spline_predict(dvector *x_, matrix *S, dvector **y_pred)
         continue;
       }
     }
+
+    /* if y is still missing,
+     * this means that we are extrapolating over y.
+     * Then we will use the last equation
+     * with the last row of coefficients in S
+     */
+    if(FLOAT_EQ(y, MISSING, 1e-2)){
+      j = S->row-1;
+      y = S->data[j][1] + S->data[j][2]*(x-xi) + S->data[j][3]*(x-xi)*(x-xi) + S->data[j][4]*(x-xi)*(x-xi)*(x-xi);
+    }
+
     (*y_pred)->data[i] = y;
   }
 }

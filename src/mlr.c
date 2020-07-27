@@ -209,6 +209,9 @@ void MLRRegressionStatistics(matrix *my_true, matrix *my_pred, dvector** ccoeff,
   }
 }
 
+/*
+ * Warning: this function will be deprecated in future versions.
+ */
 void MLRYScrambling(matrix *mx, matrix *my,
                         size_t block, size_t valtype, size_t rgcv_group, size_t rgcv_iterations,
                         matrix **r2q2scrambling, ssignal *s)

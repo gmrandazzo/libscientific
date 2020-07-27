@@ -6,6 +6,7 @@
 #include "epls.h"
 #include "numeric.h" /* Using:  if(FLOAT_EQ(NumOne, NumTwo));*/
 #include "metricspace.h"
+#include "statistic.h"
 #include <math.h>
 #include <pthread.h>
 #include <stdarg.h>
@@ -1082,16 +1083,23 @@ void PLSDiscriminantAnalysisYScramblingPipeline(matrix *mx, matrix *my, size_t x
   DelMatrix(&pres);
 }
 
-void PermutedObservetCorrelation(matrix *my_true, matrix *my_perm, dvector *yaverage, dvector **ccoef)
+void PermutedObservetCorrelation(matrix *my_true, matrix *my_perm, dvector **ccoef)
 {
   size_t i, j;
+  dvector *yt;
+  dvector *yp;
+
   for(j = 0; j < my_true->col; j++){
-    double rss = 0.f, tss = 0.f;
+    initDVector(&yt);
+    initDVector(&yp);
+
     for(i = 0; i < my_true->row; i++){
-      rss += square(my_true->data[i][j] - my_perm->data[i][j]);
-      tss += square(my_true->data[i][j] - yaverage->data[j]);
+      DVectorAppend(&yt, my_true->data[i][j]);
+      DVectorAppend(&yp, my_perm->data[i][j]);
     }
-    (*ccoef)->data[j] = 1 - (rss/tss);
+    (*ccoef)->data[j] = R2(yt, yp);
+    DelDVector(&yt);
+    DelDVector(&yp);
   }
 }
 
@@ -1103,14 +1111,10 @@ void YScrambling(MODELINPUT *input, AlgorithmType algo, ValidationArg varg, size
 
   matrix *mx, *my;
   matrix *randomY;
-  dvector *yaverage;
   dvector *corrpermobs, *coeff_int, *coeff_valid;
   mx = (*input->mx);
   my = (*input->my);
   unsigned int srand_init = 1;
-
-  initDVector(&yaverage);
-  MatrixColAverage(my, &yaverage);
 
   srand(mx->row+mx->col+my->col+iterations);
 
@@ -1129,7 +1133,7 @@ void YScrambling(MODELINPUT *input, AlgorithmType algo, ValidationArg varg, size
   NewDVector(&coeff_int, my->col);
   NewDVector(&coeff_valid, my->col);
 
-  PermutedObservetCorrelation(my, my, yaverage, &corrpermobs);
+  PermutedObservetCorrelation(my, my, &corrpermobs);
   /*The first row is the model not scrambled...*/
   if(algo == _PLS_){
     PLSRegressionYScramblingPipeline(mx, my, input->xautoscaling, input->yautoscaling, input->nlv,  varg, nthreads, &coeff_int, &coeff_valid);
@@ -1160,7 +1164,7 @@ void YScrambling(MODELINPUT *input, AlgorithmType algo, ValidationArg varg, size
       }
     }
 
-    PermutedObservetCorrelation(my, randomY, yaverage, &corrpermobs);
+    PermutedObservetCorrelation(my, randomY, &corrpermobs);
     /*The first row is the model not scrambled...*/
     if(algo == _PLS_){
       PLSRegressionYScramblingPipeline(mx, randomY, input->xautoscaling, input->yautoscaling, input->nlv, varg, nthreads, &coeff_int, &coeff_valid);
@@ -1168,7 +1172,9 @@ void YScrambling(MODELINPUT *input, AlgorithmType algo, ValidationArg varg, size
     else if(algo == _PLS_DA_){
       PLSDiscriminantAnalysisYScramblingPipeline(mx, my, input->xautoscaling, input->yautoscaling, input->nlv, varg, nthreads, &coeff_int, &coeff_valid);
     }
-    /*else if(algo_ == _MLR_)
+    /*
+    TODO
+    else if(algo_ == _MLR_)
     else if(algo_ == _LDA_)*/
     for(j = 0; j < my->col; j++){
       size_t mult = j*my->col;
@@ -1181,202 +1187,5 @@ void YScrambling(MODELINPUT *input, AlgorithmType algo, ValidationArg varg, size
   DelDVector(&coeff_valid);
   DelDVector(&coeff_int);
   DelDVector(&corrpermobs);
-  DelDVector(&yaverage);
   DelMatrix(&randomY);
-}
-
-void YScrambling_OLDMETHOD(MODELINPUT *input, AlgorithmType algo, ValidationArg varg, size_t blocks,
-                  matrix **ccoeff_yscrambling, size_t nthreads, ssignal *s)
-{
-  size_t scrambiterations, iterations_, i, j, k, n, y_, blocksize;
-  int id;
-  double temp;
-
-  matrix *mx, *my;
-  matrix *randomY, *sorted_y_id, *sorty, *gid;
-  dvector *yaverage;
-  dvector *corrpermobs, *r2mod, *q2mod;
-  mx = (*input->mx);
-  my = (*input->my);
-
-  initDVector(&yaverage);
-  MatrixColAverage(my, &yaverage);
-
-  srand(mx->row*mx->col*my->col*blocks);
-  NewMatrix(&randomY, my->row, my->col);
-  NewMatrix(&sorted_y_id, my->row, my->col);
-
-  NewMatrix(&sorty, my->row, 2);
-  for(j = 0; j < my->col; j++){
-    for(i = 0; i < my->row; i++){
-      sorty->data[i][0] = my->data[i][j];
-      sorty->data[i][1] = i;
-    }
-    MatrixSort(sorty, 0);
-
-    for(i = 0; i < my->row; i++){
-      sorted_y_id->data[i][j] = sorty->data[i][1];
-    }
-  }
-  DelMatrix(&sorty);
-
-
-  /*calcualte the block size for the rotate matrix*/
-  blocksize = (size_t)ceil(mx->row/(double)blocks);
-  blocksize += (size_t)ceil((float)((blocksize*blocks) - mx->row)/  blocks);
-
-  NewMatrix(&gid, blocks, blocksize);
-  MatrixSet(gid, -2);
-  /* Crate the boxes to fill -2 means no value to fill, -1 means value to fill*/
-  for(i = 0, j = 0, k = 0; i < mx->row; i++){
-    if(j < blocks){
-      gid->data[j][k] = -1;
-      j++;
-    }
-    else{
-      j = 0;
-      k++;
-      gid->data[j][k] = -1;
-      j++;
-    }
-  }
-
-  /*get number of iterations*/
-  scrambiterations = 0;
-  for(i = 0; i < gid->row; i++){
-    iterations_ = 0;
-    for(j = 0; j < gid->col; j++){
-      if((int)gid->data[i][j] == -1){
-        iterations_++;
-      }
-      else{
-        continue;
-      }
-    }
-
-    if(iterations_ > scrambiterations){
-      scrambiterations = iterations_;
-    }
-    else{
-      continue;
-    }
-  }
-
-  /*Create a the r2q2scrambling matrix */
-  /*
-   * ccoeff_yscrambling columns:
-   *  0: correlation between permuted and observed y
-   *  1: r2 for the model
-   *  2: q2 for the model
-   */
-  ResizeMatrix(ccoeff_yscrambling, 1+scrambiterations, 3);
-  NewDVector(&corrpermobs, my->col);
-  NewDVector(&r2mod, my->col);
-  NewDVector(&q2mod, my->col);
-
-  PermutedObservetCorrelation(my, my, yaverage, &corrpermobs);
-  /*The first row is the model not scrambled...*/
-  if(algo == _PLS_){
-    PLSRegressionYScramblingPipeline(mx, my, input->xautoscaling, input->yautoscaling, input->nlv,  varg, nthreads, &r2mod, &q2mod);
-  }
-  /*else if(algo_ == _MLR_)
-  else if(algo_ == _LDA_)*/
-  for(j = 0; j < my->col; j++){
-    size_t mult = j*my->col;
-    (*ccoeff_yscrambling)->data[0][mult] = corrpermobs->data[j];
-    (*ccoeff_yscrambling)->data[0][mult+1] = r2mod->data[j];
-    (*ccoeff_yscrambling)->data[0][mult+2] = q2mod->data[j];
-  }
-
-
-  for(y_ = 0; y_ < sorted_y_id->col; y_++){
-    /* START WITH THE ORDERED Y_*/
-    k = 0;
-    for(i = 0; i < gid->row; i++){
-      for(j = 0; j < gid->col; j++){
-        if(gid->data[i][j] >= -1){
-          gid->data[i][j] = sorted_y_id->data[k][y_];
-          k++;
-        }
-        else{
-          continue;
-        }
-      }
-    }
-    /*
-    puts("GID Y_");
-    PrintMatrix(gid);
-    */
-
-    iterations_ = 0;
-    while(iterations_ <  scrambiterations){
-      if(s != NULL && (*s) == SIGSCIENTIFICSTOP){
-        break;
-      }
-      else{
-        /* Shuffle the Y bloks */
-        for(i = 0; i < gid->row; i++){
-          for(j = (gid->col-1); j > 0; j--){
-            if(gid->data[i][j] > -1){
-              /*then shift from this id to the first value..*/
-              temp = gid->data[i][j];
-              for(k = j; k > 0; k--){
-                gid->data[i][k] = gid->data[i][k-1];
-              }
-              gid->data[i][0] = temp;
-              break;
-            }
-            else{
-              continue;
-            }
-          }
-        }
-
-        /*
-        printf("Shuffled Y ID %d\n", (int)iterations_);
-        PrintMatrix(gid);
-        */
-
-        /*Fill the shifted y*/
-        n = 0;
-        for(i = 0; i < gid->row; i++){
-          for(j = 0; j < gid->col; j++){
-            id = gid->data[i][j];
-            if(id > -1){
-              for(k = 0; k < my->col; k++){
-                randomY->data[n][k] = my->data[id][k];
-              }
-              n++;
-            }
-            else{
-              continue;
-            }
-          }
-        }
-
-        PermutedObservetCorrelation(my, randomY, yaverage, &corrpermobs);
-        /*The first row is the model not scrambled...*/
-        if(algo == _PLS_){
-          PLSRegressionYScramblingPipeline(mx, randomY, input->xautoscaling, input->yautoscaling, input->nlv, varg, nthreads, &r2mod, &q2mod);
-        }
-        /*else if(algo_ == _MLR_)
-        else if(algo_ == _LDA_)*/
-        for(j = 0; j < my->col; j++){
-          size_t mult = j*my->col;
-          (*ccoeff_yscrambling)->data[iterations_+1][mult] = corrpermobs->data[j];
-          (*ccoeff_yscrambling)->data[iterations_+1][mult+1] = r2mod->data[j];
-          (*ccoeff_yscrambling)->data[iterations_+1][mult+2] = q2mod->data[j];
-        }
-        iterations_++;
-      }
-    }
-  }
-
-  DelDVector(&q2mod);
-  DelDVector(&r2mod);
-  DelDVector(&corrpermobs);
-  DelDVector(&yaverage);
-  DelMatrix(&sorted_y_id);
-  DelMatrix(&randomY);
-  DelMatrix(&gid);
 }

@@ -18,7 +18,6 @@ import ctypes
 import scientific.matrix as mx
 import scientific.vector as vect
 import scientific.tensor as t
-from scientific import pca
 from scientific.loadlibrary import LoadLibrary
 
 lsci = LoadLibrary()
@@ -97,8 +96,9 @@ lsci.PLS.restype = None
 
 def PLS_(x, y, nlv, xscaling, yscaling, mpls):
     """
-    PLS: Calculate the PLS model using a matrix x and a matrix y according to the NIPALS algorithm
-    
+    PLS: Calculate the PLS model using a matrix x and a matrix y
+         according to the NIPALS algorithm
+
     PLS(matrix *mx,
         matrix *my,
         size_t nlv,
@@ -126,8 +126,7 @@ lsci.PLSBetasCoeff.restype = None
 
 def PLSBetasCoeff(mpls, nlv, bcoeff):
     """
-    PCAIndVarPredictor: Reconstruct the original matrix from PCA model,
-                        scores and loadings
+    PLSBetasCoeff calculation
     """
     lsci.PLSBetasCoeff(mpls, nlv, ctypes.pointer(ctypes.pointer(bcoeff)))
 
@@ -225,7 +224,7 @@ class PLS(object):
             DelPLSModel(self.mpls)
             del self.mpls
         self.mpls = None
-        
+
     def fit(self, x_, y_, cross_validation=None):
         x = None
         xalloc = False
@@ -234,7 +233,7 @@ class PLS(object):
             xalloc = True
         else:
             x = x_
-        
+
         y = None
         yalloc = False
         if "Matrix" not in str(type(y_)):
@@ -248,30 +247,30 @@ class PLS(object):
              self.xscaling,
              self.yscaling,
              self.mpls)
-        
+
         if xalloc is True:
             mx.DelMatrix(x)
             del x
-        
+
         if yalloc is True:
             mx.DelMatrix(y)
             del y
-    
+
     def get_tscores(self):
         return mx.MatrixToList(self.mpls[0].xscores)
 
     def get_uscores(self):
         return mx.MatrixToList(self.mpls[0].yscores)
-    
+
     def get_ploadings(self):
         return mx.MatrixToList(self.mpls[0].xloadings)
 
     def get_qloadings(self):
         return mx.MatrixToList(self.mpls[0].yloadings)
-    
+
     def get_weights(self):
         return mx.MatrixToList(self.mpls[0].xweights)
-    
+
     def get_exp_variance(self):
         return vect.DVectorToList(self.mpls[0].xvarexp)
 
@@ -279,13 +278,13 @@ class PLS(object):
         x = mx.NewMatrix(x_)
         pscores_ = mx.initMatrix()
         py_ = mx.initMatrix()
-        
+
         nlv = None
         if nlv_ is None:
             nlv = self.nlv
         else:
             nlv = self.nlv
-            
+
         PLSYPredictorAllLV(x, self.mpls, pscores_, py_)
         pscores = mx.MatrixToList(pscores_)
         py = mx.MatrixToList(py_)
@@ -297,6 +296,7 @@ class PLS(object):
         del py_
         return py, pscores
 
+
 if __name__ == '__main__':
     def mx_to_video(m, decimals=5):
         for row in m:
@@ -306,7 +306,7 @@ if __name__ == '__main__':
     x = [[random.random() for j in range(4)] for i in range(10)]
     y = [[random.random() for j in range(1)] for i in range(10)]
     xp = [[random.random() for j in range(4)] for i in range(10)]
-    
+
     print("Original Matrix")
     print("X")
     mx_to_video(x)
@@ -320,23 +320,22 @@ if __name__ == '__main__':
     print("Showing the PLS T scores")
     tscores = model.get_tscores()
     mx_to_video(tscores, 3)
-    
+
     print("Showing the PLS U scores")
     uscores = model.get_uscores()
     mx_to_video(uscores, 3)
-    
+
     print("Showing the PLS P loadings")
     ploadings = model.get_ploadings()
     mx_to_video(ploadings, 3)
-    
+
     print("Showing the X Variance")
     print(model.get_exp_variance())
 
-    
+
     print("Predict XP")
     py, pscores = model.predict(xp)
     print("Predicted Y for all LVs")
     mx_to_video(py, 3)
     print("Predicted Scores")
     mx_to_video(pscores, 3)
-
