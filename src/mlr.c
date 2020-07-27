@@ -22,6 +22,7 @@
 
 #include "algebra.h"
 #include "numeric.h"
+#include "statistic.h"
 
 #include <math.h>
 
@@ -169,52 +170,43 @@ void MLRPredictY(matrix* mx, matrix *my, MLRMODEL* model, matrix** predicted_y, 
 }
 
 
-void MLRRegressionStatistics(matrix *my_true, matrix *my_pred, dvector** ccoeff, dvector **stdev, dvector **bias)
+void MLRRegressionStatistics(matrix *my_true, matrix *my_pred, dvector** ccoeff, dvector **rmse, dvector **bias)
 {
   size_t i, j;
-  dvector *ymean;
+  dvector *yt;
+  dvector *yp;
 
-  /*Calculate the Q2 and SDEP */
   if(ccoeff != NULL)
     DVectorResize(ccoeff,my_true->col);
 
-  if(stdev != NULL)
-    DVectorResize(stdev, my_true->col);
+  if(rmse != NULL)
+    DVectorResize(rmse, my_true->col);
 
   if(bias != NULL)
     DVectorResize(bias, my_true->col);
 
-  initDVector(&ymean);
-  MatrixColAverage(my_true, &ymean);
-
   for(j = 0; j < my_true->col; j++){
-    double ssreg = 0.f;
-    double sstot = 0.f;
+    initDVector(&yt);
+    initDVector(&yp);
     for(i = 0; i < my_true->row; i++){
-      ssreg += square(my_pred->data[i][j] - my_true->data[i][j]);
-      sstot += square(my_true->data[i][j] - ymean->data[j]);
+      DVectorAppend(&yt, my_true->data[i][j]);
+      DVectorAppend(&yp, my_pred->data[i][j]);
     }
 
     if(bias != NULL){
-      double sum_yi = 0.f, sum_xi = 0.f;
-      /*ypredaverage /= (double)my->row;*/
-      for(i = 0; i < my_true->row; i++){
-        sum_yi+=(my_pred->data[i][j]*(my_true->data[i][j]-ymean->data[j]));
-        sum_xi+=(my_true->data[i][j]*(my_true->data[i][j]-ymean->data[j]));
-      }
-      /*sum_yi/sum_xi = m */
-      (*bias)->data[j] = fabs(1 - sum_yi/sum_xi);
-      /*k = Y-(X*b);*/
+      (*bias)->data[j] = BIAS(yt, yp);
     }
 
-    if(ccoeff != NULL)
-      (*ccoeff)->data[j] = 1.f - (ssreg/sstot);
+    if(ccoeff != NULL){
+      (*ccoeff)->data[j] = R2(yt, yp);
+    }
 
-    if(stdev != NULL)
-      (*stdev)->data[j] = sqrt(ssreg/(double)my_true->row);
+    if(rmse != NULL){
+      (*rmse)->data[j] = RMSE(yt, yp);
+    }
+    DelDVector(&yt);
+    DelDVector(&yp);
   }
-
-  DelDVector(&ymean);
 }
 
 void MLRYScrambling(matrix *mx, matrix *my,
