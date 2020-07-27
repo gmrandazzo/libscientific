@@ -23,6 +23,41 @@
 #include "vector.h"
 
 /*
+ * ytrue = True values
+ * ypred = Predicted values
+ *
+ */
+double R2(dvector *ytrue, dvector *ypred);
+
+/*
+ * ytrue = True values
+ * ypred = Predicted values
+ *
+ */
+double MAE(dvector *ytrue, dvector *ypred);
+
+/*
+ * ytrue = True values
+ * ypred = Predicted values
+ *
+ */
+double MSE(dvector *ytrue, dvector *ypred);
+
+/*
+ * ytrue = True values
+ * ypred = Predicted values
+ *
+ */
+double RMSE(dvector *ytrue, dvector *ypred);
+
+/*
+ * ytrue = True values
+ * ypred = Predicted values
+ *
+ */
+double BIAS(dvector *ytrue, dvector *ypred);
+
+/*
  * TP = True PositivePredictedValue
  * FN = False Negative
  *

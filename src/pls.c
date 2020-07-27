@@ -503,10 +503,10 @@ void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautosc
        * Check in in the my matrix there are missing values.
        */
       MatrixCheck(my);
-      
+
       /*mean centering the y matrix*/
       MatrixColAverage(my, &(model->ycolaverage));
-      
+
       for(j = 0; j < my->col; j++){
         for(i = 0; i < my->row; i++){
           if(FLOAT_EQ(my->data[i][j], MISSING, 1e-1)){
@@ -546,7 +546,7 @@ void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautosc
           }
         }
 
-        
+
         for(j = 0; j < Y->col; j++){
           if(FLOAT_EQ(getDVectorValue(model->ycolscaling, j), 0, EPSILON)){
             for(i = 0; i< Y->row; i++){
@@ -939,8 +939,10 @@ void PLSYPredictorAllLV(matrix *mx, PLSMODEL *model, matrix **tscores, matrix **
 
 void PLSRegressionStatistics(matrix *my_true, matrix *my_pred, matrix** ccoeff, matrix **rmse, matrix **bias)
 {
-  size_t lv, i, j;
-  dvector *ymean;
+  size_t lv, i, j, ny;
+
+  dvector *yt;
+  dvector *yp;
 
   size_t nlv = (size_t) my_pred->col/my_true->col;
   /*Calculate the Q2 and SDEP */
@@ -953,39 +955,37 @@ void PLSRegressionStatistics(matrix *my_true, matrix *my_pred, matrix** ccoeff, 
   if(bias != NULL)
     ResizeMatrix(bias, nlv, my_true->col);
 
-  initDVector(&ymean);
-  MatrixColAverage(my_true, &ymean);
-
+  ny = 0;
   for(lv = 0; lv < nlv; lv++){
     for(j = 0; j < my_true->col; j++){
-      double ssreg = 0.f;
-      double sstot = 0.f;
+      initDVector(&yt);
+      initDVector(&yp);
       for(i = 0; i < my_true->row; i++){
-	      ssreg += square(my_pred->data[i][my_true->col*lv+j] - my_true->data[i][j]);
-        sstot += square(my_true->data[i][j] - ymean->data[j]);
+        if(FLOAT_EQ(my_true->data[i][j], MISSING, 1e-1)){
+          continue;
+        }
+        else{
+          DVectorAppend(&yt, my_true->data[i][j]);
+          DVectorAppend(&yp, my_pred->data[i][my_true->col*lv+j]);
+        }
       }
 
       if(bias != NULL){
-        double sum_yi = 0.f, sum_xi = 0.f;
-        /*ypredaverage /= (double)my->row;*/
-        for(i = 0; i < my_true->row; i++){
-          sum_yi+=(my_pred->data[i][my_true->col*lv+j]*(my_true->data[i][j]-ymean->data[j]));
-          sum_xi+=(my_true->data[i][j]*(my_true->data[i][j]-ymean->data[j]));
-        }
-        /*sum_yi/sum_xi = m */
-        (*bias)->data[lv][j] = fabs(1 - sum_yi/sum_xi);
-        /*k = Y-(X*b);*/
+        (*bias)->data[lv][j] = BIAS(yt, yp);
       }
 
-      if(ccoeff != NULL)
-        (*ccoeff)->data[lv][j] = 1.f - (ssreg/sstot);
+      if(ccoeff != NULL){
+        (*ccoeff)->data[lv][j] = R2(yt, yp);
+      }
 
-      if(rmse != NULL)
-        (*rmse)->data[lv][j] = sqrt(ssreg/(double)my_true->row);
+      if(rmse != NULL){
+        (*rmse)->data[lv][j] = RMSE(yt, yp);
+      }
+
+      DelDVector(&yt);
+      DelDVector(&yp);
     }
-
   }
-  DelDVector(&ymean);
 }
 
 void PLSDiscriminantAnalysisStatistics(matrix *my_true, matrix *my_score, tensor **roc, matrix **roc_auc, tensor **precision_recall, matrix **precision_recall_ap)
