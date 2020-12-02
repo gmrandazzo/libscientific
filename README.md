@@ -33,6 +33,7 @@ with parallel computing to be faster:
 - Leave-One-Out
 - Y-Scrambling [6]
 
+Documentation available at http://gmrandazzo.github.io/libscientific/
 
 References:
 ----------
