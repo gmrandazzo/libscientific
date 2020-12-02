@@ -1,0 +1,722 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Getting started in C &#8212; libscientific 1.2.4 documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Getting started in Python" href="GettingStartedInPython.html" />
+    <link rel="prev" title="Install" href="Install.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="GettingStartedInPython.html" title="Getting started in Python"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Install.html" title="Install"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">libscientific 1.2.4 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Getting started in C</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="getting-started-in-c">
+<h1>Getting started in C<a class="headerlink" href="#getting-started-in-c" title="Permalink to this headline">¶</a></h1>
+<p>Every data type object in libscientific is stored in the HEAP and then supports
+dynamic memory allocation.</p>
+<p>This means that every data object such as, matrix, vectors, tensors, models in general need to be manually allocated/deallocated
+by the programmer using the library predefined constructs “NewSOMETHING(&amp;…);” and “DelSOMETHING(&amp;…);”.</p>
+<p>This also means that every data object is a pointer and need to pass by reference “&amp;”.</p>
+<p>To avoid memory fragmentation problems please, consider that every allocated variable
+need to be deallocated at the end of your program :-)</p>
+<div class="section" id="compile-a-program-that-use-libscientific">
+<h2>Compile a program that use libscientific<a class="headerlink" href="#compile-a-program-that-use-libscientific" title="Permalink to this headline">¶</a></h2>
+<p>A program that use libscientific requires only one directive as follow:</p>
+<div class="highlight-c notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;scientific.h&gt;</span><span class="cp"></span>
+</pre></div>
+</td></tr></table></div>
+<p>and to compile the code with a C or C++ compiler linking with <cite>-lscientific</cite>
+and specify the right paths using the <cite>-L&lt;library path/of/libscientific</cite> and <cite>-I&lt;include path/of libscientific&gt;</cite>
+options.</p>
+<div class="highlight-c notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">gcc</span> <span class="o">-</span><span class="n">o</span> <span class="n">example1</span> <span class="o">-</span><span class="n">L</span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span> <span class="o">-</span><span class="n">I</span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">include</span> <span class="o">-</span><span class="n">lscientific</span> <span class="n">example1</span><span class="p">.</span><span class="n">c</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+</div>
+<div class="section" id="matrix-operations">
+<h1>Matrix operations<a class="headerlink" href="#matrix-operations" title="Permalink to this headline">¶</a></h1>
+<p>Matrix is an user defined data type which contains informations in regards to
+- the number of rows
+- the number of columns
+- the 2D data array which define the matrix</p>
+<p>The data array is specifically selected to be double type
+to work with large range of numbers.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span> <span class="k">struct</span><span class="p">{</span>
+  <span class="kt">double</span> <span class="o">**</span><span class="n">data</span><span class="p">;</span>
+  <span class="kt">size_t</span> <span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">;</span>
+<span class="p">}</span><span class="n">matrix</span><span class="p">;</span>
+</pre></div>
+</div>
+<div class="section" id="create-allocate-a-matrix-with-a-specific-size">
+<h2>Create/Allocate a matrix with a specific size<a class="headerlink" href="#create-allocate-a-matrix-with-a-specific-size" title="Permalink to this headline">¶</a></h2>
+<p>Create a simple matrix of 10 rows and 15 columns and fill it with numbers.</p>
+<p>Then print it to the terminal using “PrintMatrix();”</p>
+<div class="highlight-c notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;scientific.h&gt;</span><span class="cp"></span>
+
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">;</span>
+    <span class="n">matrix</span> <span class="o">*</span><span class="n">m</span><span class="p">;</span> <span class="c1">// Definition of the pointer matrix variable</span>
+    <span class="n">NewMatrix</span><span class="p">(</span><span class="o">&amp;</span><span class="n">m</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">);</span> <span class="c1">// Create the matrix with 10 rows and 15 columns. Each value in the matrix is 0.</span>
+    <span class="k">for</span><span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">){</span>
+        <span class="k">for</span><span class="p">(</span><span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="mi">15</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">){</span>
+            <span class="n">m</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="kt">float</span><span class="p">)</span><span class="n">i</span><span class="o">+</span><span class="n">j</span><span class="p">;</span> <span class="c1">// Fill the matrix values with these numbers</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="n">PrintMatrix</span><span class="p">(</span><span class="n">m</span><span class="p">);</span> <span class="c1">// Print to video the matrix content</span>
+    <span class="n">DelMatrix</span><span class="p">(</span><span class="o">&amp;</span><span class="n">m</span><span class="p">);</span> <span class="c1">// Free the memory space</span>
+<span class="p">}</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="initialize-an-empty-matrix-and-append-a-row-column-to-it">
+<h2>Initialize an empty matrix and append a row/column to it<a class="headerlink" href="#initialize-an-empty-matrix-and-append-a-row-column-to-it" title="Permalink to this headline">¶</a></h2>
+<p>An empty matrix is an object with rows and cols equal to 0. However in that
+matrix object we can add dynamically rows and columns and or resize it later on.</p>
+<p>In this example we will initialize an empty matrix and we will add to it several rows.</p>
+<div class="highlight-c notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;scientific.h&gt;</span><span class="cp"></span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+    <span class="n">matrix</span> <span class="o">*</span><span class="n">mx</span><span class="p">;</span> <span class="c1">// Definition of the matrix variable as a pointer</span>
+    <span class="n">dvector</span> <span class="o">*</span><span class="n">row</span><span class="p">;</span> <span class="c1">// Definition of the row variable as a pointer </span>
+
+    <span class="n">NewDVector</span><span class="p">(</span><span class="o">&amp;</span><span class="n">row</span><span class="p">,</span> <span class="mi">15</span><span class="p">);</span>
+    <span class="k">for</span><span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">row</span><span class="o">-&gt;</span><span class="n">size</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">){</span>
+        <span class="n">row</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="n">i</span><span class="p">;</span> <span class="c1">// Fill one time the row vector </span>
+    <span class="p">}</span>
+
+    <span class="n">initMatrix</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mx</span><span class="p">);</span> <span class="c1">// Initialize the empty matrix with rows and columns equal to 0</span>
+
+    <span class="k">for</span><span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">){</span>
+        <span class="n">MatrixAppendRow</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mx</span><span class="p">,</span> <span class="n">row</span><span class="p">);</span> <span class="c1">// Append 5 times the row to the matrix mx</span>
+    <span class="p">}</span>
+
+    <span class="n">PrintMatrix</span><span class="p">(</span><span class="n">mx</span><span class="p">);</span> <span class="c1">// Print to video the matrix </span>
+
+    <span class="n">DelDVector</span><span class="p">(</span><span class="o">&amp;</span><span class="n">row</span><span class="p">);</span> <span class="c1">// Free the memory space for the row vector</span>
+    <span class="n">DelMatrix</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mx</span><span class="p">);</span> <span class="c1">// Free the memory space for the matrix</span>
+<span class="p">}</span>
+
+
+</pre></div>
+</td></tr></table></div>
+<p>Of course the same code can be reused to add a columns using the construct “MatrixAppendCol” instead of “MatrixAppendRow”.</p>
+</div>
+<div class="section" id="matrix-x-column-vector-dot-product">
+<h2>Matrix x Column vector dot product<a class="headerlink" href="#matrix-x-column-vector-dot-product" title="Permalink to this headline">¶</a></h2>
+<p>In this example we illustrate the product between a matrix of sizes M x N and a column double vector of size N.</p>
+<div class="highlight-c notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;scientific.h&gt;</span><span class="cp"></span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">;</span>
+    <span class="n">matrix</span> <span class="o">*</span><span class="n">mx</span><span class="p">;</span> <span class="c1">// Definition of the matrix variable as a pointer</span>
+    <span class="n">dvector</span> <span class="o">*</span><span class="n">cvect</span><span class="p">;</span> <span class="c1">// Definition of the column vector as a pointer </span>
+    <span class="n">dvector</span> <span class="o">*</span><span class="n">result</span><span class="p">;</span> <span class="c1">// Definition of the result vector between the matrix and the column vector</span>
+
+    <span class="n">NewDVector</span><span class="p">(</span><span class="o">&amp;</span><span class="n">cvect</span><span class="p">,</span> <span class="mi">15</span><span class="p">);</span>
+    <span class="k">for</span><span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">cvect</span><span class="o">-&gt;</span><span class="n">size</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">){</span>
+        <span class="n">cvect</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="n">i</span><span class="p">;</span> <span class="c1">// Fill one time the row vector </span>
+    <span class="p">}</span>
+
+    <span class="n">NewMatrix</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mx</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">15</span><span class="p">);</span> <span class="c1">// Initialize a matrix with 23 rows and 15 columns</span>
+
+    <span class="k">for</span><span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">mx</span><span class="o">-&gt;</span><span class="n">row</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">){</span>
+        <span class="k">for</span><span class="p">(</span><span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">mx</span><span class="o">-&gt;</span><span class="n">col</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">){</span>
+            <span class="n">mx</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="n">i</span><span class="o">+</span><span class="n">j</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="n">NewDVector</span><span class="p">(</span><span class="o">&amp;</span><span class="n">result</span><span class="p">,</span> <span class="mi">23</span><span class="p">);</span>
+
+    <span class="n">MatrixDVectorDotProduct</span><span class="p">(</span><span class="n">mx</span><span class="p">,</span> <span class="n">cvect</span><span class="p">,</span> <span class="n">result</span><span class="p">);</span>
+    <span class="cm">/*</span>
+<span class="cm">     * or MT_MatrixDVectorDotProduct if you want to run the multitask operation.</span>
+<span class="cm">     * This function is usefull for large matrix.</span>
+<span class="cm">     */</span>
+
+
+    <span class="n">PrintDVector</span><span class="p">(</span><span class="n">result</span><span class="p">);</span> <span class="c1">// Print to video the result</span>
+    <span class="c1">// Free the memory spaces</span>
+    <span class="n">DelDVector</span><span class="p">(</span><span class="o">&amp;</span><span class="n">result</span><span class="p">);</span> 
+    <span class="n">DelDVector</span><span class="p">(</span><span class="o">&amp;</span><span class="n">cvect</span><span class="p">);</span>
+    <span class="n">DelMatrix</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mx</span><span class="p">);</span>
+<span class="p">}</span>
+
+
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="transpose-a-matrix">
+<h2>Transpose a matrix<a class="headerlink" href="#transpose-a-matrix" title="Permalink to this headline">¶</a></h2>
+<p>A matrix transpose is an operation which flip a matrix over it’s diagonal.
+Here an example that shows how to produce a transpose of a given matrix.</p>
+<div class="highlight-c notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;scientific.h&gt;</span><span class="cp"></span>
+
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">;</span>
+    <span class="n">matrix</span> <span class="o">*</span><span class="n">m</span><span class="p">,</span> <span class="o">*</span><span class="n">m_T</span><span class="p">;</span> <span class="c1">// Definition of the pointer matrix variable</span>
+    <span class="n">NewMatrix</span><span class="p">(</span><span class="o">&amp;</span><span class="n">m</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">);</span> <span class="c1">// Create the matrix with 10 rows and 15 columns. Each value in the matrix is 0.</span>
+    <span class="n">NewMatrix</span><span class="p">(</span><span class="o">&amp;</span><span class="n">m_T</span><span class="p">,</span> <span class="n">m</span><span class="o">-&gt;</span><span class="n">col</span><span class="p">,</span> <span class="n">m</span><span class="o">-&gt;</span><span class="n">row</span><span class="p">);</span> <span class="c1">// Create the transposed matrix with the flip of the columns and rows size</span>
+
+    <span class="k">for</span><span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">){</span>
+        <span class="k">for</span><span class="p">(</span><span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="mi">15</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">){</span>
+            <span class="n">m</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="kt">float</span><span class="p">)</span><span class="n">i</span><span class="o">+</span><span class="n">j</span><span class="p">;</span> <span class="c1">// Fill the matrix values with these numbers</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="n">MatrixTranspose</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">m_T</span><span class="p">);</span>
+    <span class="n">PrintMatrix</span><span class="p">(</span><span class="n">m</span><span class="p">);</span> <span class="c1">// Print to video the original matrix content</span>
+    <span class="n">puts</span><span class="p">(</span><span class="s">&quot;Transposed matrix&quot;</span><span class="p">);</span>
+    <span class="n">PrintMatrix</span><span class="p">(</span><span class="n">m_T</span><span class="p">);</span> <span class="c1">// Print to video the transposed matrix </span>
+    <span class="c1">// Free the memory spaces</span>
+    <span class="n">DelMatrix</span><span class="p">(</span><span class="o">&amp;</span><span class="n">m</span><span class="p">);</span>
+    <span class="n">DelMatrix</span><span class="p">(</span><span class="o">&amp;</span><span class="n">m_T</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+</div>
+<div class="section" id="multivariate-analysis-algorithms">
+<h1>Multivariate analysis algorithms<a class="headerlink" href="#multivariate-analysis-algorithms" title="Permalink to this headline">¶</a></h1>
+<p>In this section you will find examples regarding how to run multivariate analysis algorithms.
+In particular the algorithm described here are extracted from official scientific publications
+and are adapted to run in multithreading to speedup the calculation.</p>
+<ul class="simple">
+<li><p>PCA and PLS implements the NIPALS algorithm described in the following publication:</p></li>
+</ul>
+<div class="line-block">
+<div class="line">P. Geladi, B.R. Kowalski</div>
+<div class="line">Partial least-squares regression: a tutorial</div>
+<div class="line">Analytica Chimica Acta Volume 185, 1986, Pages 1–17</div>
+<div class="line">DOI:10.1016/0003-2670(86)80028-9</div>
+</div>
+<div class="section" id="principal-component-analysis-pca">
+<h2>Principal Component Analysis (PCA)<a class="headerlink" href="#principal-component-analysis-pca" title="Permalink to this headline">¶</a></h2>
+<p>Here an example to shows how to compute a principal component analysis on a matrix.</p>
+<div class="highlight-c notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;scientific.h&gt;</span><span class="cp"></span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">matrix</span> <span class="o">*</span><span class="n">m</span><span class="p">;</span> <span class="c1">// Definition of the input matrix </span>
+    <span class="n">PCAMODEL</span> <span class="o">*</span><span class="n">model</span><span class="p">;</span> <span class="c1">// Definition of the PCA model</span>
+    <span class="kt">int</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">nobj</span> <span class="o">=</span> <span class="mi">20</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">nvars</span> <span class="o">=</span> <span class="mi">8</span><span class="p">;</span>
+    <span class="n">NewMatrix</span><span class="p">(</span><span class="o">&amp;</span><span class="n">m</span><span class="p">,</span> <span class="n">nobj</span><span class="p">,</span> <span class="n">nvars</span><span class="p">);</span>
+
+    <span class="c1">// Fill with random values the matrix m</span>
+    <span class="n">srand</span><span class="p">(</span><span class="n">nobj</span><span class="p">);</span>
+    <span class="k">for</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">nobj</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">){</span>
+        <span class="k">for</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">nvars</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">){</span>
+            <span class="n">m</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">randDouble</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">20</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+
+    <span class="n">NewPCAModel</span><span class="p">(</span><span class="o">&amp;</span><span class="n">model</span><span class="p">);</span> <span class="c1">// Allocation of the PCA model</span>
+    <span class="n">PCA</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span> <span class="c1">// Calculation of the PCA on matrix m using unit variance scaling (1) and the extraction of 5 principal components </span>
+
+    <span class="n">PrintPCA</span><span class="p">(</span><span class="n">model</span><span class="p">);</span> <span class="c1">// Print to video the PCA results</span>
+
+    <span class="cm">/* Of course you can print in a separate way the different results contained in the model variable</span>
+<span class="cm">     * model-&gt;scores is the matrix of scores</span>
+<span class="cm">     * model-&gt;loadings is the matrix of loadings</span>
+<span class="cm">     * model-&gt;colavg is the column average obtained from the input matrix</span>
+<span class="cm">     * model-&gt;scaling is the scaling factor obtained from the input matrix</span>
+<span class="cm">     */</span>
+
+    <span class="c1">// Free the memory spaces</span>
+    <span class="n">DelPCAModel</span><span class="p">(</span><span class="o">&amp;</span><span class="n">model</span><span class="p">);</span>
+    <span class="n">DelMatrix</span><span class="p">(</span><span class="o">&amp;</span><span class="n">m</span><span class="p">);</span>
+<span class="p">}</span>
+
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="partial-least-squares-pls">
+<h2>Partial Least Squares (PLS)<a class="headerlink" href="#partial-least-squares-pls" title="Permalink to this headline">¶</a></h2>
+<p>To calculate a PLS model, a matrix of features or independent variables and a matrix of targets or dependent variables is requested.
+Here a simple example that shows how to calculate a PLS model.</p>
+<div class="highlight-c notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15
+ 16
+ 17
+ 18
+ 19
+ 20
+ 21
+ 22
+ 23
+ 24
+ 25
+ 26
+ 27
+ 28
+ 29
+ 30
+ 31
+ 32
+ 33
+ 34
+ 35
+ 36
+ 37
+ 38
+ 39
+ 40
+ 41
+ 42
+ 43
+ 44
+ 45
+ 46
+ 47
+ 48
+ 49
+ 50
+ 51
+ 52
+ 53
+ 54
+ 55
+ 56
+ 57
+ 58
+ 59
+ 60
+ 61
+ 62
+ 63
+ 64
+ 65
+ 66
+ 67
+ 68
+ 69
+ 70
+ 71
+ 72
+ 73
+ 74
+ 75
+ 76
+ 77
+ 78
+ 79
+ 80
+ 81
+ 82
+ 83
+ 84
+ 85
+ 86
+ 87
+ 88
+ 89
+ 90
+ 91
+ 92
+ 93
+ 94
+ 95
+ 96
+ 97
+ 98
+ 99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;scientific.h&gt;</span><span class="cp"></span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">matrix</span> <span class="o">*</span><span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">y</span><span class="p">;</span> <span class="c1">// Define the feature matrix x and the target to predict y</span>
+    <span class="n">dvector</span> <span class="o">*</span><span class="n">betas</span><span class="p">;</span> <span class="c1">// Define the beta coefficients</span>
+    <span class="n">PLSMODEL</span> <span class="o">*</span><span class="n">m</span><span class="p">;</span>
+
+    <span class="c1">// Allocate the matrix</span>
+    <span class="n">NewMatrix</span><span class="p">(</span><span class="o">&amp;</span><span class="n">x</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">6</span><span class="p">);</span>
+    <span class="n">NewMatrix</span><span class="p">(</span><span class="o">&amp;</span><span class="n">y</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+
+    <span class="c1">// Fill the matrix with values</span>
+    <span class="c1">// This is a manual filling.</span>
+    <span class="c1">// Of course we can read a csv file and fill it automatically</span>
+
+    <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">4.0000</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">4.0000</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0000</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mf">84.1400</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0500</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="mf">235.1500</span><span class="p">;</span>
+    <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">5.0000</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">5.0000</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0000</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mf">79.1000</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.9780</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="mi">231</span><span class="p">;</span>
+    <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">4.0000</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">5.0000</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0000</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mf">67.0900</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.9700</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="mf">249.0000</span><span class="p">;</span>
+    <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">4.0000</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">4.0000</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0000</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mf">68.0700</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.9360</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="mf">187.3500</span><span class="p">;</span>
+    <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">3.0000</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">4.0000</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0000</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mf">68.0800</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0300</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="mf">363.0000</span><span class="p">;</span>
+    <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">5</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">9.0000</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">5</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">7.0000</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">5</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0000</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">5</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mf">129.1600</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">5</span><span class="p">][</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0900</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">5</span><span class="p">][</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="mf">258.0000</span><span class="p">;</span>
+    <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">6</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">10.0000</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">6</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">8.0000</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">6</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0000</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">6</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mf">128.1600</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">6</span><span class="p">][</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.1500</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">6</span><span class="p">][</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="mf">352.0000</span><span class="p">;</span>
+    <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">7</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">6.0000</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">7</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">6.0000</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">7</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0000</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">7</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mf">78.1118</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">7</span><span class="p">][</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.8765</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">7</span><span class="p">][</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="mf">278.6400</span><span class="p">;</span>
+    <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">8</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">16.0000</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">8</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">10.0000</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">8</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0000</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">8</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mf">202.2550</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">8</span><span class="p">][</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.2710</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">8</span><span class="p">][</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="mf">429.1500</span><span class="p">;</span>
+    <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">9</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">6.0000</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">9</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">12.0000</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">9</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0000</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">9</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mf">84.1600</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">9</span><span class="p">][</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.7800</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">9</span><span class="p">][</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="mf">279.0000</span><span class="p">;</span>
+    <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">10</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">4.0000</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">10</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">8.0000</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">10</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0000</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">10</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mf">72.1100</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">10</span><span class="p">][</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.8900</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">10</span><span class="p">][</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="mf">164.5000</span><span class="p">;</span>
+    <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">11</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">4.0000</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">11</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">9.0000</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">11</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0000</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">11</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mf">71.1100</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">11</span><span class="p">][</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.8660</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">11</span><span class="p">][</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="mf">210.0000</span><span class="p">;</span>
+    <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">12</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">5.0000</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">12</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">11.0000</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">12</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0000</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">12</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mf">85.1500</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">12</span><span class="p">][</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.8620</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">12</span><span class="p">][</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="mf">266.0000</span><span class="p">;</span>
+    <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">13</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">5.0000</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">13</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">10.0000</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">13</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0000</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">13</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mf">86.1300</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">13</span><span class="p">][</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.8800</span><span class="p">;</span>  <span class="n">x</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">13</span><span class="p">][</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="mf">228.0000</span><span class="p">;</span>
+
+    <span class="n">y</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">357.1500</span><span class="p">;</span>
+    <span class="n">y</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">388.0000</span><span class="p">;</span>
+    <span class="n">y</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">403.0000</span><span class="p">;</span>
+    <span class="n">y</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">304.5500</span><span class="p">;</span>
+    <span class="n">y</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">529.0000</span><span class="p">;</span>
+    <span class="n">y</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">5</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">510.0000</span><span class="p">;</span>
+    <span class="n">y</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">6</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">491.0000</span><span class="p">;</span>
+    <span class="n">y</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">7</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">353.3000</span><span class="p">;</span>
+    <span class="n">y</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">8</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">666.6500</span><span class="p">;</span>
+    <span class="n">y</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">9</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">354.0000</span><span class="p">;</span>
+    <span class="n">y</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">10</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">339.0000</span><span class="p">;</span>
+    <span class="n">y</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">11</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">360.0000</span><span class="p">;</span>
+    <span class="n">y</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">12</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">379.0000</span><span class="p">;</span>
+    <span class="n">y</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="mi">13</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">361.0000</span><span class="p">;</span>
+
+    <span class="c1">// Allocate the PLS model</span>
+    <span class="n">NewPLSModel</span><span class="p">(</span><span class="o">&amp;</span><span class="n">m</span><span class="p">);</span>
+
+    <span class="cm">/* Calculate the partial least squares algorithm taking as input:</span>
+<span class="cm">     * x: the feature matrix x</span>
+<span class="cm">     * y: the target matrix y</span>
+<span class="cm">     * nlv: the number of latent variable nlv</span>
+<span class="cm">     * xautoscaling: the autoscaling type for the x matrix</span>
+<span class="cm">     * yautoscaling: the autoscaling type for the y Matrix</span>
+<span class="cm">     * model: the PLSMODEL previously allocated</span>
+<span class="cm">     * ssignal: a scientific signal to stop the calculation if requested by the user</span>
+<span class="cm">     *</span>
+<span class="cm">     * more information in the pls.h header file</span>
+<span class="cm">     * void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautoscaling, PLSMODEL *model, ssignal *s);</span>
+<span class="cm">     */</span>
+    <span class="n">PLS</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+
+    <span class="n">PrintPLSModel</span><span class="p">(</span><span class="n">m</span><span class="p">);</span> <span class="c1">// Print to video the PLS model</span>
+
+    <span class="cm">/*Validate the model using the internal validation method*/</span>
+    <span class="n">MODELINPUT</span> <span class="n">minpt</span><span class="p">;</span> <span class="c1">// Define the model input for the validation method</span>
+    <span class="n">minpt</span><span class="p">.</span><span class="n">mx</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">x</span><span class="p">;</span>
+    <span class="n">minpt</span><span class="p">.</span><span class="n">my</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">y</span><span class="p">;</span>
+    <span class="n">minpt</span><span class="p">.</span><span class="n">nlv</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+    <span class="n">minpt</span><span class="p">.</span><span class="n">xautoscaling</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="n">minpt</span><span class="p">.</span><span class="n">yautoscaling</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+    <span class="c1">// Use the boot strap random group cross validation.</span>
+    <span class="n">BootstrapRandomGroupsCV</span><span class="p">(</span><span class="o">&amp;</span><span class="n">minpt</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">_PLS_</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">m</span><span class="o">-&gt;</span><span class="n">predicted_y</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">m</span><span class="o">-&gt;</span><span class="n">pred_residuals</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="c1">// We can also compute leave one out in case...</span>
+    <span class="c1">// LeaveOneOut(&amp;minpt, _PLS_, &amp;m-&gt;predicted_y, &amp;m-&gt;pred_residuals, 4, NULL, 0);</span>
+
+    <span class="c1">// Calculate the model validation statistics</span>
+    <span class="n">PLSRegressionStatistics</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">m</span><span class="o">-&gt;</span><span class="n">predicted_y</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">m</span><span class="o">-&gt;</span><span class="n">q2y</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">m</span><span class="o">-&gt;</span><span class="n">sdep</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">m</span><span class="o">-&gt;</span><span class="n">bias</span><span class="p">);</span>
+    <span class="c1">//Print to video the results of the validation and the predicted values</span>
+
+    <span class="n">puts</span><span class="p">(</span><span class="s">&quot;Q2 Cross Validation&quot;</span><span class="p">);</span>
+    <span class="n">PrintMatrix</span><span class="p">(</span><span class="n">m</span><span class="o">-&gt;</span><span class="n">q2y</span><span class="p">);</span>
+    <span class="n">puts</span><span class="p">(</span><span class="s">&quot;SDEP Cross Validation&quot;</span><span class="p">);</span>
+    <span class="n">PrintMatrix</span><span class="p">(</span><span class="n">m</span><span class="o">-&gt;</span><span class="n">sdep</span><span class="p">);</span>
+    <span class="n">puts</span><span class="p">(</span><span class="s">&quot;BIAS Cross Validation&quot;</span><span class="p">);</span>
+    <span class="n">PrintMatrix</span><span class="p">(</span><span class="n">m</span><span class="o">-&gt;</span><span class="n">bias</span><span class="p">);;</span>
+
+    <span class="c1">// Calculate the beta coefficients to see the importance of each feature</span>
+    <span class="n">puts</span><span class="p">(</span><span class="s">&quot;Beta coefficients&quot;</span><span class="p">);</span>
+    <span class="n">initDVector</span><span class="p">(</span><span class="o">&amp;</span><span class="n">betas</span><span class="p">);</span>
+    <span class="n">PLSBetasCoeff</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">GetLVCCutoff</span><span class="p">(</span><span class="n">m</span><span class="o">-&gt;</span><span class="n">q2y</span><span class="p">),</span> <span class="o">&amp;</span><span class="n">betas</span><span class="p">);</span> <span class="c1">// GetLVCCutoff select the best Q2 value from all the possibilities</span>
+    <span class="n">PrintDVector</span><span class="p">(</span><span class="n">betas</span><span class="p">);</span>
+
+    <span class="n">puts</span><span class="p">(</span><span class="s">&quot;PREDICTED VALUES&quot;</span><span class="p">);</span>
+    <span class="n">PrintMatrix</span><span class="p">(</span><span class="n">m</span><span class="o">-&gt;</span><span class="n">predicted_y</span><span class="p">);</span>
+
+    <span class="n">puts</span><span class="p">(</span><span class="s">&quot;PREDICTED RESIDUALS&quot;</span><span class="p">);</span>
+    <span class="n">PrintMatrix</span><span class="p">(</span><span class="n">m</span><span class="o">-&gt;</span><span class="n">pred_residuals</span><span class="p">);</span>
+
+    <span class="n">puts</span><span class="p">(</span><span class="s">&quot;REAL Y&quot;</span><span class="p">);</span>
+    <span class="n">PrintMatrix</span><span class="p">(</span><span class="n">y</span><span class="p">);</span>
+
+    <span class="c1">// Free the memory spaces</span>
+    <span class="n">DelDVector</span><span class="p">(</span><span class="o">&amp;</span><span class="n">betas</span><span class="p">);</span>
+    <span class="n">DelPLSModel</span><span class="p">(</span><span class="o">&amp;</span><span class="n">m</span><span class="p">);</span>
+    <span class="n">DelMatrix</span><span class="p">(</span><span class="o">&amp;</span><span class="n">x</span><span class="p">);</span>
+    <span class="n">DelMatrix</span><span class="p">(</span><span class="o">&amp;</span><span class="n">y</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Getting started in C</a><ul>
+<li><a class="reference internal" href="#compile-a-program-that-use-libscientific">Compile a program that use libscientific</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#matrix-operations">Matrix operations</a><ul>
+<li><a class="reference internal" href="#create-allocate-a-matrix-with-a-specific-size">Create/Allocate a matrix with a specific size</a></li>
+<li><a class="reference internal" href="#initialize-an-empty-matrix-and-append-a-row-column-to-it">Initialize an empty matrix and append a row/column to it</a></li>
+<li><a class="reference internal" href="#matrix-x-column-vector-dot-product">Matrix x Column vector dot product</a></li>
+<li><a class="reference internal" href="#transpose-a-matrix">Transpose a matrix</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#multivariate-analysis-algorithms">Multivariate analysis algorithms</a><ul>
+<li><a class="reference internal" href="#principal-component-analysis-pca">Principal Component Analysis (PCA)</a></li>
+<li><a class="reference internal" href="#partial-least-squares-pls">Partial Least Squares (PLS)</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Install.html"
+                        title="previous chapter">Install</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="GettingStartedInPython.html"
+                        title="next chapter">Getting started in Python</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/GettingStartedInC.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="GettingStartedInPython.html" title="Getting started in Python"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Install.html" title="Install"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">libscientific 1.2.4 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Getting started in C</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2011, Giuseppe Marco Randazzo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+    </div>
+  </body>
+</html>
