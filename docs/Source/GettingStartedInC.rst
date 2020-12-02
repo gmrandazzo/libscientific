@@ -50,7 +50,7 @@ Matrix is an user defined data type which contains informations in regards to
 The data array is specifically selected to be double type
 to work with large range of numbers.
 
-.. literalinclude:: ../src/matrix.h
+.. literalinclude:: ../../src/matrix.h
    :language: c
    :lines: 30-33
 
