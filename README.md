@@ -1,6 +1,8 @@
 libscientific
 =============
 
+Documentation available at http://gmrandazzo.github.io/libscientific/
+
 Libscientific is a C framework  for multivariate and other statistical analysis.
 It is purely writen in C language using their own numerical algorithms
 for matrix computations. Only left eigenvectors and eigenvalues are calculated
@@ -32,8 +34,6 @@ with parallel computing to be faster:
 - Bootstrap k-fold Cross Validation (RGCV)
 - Leave-One-Out
 - Y-Scrambling [6]
-
-Documentation available at http://gmrandazzo.github.io/libscientific/
 
 References:
 ----------

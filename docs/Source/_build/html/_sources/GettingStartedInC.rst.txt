@@ -39,6 +39,28 @@ options.
    gcc -o example1 -L/usr/local/lib/ -I/usr/local/include -lscientific example1.c
 
 
+
+Vector operations
+=================
+
+Create/Allocate a vector
+------------------------
+
+There are four different types of vectors
+
+* Double vector: dvector
+* Integer vector: ivector
+* Unsigned integer vector: uivector
+* String vector: strvector
+
+
+Here we show an example on how to allocate/deallocate these four types.
+
+.. literalinclude:: c_code_examples/vexample1.c
+   :language: c
+   :linenos:
+
+
 Matrix operations
 =================
 
@@ -102,6 +124,32 @@ Here an example that shows how to produce a transpose of a given matrix.
    :language: c
    :linenos:
 
+
+
+Invert a matrix
+---------------
+
+In this example we show how to invert a matrix with libscientific
+
+.. literalinclude:: c_code_examples/mxexample5.c
+   :language: c
+   :linenos:
+
+Calculate eigenvectors and eigenvalues of a matrix
+--------------------------------------------------
+
+In this example we show how to calculate eigenvectors and eigenvalues of an N x N real nonsymmetric matrix.
+The eigenvector/eigenvalue is computed thanks to the dgeev.f code extracted from the Lapack library.
+
+.. literalinclude:: c_code_examples/mxexample6.c
+  :language: c
+  :linenos:
+
+
+Tensor operations
+=================
+
+TO BE COMPLETED
 
 
 Multivariate analysis algorithms

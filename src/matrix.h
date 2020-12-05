@@ -250,6 +250,7 @@ void MatrixColVar(matrix *mx, dvector **colvar);
  *  - Column Standard Deviation Sample (Corrected Standard Deviation)
  *  - Column Max
  *  - Column Min
+ *  - Column of missing values
  */
 void MatrixColDescStat(matrix *mx, matrix **ds);
 
@@ -340,7 +341,6 @@ void MatrixGetMaxValueIndex(matrix *mx, size_t *row, size_t *col);
  * find the minimum value in matrix and return the row and col indexes
  */
 void MatrixGetMinValueIndex(matrix *mx, size_t *row, size_t *col);
-
 
 /*
  * Description:
