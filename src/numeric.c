@@ -92,7 +92,7 @@ int randInt(int low, int high)
 
 double randDouble(double low, double high)
 {
-  return (double)(xor128() % ((int)(high - low))) / (double)RAND_MAX + low;
+  return (low + ((double)xor128() / ((double) RAND_MAX + 1)) * (high - low));
 }
 
 inline double square(double x){ return x*x; }
