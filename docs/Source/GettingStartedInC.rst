@@ -61,6 +61,16 @@ Here we show an example on how to allocate/deallocate these four types.
    :linenos:
 
 
+Append a value to a vector
+--------------------------
+
+Here we show an example on how to append a value to a vector.
+
+.. literalinclude:: c_code_examples/vexample2.c
+  :language: c
+  :linenos:
+
+
 Matrix operations
 =================
 
