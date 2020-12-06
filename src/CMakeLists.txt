@@ -221,6 +221,7 @@ set(Scientific_C_H
                 mlr.h
                 modelvalidation.h)
 
+set(NumericTest_SRC testnumeric.c)
 set(StrVectorTest_SRC teststrvector.c)
 set(DVectorTest_SRC testdvector.c)
 set(UIVectorTest_SRC testuivector.c)
@@ -270,7 +271,8 @@ else()
   install(FILES scientific.h DESTINATION include)
 endif()
 
-
+add_executable(testnumeric ${NumericTest_SRC})
+target_link_libraries(testnumeric libscientific)
 
 add_executable(teststrvector ${StrVectorTest_SRC})
 target_link_libraries(teststrvector libscientific)

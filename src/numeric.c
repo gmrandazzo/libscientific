@@ -59,6 +59,7 @@ int myrand_r (unsigned int *seed)
 }
 //#endif
 
+/* Xorshift 128 is thread safe */
 uint32_t xor128(void) {
   static uint32_t x = 123456789;
   static uint32_t y = 362436069;
@@ -92,7 +93,9 @@ int randInt(int low, int high)
 
 double randDouble(double low, double high)
 {
-  return (low + ((double)xor128() / ((double) RAND_MAX + 1)) * (high - low));
+  double range = (high - low);
+  double div = 4294967296.0 / range;
+  return low + (xor128() / div);
 }
 
 inline double square(double x){ return x*x; }
