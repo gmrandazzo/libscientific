@@ -93,6 +93,9 @@ int randInt(int low, int high)
 
 double randDouble(double low, double high)
 {
+  /*
+   * xor128() cannot return 4294967296
+   */
   double range = (high - low);
   double div = 4294967296.0 / range;
   return low + (xor128() / div);
