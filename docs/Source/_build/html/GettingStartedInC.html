@@ -13,7 +13,6 @@
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -76,7 +75,7 @@ options.</p>
 <li><p>Unsigned integer vector: uivector</p></li>
 <li><p>String vector: strvector</p></li>
 </ul>
-<p>Here we show an example on how to allocate/deallocate these four types.</p>
+<p>Here we show an example on how to allocate/deallocate these four vector types.</p>
 <div class="highlight-c notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
@@ -132,6 +131,84 @@ options.</p>
 
 </pre></div>
 </td></tr></table></div>
+</div>
+<div class="section" id="append-a-value-to-a-given-vector">
+<h2>Append a value to a given vector<a class="headerlink" href="#append-a-value-to-a-given-vector" title="Permalink to this headline">¶</a></h2>
+<p>Here we show an example on how to append a value to a vector.</p>
+<div class="highlight-c notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;scientific.h&gt;</span><span class="cp"></span>
+
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">){</span>
+  <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+
+  <span class="cm">/*</span>
+<span class="cm">   * We define here the double vector. </span>
+<span class="cm">   * If we would like to utilize another vector</span>
+<span class="cm">   * we can change dvector with the other three possibilities:</span>
+<span class="cm">   * - uivector</span>
+<span class="cm">   * - ivector</span>
+<span class="cm">   * - strvector</span>
+<span class="cm">   *</span>
+<span class="cm">   */</span>
+  <span class="n">dvector</span> <span class="o">*</span><span class="n">v</span><span class="p">;</span>
+
+  <span class="n">NewDVector</span><span class="p">(</span><span class="o">&amp;</span><span class="n">v</span><span class="p">,</span> <span class="mi">5</span><span class="p">);</span> <span class="c1">// We intialize the vector </span>
+
+  <span class="c1">// We add 5 numbers</span>
+  <span class="k">for</span><span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">){</span>
+    <span class="n">v</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="kt">float</span><span class="p">)</span><span class="n">i</span><span class="p">;</span>
+  <span class="p">}</span>
+ 
+  <span class="c1">// We append a new number</span>
+  <span class="n">DVectorAppend</span><span class="p">(</span><span class="o">&amp;</span><span class="n">v</span><span class="p">,</span> <span class="mf">123.4</span><span class="p">);</span>
+  
+  <span class="c1">// Print to video the result</span>
+  <span class="n">PrintDvector</span><span class="p">(</span><span class="n">v</span><span class="p">);</span>
+
+  <span class="c1">// Free up the memory</span>
+  <span class="n">DelDVector</span><span class="p">(</span><span class="o">&amp;</span><span class="n">v</span><span class="p">);</span>
+<span class="p">}</span>
+
+</pre></div>
+</td></tr></table></div>
+</div>
+<div class="section" id="work-with-string-vectors">
+<h2>Work with string vectors<a class="headerlink" href="#work-with-string-vectors" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 <div class="section" id="matrix-operations">
@@ -861,6 +938,8 @@ Here a simple example that shows how to calculate a PLS model.</p>
 </li>
 <li><a class="reference internal" href="#vector-operations">Vector operations</a><ul>
 <li><a class="reference internal" href="#create-allocate-a-vector">Create/Allocate a vector</a></li>
+<li><a class="reference internal" href="#append-a-value-to-a-given-vector">Append a value to a given vector</a></li>
+<li><a class="reference internal" href="#work-with-string-vectors">Work with string vectors</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#matrix-operations">Matrix operations</a><ul>
@@ -925,7 +1004,7 @@ Here a simple example that shows how to calculate a PLS model.</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2011, Giuseppe Marco Randazzo.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.3.1.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.4.3.
     </div>
   </body>
 </html>

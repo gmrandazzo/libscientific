@@ -54,7 +54,7 @@ There are four different types of vectors
 * String vector: strvector
 
 
-Here we show an example on how to allocate/deallocate these four types.
+Here we show an example on how to allocate/deallocate these four vector types.
 
 .. literalinclude:: c_code_examples/vexample1.c
    :language: c

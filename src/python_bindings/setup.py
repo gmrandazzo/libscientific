@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='scientific',
-      version='1.2.4',
+      version='1.2.5',
       description='Libscientific Python bindings',
       url='http://github.com/gmrandazzo/libscientific',
       author='Giuseppe Marco Randazzo',

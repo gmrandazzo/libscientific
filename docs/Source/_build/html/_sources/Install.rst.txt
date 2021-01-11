@@ -15,6 +15,7 @@ Requirements
 * A development environment (On windows msys/msys2 or visual studio)
 * A c/fortran compiler
 * Cmake
+* python3 (if you whant to use the library in python)
 
 
 Installation process
@@ -29,6 +30,9 @@ Installation process
    cmake -DCMAKE_INSTALL_PREFIX=/usr/local/ ..
    make -j5
    sudo make install
+   cd ../src/python_bindings
+   python3 setup.py bdist_wheel
+   pip3 install scientific-*-py3-none-any.whl
 
 
 Packages
@@ -38,7 +42,7 @@ On OSX you can install libscientific via homebrew
 .. code-block::
    
    brew install --HEAD libscientific
-
+   brew install --HEAD libscientific-python3
 
 
 

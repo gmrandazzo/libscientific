@@ -115,7 +115,7 @@ lsci.DVectorHasValue.restype = ctypes.c_int
 def DVectorHasValue(v, val):
     """
     DVectorHasValue: Check if a libscientific double vector contains an exact
-                     value "val" and return 1 or 0 respectivelly for yes or no.
+                     value "val" and return 0 or 1 respectivelly for have or not have.
     """
     return lsci.DVectorHasValue(v, val)
 
@@ -169,28 +169,47 @@ def DVectorToList(d):
     return dlst
 
 
+lsci.DVectorAppend.argtypes = [ctypes.POINTER(ctypes.POINTER(dvector)),
+                               ctypes.c_double]
+lsci.DVectorAppend.restype = None
+
+def DVectorAppend(d, val):
+    """
+    Append a value to a double vector d
+    """
+    return lsci.DVectorAppend(d, val);
+
+
+lsci.DVectorRemoveAt.argtypes = [ctypes.POINTER(ctypes.POINTER(dvector)),
+                                 ctypes.c_size_t]
+lsci.DVectorRemoveAt.restype = None
+
+def DVectorRemoveAt(d, indx):
+    """
+    Remove a value from a double vector d at index indx
+    """
+    return lsci.DVectorRemoveAt(d, indx);
+
+lsci.DVectorCopy.argtypes = [ctypes.POINTER(dvector),
+                             ctypes.POINTER(ctypes.POINTER(dvector))]
+lsci.DVectorCopy.restype = None
+
+def DVectorCopy(src):
+    """
+    Create a copy of dvector d to a
+    """
+    dst = initDVector()
+    lsci.DVectorCopy(src, ctypes.pointer(dst))
+    return dst
+
+
 """
 TODO: Implement this functions
-/* Append a value to a dvector */
-void DVectorAppend(dvector **d, double val);
-
-/* Remove a value to a dvector */
-void DVectorRemoveAt(dvector **d, size_t indx);
-
-/* Copy a Dvector from dsrc: source to ddst: destination */
-void DVectorCopy(dvector *dsrc, dvector **ddst);
 
 /* Append to a dvector an other dvector */
 dvector *DVectorExtend(dvector *d1, dvector *d2);
 
-void setDVectorValue(dvector *d, size_t id, double val);
-double getDVectorValue(dvector *d, size_t id);
-
-/*check if dvector has a value val. Return 0 if is present, 1 if is not present*/
-int DVectorHasValue(dvector *d, double val);
-
 /*Vector operations*/
-void DVectorSet(dvector *v, double val);
 double DVectorDVectorDotProd(dvector *v1, dvector *v2); /* product between two vector */
 
 double DvectorModule(dvector *v); /* get the Dvector Module */
@@ -229,7 +248,14 @@ class DVector(object):
 
     def data_ptr(self):
         return self.d[0].data
-
+    
+    def append(self, value):
+        return DVectorAppend(self.d, value)
+    
+    def extend(self, lst):
+        for item in lst:
+            DVectorAppend(self.d, item)
+    
     def tolist(self):
         return DVectorToList(self.d)
 
@@ -252,5 +278,36 @@ if __name__ in "__main__":
     print("set value")
     d[1] = -2
     dlst = d.tolist()
+    print("print the list converted from the double vector")
     for item in dlst:
         print(item)
+    
+    print("Add at the end the value -123")
+    DVectorAppend(d.d, -123)
+    d.debug()
+    
+    print("Append in a different way -123 at the end")
+    d.append(-123)
+    d.debug()
+    
+    print("remove at index 1, then value -2")
+    DVectorRemoveAt(d.d, 1)
+    d.debug()
+    
+    print("Extend d with b")
+    print("b:")
+    b = [random() for j in range(4)]
+    print(b)
+    d.extend(b)
+    print("d extended:")
+    d.debug()
+    
+    print("Create a copy of d.d in q")
+    q = DVectorCopy(d.d)
+    PrintDVector(q)
+    DelDVector(q)
+    
+    print("Check if the double vector d have the value -123")
+    print(DVectorHasValue(d.d, -13.0000))
+    
+    
