@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import scientific
+import libscientific
 import random
 
 def mx_to_video(m, decimals=5):
@@ -20,7 +20,7 @@ mx_to_video(y)
 print("XP")
 mx_to_video(xp)
 print("Computing PLS ...")
-model = scientific.pls.PLS(nlv=2, xscaling=1, yscaling=0)
+model = libscientific.pls.PLS(nlv=2, xscaling=1, yscaling=0)
 model.fit(x, y)
 print("Showing the PLS T scores")
 tscores = model.get_tscores()

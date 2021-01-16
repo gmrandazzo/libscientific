@@ -1,4 +1,4 @@
-# loadlibrary libscientific python binding
+# misc libscientific python binding
 #
 # Copyright (C) <2019>  Giuseppe Marco Randazzo
 #
@@ -16,23 +16,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 import ctypes
-from ctypes import util
+from libscientific.loadlibrary import LoadLibrary
+
+lsci = LoadLibrary()
 
 
-def LoadLibrary():
-    """
-    Load the libscientific library
-    """
-    library = util.find_library("scientific")
-    if library is None:
-        message = "Please install libscientific. "
-        message += "Go to https://github.com/gmrandazzo/libscientific"
-        print(message)
-        return 0
-    else:
-        lsci = ctypes.cdll.LoadLibrary(library)
-        return lsci
+lsci.missing_value.argtypes = None
+lsci.missing_value.restype = ctypes.c_double
 
 
-if __name__ == '__main__':
-    a = LoadLibrary()
+def missing_value():
+    return lsci.missing_value()

@@ -21,6 +21,8 @@ Requirements
 Installation process
 --------------------
 
+First you need to install the C library following these instructions:
+
 .. code-block::
    
    git clone https://github.com/gmrandazzo/libscientific.git
@@ -30,9 +32,18 @@ Installation process
    cmake -DCMAKE_INSTALL_PREFIX=/usr/local/ ..
    make -j5
    sudo make install
+
+Then, if you want to use the library in python you have also 
+to install the python package
+
+.. code-block::
+   
    cd ../src/python_bindings
-   python3 setup.py bdist_wheel
-   pip3 install scientific-*-py3-none-any.whl
+   python3 setup.py install
+
+   or 
+
+   pip3 install libscientific
 
 
 Packages

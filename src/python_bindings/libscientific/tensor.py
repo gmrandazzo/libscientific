@@ -16,9 +16,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 import ctypes
-from scientific.loadlibrary import LoadLibrary
-from scientific import matrix as mx
-from scientific import misc
+from libscientific.loadlibrary import LoadLibrary
+from libscientific import matrix as mx
+from libscientific import misc
 
 lsci = LoadLibrary()
 

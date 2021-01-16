@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import scientific
+import libscientific
 import random
 
 def mx_to_video(m, decimals=5):
@@ -15,7 +15,7 @@ print("Original Matrix")
 mx_to_video(a)
 
 # Compute 2 Principal components using the UV scaling (unit variance scaling)
-model = scientific.pca.PCA(scaling=1, npc=2)
+model = libscientific.pca.PCA(scaling=1, npc=2)
 # Fit the model
 model.fit(a)
 

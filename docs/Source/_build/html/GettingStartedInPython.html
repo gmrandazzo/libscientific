@@ -49,11 +49,11 @@ dynamic memory allocation.</p>
 because are automatically handled by the python binding itself.</p>
 <div class="section" id="use-libscientific-in-python">
 <h2>Use libscientific in python<a class="headerlink" href="#use-libscientific-in-python" title="Permalink to this headline">¶</a></h2>
-<p>First you need to install the python package. For that follow the installation process described
-here.</p>
+<p>First you need to install the c library and the python package.
+Please follow the process described <a class="reference external" href="http://gmrandazzo.github.io/libscientific/Source/_build/html/Install.html">here</a>.</p>
 <p>A program that use libscientific requires to import the python binding as follow</p>
 <div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">scientific</span>
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">libscientific</span>
 <span class="o">...</span>
 </pre></div>
 </td></tr></table></div>
@@ -71,7 +71,7 @@ here.</p>
 <li><p>String vector: strvector</p></li>
 </ul>
 <p>Here we show an example on how create these four vector types.</p>
-<div class="highlight-c notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
  4
@@ -94,37 +94,37 @@ here.</p>
 21
 22
 23
-24</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="cp">#!/usr/bin/env python3</span>
-<span class="n">import</span> <span class="n">scientific</span>
-<span class="n">from</span> <span class="n">random</span> <span class="n">import</span> <span class="n">random</span>
+24</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="kn">import</span> <span class="nn">libscientific</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">random</span>
 
-<span class="cp"># Create a list of values that you whant to convert to a double vector</span>
-<span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="n">random</span><span class="p">()</span> <span class="k">for</span> <span class="n">j</span> <span class="n">in</span> <span class="n">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)]</span>
+<span class="c1"># Create a list of values that you whant to convert to a double vector</span>
+<span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="n">random</span><span class="p">()</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)]</span>
 
-<span class="cp"># Transform the list a into a double vector d</span>
-<span class="n">d</span> <span class="o">=</span> <span class="n">scientific</span><span class="p">.</span><span class="n">vector</span><span class="p">.</span><span class="n">DVector</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="c1"># Transform the list a into a double vector d</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">libscientific</span><span class="o">.</span><span class="n">vector</span><span class="o">.</span><span class="n">DVector</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
-<span class="cp"># Just print to video the content of vector d</span>
-<span class="n">d</span><span class="p">.</span><span class="n">debug</span><span class="p">()</span>
+<span class="c1"># Just print to video the content of vector d</span>
+<span class="n">d</span><span class="o">.</span><span class="n">debug</span><span class="p">()</span>
 
-<span class="cp"># If you want to catch the value in position 1</span>
-<span class="n">print</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="c1"># If you want to catch the value in position 1</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
-<span class="cp"># If you want to modify the value in position 1</span>
-<span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">-2</span>
+<span class="c1"># If you want to modify the value in position 1</span>
+<span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span>
 
-<span class="cp">#If you want to get back the result as a &quot;list&quot; </span>
-<span class="n">dlst</span> <span class="o">=</span> <span class="n">d</span><span class="p">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="c1">#If you want to get back the result as a &quot;list&quot; </span>
+<span class="n">dlst</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
 
-<span class="k">for</span> <span class="n">item</span> <span class="n">in</span> <span class="nl">dlst</span><span class="p">:</span>
-    <span class="n">print</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">dlst</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 </div>
 <div class="section" id="append-a-value-to-a-given-vector">
 <h2>Append a value to a given vector<a class="headerlink" href="#append-a-value-to-a-given-vector" title="Permalink to this headline">¶</a></h2>
 <p>Here we show an example on how to append a value to a vector.</p>
-<div class="highlight-c notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
  4
@@ -144,27 +144,27 @@ here.</p>
 18
 19
 20
-21</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="cp">#!/usr/bin/env python3</span>
-<span class="n">import</span> <span class="n">scientific</span>
-<span class="n">from</span> <span class="n">random</span> <span class="n">import</span> <span class="n">random</span>
+21</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="kn">import</span> <span class="nn">libscientific</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">random</span>
 
-<span class="cp"># Create a list of values that you whant to convert to a double vector</span>
-<span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="n">random</span><span class="p">()</span> <span class="k">for</span> <span class="n">j</span> <span class="n">in</span> <span class="n">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)]</span>
-<span class="n">d</span> <span class="o">=</span> <span class="n">scientific</span><span class="p">.</span><span class="n">vector</span><span class="p">.</span><span class="n">DVector</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-<span class="cp"># print the output of the double vector d</span>
-<span class="n">print</span><span class="p">(</span><span class="s">&quot;orig vector&quot;</span><span class="p">)</span>
-<span class="n">d</span><span class="p">.</span><span class="n">debug</span><span class="p">()</span>
+<span class="c1"># Create a list of values that you whant to convert to a double vector</span>
+<span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="n">random</span><span class="p">()</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)]</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">libscientific</span><span class="o">.</span><span class="n">vector</span><span class="o">.</span><span class="n">DVector</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="c1"># print the output of the double vector d</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;orig vector&quot;</span><span class="p">)</span>
+<span class="n">d</span><span class="o">.</span><span class="n">debug</span><span class="p">()</span>
 
 
-<span class="cp"># append the value 0.98765 at the end of d</span>
-<span class="n">d</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="mf">0.98765</span><span class="p">)</span>
-<span class="n">print</span><span class="p">(</span><span class="s">&quot;append 0.98765 at the end&quot;</span><span class="p">)</span>
-<span class="n">d</span><span class="p">.</span><span class="n">debug</span><span class="p">()</span>
+<span class="c1"># append the value 0.98765 at the end of d</span>
+<span class="n">d</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mf">0.98765</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;append 0.98765 at the end&quot;</span><span class="p">)</span>
+<span class="n">d</span><span class="o">.</span><span class="n">debug</span><span class="p">()</span>
 
-<span class="cp"># extend the vector d with more other values from a list</span>
-<span class="n">d</span><span class="p">.</span><span class="n">extend</span><span class="p">([</span><span class="mf">0.4362</span><span class="p">,</span> <span class="mf">0.34529</span><span class="p">,</span> <span class="mf">0.99862</span><span class="p">])</span>
-<span class="n">print</span><span class="p">(</span><span class="s">&quot;extent the vector with 3 more values&quot;</span><span class="p">)</span>
-<span class="n">d</span><span class="p">.</span><span class="n">debug</span><span class="p">()</span>
+<span class="c1"># extend the vector d with more other values from a list</span>
+<span class="n">d</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="mf">0.4362</span><span class="p">,</span> <span class="mf">0.34529</span><span class="p">,</span> <span class="mf">0.99862</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;extent the vector with 3 more values&quot;</span><span class="p">)</span>
+<span class="n">d</span><span class="o">.</span><span class="n">debug</span><span class="p">()</span>
 </pre></div>
 </td></tr></table></div>
 </div>
@@ -182,7 +182,7 @@ Hence there is no need to manually free up the memory.</p>
 <h2>Create a matrix in python<a class="headerlink" href="#create-a-matrix-in-python" title="Permalink to this headline">¶</a></h2>
 <p>In this example we show how to create a matrix from a list of list (or numpy array)
 and we show how to modify its content and convert it again to a list of list.</p>
-<div class="highlight-c notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
  4
@@ -205,30 +205,30 @@ and we show how to modify its content and convert it again to a list of list.</p
 21
 22
 23
-24</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="cp">#!/usr/bin/env python3</span>
-<span class="n">import</span> <span class="n">scientific</span>
-<span class="n">from</span> <span class="n">random</span> <span class="n">import</span> <span class="n">random</span>
+24</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="kn">import</span> <span class="nn">libscientific</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">random</span>
 
-<span class="cp"># Create a random list of list </span>
-<span class="n">a</span> <span class="o">=</span> <span class="p">[[</span><span class="n">random</span><span class="p">()</span> <span class="k">for</span> <span class="n">j</span> <span class="n">in</span> <span class="n">range</span><span class="p">(</span><span class="mi">2</span><span class="p">)]</span> <span class="k">for</span> <span class="n">i</span> <span class="n">in</span> <span class="n">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
+<span class="c1"># Create a random list of list </span>
+<span class="n">a</span> <span class="o">=</span> <span class="p">[[</span><span class="n">random</span><span class="p">()</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">)]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
 
-<span class="cp"># Convert the list of list matrix into a scientific matrix</span>
-<span class="n">m</span> <span class="o">=</span> <span class="n">scientific</span><span class="p">.</span><span class="n">matrix</span><span class="p">.</span><span class="n">Matrix</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="c1"># Convert the list of list matrix into a libscientific matrix</span>
+<span class="n">m</span> <span class="o">=</span> <span class="n">libscientific</span><span class="o">.</span><span class="n">matrix</span><span class="o">.</span><span class="n">Matrix</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
-<span class="cp"># Get the value at row 1, column 1</span>
-<span class="n">print</span><span class="p">(</span><span class="s">&quot;Get value example&quot;</span><span class="p">)</span>
-<span class="n">print</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="c1"># Get the value at row 1, column 1</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Get value example&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
 
-<span class="cp"># Modify the value at row 1, column 1</span>
-<span class="n">print</span><span class="p">(</span><span class="s">&quot;Set value example&quot;</span><span class="p">)</span>
-<span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">-2.</span>
-<span class="n">m</span><span class="p">.</span><span class="n">debug</span><span class="p">()</span>
+<span class="c1"># Modify the value at row 1, column 1</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Set value example&quot;</span><span class="p">)</span>
+<span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.</span>
+<span class="n">m</span><span class="o">.</span><span class="n">debug</span><span class="p">()</span>
 
 
-<span class="cp"># Convert the matrix again to a list of list</span>
-<span class="n">mlst</span> <span class="o">=</span> <span class="n">m</span><span class="p">.</span><span class="n">tolist</span><span class="p">()</span>
-<span class="k">for</span> <span class="n">row</span> <span class="n">in</span> <span class="nl">mlst</span><span class="p">:</span>
-    <span class="n">print</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+<span class="c1"># Convert the matrix again to a list of list</span>
+<span class="n">mlst</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">mlst</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
 </div>
@@ -240,7 +240,7 @@ and we show how to modify its content and convert it again to a list of list.</p
 <div class="section" id="multivariate-analysis-algorithms">
 <h1>Multivariate analysis algorithms<a class="headerlink" href="#multivariate-analysis-algorithms" title="Permalink to this headline">¶</a></h1>
 <p>In this section you will find examples regarding how to run multivariate analysis algorithms.
-In particular the algorithm described here are extracted from official scientific publications
+In particular the algorithm described here are extracted from official libscientific publications
 and are adapted to run in multithreading to speedup the calculation.</p>
 <ul class="simple">
 <li><p>PCA and PLS implements the NIPALS algorithm described in the following publication:</p></li>
@@ -254,7 +254,7 @@ and are adapted to run in multithreading to speedup the calculation.</p>
 <div class="section" id="principal-component-analysis-pca">
 <h2>Principal Component Analysis (PCA)<a class="headerlink" href="#principal-component-analysis-pca" title="Permalink to this headline">¶</a></h2>
 <p>Here an example to shows how to compute a principal component analysis on a matrix.</p>
-<div class="highlight-c notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
  4
@@ -291,43 +291,43 @@ and are adapted to run in multithreading to speedup the calculation.</p>
 35
 36
 37
-38</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="cp">#!/usr/bin/env python3</span>
+38</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
 
-<span class="n">import</span> <span class="n">scientific</span>
-<span class="n">import</span> <span class="n">random</span>
+<span class="kn">import</span> <span class="nn">libscientific</span>
+<span class="kn">import</span> <span class="nn">random</span>
 
-<span class="n">def</span> <span class="n">mx_to_video</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span><span class="o">:</span>
-    <span class="k">for</span> <span class="n">row</span> <span class="n">in</span> <span class="nl">m</span><span class="p">:</span>
-        <span class="n">print</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\t</span><span class="s">&quot;</span><span class="p">.</span><span class="n">join</span><span class="p">([</span><span class="n">str</span><span class="p">(</span><span class="n">round</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">decimals</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span> <span class="n">in</span> <span class="n">row</span><span class="p">]))</span>
+<span class="k">def</span> <span class="nf">mx_to_video</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">m</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">decimals</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">row</span><span class="p">]))</span>
 
-<span class="n">random</span><span class="p">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">123456</span><span class="p">)</span>
+<span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">123456</span><span class="p">)</span>
 
-<span class="cp"># Create a random matrix of 10 objects and 4 features</span>
-<span class="n">a</span> <span class="o">=</span> <span class="p">[[</span><span class="n">random</span><span class="p">.</span><span class="n">random</span><span class="p">()</span> <span class="k">for</span> <span class="n">j</span> <span class="n">in</span> <span class="n">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)]</span> <span class="k">for</span> <span class="n">i</span> <span class="n">in</span> <span class="n">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
-<span class="n">print</span><span class="p">(</span><span class="s">&quot;Original Matrix&quot;</span><span class="p">)</span>
+<span class="c1"># Create a random matrix of 10 objects and 4 features</span>
+<span class="n">a</span> <span class="o">=</span> <span class="p">[[</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Original Matrix&quot;</span><span class="p">)</span>
 <span class="n">mx_to_video</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
-<span class="cp"># Compute 2 Principal components using the UV scaling (unit variance scaling)</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">scientific</span><span class="p">.</span><span class="n">pca</span><span class="p">.</span><span class="n">PCA</span><span class="p">(</span><span class="n">scaling</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">npc</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="cp"># Fit the model</span>
-<span class="n">model</span><span class="p">.</span><span class="n">fit</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="c1"># Compute 2 Principal components using the UV scaling (unit variance scaling)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">libscientific</span><span class="o">.</span><span class="n">pca</span><span class="o">.</span><span class="n">PCA</span><span class="p">(</span><span class="n">scaling</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">npc</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="c1"># Fit the model</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
-<span class="cp"># Show the scores</span>
-<span class="n">print</span><span class="p">(</span><span class="s">&quot;Showing the PCA scores&quot;</span><span class="p">)</span>
-<span class="n">scores</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">get_scores</span><span class="p">()</span>
+<span class="c1"># Show the scores</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Showing the PCA scores&quot;</span><span class="p">)</span>
+<span class="n">scores</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_scores</span><span class="p">()</span>
 <span class="n">mx_to_video</span><span class="p">(</span><span class="n">scores</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 
-<span class="cp"># Show the loadings</span>
-<span class="n">print</span><span class="p">(</span><span class="s">&quot;Showing the PCA loadings&quot;</span><span class="p">)</span>
-<span class="n">loadings</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">get_loadings</span><span class="p">()</span>
+<span class="c1"># Show the loadings</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Showing the PCA loadings&quot;</span><span class="p">)</span>
+<span class="n">loadings</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_loadings</span><span class="p">()</span>
 <span class="n">mx_to_video</span><span class="p">(</span><span class="n">loadings</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 
-<span class="cp"># Show the explained variance</span>
-<span class="n">print</span><span class="p">(</span><span class="n">model</span><span class="p">.</span><span class="n">get_exp_variance</span><span class="p">())</span>
+<span class="c1"># Show the explained variance</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">get_exp_variance</span><span class="p">())</span>
 
-<span class="cp"># Reconstruct the original PCA matrix from the 2 principal components</span>
-<span class="n">print</span><span class="p">(</span><span class="s">&quot;Reconstruct the original PCA matrix using the PCA Model&quot;</span><span class="p">)</span>
-<span class="n">ra</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">reconstruct_original_matrix</span><span class="p">()</span>
+<span class="c1"># Reconstruct the original PCA matrix from the 2 principal components</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Reconstruct the original PCA matrix using the PCA Model&quot;</span><span class="p">)</span>
+<span class="n">ra</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">reconstruct_original_matrix</span><span class="p">()</span>
 <span class="n">mx_to_video</span><span class="p">(</span><span class="n">ra</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
@@ -336,7 +336,7 @@ and are adapted to run in multithreading to speedup the calculation.</p>
 <h2>Partial Least Squares (PLS)<a class="headerlink" href="#partial-least-squares-pls" title="Permalink to this headline">¶</a></h2>
 <p>To calculate a PLS model, a matrix of features or independent variables and a matrix of targets or dependent variables is requested.</p>
 <p>Here a simple example that shows how to calculate a PLS model.</p>
-<div class="highlight-c notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
  2
  3
  4
@@ -381,51 +381,51 @@ and are adapted to run in multithreading to speedup the calculation.</p>
 43
 44
 45
-46</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="cp">#!/usr/bin/env python3</span>
+46</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
 
-<span class="n">import</span> <span class="n">scientific</span>
-<span class="n">import</span> <span class="n">random</span>
+<span class="kn">import</span> <span class="nn">libscientific</span>
+<span class="kn">import</span> <span class="nn">random</span>
 
-<span class="n">def</span> <span class="n">mx_to_video</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span><span class="o">:</span>
-    <span class="k">for</span> <span class="n">row</span> <span class="n">in</span> <span class="nl">m</span><span class="p">:</span>
-        <span class="n">print</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\t</span><span class="s">&quot;</span><span class="p">.</span><span class="n">join</span><span class="p">([</span><span class="n">str</span><span class="p">(</span><span class="n">round</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">decimals</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span> <span class="n">in</span> <span class="n">row</span><span class="p">]))</span>
+<span class="k">def</span> <span class="nf">mx_to_video</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">m</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">decimals</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">row</span><span class="p">]))</span>
 
-<span class="n">random</span><span class="p">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">123456</span><span class="p">)</span>
-<span class="n">x</span> <span class="o">=</span> <span class="p">[[</span><span class="n">random</span><span class="p">.</span><span class="n">random</span><span class="p">()</span> <span class="k">for</span> <span class="n">j</span> <span class="n">in</span> <span class="n">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)]</span> <span class="k">for</span> <span class="n">i</span> <span class="n">in</span> <span class="n">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
-<span class="n">y</span> <span class="o">=</span> <span class="p">[[</span><span class="n">random</span><span class="p">.</span><span class="n">random</span><span class="p">()</span> <span class="k">for</span> <span class="n">j</span> <span class="n">in</span> <span class="n">range</span><span class="p">(</span><span class="mi">1</span><span class="p">)]</span> <span class="k">for</span> <span class="n">i</span> <span class="n">in</span> <span class="n">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
-<span class="n">xp</span> <span class="o">=</span> <span class="p">[[</span><span class="n">random</span><span class="p">.</span><span class="n">random</span><span class="p">()</span> <span class="k">for</span> <span class="n">j</span> <span class="n">in</span> <span class="n">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)]</span> <span class="k">for</span> <span class="n">i</span> <span class="n">in</span> <span class="n">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
+<span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">123456</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="p">[[</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
+<span class="n">y</span> <span class="o">=</span> <span class="p">[[</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">)]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
+<span class="n">xp</span> <span class="o">=</span> <span class="p">[[</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
 
-<span class="n">print</span><span class="p">(</span><span class="s">&quot;Original Matrix&quot;</span><span class="p">)</span>
-<span class="n">print</span><span class="p">(</span><span class="s">&quot;X&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Original Matrix&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;X&quot;</span><span class="p">)</span>
 <span class="n">mx_to_video</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-<span class="n">print</span><span class="p">(</span><span class="s">&quot;Y&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Y&quot;</span><span class="p">)</span>
 <span class="n">mx_to_video</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
-<span class="n">print</span><span class="p">(</span><span class="s">&quot;XP&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;XP&quot;</span><span class="p">)</span>
 <span class="n">mx_to_video</span><span class="p">(</span><span class="n">xp</span><span class="p">)</span>
-<span class="n">print</span><span class="p">(</span><span class="s">&quot;Computing PLS ...&quot;</span><span class="p">)</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">scientific</span><span class="p">.</span><span class="n">pls</span><span class="p">.</span><span class="n">PLS</span><span class="p">(</span><span class="n">nlv</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">xscaling</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">yscaling</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">model</span><span class="p">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-<span class="n">print</span><span class="p">(</span><span class="s">&quot;Showing the PLS T scores&quot;</span><span class="p">)</span>
-<span class="n">tscores</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">get_tscores</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Computing PLS ...&quot;</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">libscientific</span><span class="o">.</span><span class="n">pls</span><span class="o">.</span><span class="n">PLS</span><span class="p">(</span><span class="n">nlv</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">xscaling</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">yscaling</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Showing the PLS T scores&quot;</span><span class="p">)</span>
+<span class="n">tscores</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_tscores</span><span class="p">()</span>
 <span class="n">mx_to_video</span><span class="p">(</span><span class="n">tscores</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 
-<span class="n">print</span><span class="p">(</span><span class="s">&quot;Showing the PLS U scores&quot;</span><span class="p">)</span>
-<span class="n">uscores</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">get_uscores</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Showing the PLS U scores&quot;</span><span class="p">)</span>
+<span class="n">uscores</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_uscores</span><span class="p">()</span>
 <span class="n">mx_to_video</span><span class="p">(</span><span class="n">uscores</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 
-<span class="n">print</span><span class="p">(</span><span class="s">&quot;Showing the PLS P loadings&quot;</span><span class="p">)</span>
-<span class="n">ploadings</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">get_ploadings</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Showing the PLS P loadings&quot;</span><span class="p">)</span>
+<span class="n">ploadings</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_ploadings</span><span class="p">()</span>
 <span class="n">mx_to_video</span><span class="p">(</span><span class="n">ploadings</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 
-<span class="n">print</span><span class="p">(</span><span class="s">&quot;Showing the X Variance&quot;</span><span class="p">)</span>
-<span class="n">print</span><span class="p">(</span><span class="n">model</span><span class="p">.</span><span class="n">get_exp_variance</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Showing the X Variance&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">get_exp_variance</span><span class="p">())</span>
 
 
-<span class="n">print</span><span class="p">(</span><span class="s">&quot;Predict XP&quot;</span><span class="p">)</span>
-<span class="n">py</span><span class="p">,</span> <span class="n">pscores</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">predict</span><span class="p">(</span><span class="n">xp</span><span class="p">)</span>
-<span class="n">print</span><span class="p">(</span><span class="s">&quot;Predicted Y for all LVs&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Predict XP&quot;</span><span class="p">)</span>
+<span class="n">py</span><span class="p">,</span> <span class="n">pscores</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">xp</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Predicted Y for all LVs&quot;</span><span class="p">)</span>
 <span class="n">mx_to_video</span><span class="p">(</span><span class="n">py</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
-<span class="n">print</span><span class="p">(</span><span class="s">&quot;Predicted Scores&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Predicted Scores&quot;</span><span class="p">)</span>
 <span class="n">mx_to_video</span><span class="p">(</span><span class="n">pscores</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>

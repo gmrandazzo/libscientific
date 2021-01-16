@@ -1,0 +1,17 @@
+README.md
+setup.py
+libscientific/__init__.py
+libscientific/info.py
+libscientific/interpolate.py
+libscientific/loadlibrary.py
+libscientific/matrix.py
+libscientific/misc.py
+libscientific/pca.py
+libscientific/pls.py
+libscientific/tensor.py
+libscientific/vector.py
+libscientific.egg-info/PKG-INFO
+libscientific.egg-info/SOURCES.txt
+libscientific.egg-info/dependency_links.txt
+libscientific.egg-info/not-zip-safe
+libscientific.egg-info/top_level.txt

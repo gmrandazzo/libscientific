@@ -15,15 +15,15 @@ because are automatically handled by the python binding itself.
 
 Use libscientific in python
 ---------------------------
-First you need to install the python package. For that follow the installation process described 
-here.
+First you need to install the c library and the python package.
+Please follow the process described `here <http://gmrandazzo.github.io/libscientific/Source/_build/html/Install.html>`_.
 
 A program that use libscientific requires to import the python binding as follow
 
 .. code-block:: python
    :linenos:
 
-   import scientific
+   import libscientific
    ...
 
 
@@ -44,7 +44,7 @@ There are four different types of vectors
 Here we show an example on how create these four vector types.
 
 .. literalinclude:: python_code_examples/vexample1.py
-   :language: c
+   :language: python
    :linenos:
 
 
@@ -54,7 +54,7 @@ Append a value to a given vector
 Here we show an example on how to append a value to a vector.
 
 .. literalinclude:: python_code_examples/vexample2.py
-  :language: c
+  :language: python
   :linenos:
 
 
@@ -79,10 +79,8 @@ In this example we show how to create a matrix from a list of list (or numpy arr
 and we show how to modify its content and convert it again to a list of list.
 
 .. literalinclude:: python_code_examples/mxexample1.py
-   :language: c
+   :language: python
    :linenos:
-
-
 
 Tensor operations
 =================
@@ -94,7 +92,7 @@ Multivariate analysis algorithms
 ================================
 
 In this section you will find examples regarding how to run multivariate analysis algorithms.
-In particular the algorithm described here are extracted from official scientific publications
+In particular the algorithm described here are extracted from official libscientific publications
 and are adapted to run in multithreading to speedup the calculation.
 
 * PCA and PLS implements the NIPALS algorithm described in the following publication:
@@ -114,7 +112,7 @@ Here an example to shows how to compute a principal component analysis on a matr
 
 
 .. literalinclude:: python_code_examples/pcaexample1.py
-   :language: c
+   :language: python
    :linenos:
 
 
@@ -126,7 +124,7 @@ To calculate a PLS model, a matrix of features or independent variables and a ma
 Here a simple example that shows how to calculate a PLS model.
 
 .. literalinclude:: python_code_examples/plsexample1.py
-   :language: c
+   :language: python
    :linenos:
 
 

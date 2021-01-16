@@ -1,12 +1,19 @@
 from setuptools import setup
+from os import path
 
-setup(name='scientific',
-      version='1.2.5',
-      description='Libscientific Python bindings',
+this_directory = path.abspath(path.dirname(__file__))
+with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
+    long_description = f.read()
+
+setup(name='libscientific',
+      version='1.2.6',
+      description='Libscientific python foreign function interface',
+      long_description=long_description,
+      long_description_content_type='text/markdown',
       url='http://github.com/gmrandazzo/libscientific',
       author='Giuseppe Marco Randazzo',
       author_email='gmrandazzo@gmail.com',
       license='GPLv3',
-      packages=['scientific'],
+      packages=['libscientific'],
       python_requires=">=3.0",
       zip_safe=False)

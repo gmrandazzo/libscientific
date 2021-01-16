@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-import scientific
+import libscientific
 from random import random
 
 # Create a list of values that you whant to convert to a double vector
 a = [random() for j in range(5)]
-d = scientific.vector.DVector(a)
+d = libscientific.vector.DVector(a)
 # print the output of the double vector d
 print("orig vector")
 d.debug()
