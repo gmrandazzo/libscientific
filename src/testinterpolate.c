@@ -66,7 +66,7 @@ void test2()
 
 void test1()
 {
-  puts("Test2: Natural Cubic spline interpolation and area under the curve tests.");
+  puts("Test1: Natural Cubic spline interpolation and area under the curve tests.");
   /* Natural Cubic spline interpolation and area under the curve tests */
   matrix *xy, *interp_xy;
 

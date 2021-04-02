@@ -1,4 +1,5 @@
-project(libscientific C Fortran)
+project(libscientific C)
+
 cmake_minimum_required(VERSION 2.6)
 set(AUTHOR "Giuseppe Marco Randazzo")
 set(VERSION "1.2.2")
@@ -13,23 +14,27 @@ endif()
 
 string(TOLOWER "${CMAKE_BUILD_TYPE}" cmake_build_type_tolower)
 
-get_filename_component (Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
-set(CMAKE_Fortran_FLAGS_RELEASE "-funroll-all-loops -fno-f2c -O3")
-set(CMAKE_Fortran_FLAGS_DEBUG   "-fno-f2c -O0 -g")
+find_package(LAPACK)
+
+if(LAPACK_FOUND)
+  message(STATUS "Build libscientific using system lapack library")
+else()
+  message(STATUS "Build libscientific using local lapack source code")
+  project(libscientific C Fortran)
+  get_filename_component (Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
+  set(CMAKE_Fortran_FLAGS_RELEASE "-funroll-all-loops -fno-f2c -O3")
+  set(CMAKE_Fortran_FLAGS_DEBUG   "-fno-f2c -O0 -g")
+endif()
 
 if(WIN32)
   message(STATUS "Build Release: WIN32")
-  # add -static if you whant to compile with gcc lib static
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -D_GNU_SOURCE -O2 -pipe -mwindows -pedantic -Wall -DWIN32")
-  # add to the linker flags the static library -static-libgcc -static-libgfortran
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -s -Wl,-O1")
 elseif(APPLE)
   if(cmake_build_type_tolower STREQUAL "debug")
     message(STATUS "Build Debug: APPLE")
     set(CMAKE_C_FLAGS "-std=c99 -D_GNU_SOURCE -O0 -pedantic -Wall -g")
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -static -static-libgcc -pthread")
-#     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O1 -g -fsanitize=address -fno-omit-frame-pointer -pipe -Wall")
-#     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -g -fsanitize=address")
   else()
     message(STATUS "Build Release: APPLE")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -D_GNU_SOURCE -O2 -pipe -Wall")
@@ -39,7 +44,6 @@ else(NOT WIN32)
   if(cmake_build_type_tolower STREQUAL "debug")
     set(CMAKE_BUILD_TYPE "Debug")
     message(STATUS "Build Debug: Linux")
-    #set(CMAKE_C_FLAGS "-O0 -pedantic -Werror -g -DDEBUG")
     set(CMAKE_C_FLAGS "-std=c99 -D_GNU_SOURCE -O0 -pedantic -Wall -g -pthread")
     set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
   else()
@@ -53,6 +57,7 @@ else(NOT WIN32)
 endif(WIN32)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+
 
 message(STATUS "Build Type: ${CMAKE_BUILD_TYPE}")
 

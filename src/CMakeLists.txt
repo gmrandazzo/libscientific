@@ -1,7 +1,5 @@
 set(Lapack_SRCS
 # Code for Matrix inversion and LU Decomposition
-
-
 3dpart-lapack-3.8.0/dbdsdc.f
 3dpart-lapack-3.8.0/dbdsqr.f
 3dpart-lapack-3.8.0/dgebd2.f
@@ -251,15 +249,15 @@ if(WIN32)
   set(CMAKE_STATIC_LIBRARY_SUFFIX ".dll")
 endif()
 
-#find_library(STATICLIBGCC libgcc.a PATH  /usr/local/Cellar/gcc/4.9.1/lib/gcc/x86_64-apple-darwin14.0.0/4.9.1/)
-#find_library(STATICLIBQUADMATH libquadmath.a PATH  /usr/local/Cellar/gcc/4.9.1/lib/gcc/x86_64-apple-darwin14.0.0/4.9.1/)
-#find_library(STATICGFORTRAN libgfortran.a PATH /usr/local/Cellar/gcc/4.9.1/lib/gcc/x86_64-apple-darwin14.0.0/4.9.1/)
-
-# IF EMSCRIPTEN COMPILE REMOVE SHARED!
-add_library(libscientific SHARED ${Scientific_C_SRCS} ${Scientific_C_H} ${Lapack_SRCS})
-set_target_properties(libscientific PROPERTIES OUTPUT_NAME "scientific")
-#target_link_libraries(libscientific m pthread ${STATICLIBQUADMATH} ${STATICLIBGCC} ${STATICGFORTRAN})
-target_link_libraries(libscientific m pthread)
+if(LAPACK_FOUND)
+    add_library(libscientific SHARED ${Scientific_C_SRCS} ${Scientific_C_H})
+    set_target_properties(libscientific PROPERTIES OUTPUT_NAME "scientific")
+    target_link_libraries(libscientific m pthread ${LAPACK_LIBRARIES})
+else()
+    add_library(libscientific SHARED ${Scientific_C_SRCS} ${Scientific_C_H} ${Lapack_SRCS})
+    set_target_properties(libscientific PROPERTIES OUTPUT_NAME "scientific")
+    target_link_libraries(libscientific m pthread)
+endif()
 
 if(WIN32)
   install(TARGETS libscientific ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib COMPONENT library)
