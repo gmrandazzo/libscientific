@@ -36,3 +36,4 @@ build/*
 *.dSYM/
 
 libscientific.kdev4
+.kdev4
