@@ -520,15 +520,15 @@ void CovarianceDistanceMap(matrix* mi, matrix **mo)
   dvector *x;
   dvector *p;
   dvector *colavg;
+  matrix *covmx;
+  matrix *inv_cov;
+  
   initDVector(&colavg);
   MatrixColAverage(mi, &colavg);
-
-
-  matrix *covmx;
+  
   NewMatrix(&covmx, mi->col, mi->col);
   MatrixCovariance(mi, &covmx);
 
-  matrix *inv_cov;
   NewMatrix(&inv_cov, mi->col, mi->col);
   MatrixInversion(covmx, &inv_cov);
   DelMatrix(&covmx);

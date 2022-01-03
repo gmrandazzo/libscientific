@@ -34,3 +34,5 @@ build/*
 
 # Debug files
 *.dSYM/
+
+libscientific.kdev4

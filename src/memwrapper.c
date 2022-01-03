@@ -28,7 +28,7 @@
 #endif
 
 
-inline void *xmalloc(size_t size)
+void *xmalloc(size_t size)
 {
   void *ptr = NULL;
   ptr = malloc(size);

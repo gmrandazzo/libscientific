@@ -124,11 +124,11 @@ void StrVectorRemoveAt(strvector **d, size_t indx)
 void StrVectorAppendInt(strvector** s, int val)
 {
   size_t size = (*s)->size+1;
+  char str[MAXCHARSIZE];
   (*s)->data = xrealloc((*s)->data, sizeof(char*)*size);
   (*s)->size += 1;
   /*(*s)->data[(*s)->size-1] = xmalloc(sizeof(char)*MAXCHARSIZE);
   sprintf((*s)->data[(*s)->size-1], "%d", val);*/
-  char str[MAXCHARSIZE];
   sprintf(str, "%d", val);
   (*s)->data[(*s)->size-1] = strdup(str);
 }
@@ -136,11 +136,11 @@ void StrVectorAppendInt(strvector** s, int val)
 void StrVectorAppendDouble(strvector** s, double val)
 {
   size_t size = (*s)->size+1;
+  char str[MAXCHARSIZE];
   (*s)->data = xrealloc((*s)->data, sizeof(char*)*size);
   (*s)->size += 1;
   /*(*s)->data[(*s)->size-1] = xmalloc(sizeof(char)*MAXCHARSIZE);
   sprintf((*s)->data[(*s)->size-1], "%f", val);*/
-  char str[MAXCHARSIZE];
   sprintf(str, "%f", val);
   (*s)->data[(*s)->size-1] = strdup(str);
 }

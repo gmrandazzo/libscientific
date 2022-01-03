@@ -101,7 +101,7 @@ double randDouble(double low, double high)
   return low + (xor128() / div);
 }
 
-inline double square(double x){ return x*x; }
+double square(double x){ return x*x; }
 
 void StochasticUniversalSample(dvector *fitness, size_t nselect, size_t init, uivector **selection)
 {
@@ -196,6 +196,8 @@ void Combinations(uivector *num, matrix **comb)
 double curve_area(matrix *xy, size_t intervals)
 {
   size_t i;
+  double base, height;
+  double area = 0.f;
   matrix *interp_xy;
   initMatrix(&interp_xy);
   /*If intervals > 0 interpolate with natural cubic splines to have more fine area */
@@ -208,8 +210,6 @@ double curve_area(matrix *xy, size_t intervals)
     intervals = xy->row;
   }
 
-  double base, height;
-  double area = 0.f;
   for(i = 0; i < intervals-1; i++){
       /* Trapezoidal method */
       base = interp_xy->data[i+1][0]-interp_xy->data[i][0];

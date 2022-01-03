@@ -22,7 +22,6 @@
 #include <stdbool.h>
 #include <string.h>
 #include <math.h>
-#include <complex.h>
 #include <pthread.h>
 #include "numeric.h"
 #include "algebra.h"
@@ -1172,10 +1171,10 @@ void MeanCenteredMatrix(matrix *mx, matrix *mxc)
 
 void PearsonCorrelMatrix(matrix* mxsrc, matrix* mxdst)
 {
-  ResizeMatrix(&mxdst, mxsrc->col, mxsrc->col);
   size_t i, j, k;
   double n, a, b, xres, yres;
   dvector *mean;
+  ResizeMatrix(&mxdst, mxsrc->col, mxsrc->col);
   initDVector(&mean);
   MatrixColAverage(mxsrc, &mean);
   for(k = 0; k < mxsrc->col; k++){
@@ -1209,11 +1208,11 @@ void PearsonCorrelMatrix(matrix* mxsrc, matrix* mxdst)
 
 void SpearmanCorrelMatrix(matrix* mxsrc, matrix* mxdst)
 {
-  ResizeMatrix(&mxdst, mxsrc->col, mxsrc->col);
   size_t i, j, k, l;
   matrix *rankmx;
   dvector *vtosort;
   double n;
+  ResizeMatrix(&mxdst, mxsrc->col, mxsrc->col);
   NewMatrix(&rankmx, mxsrc->row, 4);
   NewDVector(&vtosort, mxsrc->row);
   for(k = 0; k < mxsrc->col; k++){
@@ -1535,8 +1534,8 @@ void MatrixCovariance(matrix* mx, matrix** cm)
 /* Transform a matrix into a logaritmic matrix */
 void Matrix2LogMatrix(matrix *mx_in, matrix **mx_out)
 {
-  ResizeMatrix(mx_out, mx_in->row, mx_in->col);
   size_t i, j;
+  ResizeMatrix(mx_out, mx_in->row, mx_in->col);
   for(i = 0; i < mx_in->row; i++){
     for(j = 0; j < mx_in->col; j++){
       (*mx_out)->data[i][j] = log10(mx_in->data[i][j]+1);
@@ -1547,8 +1546,8 @@ void Matrix2LogMatrix(matrix *mx_in, matrix **mx_out)
 /* Transform a matrix into a SQUARE matrix */
 void Matrix2SquareMatrix(matrix *mx_in, matrix **mx_out)
 {
-  ResizeMatrix(mx_out, mx_in->row, mx_in->col);
   size_t i, j;
+  ResizeMatrix(mx_out, mx_in->row, mx_in->col);
   for(i = 0; i < mx_in->row; i++)
     for(j = 0; j < mx_in->col; j++)
       (*mx_out)->data[i][j] = square(mx_in->data[i][j]);
@@ -1557,8 +1556,8 @@ void Matrix2SquareMatrix(matrix *mx_in, matrix **mx_out)
 /* Transform a matrix into a SQRT matrix */
 void Matrix2SQRTMatrix(matrix *mx_in, matrix **mx_out)
 {
-  ResizeMatrix(mx_out, mx_in->row, mx_in->col);
   size_t i, j;
+  ResizeMatrix(mx_out, mx_in->row, mx_in->col);
   for(i = 0; i < mx_in->row; i++)
     for(j = 0; j < mx_in->col; j++)
       (*mx_out)->data[i][j] = sqrt(mx_in->data[i][j]);

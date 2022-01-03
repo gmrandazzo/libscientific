@@ -378,6 +378,8 @@ void MDC(matrix* m, size_t n, int metric, uivector** selections, size_t nthreads
 void MaxDis(matrix* m, size_t n, int metric, uivector** selections, size_t nthreads, ssignal *s)
 {
   size_t i, j, l, nobj, ntotobj;
+  int far_away;
+  double far;
   double dis;
   matrix *m1, *m2, *distances;
   uivector *idselection/*, *discounter*/;
@@ -400,8 +402,8 @@ void MaxDis(matrix* m, size_t n, int metric, uivector** selections, size_t nthre
     c->data[j] /= (double)m->row;
   }
 
-  int far_away = -1;
-  double far = 0.f;
+  far_away = -1;
+  far = 0.f;
   for(i = 0; i < m->row; i++){
     double dst = 0.f;
     for(j = 0; j < m->col; j++){
@@ -1646,6 +1648,7 @@ void HierarchicalClustering(matrix* _m, size_t nclusters, uivector** _clusters, 
 {
   size_t i, j, k, l, m, min_i, min_j;
   char buffer[MAXCHARSIZE];
+  char fl2str[50];
   /* calc the matrix distance */
   matrix *distmx, *distmx_new;
   strvector *pointname, *pointname_new, *clusters, *tokens;
@@ -1857,7 +1860,6 @@ void HierarchicalClustering(matrix* _m, size_t nclusters, uivector** _clusters, 
     for(i = 0; i < clusters->size; i++){
       strcpy(buffer, "");
       strcpy(buffer, getStr(clusters, i));
-      char fl2str[50];
       snprintf (fl2str, sizeof(fl2str), "%f", clusterdist->data[i]);
       strcat(buffer, fl2str);
       StrVectorAppend(dendogram, buffer);

@@ -113,6 +113,7 @@ double calcObjectDistance(matrix *m)
 void PCA(matrix *mx, size_t scaling, size_t npc, PCAMODEL* model, ssignal *s)
 {
   size_t i, j, pc;
+  double degree_freedom;
   dvector *t;
   dvector *p;
   dvector *colvar;
@@ -352,7 +353,7 @@ void PCA(matrix *mx, size_t scaling, size_t npc, PCAMODEL* model, ssignal *s)
         puts("....................");
         #endif
 
-        if(mod_t_new - mod_t_old <= PCACONVERGENCE && !isnan(mod_t_new)){
+        if(mod_t_new - mod_t_old <= PCACONVERGENCE && !_isnan_(mod_t_new)){
           /* copy the loadings and score to the output data matrix */
           for(i = 0; i < t->size; i++){
             model->scores->data[i][pc] = t->data[i];
@@ -390,7 +391,6 @@ void PCA(matrix *mx, size_t scaling, size_t npc, PCAMODEL* model, ssignal *s)
             * the degree of freedom are calculated according to the formula
             *  (n_variables-npc)  * (nobjects/(nobject-1)
             */
-            double degree_freedom;
             if(E->col < pc+1 && E->row > pc+1){
                 degree_freedom = (float) (E->col-(pc+1)) / (float)(E->row/((E->row-(pc+1))-1));
             }

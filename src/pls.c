@@ -141,11 +141,12 @@ void LVCalc(matrix **X, matrix **Y, dvector **t, dvector **u, dvector **p, dvect
 {
   size_t i, j, loop;
   double mod_p_old, dot_q, dot_t, dot_u, dot_w, deltat;
-  mod_p_old = dot_q = dot_t = dot_u = dot_w = 0.f;
-
   /* Make a copy of variables for memory reasons... */
   matrix *X_, *Y_;
   dvector *t_, *u_, *p_, *q_, *w_;
+  dvector *t_old;
+  
+  mod_p_old = dot_q = dot_t = dot_u = dot_w = 0.f;
   initMatrix(&X_);
   initMatrix(&Y_);
   MatrixCopy((*X), &X_);
@@ -156,9 +157,8 @@ void LVCalc(matrix **X, matrix **Y, dvector **t, dvector **u, dvector **p, dvect
   NewDVector(&p_, (*p)->size);
   NewDVector(&q_, (*q)->size);
   NewDVector(&w_, (*w)->size);
-
-  dvector *t_old;
   NewDVector(&t_old, (*t)->size);
+  
   /* Step 1: select the column vector u with the largest column average from Y  take u = some y_j */
   if(Y_->col > 1){
     dvector *Y_avg;
