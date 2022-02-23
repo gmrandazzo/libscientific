@@ -32,10 +32,14 @@ Actually libscientific is able to compute:
     - Yates analysis
     - Receiver operating characteristic (ROC)
     - Precision-Recal
+    - Matrix-Matrix Euclidean, Manhattan, Cosine and Mahalanobis  distances
 
   - Numerical analysis
     - Estimate of an integral over a xy region (numerical integration using the trapezoid rule)
     - Natural cubic spline interpolation and prediction
+    - Ordinary Least-Squares (OrdinaryLeastSquares)
+    - Linear Equation Solver (SolveLSE)
+    - Singular value decomposition
   
   - Optimization
      - Nelder-Mead simplex algorithm 
@@ -52,6 +56,7 @@ TODO
 
 - Implement Consensus PCA
 - Implement Independent Component Analysis ICA
+- Exstensive test of some numerical analyisis methods: CholeskyReduction, QR Decomposition, LU Decomposition, HouseholderReduction and so on.
 
 References:
 ----------
