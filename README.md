@@ -3,10 +3,9 @@ libscientific
 
 Documentation available at http://gmrandazzo.github.io/libscientific/
 
-Libscientific is a C framework  for multivariate and other statistical analysis.
-It is purely writen in C language using their own numerical algorithms
-for matrix computations. Only left eigenvectors and eigenvalues are calculated
-using a third part library, lapack version 3.5.0.
+Libscientific is a C framework for multivariate and other statistical analysis.
+It is written in C language using their numerical algorithms for matrix computations.
+Only left eigenvectors and eigenvalues are calculated using a third-party library, lapack.
 
 Actually libscientific is able to compute:
 
@@ -29,7 +28,7 @@ Actually libscientific is able to compute:
     - Most Dissimilar Compounds  (DIS) [5]
 
   - Statistical analyisis
-    - R2, MSE, MAE, RMSE, BIAS, Sensitivity, Positive Predicted Values, 
+    - R2, MSE, MAE, RMSE, BIAS, Sensitivity, Positive Predicted Values 
     - Yates analysis
     - Receiver operating characteristic (ROC)
     - Precision-Recal
@@ -94,17 +93,14 @@ References:
 License
 ============
 
-Libscientific is distributed under GPLv3 license, this means that:
+Libscientific is distributed under GPLv3 license, and this means that:
 
-- you can use this library where you want doing what you want.
+- you can use this library where you want, to do what you want.
 - you can modify this library and commit changes.
-- you can not use this library inside a commercial software.
+- you can not use this library inside commercial software.
 
-To know more in details how the licens work please read the file "LICENSE" or
+To know more in detail how the license work, please read the file "LICENSE" or
 go to "http://www.gnu.org/licenses/gpl-3.0.en.html"
-
-Libscientific is currently property of Giuseppe Marco Randazzo which is also the
-current package maintainer.
 
 Voluntary contributions are welcome. :-)
 
@@ -147,13 +143,11 @@ You can check the latest sources with the command::
 Contributing
 ------------
 
-To contribute you can fork the project, or if you have already forked the project
+To contribute, you can fork the project, or if you have already forked the project
 update to the latest version of libscientific, make the changes and open a Pull Request.
 
-However some recommendations before open a Pull Request:
+However, here are some recommendations.
+Before opening a Pull Request:
   * Be sure that your code it's working.
-  * Comment your code with Parameters, Attribute, Return, Notes and References.
+  * Comment your code with Parameters, attributes, returns, notes, and References.
   * A test example is necessary.
-
-Probably your code will be integrated but some quality controls and goals
-have to be respected.
