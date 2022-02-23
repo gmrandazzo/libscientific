@@ -6,19 +6,18 @@
 Getting started in Python
 =========================
 
-Every data type object in libscientific is stored in the HEAP and then supports
-dynamic memory allocation.
+Every data type object in libscientific is stored in the HEAP and then supports dynamic memory allocation.
 
 In python, there is no need to allocate/deallocate matrix/vectors/tensors and models in general
-because are automatically handled by the python binding itself.
+because the python binding itself automatically handles them.
 
 
 Use libscientific in python
 ---------------------------
-First you need to install the c library and the python package.
+First, you need to install the c library and the python package.
 Please follow the process described `here <http://gmrandazzo.github.io/libscientific/Source/_build/html/Install.html>`_.
 
-A program that use libscientific requires to import the python binding as follow
+A program that use libscientific requires to import the python binding as follows
 
 .. code-block:: python
    :linenos:
@@ -62,21 +61,21 @@ Here we show an example on how to append a value to a vector.
 Matrix operations
 =================
 
-Matrix is an user defined data type which contains informations in regards to
+Matrix is a user-defined data type that contains information in regards to
 - the number of rows
 - the number of columns
-- the 2D data array which define the matrix
+- the 2D data array which defines the matrix
 
-The data array in python use the same implementation of the c language version.
-However memory allocation/destruction are carried out directly from the python class.
-Hence there is no need to manually free up the memory.
+The data array in python uses the c language implementation.
+However, memory allocation/destruction is carried out directly from the python class.
+Hence there is no need to free up the memory manually.
 
 
 Create a matrix in python
 --------------------------
 
-In this example we show how to create a matrix from a list of list (or numpy array)
-and we show how to modify its content and convert it again to a list of list.
+In this example, we show how to create a matrix from a list of lists (or numpy array),
+modify its content and convert it again to a list of lists.
 
 .. literalinclude:: python_code_examples/mxexample1.py
    :language: python
@@ -91,9 +90,9 @@ TO BE COMPLETED
 Multivariate analysis algorithms
 ================================
 
-In this section you will find examples regarding how to run multivariate analysis algorithms.
-In particular the algorithm described here are extracted from official libscientific publications
-and are adapted to run in multithreading to speedup the calculation.
+In this section, you will find examples of running multivariate analysis algorithms.
+In particular, the algorithm described here is extracted from official libscientific publications and is adapted to run in multithreading to speed up the calculation.
+
 
 * PCA and PLS implements the NIPALS algorithm described in the following publication:
 
@@ -108,7 +107,7 @@ Principal Component Analysis (PCA)
 ----------------------------------
 
 
-Here an example to shows how to compute a principal component analysis on a matrix.
+Here is an example that shows to compute a principal component analysis on a matrix.
 
 
 .. literalinclude:: python_code_examples/pcaexample1.py
@@ -119,9 +118,9 @@ Here an example to shows how to compute a principal component analysis on a matr
 Partial Least Squares (PLS)
 ---------------------------
 
-To calculate a PLS model, a matrix of features or independent variables and a matrix of targets or dependent variables is requested.
+A matrix of features or independent variables and a matrix of targets or dependent variables is requested to calculate a PLS model.
 
-Here a simple example that shows how to calculate a PLS model.
+Here is a simple example that shows how to calculate a PLS model.
 
 .. literalinclude:: python_code_examples/plsexample1.py
    :language: python

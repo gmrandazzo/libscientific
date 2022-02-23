@@ -4,9 +4,9 @@
 
 int main(void){
   int i;
-  /* Define the variable vector which in this case is a double vector.
-   * If we would like to use instead an integer or an unsigned integer or a string vector 
-   * this construct became
+  /* Define the variable vector, which in this case is a double vector.
+   * If we would like to use an integer or an unsigned integer or a 
+   * string vector instead this construct became
    * ivector *v; or uivector *v; or strvector *v;
    */
 

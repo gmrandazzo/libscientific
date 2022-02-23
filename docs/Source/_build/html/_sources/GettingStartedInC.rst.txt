@@ -6,16 +6,16 @@
 Getting started in C
 ====================
 
-Every data type object in libscientific is stored in the HEAP and then supports
+
+Every data type object in libscientific is stored in the HEAP and then supports 
 dynamic memory allocation.
 
-This means that every data object such as, matrix, vectors, tensors, models in general need to be manually allocated/deallocated
-by the programmer using the library predefined constructs "NewSOMETHING(&...);" and "DelSOMETHING(&...);".
+Hence, every data object such as matrix, vectors, tensors, models, in general,
+need to be manually allocated/deallocated by the programmer using the library predefined
+constructs "NewSOMETHING(&...);" and "DelSOMETHING(&...);".
 
-This also means that every data object is a pointer and need to pass by reference "&".
-
-To avoid memory fragmentation problems please, consider that every allocated variable
-need to be deallocated at the end of your program :-)
+Hence, every data object is a pointer and needs to pass by reference "&".
+To avoid memory fragmentation problems, please, consider deallocating every allocated variable at the end of your program :-)
 
 
 Compile a program that use libscientific
@@ -79,13 +79,13 @@ Work with string vectors
 Matrix operations
 =================
 
-Matrix is an user defined data type which contains informations in regards to
+
+Matrix is a user-defined data type that contains:
 - the number of rows
 - the number of columns
-- the 2D data array which define the matrix
+- the 2D data array, which defines the matrix.
 
-The data array is specifically selected to be double type
-to work with large range of numbers.
+The data array is selected explicitly as a double type to work with an extensive range of numbers.
 
 .. literalinclude:: ../../src/matrix.h
    :language: c
@@ -132,8 +132,8 @@ In this example we illustrate the product between a matrix of sizes M x N and a 
 Transpose a matrix
 ------------------
 
-A matrix transpose is an operation which flip a matrix over it's diagonal.
-Here an example that shows how to produce a transpose of a given matrix.
+A matrix transpose is an operation that flips a matrix over its diagonal.
+Here is an example that shows how to produce a transpose of a given matrix.
 
 .. literalinclude:: c_code_examples/mxexample4.c
    :language: c
@@ -153,7 +153,7 @@ In this example we show how to invert a matrix with libscientific
 Calculate eigenvectors and eigenvalues of a matrix
 --------------------------------------------------
 
-In this example we show how to calculate eigenvectors and eigenvalues of an N x N real nonsymmetric matrix.
+This example shows how to calculate eigenvectors and eigenvalues of an N x N real nonsymmetric matrix.
 The eigenvector/eigenvalue is computed thanks to the dgeev.f code extracted from the Lapack library.
 
 .. literalinclude:: c_code_examples/mxexample6.c
@@ -170,15 +170,15 @@ TO BE COMPLETED
 Multivariate analysis algorithms
 ================================
 
-In this section you will find examples regarding how to run multivariate analysis algorithms.
-In particular the algorithm described here are extracted from official scientific publications
-and are adapted to run in multithreading to speedup the calculation.
+In this section, you will find examples of running multivariate analysis algorithms.
+In particular, the algorithm described here is extracted from official scientific publications
+and is adapted to run in multithreading to speed up the calculation.
 
 * PCA and PLS implements the NIPALS algorithm described in the following publication:
 
 | P. Geladi, B.R. Kowalski
 | Partial least-squares regression: a tutorial
-| Analytica Chimica Acta Volume 185, 1986, Pages 1–17
+| Analytica Chimica Acta Volume 185, 1986, Pages 1-17
 | DOI:10.1016/0003-2670(86)80028-9
 
 
@@ -186,7 +186,7 @@ and are adapted to run in multithreading to speedup the calculation.
 Principal Component Analysis (PCA)
 ----------------------------------
 
-Here an example to shows how to compute a principal component analysis on a matrix.
+Here is an example that shows how to compute a principal component analysis on a matrix.
 
 
 .. literalinclude:: c_code_examples/pcaexample1.c
@@ -196,8 +196,9 @@ Here an example to shows how to compute a principal component analysis on a matr
 
 Partial Least Squares (PLS)
 ---------------------------
-To calculate a PLS model, a matrix of features or independent variables and a matrix of targets or dependent variables is requested.
-Here a simple example that shows how to calculate a PLS model.
+
+A matrix of features or independent vIariables and a matrix of targets or dependent variables is requested to calculate a PLS model.
+Here is a simple example that shows how to calculate a PLS model.
 
 
 .. literalinclude:: c_code_examples/plsexample1.c

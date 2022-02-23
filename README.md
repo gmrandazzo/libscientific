@@ -28,6 +28,19 @@ Actually libscientific is able to compute:
     - Most Descriptive Compounds (MDC) [4]
     - Most Dissimilar Compounds  (DIS) [5]
 
+  - Statistical analyisis
+    - R2, MSE, MAE, RMSE, BIAS, Sensitivity, Positive Predicted Values, 
+    - Yates analysis
+    - Receiver operating characteristic (ROC)
+    - Precision-Recal
+
+  - Numerical analysis
+    - Estimate of an integral over a xy region (numerical integration using the trapezoid rule)
+    - Natural cubic spline interpolation and prediction
+  
+  - Optimization
+     - Nelder-Mead simplex algorithm 
+
 Moreover for some algorithms is possible to run validation methods
 with parallel computing to be faster:
 
@@ -35,15 +48,21 @@ with parallel computing to be faster:
 - Leave-One-Out
 - Y-Scrambling [6]
 
+TODO
+----
+
+- Implement Consensus PCA
+- Implement Independent Component Analysis ICA
+
 References:
 ----------
 
 [1] P. Geladi, B.R. Kowalski
      Partial least-squares regression: a tutorial
-     Analytica Chimica Acta Volume 185, 1986, Pages 1–17
+     Analytica Chimica Acta Volume 185, 1986, Pages 1-17
      DOI:10.1016/0003-2670(86)80028-9
 
-[2] S. Wold, P. Geladi, K. Esbensen and J. Öhman3
+[2] S. Wold, P. Geladi, K. Esbensen and J. Öhman
     MULTI-WAY PRINCIPAL COMPONENTSAND PLS-ANALYSIS
     Journal of Chemometrics
     Volume 1, Issue 1, pages 41–56, January 1987

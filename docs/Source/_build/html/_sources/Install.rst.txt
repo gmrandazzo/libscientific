@@ -6,8 +6,7 @@
 Install
 =======
 
-The installation works for Linux/OSX and Windows.
-
+The installation works for Linux/macOS and Windows.
 
 Requirements
 ------------
@@ -33,8 +32,7 @@ First you need to install the C library following these instructions:
    make -j5
    sudo make install
 
-Then, if you want to use the library in python you have also 
-to install the python package
+Then, if you want to use the library in python, you have also to install the python package.
 
 .. code-block::
    
@@ -48,7 +46,7 @@ to install the python package
 
 Packages
 --------
-On OSX you can install libscientific via homebrew
+On macOS you can install libscientific via homebrew
 
 .. code-block::
    
