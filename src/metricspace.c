@@ -446,7 +446,7 @@ void MahalanobisDistance(matrix* m, matrix **invcov, dvector **mu, dvector **dis
       MatrixColAverage(m, &colavg);
     }
     else{
-      fprintf(stderr, "Unable to compute MahalanobisDistance. The size of mu differ from the matrix colum size \n");
+      fprintf(stderr, "Unable to compute MahalanobisDistance. The size of mu differ from the matrix column size \n");
       fflush(stderr);
       abort();
     }
@@ -481,7 +481,7 @@ void MahalanobisDistance(matrix* m, matrix **invcov, dvector **mu, dvector **dis
       DelMatrix(&covmx);
     }
     else{
-      fprintf(stderr, "Unable to compute MahalanobisDistance. The size of inverse covariance matrix differ from the matrix colum size \n");
+      fprintf(stderr, "Unable to compute MahalanobisDistance. The size of inverse covariance matrix differ from the matrix column size \n");
       fflush(stderr);
       abort();
     }

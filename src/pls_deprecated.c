@@ -768,7 +768,7 @@ void PLSDynamicSampleValidator(matrix *mx, matrix *my,
     NewMatrix(q2_surface, ceil(maxobj/deltaobj)*niters*nlv, 2+my->col);
     NewMatrix(sdep_surface, ceil(maxobj/deltaobj)*niters*nlv, 2+my->col);
 
-    /*first colum: nobj
+    /*first column: nobj
      second column: nlv
      from third to the end each serie of my->col is a q2 for each y*/
 

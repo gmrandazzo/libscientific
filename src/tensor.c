@@ -118,7 +118,7 @@ void setTensorValue(tensor *t, size_t i, size_t j, size_t k, double val)
         setMatrixValue((*t).m[i], j, k, val);
       }
       else{
-        fprintf(stderr, "setTensorValue Error! Wrong colum index.\n");
+        fprintf(stderr, "setTensorValue Error! Wrong columnindex.\n");
         fflush(stderr);
         abort();
       }
@@ -143,7 +143,7 @@ double getTensorValue(tensor *t, size_t i, size_t j, size_t k){
         return getMatrixValue((*t).m[i], j, k);
       }
       else{
-        fprintf(stderr, "getTensorValue Error! Wrong colum index.\n");
+        fprintf(stderr, "getTensorValue Error! Wrong columnindex.\n");
         fflush(stderr);
         return NAN;
       }
@@ -203,7 +203,7 @@ void TensorAppendMatrixAt(tensor **tdst, size_t order, matrix *msrc)
 /*
  * t is the tensor
  * n is the order number
- * column is the colum vector to append
+ * column is the columnvector to append
  */
 void TensorAppendColumn(tensor **t, size_t n, dvector* column)
 {
@@ -235,7 +235,7 @@ void TensorAppendColumn(tensor **t, size_t n, dvector* column)
 /*
  * t is the tensor
  * n is the order number
- * column is the colum vector to append
+ * column is the columnvector to append
  */
 void TensorAppendRow(tensor **t, size_t n, dvector* row)
 {
@@ -386,7 +386,7 @@ void TransposedTensorDVectorProduct(tensor *t, dvector *v, matrix *p)
 
 
 /* the output "m" is size of:
- *   colum = t->order;
+ *   column = t->order;
  *   row = v->size
  */
 void DvectorTensorDotProduct(tensor* t, dvector* v, matrix* m)

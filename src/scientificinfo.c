@@ -24,7 +24,7 @@
 
 void ScientificVersion()
 {
-  printf("Scientific Library was writen by Giuseppe Marco Randazzo <gmrandazzo@gmail.com>\nVersion: %d.%d.%d\n", major_, minor_, patch_);
+  printf("Scientific Library was written by Giuseppe Marco Randazzo <gmrandazzo@gmail.com>\nVersion: %d.%d.%d\n", major_, minor_, patch_);
 }
 
 const char *GetScientificVersion()
