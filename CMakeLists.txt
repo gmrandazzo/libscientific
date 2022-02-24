@@ -1,8 +1,11 @@
-project(libscientific C)
-
-cmake_minimum_required(VERSION 2.6)
+project(libscientific LANGUAGES C)
+cmake_minimum_required(VERSION 3.22)
 set(AUTHOR "Giuseppe Marco Randazzo")
-set(VERSION "1.2.2")
+set(VERSION_MAJOR 1)
+set(VERSION_MINOR 2)
+set(VERSION_PATCH 4)
+set(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
+configure_file(src/scientificconfig.h.in scientificconfig.h)
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: Debug Release" FORCE)
@@ -62,6 +65,8 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
 message(STATUS "Build Type: ${CMAKE_BUILD_TYPE}")
 
 include(GNUInstallDirs)
+include_directories(${PROJECT_BINARY_DIR})
+
 add_subdirectory(src)
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"

@@ -939,7 +939,7 @@ void PLSYPredictorAllLV(matrix *mx, PLSMODEL *model, matrix **tscores, matrix **
 
 void PLSRegressionStatistics(matrix *my_true, matrix *my_pred, matrix** ccoeff, matrix **rmse, matrix **bias)
 {
-  size_t lv, i, j, ny;
+  size_t lv, i, j;
 
   dvector *yt;
   dvector *yp;
@@ -955,7 +955,6 @@ void PLSRegressionStatistics(matrix *my_true, matrix *my_pred, matrix** ccoeff, 
   if(bias != NULL)
     ResizeMatrix(bias, nlv, my_true->col);
 
-  ny = 0;
   for(lv = 0; lv < nlv; lv++){
     for(j = 0; j < my_true->col; j++){
       initDVector(&yt);

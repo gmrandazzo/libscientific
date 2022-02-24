@@ -1,0 +1,3 @@
+#define major_ @VERSION_MAJOR@
+#define minor_ @VERSION_MINOR@
+#define patch_ @VERSION_PATCH@
