@@ -549,6 +549,57 @@ void MatrixAppendUICol(matrix** m, uivector *col)
   (*m)->row = rowsize; /* updating the row matrix size */
 }
 
+
+/* Description:
+ * Delete a specific row in a matrix
+ */
+void MatrixDeleteRowAt(matrix **mx, size_t row)
+{
+  size_t i, j, k;
+  matrix *c;
+  NewMatrix(&c, (*mx)->row, (*mx)->col);
+  MatrixCopy((*mx), &c);
+  ResizeMatrix(mx, c->row-1, c->col);
+  k = 0;
+  for(i = 0; i < c->row; i++){
+    if(i == row){
+      continue;
+    }
+    else{
+      for(j = 0; j < c->col; j++){
+        (*mx)->data[k][j] = c->data[i][j];
+      }
+      k++;
+    }
+  }
+  DelMatrix(&c);
+}
+
+/* Description:
+ * Delete a specific column in a matrix
+ */
+void MatrixDeleteColAt(matrix **mx, size_t col)
+{
+  size_t i, j, k;
+  matrix *c;
+  NewMatrix(&c, (*mx)->row, (*mx)->col);
+  MatrixCopy((*mx), &c);
+  ResizeMatrix(mx, c->row, c->col-1);
+  k = 0;
+  for(j = 0; j < c->col; j++){
+    if(j == col){
+      continue;
+    }
+    else{  
+      for(i = 0; i < c->row; i++){
+        (*mx)->data[i][k] = c->data[i][j];
+      }
+      k++;
+    }
+  }
+  DelMatrix(&c);
+}
+
 /*
  * p[i] =   Σ mx[i][j] * v[j]
  */

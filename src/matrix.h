@@ -134,6 +134,17 @@ void MatrixAppendUIRow(matrix **mx, uivector *row);
  */
 void MatrixAppendUIRow(matrix **mx, uivector *row);
 
+
+/* Description:
+ * Delete a specific row in a matrix
+ */
+void MatrixDeleteRowAt(matrix **mx, size_t row);
+
+/* Description:
+ * Delete a specific column in a matrix
+ */
+void MatrixDeleteColAt(matrix **mx, size_t col);
+
 /*  Matrix Operations */
 
 /* Description:
