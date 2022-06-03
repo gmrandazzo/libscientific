@@ -42,7 +42,8 @@ void DelEPLSModel(EPLSMODEL** m)
   size_t i;
   for(i = 0; i < (*m)->n_models; i++){
     DelPLSModel(&(*m)->models[i]);
-    DelMatrix(&(*m)->Sintrps[i]);
+    if((*m)->Sintrps != NULL)
+      DelMatrix(&(*m)->Sintrps[i]);
     if((*m)->model_feature_ids != NULL)
       DelUIVector(&(*m)->model_feature_ids[i]);
   }

@@ -7,9 +7,18 @@
 What is libscientific?
 ======================
 
-Libscientific aims to do numerical/multivariate and statistical analysis. The library is written in C language for almost all the computations except for a few methods such as the singular value decomposition (SVD) and the eigenvector/eigenvalue transformation from a third-party library, the Lapack library. It requires two dependencies: CMake and a c/fortran compiler and supports Windows, Linux, macOS, and embedded systems. Python bindings are available using ctypes to avoid dependencies. The library is distributed under GPLv3 license allowing it to be used for public and commercial purposes.
+Libscientific aims to do numerical/multivariate and statistical analysis.
+The library is written in C language for almost all the computations except
+for a few methods such as the singular value decomposition (SVD) and
+the eigenvector/eigenvalue transformation from a third-party library, the Lapack library.
+It requires two dependencies: CMake and a c/fortran compiler
+and supports Windows, Linux, macOS, and embedded systems.
+Python bindings are available using ctypes to avoid dependencies.
+The library is distributed under GPLv3 license allowing it
+to be used for public and commercial purposes.
 
-The significant advantage of libscientific is that it does not require dependencies unless a c/fortran compiler and CMake. Moreover, the size of the library is under 1.5MB.
+The significant advantage of libscientific is that it does not require dependencies
+unless a c/fortran compiler and CMake. Moreover, the size of the library is under 1.5MB.
 Libscientific also has been tested with old computers.
 
 

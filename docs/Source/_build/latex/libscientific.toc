@@ -1,0 +1,40 @@
+\babel@toc {english}{}\relax 
+\contentsline {chapter}{\numberline {1}What is libscientific?}{1}{chapter.1}%
+\contentsline {section}{\numberline {1.1}What can I do with libscientific?}{1}{section.1.1}%
+\contentsline {section}{\numberline {1.2}History}{3}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Integration with other open\sphinxhyphen {}source projects}{3}{section.1.3}%
+\contentsline {section}{\numberline {1.4}Licensing}{3}{section.1.4}%
+\contentsline {chapter}{\numberline {2}Install}{5}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Requirements}{5}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Installation process}{5}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Packages}{6}{section.2.3}%
+\contentsline {chapter}{\numberline {3}Getting started in C}{7}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Compile a program that use libscientific}{7}{section.3.1}%
+\contentsline {chapter}{\numberline {4}Vector operations}{9}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Create/Allocate a vector}{9}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Append a value to a given vector}{10}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Work with string vectors}{10}{section.4.3}%
+\contentsline {chapter}{\numberline {5}Matrix operations}{11}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Create/Allocate a matrix with a specific size}{11}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Initialize an empty matrix and append a row/column to it}{12}{section.5.2}%
+\contentsline {section}{\numberline {5.3}Matrix x Column vector dot product}{12}{section.5.3}%
+\contentsline {section}{\numberline {5.4}Transpose a matrix}{13}{section.5.4}%
+\contentsline {section}{\numberline {5.5}Invert a matrix}{14}{section.5.5}%
+\contentsline {section}{\numberline {5.6}Calculate eigenvectors and eigenvalues of a matrix}{15}{section.5.6}%
+\contentsline {chapter}{\numberline {6}Tensor operations}{17}{chapter.6}%
+\contentsline {chapter}{\numberline {7}Multivariate analysis algorithms}{19}{chapter.7}%
+\contentsline {section}{\numberline {7.1}Principal Component Analysis (PCA)}{19}{section.7.1}%
+\contentsline {section}{\numberline {7.2}Partial Least Squares (PLS)}{20}{section.7.2}%
+\contentsline {chapter}{\numberline {8}Getting started in Python}{23}{chapter.8}%
+\contentsline {section}{\numberline {8.1}Use libscientific in python}{23}{section.8.1}%
+\contentsline {chapter}{\numberline {9}Vector operations}{25}{chapter.9}%
+\contentsline {section}{\numberline {9.1}Create a vector in python}{25}{section.9.1}%
+\contentsline {section}{\numberline {9.2}Append a value to a given vector}{26}{section.9.2}%
+\contentsline {chapter}{\numberline {10}Matrix operations}{27}{chapter.10}%
+\contentsline {section}{\numberline {10.1}Create a matrix in python}{27}{section.10.1}%
+\contentsline {chapter}{\numberline {11}Tensor operations}{29}{chapter.11}%
+\contentsline {chapter}{\numberline {12}Multivariate analysis algorithms}{31}{chapter.12}%
+\contentsline {section}{\numberline {12.1}Principal Component Analysis (PCA)}{31}{section.12.1}%
+\contentsline {section}{\numberline {12.2}Partial Least Squares (PLS)}{32}{section.12.2}%
+\contentsline {chapter}{\numberline {13}Licensing}{35}{chapter.13}%
+\contentsline {chapter}{\numberline {14}Indices and tables}{37}{chapter.14}%
