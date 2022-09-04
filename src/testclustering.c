@@ -49,7 +49,7 @@ void test19()
   initUIVector(&selections);
 
   MDC(m, 0, 0, &selections, 8, &run);
-  printf("Selected compounds %lu\n", selections->size);
+  printf("Selected compounds %llu\n", selections->size);
   DelUIVector(&selections);
   DelMatrix(&m);
 }

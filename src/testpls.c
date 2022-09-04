@@ -1447,7 +1447,7 @@ void TestPLS2()
 
   MatrixGetMaxValueIndex(m->sdep, &row, &col);
 
-  printf("cutoff : %lu  %lu\n", row, col);
+  printf("cutoff : %llu  %llu\n", row, col);
 
   DelPLSModel(&m);
   DelMatrix(&x);

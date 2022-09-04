@@ -117,6 +117,7 @@ void cubic_spline_predict(dvector *x_, matrix *S, dvector **y_pred)
      * with the last row of coefficients in S
      */
     if(FLOAT_EQ(y, MISSING, 1e-2)){
+      xi = S->data[n][0];
       j = S->row-1;
       y = S->data[j][1] + S->data[j][2]*(x-xi) + S->data[j][3]*(x-xi)*(x-xi) + S->data[j][4]*(x-xi)*(x-xi)*(x-xi);
     }

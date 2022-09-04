@@ -798,9 +798,9 @@ void PrintHGMBins(hgmbins *bins_id)
   size_t i, j;
   for(i = 0; i < bins_id->nobj; i++){
     for(j = 0; j < bins_id->hash_size-1; j++){
-      printf("%lu", bins_id->hash[i][j]);
+      printf("%llu", bins_id->hash[i][j]);
     }
-    printf("%lu\n", bins_id->hash[i][bins_id->hash_size-1]);
+    printf("%llu\n", bins_id->hash[i][bins_id->hash_size-1]);
   }
 }
 

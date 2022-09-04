@@ -534,10 +534,10 @@ void Test17()
   PrintMatrix(m);
 
   MatrixGetMinValueIndex(m, &row, &col);
-  printf("Min value [%lu][%lu]: %f\n", row, col, getMatrixValue(m, row, col));
+  printf("Min value [%llu][%llu]: %f\n", row, col, getMatrixValue(m, row, col));
 
   MatrixGetMaxValueIndex(m, &row, &col);
-  printf("Max value [%lu][%lu]: %f\n", row, col, getMatrixValue(m, row, col));
+  printf("Max value [%llu][%llu]: %f\n", row, col, getMatrixValue(m, row, col));
 
   DelMatrix(&m);
 }
@@ -570,10 +570,10 @@ void Test16()
   PrintMatrix(spearmanncorrelmx);
 
   MatrixGetMaxValueIndex(spearmanncorrelmx, &row, &col);
-  printf("Max value [%lu][%lu]: %f\n", row, col, getMatrixValue(spearmanncorrelmx, row, col));
+  printf("Max value [%llu][%llu]: %f\n", row, col, getMatrixValue(spearmanncorrelmx, row, col));
 
   MatrixGetMinValueIndex(spearmanncorrelmx, &row, &col);
-  printf("Min value [%lu][%lu]: %f\n", row, col, getMatrixValue(spearmanncorrelmx, row, col));
+  printf("Min value [%llu][%llu]: %f\n", row, col, getMatrixValue(spearmanncorrelmx, row, col));
 
   DelMatrix(&spearmanncorrelmx);
   DelMatrix(&m);
