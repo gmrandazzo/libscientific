@@ -32,7 +32,14 @@ void random_kfold_group_generator(matrix **gid, size_t ngroups, size_t nobj, uns
   }
 }
 
-void kfold_group_train_test_split(matrix *x, matrix *y, matrix *gid, size_t group_id, matrix **x_train, matrix **y_train, matrix **x_test, matrix **y_test)
+void kfold_group_train_test_split(matrix *x,
+                                  matrix *y,
+                                  matrix *gid,
+                                  size_t group_id,
+                                  matrix **x_train,
+                                  matrix **y_train,
+                                  matrix **x_test,
+                                  matrix **y_test)
 {
   /* Estimate how many objects are utilised to build the model and how many to predict */
   size_t i, j, k, l, n;
@@ -64,12 +71,12 @@ void kfold_group_train_test_split(matrix *x, matrix *y, matrix *gid, size_t grou
   /*Allocate the test matrix */
   ResizeMatrix(x_test, p_obj, x->col);
   ResizeMatrix(y_test, p_obj, y->col);
-
   /* copy the train and test values */
+
   for(i = 0, k = 0, l = 0; i < gid->row; i++){
     if(i != group_id){
       for(j = 0; j < gid->col; j++){
-        size_t a =  (size_t)gid->data[i][j]; /* get the row index */
+        int a =  (int)gid->data[i][j]; /* get the row index */
         if(a != -1){
           for(n = 0; n < x->col; n++){
             (*x_train)->data[k][n] = x->data[a][n];
@@ -86,12 +93,14 @@ void kfold_group_train_test_split(matrix *x, matrix *y, matrix *gid, size_t grou
     }
     else{
       for(j = 0; j < gid->col; j++){
-        size_t a = (size_t)gid->data[i][j];
+        int a = (int)gid->data[i][j];
         if(a != -1){
           for(n = 0; n < x->col; n++){
+            //printf("x row: %ld/%ld x col  %ld/%ld; x_test row: %ld/%ld col %ld/%ld\n", a,x->row, n,x->col, l,(*x_test)->row, n,(*x_test)->col);
             (*x_test)->data[l][n] = x->data[a][n];
           }
           for(n = 0; n < y->col; n++){
+            //printf("y row: %ld/%ld y col  %ld/%ld; y_train row: %ld/%ld col %ld/%ld\n", a,y->row, n,y->col, l,(*y_test)->row, n,(*y_test)->col);
             (*y_test)->data[l][n] = y->data[a][n];
           }
           l++;
@@ -204,7 +213,7 @@ void *PLSRandomGroupCVModel(void *arg_)
     PLSYPredictorAllLV(x_test, subm, NULL, &y_test_predicted);
 
     for(j = 0, k = 0; j < gid->col; j++){
-      size_t a = (size_t)gid->data[g][j]; /*object id*/
+      int a = (int)gid->data[g][j]; /*object id*/
       if(a != -1){
         arg->predictioncounter->data[a] += 1; /* this object was visited */
         /* updating y */
@@ -275,7 +284,7 @@ void *MLRRandomGroupCVModel(void *arg_)
     MLRPredictY(x_test, NULL, subm, &y_test_predicted, NULL, NULL, NULL);
 
     for(j = 0, k = 0; j < gid->col; j++){
-      size_t a = (size_t)gid->data[g][j]; /*object id*/
+      int a = (int)gid->data[g][j]; /*object id*/
       if(a != -1){
         arg->predictioncounter->data[a] += 1; /* this object was visited */
         /* updating y */
@@ -344,7 +353,7 @@ void *EPLSRandomGroupCVModel(void *arg_)
     EPLSYPRedictorAllLV(x_test, subm, arg->crule, NULL, &y_test_predicted);
 
     for(j = 0, k = 0; j < gid->col; j++){
-      size_t a = (size_t)gid->data[g][j]; /*object id*/
+      int a = (int)gid->data[g][j]; /*object id*/
       if(a != -1){
         arg->predictioncounter->data[a] += 1; /* this object was visited */
         /* updating y */
@@ -919,7 +928,7 @@ void KFoldCV(MODELINPUT *input, uivector *groups, AlgorithmType algo,
           }
           else{
             for(i = 0; i < kcv_arg[th].y_test_predicted->row; i++){
-              size_t id = (size_t)gid->data[th+it][i];
+              int id = (int)gid->data[th+it][i];
               for(j = 0; j < kcv_arg[th].y_test_predicted->col; j++){
                 y_predicted->data[id][j] = kcv_arg[th].y_test_predicted->data[i][j];
                 //setMatrixValue(y_predicted, id, j, kcv_arg[th].y_test_predicted->data[i][j]);
