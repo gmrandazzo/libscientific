@@ -25,6 +25,7 @@
 
 void test19()
 {
+  puts("Test Clustering 19: MDC with 1000x50 random data");
   size_t i, j, maxrow, maxcol;
   matrix *m; /* Data matrix */
   int run = SIGSCIENTIFICRUN;
@@ -49,13 +50,14 @@ void test19()
   initUIVector(&selections);
 
   MDC(m, 0, 0, &selections, 8, &run);
-  printf("Selected compounds %llu\n", selections->size);
+  printf("Selected instances %zu\n", selections->size);
   DelUIVector(&selections);
   DelMatrix(&m);
 }
 
 void test18()
 {
+  puts("Test Clustering 18: KMeans++ clustering on random data");
   matrix *m, *centroids;
   int run = SIGSCIENTIFICRUN;
   uivector *clusters;
@@ -75,8 +77,6 @@ void test18()
 
   initUIVector(&clusters);
   initMatrix(&centroids);
-  puts("KMeans++ Clustering");
-
   KMeans(m, 1000, 0, &clusters, &centroids, 4, &run);
 
 
@@ -87,6 +87,7 @@ void test18()
 
 void test17()
 {
+  puts("Test Clustering 17: Hierarchical clustering");
   matrix *m, *centroids;
   int run = SIGSCIENTIFICRUN;
   uivector *clusters;
@@ -106,13 +107,11 @@ void test17()
 
   initUIVector(&clusters);
   initMatrix(&centroids);
-  puts("Hierarchical Clustering");
 
   HierarchicalClustering(m, 3, &clusters, &centroids, NULL, 0, 4, &run);
 
-  /*puts("clusters");
+  puts("clusters");
   PrintUIVector(clusters);
-  */
 
   DelUIVector(&clusters);
   DelMatrix(&centroids);
@@ -121,6 +120,7 @@ void test17()
 
 void test16()
 {
+  puts("Test Clustering 16: Hypergridmap");
   matrix *m;
   hgmbins *bins_id;
   HyperGridModel *hgm;
@@ -152,6 +152,7 @@ void test16()
 
 void test15()
 {
+  puts("Test Clustering 15: Hierarchical clustering test");
   matrix *m, *centroids;
   int run = SIGSCIENTIFICRUN;
   uivector *clusters;
@@ -173,8 +174,6 @@ void test15()
   initUIVector(&clusters);
   initMatrix(&centroids);
   initStrVector(&dendogram);
-  puts("Hierarchical Clustering");
-
   HierarchicalClustering(m, 3, &clusters, &centroids, &dendogram, average_linkage, 4, &run);
 
   puts("clusters");
@@ -190,6 +189,7 @@ void test15()
 
 void test14()
 {
+  puts("Test Clustering 14: matrix - matrix malhanobis distance");
   matrix *m1, *m2;
 
   double dist;
@@ -225,6 +225,7 @@ void test14()
 
 void test13()
 {
+  puts("Test Clustering 13: KMeans ++ start");
  matrix *m, *centroids;
  uivector *clusters;
 
@@ -240,7 +241,6 @@ void test13()
   initUIVector(&clusters);
   initMatrix(&centroids);
 
-  puts("KMeans ++");
   KMeans(m, 2, 1, &clusters, &centroids, 4, NULL);
 
   puts("Centroids");
@@ -261,6 +261,7 @@ void test13()
 
 void test12()
 {
+  puts("Test Clustering 12: KMeans ++ start and random group cross validation method");
   size_t i, j;
   matrix *m; /* Data matrix */
   int run = SIGSCIENTIFICRUN;
@@ -287,6 +288,7 @@ void test12()
 
 void test11()
 {
+  puts("Test Clustering 11: KMeans ++ start and jump method cross validation");
   matrix *m; /* Data matrix */
   int run = SIGSCIENTIFICRUN;
   dvector *ssdist;
@@ -323,6 +325,7 @@ void test11()
 
 void test10()
 {
+  puts("Test Clustering 10: KMeans ++ start");
   matrix *m; /* Data matrix */
   int run = SIGSCIENTIFICRUN;
   uivector *clusters;
@@ -348,7 +351,6 @@ void test10()
   initUIVector(&clusters);
   initMatrix(&centroids);
 
-  puts("KMeans ++");
   KMeans(m, 3, 1, &clusters, &centroids, 4, &run);
 
   puts("Centroids");
@@ -369,6 +371,7 @@ void test10()
 
 void test9()
 {
+  puts("Test Clustering 9: KMeans random start");
   matrix *m; /* Data matrix */
   uivector *clusters;
   int run = SIGSCIENTIFICRUN;
@@ -490,6 +493,7 @@ void test9()
 
 void test8()
 {
+  puts("Test Clustering 8: KMeans MaxDis start random");
   matrix *m; /* Data matrix */
   int run = SIGSCIENTIFICRUN;
   uivector *clusters;
@@ -530,6 +534,7 @@ void test8()
 
 void test7()
 {
+  puts("Test Clustering 6: KMeans MDC start");
   matrix *m; /* Data matrix */
   int run = SIGSCIENTIFICRUN;
   uivector *clusters;
@@ -555,7 +560,6 @@ void test7()
   initUIVector(&clusters);
   initMatrix(&centroids);
 
-  puts("KMeans MDC");
   KMeans(m, 2, 2, &clusters, &centroids, 4, &run);
 
   puts("Selections");
@@ -570,6 +574,7 @@ void test7()
 
 void test6()
 {
+  puts("Test Clustering 6: KMeans random start");
   matrix *m; /* Data matrix */
   int run = SIGSCIENTIFICRUN;
   uivector *clusters;
@@ -595,7 +600,6 @@ void test6()
   initUIVector(&clusters);
   initMatrix(&centroids);
 
-  puts("KMeans RANDOM");
   KMeans(m, 2, 0, &clusters, &centroids, 4, &run);
 
   puts("Selections");
@@ -610,6 +614,7 @@ void test6()
 
 void test5()
 {
+  puts("Test Clustering 5: KMeans++ test");
   matrix *m; /* Data matrix */
   int run = SIGSCIENTIFICRUN;
   uivector *clusters;
@@ -635,7 +640,6 @@ void test5()
   initUIVector(&clusters);
   initMatrix(&centroids);
 
-  puts("KMeans++ TEST");
   KMeans(m, 2, 1, &clusters, &centroids, 4, &run);
 
   puts("Selections");
@@ -651,6 +655,7 @@ void test5()
 
 void test4()
 {
+  puts("Test Clustering 4: KMeans center instance selection");
   size_t i;
   matrix *m; /* Data matrix */
   int run = SIGSCIENTIFICRUN;
@@ -691,6 +696,7 @@ void test4()
 
 void test3()
 {
+  puts("Test Clustering 3: Max dissimilarity instance selection");
   size_t i;
   matrix *m; /* Data matrix */
   int run = SIGSCIENTIFICRUN;
@@ -732,6 +738,7 @@ void test3()
 
 void test2()
 {
+  puts("Test Clustering 2: Most descriptive instance selection");
   size_t i;
   matrix *m; /* Data matrix */
   int run = SIGSCIENTIFICRUN;
@@ -774,6 +781,7 @@ void test2()
 
 void test1()
 {
+  puts("Test Clustering 1: Max dissimilarity selection");
   size_t i;
   matrix *m; /* Data matrix */
   uivector *selections;
@@ -898,30 +906,26 @@ void test1()
 }
 
 int main(void){
-  /* Selection Tests
-  test1();*/
-  //test2();
+  /* Selection Tests */
+  test1();
+  test2();
   test3();
-  /*test4();*/
-
+  test4();
   /*Clustering Tests*/
-  // test5();
-  /*test6();
+  test5();
+  test6();
   test7();
   test8();
   test9();
-  test10();*/
-
-  //test11();
-  /*test12();*/
-
-  /*test13();
-
+  test10();
+  test11();
+  // test12(); WARNING ERROR HERE!
+  test13();
   test14();
-  test15();*/
-   // test16(); HERE LAST TIME
-  /*test17();*/
-  //test18();
-  //test19();
+  test15();
+  test16();
+  test17();
+  test18();
+  test19();
   return 0;
 }

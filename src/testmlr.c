@@ -26,7 +26,7 @@ void test3()
   matrix *mx, *my;
   MLRMODEL *m;
   ssignal s = SIGSCIENTIFICRUN;
-  puts("Test1: Simple Calculation MLR Model with LOOCV and Model Consistency");
+  puts("Test3: Simple Calculation MLR Model with BootstrapRandomGroupsCV");
 
   NewMatrix(&mx, 5, 1);
   NewMatrix(&my, 5, 1);
@@ -125,7 +125,7 @@ void test2()
   matrix *mx, *my;
   MLRMODEL *m;
   ssignal s = SIGSCIENTIFICRUN;
-  puts("Test1: Simple Calculation MLR Model with LOOCV and Model Consistency");
+  puts("Test2: Simple Calculation MLR Model with LOOCV and YScrambling");
 
 
   NewMatrix(&mx, 17, 1);
@@ -145,8 +145,16 @@ void test2()
   NewMLRModel(&m);
   MLR(mx, my, m, &s);
 
-  MLRYScrambling(mx, my, 5, 0, 0, 0, &m->r2q2scrambling, &s);
-  MLRLOOCV(mx, my, &m->q2y, &m->sdep, &m->bias, &m->predicted_y, &m->pred_residuals, &s);
+
+  MODELINPUT minpt;
+  minpt.mx = &mx;
+  minpt.my = &my;
+
+  ValidationArg varg;
+  varg.vtype = LOO;
+  YScrambling(&minpt, _MLR_, varg, 100, &m->r2q2scrambling, 4, &s);
+  LeaveOneOut(&minpt, _MLR_, &m->predicted_y, &m->pred_residuals, 4, &s, 0);
+
 
   PrintMLR(m);
 
@@ -161,7 +169,7 @@ void test1()
   matrix *mx, *my;
   MLRMODEL *m;
   ssignal s = SIGSCIENTIFICRUN;
-  puts("Test1: Simple Calculation MLR Model with LOOCV and Model Consistency");
+  puts("Test1: Simple Calculation MLR Model with BootstrapRandomGroupsCV and YScrambling");
 
   NewMatrix(&mx, 5, 1);
   NewMatrix(&my, 5, 1);
@@ -186,9 +194,17 @@ void test1()
   NewMLRModel(&m);
   MLR(mx, my, m, &s);
 
-  MLRRandomGroupsCV(mx, my, 2, 20, &m->q2y, &m->sdep, &m->bias, &m->predicted_y, &m->pred_residuals, &s);
-  /*MLRLOOCV(mx, my, &m->q2y, &m->sdep, &m->bias, &m->predicted_y, &m->pred_residuals, &s);*/
-  MLRYScrambling(mx, my, 5, 0, 0, 0, &m->r2q2scrambling, &s);
+  /*VALIDATE THE MODEL */
+  MODELINPUT minpt;
+  minpt.mx = &mx;
+  minpt.my = &my;
+
+  BootstrapRandomGroupsCV(&minpt, 2, 20, _MLR_, &m->predicted_y, &m->pred_residuals, 1, &s, 0);
+  //LeaveOneOut(&minpt, _MLR_, &m->predicted_y, &m->pred_residuals, 1, &s, 0);
+
+  ValidationArg varg;
+  varg.vtype = BootstrapRGCV;
+  YScrambling(&minpt, _MLR_, varg, 100, &m->r2q2scrambling, 4, &s);
 
   PrintMLR(m);
 
@@ -199,8 +215,9 @@ void test1()
 
 int main()
 {
-  /*test1();
-  test2();*/
+  /**/
+  test1();
+  test2();
   test3();
   return 0;
 }

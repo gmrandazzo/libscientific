@@ -80,23 +80,57 @@ void YScrambling(matrix *mx, matrix *my,
  * }
  * DelMatrix(&gid);
  */
-void random_kfold_group_generator(matrix **gid, size_t ngroups, size_t nobj, unsigned int *srand_init);
-void kfold_group_train_test_split(matrix *x, matrix *y, matrix *gid, size_t group_id, matrix **x_train, matrix **y_train, matrix **x_test, matrix **y_test);
+void random_kfold_group_generator(matrix **gid,
+                                  size_t ngroups,
+                                  size_t nobj,
+                                  unsigned int *srand_init);
 
-void train_test_split(matrix *x, matrix *y, double testsize, matrix **x_train, matrix **y_train, matrix **x_test, matrix **y_test, uivector **testids, unsigned int *srand_init);
+void kfold_group_train_test_split(matrix *x,
+                                  matrix *y,
+                                  matrix *gid,
+                                  size_t group_id,
+                                  matrix **x_train,
+                                  matrix **y_train,
+                                  matrix **x_test,
+                                  matrix **y_test);
+
+void train_test_split(matrix *x,
+                      matrix *y,
+                      double testsize,
+                      matrix **x_train,
+                      matrix **y_train,
+                      matrix **x_test,
+                      matrix **y_test,
+                      uivector **testids,
+                      unsigned int *srand_init);
 
 /*
  * Description: Calculate the Bootstrap Random group cross validation.
  * Possible algorithms
  */
-void BootstrapRandomGroupsCV(MODELINPUT *input, size_t group, size_t iterations, AlgorithmType algo,
-                             matrix **predicted_y, matrix **pred_residuals, size_t nthreads, ssignal *s, int arg, ...);
+void BootstrapRandomGroupsCV(MODELINPUT *input,
+                             size_t group,
+                             size_t iterations,
+                             AlgorithmType algo,
+                             matrix **predicted_y,
+                             matrix **pred_residuals,
+                             size_t nthreads,
+                             ssignal *s,
+                             int arg,
+                             ...);
 
 /*
  * Description:
  * Leave one object/instance out cross validation.
  */
-void LeaveOneOut(MODELINPUT *input, AlgorithmType algo, matrix** predicted_y, matrix **pred_residuals, size_t nthreads, ssignal *s, int arg, ...);
+void LeaveOneOut(MODELINPUT *input,
+                 AlgorithmType algo,
+                 matrix** predicted_y,
+                 matrix **pred_residuals,
+                 size_t nthreads,
+                 ssignal *s,
+                 int arg,
+                 ...);
 
 /*
  * Description:
@@ -105,12 +139,22 @@ void LeaveOneOut(MODELINPUT *input, AlgorithmType algo, matrix** predicted_y, ma
  * step by step a group, compute a model and predict the out group.
  * This methodology should be prefered when similar instances are present in the dataset
  */
-void KFoldCV(MODELINPUT *input, uivector *groups, AlgorithmType algo,
-            matrix **predicted_y, matrix **pred_residuals, size_t nthreads, ssignal *s, int arg, ...);
+void KFoldCV(MODELINPUT *input,
+             uivector *groups,
+             AlgorithmType algo,
+             matrix **predicted_y,
+             matrix **pred_residuals,
+             size_t nthreads,
+             ssignal *s,
+             int arg,
+             ...);
 
-void YScrambling(MODELINPUT *input, AlgorithmType algo, ValidationArg varg, size_t iterations,
-                 matrix **ccoeff_yscrambling, size_t nthreads, ssignal *s);
-
-
+void YScrambling(MODELINPUT *input,
+                 AlgorithmType algo,
+                 ValidationArg varg,
+                 size_t iterations,
+                 matrix **ccoeff_yscrambling,
+                 size_t nthreads,
+                 ssignal *s);
 
 #endif

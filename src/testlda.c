@@ -18,71 +18,234 @@
 
 #include "lda.h"
 #include "numeric.h"
+#include "modelvalidation.h"
+#include "datasets.h"
 
-void Test4()
+void Test6()
 {
   size_t i, j;
   matrix *x/*, *p, *probability, *predfeatures*/;
-  uivector *y/*, *classpred*/;
+  matrix *y/*, *classpred*/;
+  matrix *ypred;
+  matrix *yresiduals;
+  dvector *roc_aucs;
+  dvector *pr_aucs;
   LDAMODEL *lda;
 
-  puts("Test 4: Compute LDA and Validate with Random Group Cross Validation");
-  srand(150*128);
-  NewMatrix(&x, 150, 128);
-  NewUIVector(&y, 150);
-  for(i = 0; i < 50; i++){
+  puts("Test 6: Compute LDA and Validate with Y Scrambing and Bootstrap Kfold Group Cross Validation random dataset with 3 features");
+  srand(200*3);
+  NewMatrix(&x, 200, 3);
+  NewMatrix(&y, 200, 1);
+  for(i = 0; i < 100; i++){
     for(j = 0; j < x->col; j++){
-      setMatrixValue(x, i, j, randDouble(-2, 1));
+      setMatrixValue(x, i, j, randDouble(-2, 0.5));
     }
-    y->data[i] = 0;
+    y->data[i][0] = 0.;
   }
 
-  for(i = 50; i < 100; i++){
+  for(i = 100; i < 200; i++){
     for(j = 0; j < x->col; j++){
-      setMatrixValue(x, i, j, randDouble(-1, 3));
+      setMatrixValue(x, i, j, randDouble(-0.5, 3));
     }
-    y->data[i] = 1;
+    y->data[i][0] = 1.;
   }
 
-  for(i = 100; i < 150; i++){
-    for(j = 0; j < x->col; j++){
-      setMatrixValue(x, i, j, randDouble(2, 5));
-    }
-    y->data[i] = 2;
-  }
-
-//   puts("X");PrintMatrix(x);
+  //puts("X");PrintMatrix(x);
+  //puts("Y");PrintMatrix(y);
 
   NewLDAModel(&lda);
   LDA(x, y, lda);
 
-  LDARandomGroupsCV(x, y, 5, 20, &lda->sens, &lda->spec, &lda->ppv, &lda->npv, &lda->acc, 4, NULL);
-  /*LDALOOCV(x, y, &lda->sens, &lda->spec, &lda->ppv, &lda->npv, &lda->acc, 1, NULL);*/
+  /*VALIDATE THE MODEL */
+  MODELINPUT minpt;
+  minpt.mx = &x;
+  minpt.my = &y;
+  initMatrix(&ypred);
+  initMatrix(&yresiduals);
 
-  PrintLDAModel(lda);
+  BootstrapRandomGroupsCV(&minpt, 5, 20, _LDA_, &ypred, &yresiduals, 8, NULL, 0);
+
+  initDVector(&roc_aucs);
+  initDVector(&pr_aucs);
+  LDAMulticlassStatistics(y,
+                          ypred,
+                          NULL,
+                          &roc_aucs,
+                          NULL,
+                          &pr_aucs);
+
+  puts("ROC AUCs");
+  PrintDVector(roc_aucs);
+  puts("PR AUCs");
+  PrintDVector(pr_aucs);
+
+
+  ValidationArg varg;
+  varg.vtype = BootstrapRGCV;
+  YScrambling(&minpt, _LDA_, varg, 100, &lda->yscrambling, 4, NULL);
+
+  PrintMatrix(lda->yscrambling);
+  DelDVector(&roc_aucs);
+  DelDVector(&pr_aucs);
+  DelMatrix(&yresiduals);
+  DelMatrix(&ypred);
   DelLDAModel(&lda);
-  DelUIVector(&y);
+  DelMatrix(&y);
   DelMatrix(&x);
-
 }
+
+void Test5()
+{
+  size_t i;
+  matrix *x/*, *p, *probability, *predfeatures*/;
+  matrix *y/*, *classpred*/;
+  matrix *ypred;
+  matrix *yresiduals;
+  dvector *roc_aucs;
+  dvector *pr_aucs;
+  LDAMODEL *lda;
+
+  puts("Test 5: Compute LDA and Validate with Random Group Cross Validation random dataset 2 features");
+  srand(200*2);
+  NewMatrix(&x, 200, 2);
+  NewMatrix(&y, 200, 1);
+  for(i = 0; i < 50; i++){
+    setMatrixValue(x, i, 0, randDouble(-2, 0.5));
+    setMatrixValue(x, i, 1, randDouble(-2, 0.5));
+    y->data[i][0] = 0.;
+  }
+
+  for(i = 50; i < 100; i++){
+    setMatrixValue(x, i, 0, randDouble(0, 3));
+    setMatrixValue(x, i, 1, randDouble(0, 3));
+    y->data[i][0] = 1.;
+  }
+
+  for(i = 100; i < 150; i++){
+    setMatrixValue(x, i, 0, randDouble(2.5, 5));
+    setMatrixValue(x, i, 1, randDouble(2.5, 5));
+    y->data[i][0] = 2.;
+  }
+
+  for(i = 150; i < 200; i++){
+    setMatrixValue(x, i, 0, randDouble(4.5, 6));
+    setMatrixValue(x, i, 1, randDouble(4.5, 6));
+    y->data[i][0] = 3.;
+  }
+
+  //puts("X");PrintMatrix(x);
+  //puts("Y");PrintMatrix(y);
+
+  NewLDAModel(&lda);
+  LDA(x, y, lda);
+
+  /*VALIDATE THE MODEL */
+  MODELINPUT minpt;
+  minpt.mx = &x;
+  minpt.my = &y;
+  initMatrix(&ypred);
+  initMatrix(&yresiduals);
+
+  BootstrapRandomGroupsCV(&minpt, 5, 20, _LDA_, &ypred, &yresiduals, 8, NULL, 0);
+
+  initDVector(&roc_aucs);
+  initDVector(&pr_aucs);
+  LDAMulticlassStatistics(y,
+                          ypred,
+                          NULL,
+                          &roc_aucs,
+                          NULL,
+                          &pr_aucs);
+
+  puts("ROC AUCs");
+  PrintDVector(roc_aucs);
+  puts("PR AUCs");
+  PrintDVector(pr_aucs);
+  //PrintLDAModel(lda);
+
+  DelDVector(&roc_aucs);
+  DelDVector(&pr_aucs);
+  DelMatrix(&yresiduals);
+  DelMatrix(&ypred);
+  DelLDAModel(&lda);
+  DelMatrix(&y);
+  DelMatrix(&x);
+}
+
+void Test4()
+{
+  matrix *x;
+  matrix *y;
+  matrix *ypred;
+  matrix *yresiduals;
+  dvector *roc_aucs;
+  dvector *pr_aucs;
+
+  LDAMODEL *lda;
+
+  puts("Test 4: Compute LDA and Validate with Random Group Cross Validation on IRIS dataset");
+
+  initMatrix(&x);
+  initMatrix(&y);
+
+  iris(&x, &y);
+
+  NewLDAModel(&lda);
+  LDA(x, y, lda);
+
+  /*VALIDATE THE MODEL */
+  MODELINPUT minpt;
+  minpt.mx = &x;
+  minpt.my = &y;
+  initMatrix(&ypred);
+  initMatrix(&yresiduals);
+
+  //BootstrapRandomGroupsCV(&minpt, 3, 100, _LDA_, &ypred, &yresiduals, 1, NULL, 0);
+  LeaveOneOut(&minpt, _LDA_, &ypred, &yresiduals, 8, NULL, 0);
+
+
+  initDVector(&roc_aucs);
+  initDVector(&pr_aucs);
+
+  LDAMulticlassStatistics(y,
+                          ypred,
+                          NULL,
+                          &roc_aucs,
+                          NULL,
+                          &pr_aucs);
+
+  puts("ROC AUCs");
+  PrintDVector(roc_aucs);
+  puts("PR AUCs");
+  PrintDVector(pr_aucs);
+
+  //PrintLDAModel(lda);
+  DelDVector(&pr_aucs);
+  DelDVector(&roc_aucs);
+  DelMatrix(&yresiduals);
+  DelMatrix(&ypred);
+  DelLDAModel(&lda);
+  DelMatrix(&y);
+  DelMatrix(&x);
+}
+
 void Test3()
 {
-  matrix *x, *pred, *probability, *mnpdf, *predfeatures;
-  uivector *y, *classpred;
+  matrix *x, *y, *pred, *probability, *mnpdf, *predfeatures, *classpred;
   LDAMODEL *lda;
 
   puts("Test3: Create LDA Model and Predict one external object");
   NewMatrix(&x, 7, 2);
-  NewUIVector(&y, 7);
+  NewMatrix(&y, 7, 1);
 
-  x->data[0][0] = 2.95; x->data[0][1] = 6.63; y->data[0] = 0;
-  x->data[1][0] = 2.53; x->data[1][1] = 7.79; y->data[1] = 0;
-  x->data[2][0] = 3.57; x->data[2][1] = 5.65; y->data[2] = 0;
-  x->data[3][0] = 3.16; x->data[3][1] = 5.47; y->data[3] = 0;
+  x->data[0][0] = 2.95; x->data[0][1] = 6.63; y->data[0][0] = 0;
+  x->data[1][0] = 2.53; x->data[1][1] = 7.79; y->data[1][0] = 0;
+  x->data[2][0] = 3.57; x->data[2][1] = 5.65; y->data[2][0] = 0;
+  x->data[3][0] = 3.16; x->data[3][1] = 5.47; y->data[3][0] = 0;
 
-  x->data[4][0] = 2.58; x->data[4][1] = 4.46; y->data[4] = 1;
-  x->data[5][0] = 2.16; x->data[5][1] = 6.22; y->data[5] = 1;
-  x->data[6][0] = 3.27; x->data[6][1] = 3.52; y->data[6] = 1;
+  x->data[4][0] = 2.58; x->data[4][1] = 4.46; y->data[4][0] = 1;
+  x->data[5][0] = 2.16; x->data[5][1] = 6.22; y->data[5][0] = 1;
+  x->data[6][0] = 3.27; x->data[6][1] = 3.52; y->data[6][0] = 1;
 
   NewMatrix(&pred, 8, 2);
   pred->data[0][0] = 2.95; pred->data[0][1] = 6.63;
@@ -96,7 +259,7 @@ void Test3()
   pred->data[7][0] = 2.81; pred->data[7][1] = 5.46;
 
   PrintMatrix(x);
-  PrintUIVector(y);
+  PrintMatrix(y);
 
   NewLDAModel(&lda);
   LDA(x, y, lda);
@@ -104,7 +267,7 @@ void Test3()
 
   initMatrix(&predfeatures);
   initMatrix(&probability);
-  initUIVector(&classpred);
+  initMatrix(&classpred);
   initMatrix(&mnpdf);
 
   LDAPrediction(pred, lda, &predfeatures, &probability, &mnpdf, &classpred);
@@ -112,7 +275,7 @@ void Test3()
   PrintMatrix(probability);
 
   puts("Class Prediction");
-  PrintUIVector(classpred);
+  PrintMatrix(classpred);
 
   puts("Predict New Features");
   PrintMatrix(predfeatures);
@@ -124,42 +287,41 @@ void Test3()
 
   DelMatrix(&mnpdf);
   DelMatrix(&predfeatures);
-  DelUIVector(&classpred);
+  DelMatrix(&classpred);
   DelMatrix(&probability);
   DelMatrix(&pred);
   DelLDAModel(&lda);
   DelMatrix(&x);
-  DelUIVector(&y);
+  DelMatrix(&y);
 }
 
 void Test2()
 {
-  matrix *x, *pred, *probability, *mnpdf, *predfeatures;
-  uivector *y, *classpred;
+  matrix *x, *y, *pred, *probability, *mnpdf, *predfeatures, *classpred;
   LDAMODEL *lda;
 
   puts("Test2: Create LDA Model and Predict itself");
 
   NewMatrix(&x, 10, 2);
-  NewUIVector(&y, 10);
-  x->data[0][0] = 4; x->data[0][1] = 2; y->data[0] = 0;
-  x->data[1][0] = 2; x->data[1][1] = 4; y->data[1] = 0;
-  x->data[2][0] = 2; x->data[2][1] = 3; y->data[2] = 0;
-  x->data[3][0] = 3; x->data[3][1] = 6; y->data[3] = 1;
-  x->data[4][0] = 4; x->data[4][1] = 4; y->data[4] = 1;
+  NewMatrix(&y, 10, 1);
+  x->data[0][0] = 4; x->data[0][1] = 2; y->data[0][0] = 0;
+  x->data[1][0] = 2; x->data[1][1] = 4; y->data[1][0] = 0;
+  x->data[2][0] = 2; x->data[2][1] = 3; y->data[2][0] = 0;
+  x->data[3][0] = 3; x->data[3][1] = 6; y->data[3][0] = 1;
+  x->data[4][0] = 4; x->data[4][1] = 4; y->data[4][0] = 1;
 
-  x->data[5][0] = 9; x->data[5][1] = 10; y->data[5] = 1;
-  x->data[6][0] = 6; x->data[6][1] = 8; y->data[6] = 1;
-  x->data[7][0] = 9; x->data[7][1] = 5; y->data[7] = 1;
-  x->data[8][0] = 8; x->data[8][1] = 7; y->data[8] = 1;
-  x->data[9][0] = 10; x->data[9][1] = 8; y->data[9] = 1;
+  x->data[5][0] = 9; x->data[5][1] = 10; y->data[5][0] = 1;
+  x->data[6][0] = 6; x->data[6][1] = 8; y->data[6][0] = 1;
+  x->data[7][0] = 9; x->data[7][1] = 5; y->data[7][0] = 1;
+  x->data[8][0] = 8; x->data[8][1] = 7; y->data[8][0] = 1;
+  x->data[9][0] = 10; x->data[9][1] = 8; y->data[9][0] = 1;
 
   NewMatrix(&pred, 2, 2);
   pred->data[0][0] = 8; pred->data[0][1] = 6;
   pred->data[1][0] = 5.5; pred->data[1][1] = 5.5;
 
   PrintMatrix(x);
-  PrintUIVector(y);
+  PrintMatrix(y);
 
   NewLDAModel(&lda);
   LDA(x, y, lda);
@@ -167,7 +329,7 @@ void Test2()
 
   initMatrix(&predfeatures);
   initMatrix(&probability);
-  initUIVector(&classpred);
+  initMatrix(&classpred);
   initMatrix(&mnpdf);
 
   LDAPrediction(pred, lda, &predfeatures, &probability, &mnpdf, &classpred);
@@ -175,7 +337,7 @@ void Test2()
   PrintMatrix(probability);
 
   puts("Class Prediction");
-  PrintUIVector(classpred);
+  PrintMatrix(classpred);
 
   puts("Predict New Features");
   PrintMatrix(predfeatures);
@@ -186,33 +348,33 @@ void Test2()
   DelMatrix(&predfeatures);
   DelMatrix(&pred);
   DelMatrix(&probability);
-  DelUIVector(&classpred);
+  DelMatrix(&classpred);
   DelLDAModel(&lda);
   DelMatrix(&x);
-  DelUIVector(&y);
+  DelMatrix(&y);
 }
 
 void Test1()
 {
-  matrix *x;
-  uivector *y;
+  matrix *x, *y;
   LDAMODEL *lda;
   puts("Test2: Create LDA Model");
   NewMatrix(&x, 11, 2);
-  NewUIVector(&y, 11);
-  x->data[0][0] = 1; x->data[0][1] = 2; y->data[0] = 0;
-  x->data[1][0] = 2; x->data[1][1] = 3; y->data[1] = 0;
-  x->data[2][0] = 3; x->data[2][1] = 3; y->data[2] = 0;
-  x->data[3][0] = 4; x->data[3][1] = 5; y->data[3] = 0;
-  x->data[4][0] = 5; x->data[4][1] = 5; y->data[4] = 0;
-  x->data[5][0] = 1; x->data[5][1] = 0; y->data[5] = 1;
-  x->data[6][0] = 2; x->data[6][1] = 1; y->data[6] = 1;
-  x->data[7][0] = 3; x->data[7][1] = 1; y->data[7] = 1;
-  x->data[8][0] = 3; x->data[8][1] = 2; y->data[8] = 1;
-  x->data[9][0] = 5; x->data[9][1] = 3; y->data[9] = 1;
-  x->data[10][0] = 6; x->data[10][1] = 5; y->data[10] = 1;
+  NewMatrix(&y, 11, 1);
+  x->data[0][0] = 1; x->data[0][1] = 2; y->data[0][0] = 0;
+  x->data[1][0] = 2; x->data[1][1] = 3; y->data[1][0] = 0;
+  x->data[2][0] = 3; x->data[2][1] = 3; y->data[2][0] = 0;
+  x->data[3][0] = 4; x->data[3][1] = 5; y->data[3][0] = 0;
+  x->data[4][0] = 5; x->data[4][1] = 5; y->data[4][0] = 0;
+  x->data[5][0] = 1; x->data[5][1] = 0; y->data[5][0] = 1;
+  x->data[6][0] = 2; x->data[6][1] = 1; y->data[6][0] = 1;
+  x->data[7][0] = 3; x->data[7][1] = 1; y->data[7][0] = 1;
+  x->data[8][0] = 3; x->data[8][1] = 2; y->data[8][0] = 1;
+  x->data[9][0] = 5; x->data[9][1] = 3; y->data[9][0] = 1;
+  x->data[10][0] = 6; x->data[10][1] = 5; y->data[10][0] = 1;
 
   PrintMatrix(x);
+  PrintMatrix(y);
 
   NewLDAModel(&lda);
 
@@ -222,14 +384,16 @@ void Test1()
 
   DelLDAModel(&lda);
   DelMatrix(&x);
-  DelUIVector(&y);
+  DelMatrix(&y);
 }
 
 int main()
 {
-//   Test1();
-    Test2();
-//  Test3();
-//   Test4();
+   Test1();
+   Test2();
+   Test3();
+   Test4();
+   Test5();
+   Test6();
   return 0;
 }

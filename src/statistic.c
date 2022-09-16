@@ -408,6 +408,8 @@ void ROC(dvector *y_true, dvector *y_score,  matrix **roc, double *auc)
   DelDVector(&roc_row);
   DelMatrix(&yy);
   (*auc) = curve_area((*roc), 0);
+  if(_isnan_((*auc)))
+    (*auc) = 0.f;
 }
 
 /* Algorithm from:
@@ -469,4 +471,6 @@ void PrecisionRecall(dvector *y_true, dvector *y_score,  matrix **pr, double *ap
   DelDVector(&pr_row);
   DelMatrix(&yy);
   (*ap) = curve_area((*pr), 0);
+  if(_isnan_((*ap)))
+    (*ap) = 0.f;
 }

@@ -192,6 +192,7 @@ set(Scientific_C_SRCS memwrapper.c
 #                    svd.c
                    clustering.c
                    mlr.c
+                   datasets.c
                    modelvalidation.c)
 
 set(Scientific_C_H
@@ -210,13 +211,14 @@ set(Scientific_C_H
                 pca.h
                 pls.h
                 epls.h
-                #cpca.h
+#cpca.h
                 upca.h
                 upls.h
                 lda.h
-#                 svd.h
+#svd.h
                 clustering.h
                 mlr.h
+                datasets.h
                 modelvalidation.h)
 
 set(NumericTest_SRC testnumeric.c)

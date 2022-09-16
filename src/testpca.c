@@ -21,34 +21,31 @@
 #include "numeric.h"
 #include "pca.h"
 #include "pca.h"
+#include "datasets.h"
 #include "scientificinfo.h"
 
 void test7()
 {
-  matrix *m;
+  puts("Test PCA 7: PCA on iris dataset");
+  matrix *m, *_;
   PCAMODEL *model;
 
-  int nobj = 32000;
-  int nvars = 200;
-  NewMatrix(&m, nobj, nvars);
-
-  srand(nobj);
-  for(size_t i = 0; i < nobj; i++){
-    for(size_t j = 0; j < nvars; j++){
-      m->data[i][j] = randDouble(0,20);
-    }
-  }
+  initMatrix(&m);
+  initMatrix(&_);
+  iris(&m, &_);
 
   NewPCAModel(&model);
-  printf("Test PCA 7\n");
-  PCA(m, 1, 5, model, NULL);
 
+  PCA(m, 1, 2, model, NULL);
+  PrintPCA(model);
   DelPCAModel(&model);
   DelMatrix(&m);
+  DelMatrix(&_);
 }
 
 void test6()
 {
+  puts("Test PCA 6: PCA on a simple dataset");
   matrix *m;
   PCAMODEL *model;
 
@@ -63,7 +60,7 @@ void test6()
   NewPCAModel(&model);
 
   PCA(m, 0, 5, model, NULL);
-  printf("Test PCA 6\n");
+
   PrintPCA(model);
 
   DelPCAModel(&model);
@@ -72,6 +69,7 @@ void test6()
 
 void test5()
 {
+  puts("Test PCA 5: PCA on a simple dataset");
   matrix *m; /* Data matrix */
   PCAMODEL *model;
 
@@ -83,8 +81,6 @@ void test5()
 
 
   NewPCAModel(&model);
-
-  printf("Test PCA 5\n");
   PCA(m, 1, 5, model, NULL);
 
   PrintPCA(model);
@@ -95,6 +91,7 @@ void test5()
 
 void test4()
 {
+  puts("Test PCA 4: PCA on a simple dataset");
   matrix *m; /* Data matrix */
   PCAMODEL *model;
   int run = SIGSCIENTIFICRUN;
@@ -232,6 +229,6 @@ int main(void)
   test4();
   test5();
   test6();
-  /*test7();*/
+  test7();
   return 0;
 }

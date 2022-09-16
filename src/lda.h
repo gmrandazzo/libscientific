@@ -33,6 +33,7 @@ typedef struct{
   matrix *mu;
   matrix *fmean;
   matrix *fsdev;
+  matrix *yscrambling;
   dvector *eval;
   dvector *pprob;
   uivector *classid;
@@ -45,7 +46,7 @@ void NewLDAModel(LDAMODEL **m);
 void DelLDAModel(LDAMODEL **m);
 void PrintLDAModel(LDAMODEL *m);
 
-void LDA(matrix *mx, uivector *y, LDAMODEL *lda);
+void LDA(matrix *mx, matrix *my, LDAMODEL *lda);
 /*prediction
  * OUTPUT:
  *  - predicted features
@@ -53,12 +54,29 @@ void LDA(matrix *mx, uivector *y, LDAMODEL *lda);
  *  - multivariate normal probability distribution of features
  *  - class prediction
  */
-void LDAPrediction(matrix *mx, LDAMODEL *lda, matrix **pfeatures, matrix **probability, matrix **mnpdf, uivector **prediction);
+void LDAPrediction(matrix *mx,
+                   LDAMODEL *lda,
+                   matrix **pfeatures,
+                   matrix **probability,
+                   matrix **mnpdf,
+                   matrix **prediction);
 
-void LDAStatistics(dvector *y_true, dvector *y_score, matrix **roc, double *roc_auc, matrix **precision_recal, double *pr_auc);
+/* Binary statistics */
+void LDAStatistics(dvector *y_true,
+                   dvector *y_pred,
+                   matrix **roc,
+                   double *roc_auc,
+                   matrix **precision_recal,
+                   double *pr_auc);
 
-void LDARandomGroupsCV(matrix *mx, uivector *my, size_t group, size_t iterations, dvector **sens, dvector **spec, dvector **ppv, dvector **npv, dvector **acc, size_t nthreads, ssignal *s);
+/* Multiclass statistics */
+void LDAMulticlassStatistics(matrix *y_true,
+                             matrix *y_pred,
+                             tensor **roc,
+                             dvector **roc_aucs,
+                             tensor **precision_recals,
+                             dvector **pr_aucs);
 
-void LDALOOCV(matrix* mx, uivector* my, dvector** sens, dvector** spec, dvector** ppv, dvector** npv, dvector **acc, size_t nthreads, ssignal *s);
+int getNClasses(matrix *my);
 
 #endif
