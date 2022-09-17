@@ -40,25 +40,32 @@ void NewLDAModel(LDAMODEL** m)
   initMatrix(&((*m)->fsdev));
   initMatrix(&((*m)->fmean));
   initMatrix(&((*m)->yscrambling));
+  initMatrix(&((*m)->recalculated_y));
+  initMatrix(&((*m)->recalculated_residuals));
+  initMatrix(&((*m)->predicted_y));
+  initMatrix(&((*m)->predicted_residuals));
   initDVector(&((*m)->eval));
   initDVector(&((*m)->pprob));
-  initDVector(&((*m)->sens));
-  initDVector(&((*m)->spec));
-  initDVector(&((*m)->ppv)); /* o precision */
-  initDVector(&((*m)->npv));
-  initDVector(&((*m)->acc));
+
+  initMatrix(&((*m)->precision_recal));
+  initMatrix(&((*m)->roc));
+  initDVector(&((*m)->roc_aucs));
+  initDVector(&((*m)->pr_aucs));
   (*m)->nclass = (*m)->class_start = 0;
 }
 
 void DelLDAModel(LDAMODEL** m)
 {
-  DelDVector(&((*m)->acc));
-  DelDVector(&((*m)->sens));
-  DelDVector(&((*m)->spec));
-  DelDVector(&((*m)->ppv));
-  DelDVector(&((*m)->npv));
+  DelDVector(&((*m)->roc_aucs));
+  DelDVector(&((*m)->pr_aucs));
+  DelMatrix(&((*m)->precision_recal));
+  DelMatrix(&((*m)->roc));
   DelDVector(&((*m)->pprob));
   DelDVector(&((*m)->eval));
+  DelMatrix(&((*m)->recalculated_y));
+  DelMatrix(&((*m)->recalculated_residuals));
+  DelMatrix(&((*m)->predicted_y));
+  DelMatrix(&((*m)->predicted_residuals));
   DelMatrix(&((*m)->yscrambling));
   DelMatrix(&((*m)->mu));
   DelMatrix(&((*m)->fsdev));
@@ -84,11 +91,12 @@ void PrintLDAModel(LDAMODEL* m)
   PrintMatrix(m->mu);
 
   puts("Validation...");
-  puts("Senstivity"); PrintDVector(m->sens);
-  puts("Specificity"); PrintDVector(m->spec);
-  puts("Positive Predicted Value"); PrintDVector(m->ppv);
-  puts("Negative Predicted Value"); PrintDVector(m->npv);
-  puts("Accuracy"); PrintDVector(m->acc);
+  puts("ROC");
+  PrintMatrix(m->roc);
+  PrintDVector(m->roc_aucs);
+  puts("Precision-Recall");
+  PrintMatrix(m->precision_recal);
+  PrintDVector(m->pr_aucs);
 }
 
 

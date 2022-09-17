@@ -34,12 +34,19 @@ typedef struct{
   matrix *fmean;
   matrix *fsdev;
   matrix *yscrambling;
+  matrix *recalculated_y;
+  matrix *recalculated_residuals;
+  matrix *predicted_y;
+  matrix *predicted_residuals;
   dvector *eval;
   dvector *pprob;
   uivector *classid;
   size_t nclass;
   size_t class_start;
-  dvector *sens, *spec, *ppv, *npv, *acc;
+  matrix *roc;
+  matrix *precision_recal;
+  dvector *roc_aucs;
+  dvector *pr_aucs;
 } LDAMODEL;
 
 void NewLDAModel(LDAMODEL **m);

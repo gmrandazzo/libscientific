@@ -26,10 +26,6 @@ void Test6()
   size_t i, j;
   matrix *x/*, *p, *probability, *predfeatures*/;
   matrix *y/*, *classpred*/;
-  matrix *ypred;
-  matrix *yresiduals;
-  dvector *roc_aucs;
-  dvector *pr_aucs;
   LDAMODEL *lda;
 
   puts("Test 6: Compute LDA and Validate with Y Scrambing and Bootstrap Kfold Group Cross Validation random dataset with 3 features");
@@ -60,35 +56,27 @@ void Test6()
   MODELINPUT minpt;
   minpt.mx = &x;
   minpt.my = &y;
-  initMatrix(&ypred);
-  initMatrix(&yresiduals);
 
-  BootstrapRandomGroupsCV(&minpt, 5, 20, _LDA_, &ypred, &yresiduals, 8, NULL, 0);
+  BootstrapRandomGroupsCV(&minpt, 5, 20, _LDA_, &lda->predicted_y, &lda->predicted_residuals, 8, NULL, 0);
 
-  initDVector(&roc_aucs);
-  initDVector(&pr_aucs);
   LDAMulticlassStatistics(y,
-                          ypred,
+                          lda->predicted_y,
                           NULL,
-                          &roc_aucs,
+                          &lda->roc_aucs,
                           NULL,
-                          &pr_aucs);
+                          &lda->pr_aucs);
 
   puts("ROC AUCs");
-  PrintDVector(roc_aucs);
+  PrintDVector(lda->roc_aucs);
   puts("PR AUCs");
-  PrintDVector(pr_aucs);
+  PrintDVector(lda->pr_aucs);
 
 
   ValidationArg varg;
   varg.vtype = BootstrapRGCV;
   YScrambling(&minpt, _LDA_, varg, 100, &lda->yscrambling, 4, NULL);
-
+  puts("YScrambling");
   PrintMatrix(lda->yscrambling);
-  DelDVector(&roc_aucs);
-  DelDVector(&pr_aucs);
-  DelMatrix(&yresiduals);
-  DelMatrix(&ypred);
   DelLDAModel(&lda);
   DelMatrix(&y);
   DelMatrix(&x);
@@ -99,10 +87,6 @@ void Test5()
   size_t i;
   matrix *x/*, *p, *probability, *predfeatures*/;
   matrix *y/*, *classpred*/;
-  matrix *ypred;
-  matrix *yresiduals;
-  dvector *roc_aucs;
-  dvector *pr_aucs;
   LDAMODEL *lda;
 
   puts("Test 5: Compute LDA and Validate with Random Group Cross Validation random dataset 2 features");
@@ -143,30 +127,22 @@ void Test5()
   MODELINPUT minpt;
   minpt.mx = &x;
   minpt.my = &y;
-  initMatrix(&ypred);
-  initMatrix(&yresiduals);
 
-  BootstrapRandomGroupsCV(&minpt, 5, 20, _LDA_, &ypred, &yresiduals, 8, NULL, 0);
+  BootstrapRandomGroupsCV(&minpt, 5, 20, _LDA_, &lda->predicted_y, &lda->predicted_residuals, 8, NULL, 0);
 
-  initDVector(&roc_aucs);
-  initDVector(&pr_aucs);
   LDAMulticlassStatistics(y,
-                          ypred,
+                          lda->predicted_y,
                           NULL,
-                          &roc_aucs,
+                          &lda->roc_aucs,
                           NULL,
-                          &pr_aucs);
+                          &lda->pr_aucs);
 
   puts("ROC AUCs");
-  PrintDVector(roc_aucs);
+  PrintDVector(lda->roc_aucs);
   puts("PR AUCs");
-  PrintDVector(pr_aucs);
+  PrintDVector(lda->pr_aucs);
   //PrintLDAModel(lda);
 
-  DelDVector(&roc_aucs);
-  DelDVector(&pr_aucs);
-  DelMatrix(&yresiduals);
-  DelMatrix(&ypred);
   DelLDAModel(&lda);
   DelMatrix(&y);
   DelMatrix(&x);
@@ -176,10 +152,6 @@ void Test4()
 {
   matrix *x;
   matrix *y;
-  matrix *ypred;
-  matrix *yresiduals;
-  dvector *roc_aucs;
-  dvector *pr_aucs;
 
   LDAMODEL *lda;
 
@@ -197,33 +169,24 @@ void Test4()
   MODELINPUT minpt;
   minpt.mx = &x;
   minpt.my = &y;
-  initMatrix(&ypred);
-  initMatrix(&yresiduals);
-
-  //BootstrapRandomGroupsCV(&minpt, 3, 100, _LDA_, &ypred, &yresiduals, 1, NULL, 0);
-  LeaveOneOut(&minpt, _LDA_, &ypred, &yresiduals, 8, NULL, 0);
 
 
-  initDVector(&roc_aucs);
-  initDVector(&pr_aucs);
+  //BootstrapRandomGroupsCV(&minpt, 3, 100, _LDA_, &lda->predicted_y, &lda->predicted_residuals, 1, NULL, 0);
+  LeaveOneOut(&minpt, _LDA_, &lda->predicted_y, &lda->predicted_residuals, 8, NULL, 0);
 
   LDAMulticlassStatistics(y,
-                          ypred,
+                          lda->predicted_y,
                           NULL,
-                          &roc_aucs,
+                          &lda->roc_aucs,
                           NULL,
-                          &pr_aucs);
+                          &lda->pr_aucs);
 
   puts("ROC AUCs");
-  PrintDVector(roc_aucs);
+  PrintDVector(lda->roc_aucs);
   puts("PR AUCs");
-  PrintDVector(pr_aucs);
+  PrintDVector(lda->pr_aucs);
 
   //PrintLDAModel(lda);
-  DelDVector(&pr_aucs);
-  DelDVector(&roc_aucs);
-  DelMatrix(&yresiduals);
-  DelMatrix(&ypred);
   DelLDAModel(&lda);
   DelMatrix(&y);
   DelMatrix(&x);
