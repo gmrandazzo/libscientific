@@ -468,7 +468,7 @@ void LDAPrediction(matrix *mx,
                    matrix **pfeatures,
                    matrix **probability,
                    matrix **mnpdf,
-                   matrix **classprediction)
+                   matrix **prediction)
 {
   /* probability function:
    * f = mu_class * inv_cov * mx.T  - 1/2. * mu_class * inv_cov * mu_class.T + ln(prior_probability_class)
@@ -485,7 +485,7 @@ void LDAPrediction(matrix *mx,
   NewDVector(&C_mu_T, lda->inv_cov->row);
 
   ResizeMatrix(probability, mx->row, lda->nclass);
-  ResizeMatrix(classprediction, mx->row, 1);
+  ResizeMatrix(prediction, mx->row, 1);
 
   if(lda->class_start == 1){
     pos = -1;
@@ -519,7 +519,7 @@ void LDAPrediction(matrix *mx,
       }
     }
 
-    (*classprediction)->data[i][0] = (argmax+pos);
+    (*prediction)->data[i][0] = (argmax+pos);
   }
 
   /* Predict the the new projection in the feature space */
@@ -532,7 +532,7 @@ void LDAPrediction(matrix *mx,
     MatrixAppendCol(pfeatures, ldfeature);
 
     for(j = 0; j < ldfeature->size; j++){
-      id = (int)((*classprediction)->data[j][0]+pos);
+      id = (int)((*prediction)->data[j][0]+pos);
       (*mnpdf)->data[j][i] = 1./sqrt(2 * _pi_* lda->fsdev->data[id][i]) * exp(-square((ldfeature->data[j] - lda->fmean->data[id][i])/lda->fsdev->data[id][i])/2.f);
     }
 
