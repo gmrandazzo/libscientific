@@ -47,8 +47,8 @@ void NewLDAModel(LDAMODEL** m)
   initDVector(&((*m)->eval));
   initDVector(&((*m)->pprob));
 
-  initMatrix(&((*m)->precision_recal));
-  initMatrix(&((*m)->roc));
+  initTensor(&((*m)->roc));
+  initTensor(&((*m)->pr));
   initDVector(&((*m)->roc_aucs));
   initDVector(&((*m)->pr_aucs));
   (*m)->nclass = (*m)->class_start = 0;
@@ -58,8 +58,8 @@ void DelLDAModel(LDAMODEL** m)
 {
   DelDVector(&((*m)->roc_aucs));
   DelDVector(&((*m)->pr_aucs));
-  DelMatrix(&((*m)->precision_recal));
-  DelMatrix(&((*m)->roc));
+  DelTensor(&((*m)->pr));
+  DelTensor(&((*m)->roc));
   DelDVector(&((*m)->pprob));
   DelDVector(&((*m)->eval));
   DelMatrix(&((*m)->recalculated_y));
@@ -92,10 +92,10 @@ void PrintLDAModel(LDAMODEL* m)
 
   puts("Validation...");
   puts("ROC");
-  PrintMatrix(m->roc);
+  PrintTensor(m->roc);
   PrintDVector(m->roc_aucs);
   puts("Precision-Recall");
-  PrintMatrix(m->precision_recal);
+  PrintTensor(m->pr);
   PrintDVector(m->pr_aucs);
 }
 

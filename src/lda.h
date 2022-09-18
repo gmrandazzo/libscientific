@@ -43,8 +43,8 @@ typedef struct{
   uivector *classid;
   size_t nclass;
   size_t class_start;
-  matrix *roc;
-  matrix *precision_recal;
+  tensor *roc;
+  tensor *pr;
   dvector *roc_aucs;
   dvector *pr_aucs;
 } LDAMODEL;
