@@ -73,7 +73,12 @@ void shrink(matrix *x, double delta)
  * Comput Optim Appl
  * DOI 10.1007/s10589-010-9329-3
  */
-double NelderMeadSimplex(double (*func)(), dvector *x0, dvector *step, double xtol, size_t iter, dvector **best)
+double NelderMeadSimplex(double (*func)(),
+                         dvector *x0,
+                         dvector *step,
+                         double xtol,
+                         size_t iter,
+                         dvector *best)
 {
   size_t i, j, iter_;
   matrix *x;
@@ -253,7 +258,7 @@ double NelderMeadSimplex(double (*func)(), dvector *x0, dvector *step, double xt
 
   DVectorResize(best, x0->size);
   for(i = 0; i < x0->size; i++)
-    (*best)->data[i] = x->data[0][i];
+    best->data[i] = x->data[0][i];
   res = x->data[0][x0->size];
 
   DelDVector(&x_r);
@@ -262,6 +267,7 @@ double NelderMeadSimplex(double (*func)(), dvector *x0, dvector *step, double xt
   DelDVector(&x_ic);
   DelDVector(&x_i);
   DelDVector(&c);
+  DelDVector(&x_tmp);
   DelMatrix(&x);
   return res;
 }

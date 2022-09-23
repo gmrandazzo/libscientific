@@ -98,16 +98,9 @@ References:
 License
 ============
 
-Libscientific is distributed under GPLv3 license, and this means that:
-
-- you can use this library where you want, to do what you want.
-- you can modify this library and commit changes.
-- you can not use this library inside commercial software.
-
+Libscientific is distributed under GPLv3 license.
 To know more in detail how the license work, please read the file "LICENSE" or
 go to "http://www.gnu.org/licenses/gpl-3.0.en.html"
-
-Voluntary contributions are welcome. :-)
 
 
 Dependencies

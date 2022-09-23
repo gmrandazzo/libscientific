@@ -34,7 +34,7 @@ void test3()
 
   printf("Creating v1\n");
   for(i = 1; i < 100; i++){
-    UIVectorAppend(&v1, i);
+    UIVectorAppend(v1, i);
   }
 
 
@@ -53,7 +53,7 @@ void test3()
    printf("%u\n", (unsigned int)v1v2->data[i]);
   }
 
-  UIVectorRemoveAt(&v1, 48);
+  UIVectorRemoveAt(v1, 48);
 
   DelUIVector(&v1v2);
   DelUIVector(&v2);
@@ -72,7 +72,7 @@ void test2()
 
   printf("Appending 100 value\n");
   for(i = 0; i < 100; i++){
-    UIVectorAppend(&v, i);
+    UIVectorAppend(v, i);
   }
 
   printf("Final output\n");
@@ -101,7 +101,7 @@ void test1()
   }
 
   printf("Appending 123 to vector\n");
-  UIVectorAppend(&v, 123);
+  UIVectorAppend(v, 123);
 
   printf("Final output\n");
   for(i = 0; i < v->size; i++){

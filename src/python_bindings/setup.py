@@ -6,7 +6,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(name='libscientific',
-      version='1.2.7',
+      version='1.3.0',
       description='Libscientific python foreign function interface',
       long_description=long_description,
       long_description_content_type='text/markdown',

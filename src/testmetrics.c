@@ -34,7 +34,7 @@ void test7()
   m->data[2][0] = 3; m->data[2][1] = 5;
   m->data[3][0] = 15; m->data[3][1] = 5;
   initDVector(&dist);
-  CosineDistanceCondensed(m, &dist, 2);
+  CosineDistanceCondensed(m, dist, 2);
   for(i = 0; i < 4; i++){
     for(j = 0; j < 4; j++){
       if(i == j){
@@ -70,7 +70,7 @@ void test6()
   }
 
   initDVector(&dist);
-  MahalanobisDistance(m, NULL, NULL, &dist);
+  MahalanobisDistance(m, NULL, NULL, dist);
 
   DelMatrix(&m);
   DelDVector(&dist);
@@ -190,7 +190,7 @@ void test5()
   matrix *invcov;
   initDVector(&mu);
   initMatrix(&invcov);
-  MahalanobisDistance(m, &invcov, &mu, &mdst);
+  MahalanobisDistance(m, invcov, mu, mdst);
 
   PrintMatrix(invcov);
   PrintDVector(mu);
@@ -209,7 +209,7 @@ void test5()
 
 
   initMatrix(&edst);
-  ManhattanDistance(m, c, &edst, 4);
+  ManhattanDistance(m, c, edst, 4);
 
   for(i = 0; i < m->row; i++){
     printf("%.4f %.4f\n", mdst->data[i], edst->data[0][i]);
@@ -331,7 +331,7 @@ void test4()
 
   PrintMatrix(mi);
 
-  CovarianceDistanceMap(mi, &mo);
+  CovarianceDistanceMap(mi, mo);
 
   PrintMatrix(mo);
 
@@ -358,7 +358,7 @@ void test3()
   }
 
   initMatrix(&dist);
-  EuclideanDistance(m, m, &dist, 4);
+  EuclideanDistance(m, m, dist, 4);
   DelMatrix(&m);
   DelMatrix(&dist);
 }
@@ -403,7 +403,7 @@ void test2()
   y_true->data[12] = 1;
 
   initMatrix(&roc);
-  ROC(y_true, y_score,  &roc, &auc);
+  ROC(y_true, y_score,  roc, &auc);
   PrintMatrix(roc);
   if(FLOAT_EQ(auc, 0.904762, 1e-6)){
     printf("AUC OK!\n");
@@ -413,7 +413,7 @@ void test2()
   printf("AUC: %f\n", auc);
 
   initMatrix(&pr);
-  PrecisionRecall(y_true, y_score,  &pr, &ap);
+  PrecisionRecall(y_true, y_score, pr, &ap);
   PrintMatrix(pr);
 
   if(FLOAT_EQ(ap, 0.900425, 1e-6)){
@@ -429,39 +429,52 @@ void test2()
   DelDVector(&y_score);
 }
 
+
 void test1()
 {
   printf("Test1: Euclidean distance between two matrix.");
   /* Euclidean distance between two matrix test */
-  matrix *m;
+  matrix *m1;
+  matrix *m2;
   matrix *dist;
 
-  NewMatrix(&m, 4, 3);
-  m->data[0][0] = 1; m->data[0][1] = 2; m->data[0][2] = 3;
-  m->data[1][0] = 4; m->data[1][1] = 5; m->data[1][2] = 6;
-  m->data[2][0] = 7; m->data[2][1] = 8; m->data[2][2] = 11;
-  m->data[3][0] = 9; m->data[3][1] = 10; m->data[3][2] = 12;
+  NewMatrix(&m1, 4, 3);
+  m1->data[0][0] = 1; m1->data[0][1] = 2; m1->data[0][2] = 3;
+  m1->data[1][0] = 4; m1->data[1][1] = 5; m1->data[1][2] = 6;
+  m1->data[2][0] = 7; m1->data[2][1] = 8; m1->data[2][2] = 11;
+  m1->data[3][0] = 9; m1->data[3][1] = 10; m1->data[3][2] = 12;
+
+  NewMatrix(&m2, 6, 3);
+  m2->data[0][0] = 1; m2->data[0][1] = 2; m2->data[0][2] = 3;
+  m2->data[1][0] = 1; m2->data[1][1] = 8; m2->data[1][2] = 1;
+  m2->data[2][0] = 4; m2->data[2][1] = 0; m2->data[2][2] = 7;
+  m2->data[3][0] = 5; m2->data[3][1] = 1; m2->data[3][2] = 6;
+  m2->data[4][0] = 3; m2->data[4][1] = 3; m2->data[4][2] = 4;
+  m2->data[5][0] = 5; m2->data[5][1] = 2; m2->data[5][2] = 7;
+
 
   initMatrix(&dist);
-  EuclideanDistance(m, m, &dist, 4);
+  EuclideanDistance(m2, m1, dist, 4);
 
-  puts("Matrix");
+  /*puts("Matrix");
   PrintMatrix(m);
+  */
   puts("Distance Matrix");
   PrintMatrix(dist);
 
   DelMatrix(&dist);
-  DelMatrix(&m);
+  DelMatrix(&m1);
+  DelMatrix(&m2);
 }
 
 int main(void)
 {
-  /*
+
   test1();
-  test2();
+  /*test2();
   test3();
   test4();
   test5();
-  test6();*/
-  test7();
+  test6();
+  test7();*/
 }

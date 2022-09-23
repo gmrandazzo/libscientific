@@ -23,12 +23,12 @@
 #include "vector.h"
 
 /* Description: calculate the natural cubic spline interpolation equations */
-void cubic_spline_interpolation(matrix *xy, matrix **S);
+void cubic_spline_interpolation(matrix *xy, matrix *S);
 
 /* Description: predict using the  natural cubic spline interpolation equations a vector of x */
-void cubic_spline_predict(dvector *x_, matrix *S, dvector **y_pred);
+void cubic_spline_predict(dvector *x_, matrix *S, dvector *y_pred);
 
 /* Description: interpolate x and y using the natural cubic spline equations and get directly the interpolation. */
-void interpolate(matrix *xy, size_t npoints, matrix **interp_xy);
+void interpolate(matrix *xy, size_t npoints, matrix *interp_xy);
 
 #endif

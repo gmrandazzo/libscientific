@@ -73,12 +73,12 @@ int main(void)
     minpt.yautoscaling = 0;
 
     // Use the boot strap random group cross validation.
-    BootstrapRandomGroupsCV(&minpt, 3, 100, _PLS_, &m->predicted_y, &m->pred_residuals, 4, NULL, 0);
+    BootstrapRandomGroupsCV(&minpt, 3, 100, _PLS_, m->predicted_y, m->pred_residuals, 4, NULL, 0);
     // We can also compute leave one out in case...
-    // LeaveOneOut(&minpt, _PLS_, &m->predicted_y, &m->pred_residuals, 4, NULL, 0);
+    // LeaveOneOut(&minpt, _PLS_, m->predicted_y, m->pred_residuals, 4, NULL, 0);
 
     // Calculate the model validation statistics
-    PLSRegressionStatistics(y, m->predicted_y, &m->q2y, &m->sdep, &m->bias);
+    PLSRegressionStatistics(y, m->predicted_y, m->q2y, m->sdep, m->bias);
     //Print to video the results of the validation and the predicted values
 
     puts("Q2 Cross Validation");

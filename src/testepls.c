@@ -103,9 +103,9 @@ void TestEPLS5()
   size_t nthreads = 1;
   initMatrix(&y_validation);
   initMatrix(&y_validation_residuals);
-  BootstrapRandomGroupsCV(&minpt, 5, 20, _EPLS_, &y_validation, &y_validation_residuals, nthreads, NULL, 2, eparm, Averaging);
-  //LeaveOneOut(&minpt, _EPLS_, &y_validation, &y_validation_residuals, nthreads, NULL, 2, eparm, Averaging);
-  //KFoldCV(&minpt, groups, _EPLS_, &y_validation, &y_validation_residuals, nthreads, NULL, 2, eparm, Averaging);
+  BootstrapRandomGroupsCV(&minpt, 5, 20, _EPLS_, y_validation, y_validation_residuals, nthreads, NULL, 2, eparm, Averaging);
+  //LeaveOneOut(&minpt, _EPLS_, y_validation, y_validation_residuals, nthreads, NULL, 2, eparm, Averaging);
+  //KFoldCV(&minpt, groups, _EPLS_, y_validation, y_validation_residuals, nthreads, NULL, 2, eparm, Averaging);
   PrintMatrix(y);
   PrintMatrix(y_validation);
   matrix *q2;
@@ -114,7 +114,7 @@ void TestEPLS5()
   initMatrix(&q2);
   initMatrix(&sdep);
   initMatrix(&bias);
-  EPLSRegressionStatistics(y, y_validation, &q2, &sdep, &bias);
+  EPLSRegressionStatistics(y, y_validation, q2, sdep, bias);
   puts("Q2 Dynamic Random Subspace Method EPLS");
   PrintMatrix(q2);
   puts("Standard Deviation Prediction Error Dynamic Random Subspace Method EPLS");
@@ -269,8 +269,8 @@ void TestEPLS4()
   size_t nthreads = 4;
   initMatrix(&y_validation);
   initMatrix(&y_validation_residuals);
-  //BootstrapRandomGroupsCV(&minpt, 5, 20, _EPLS_, &y_validation, &y_validation_residuals, nthreads, NULL, 2, eparm, Averaging);
-  LeaveOneOut(&minpt, _EPLS_, &y_validation, &y_validation_residuals, nthreads, NULL, 2, eparm, Averaging);
+  //BootstrapRandomGroupsCV(&minpt, 5, 20, _EPLS_, y_validation, y_validation_residuals, nthreads, NULL, 2, eparm, Averaging);
+  LeaveOneOut(&minpt, _EPLS_, y_validation, y_validation_residuals, nthreads, NULL, 2, eparm, Averaging);
   /*PrintMatrix(y);
   PrintMatrix(y_validation);*/
   tensor *roc;
@@ -281,7 +281,7 @@ void TestEPLS4()
   initMatrix(&roc_auc);
   initTensor(&pr);
   initMatrix(&pr_ap);
-  EPLSDiscriminantAnalysisStatistics(y, y_validation, &roc, &roc_auc, &pr, &pr_ap);
+  EPLSDiscriminantAnalysisStatistics(y, y_validation, roc, roc_auc, pr, pr_ap);
 
   puts("ROC AUCs Boosting EPLS-DA");
   PrintMatrix(roc_auc);
@@ -295,7 +295,7 @@ void TestEPLS4()
   initMatrix(&roc_auc_test);
   initMatrix(&pr_ap_test);
 
-  EPLSDiscriminantAnalysisStatistics(y, y_validation, NULL, &roc_auc_test, NULL, &pr_ap_test);
+  EPLSDiscriminantAnalysisStatistics(y, y_validation, NULL, roc_auc_test, NULL, pr_ap_test);
 
   puts("ROC AUCs External TEST Boosting EPLS-DA");
   PrintMatrix(roc_auc_test);
@@ -381,8 +381,8 @@ void TestEPLS3()
   size_t nthreads = 4;
   initMatrix(&y_validation);
   initMatrix(&y_validation_residuals);
-  BootstrapRandomGroupsCV(&minpt, 5, 20, _EPLS_, &y_validation, &y_validation_residuals, nthreads, NULL, 2, eparm, Averaging);
-  //LeaveOneOut(&minpt, _EPLS_, &y_validation, &y_validation_residuals, nthreads, NULL, 2, eparm, Averaging);
+  BootstrapRandomGroupsCV(&minpt, 5, 20, _EPLS_, y_validation, y_validation_residuals, nthreads, NULL, 2, eparm, Averaging);
+  //LeaveOneOut(&minpt, _EPLS_, y_validation, y_validation_residuals, nthreads, NULL, 2, eparm, Averaging);
   PrintMatrix(y);
   PrintMatrix(y_validation);
   matrix *q2;
@@ -391,7 +391,7 @@ void TestEPLS3()
   initMatrix(&q2);
   initMatrix(&sdep);
   initMatrix(&bias);
-  EPLSRegressionStatistics(y, y_validation, &q2, &sdep, &bias);
+  EPLSRegressionStatistics(y, y_validation, q2, sdep, bias);
   puts("Q2 Dynamic Random Subspace Method EPLS");
   PrintMatrix(q2);
   puts("Standard Deviation Prediction Error Dynamic Random Subspace Method EPLS");
@@ -470,8 +470,8 @@ void TestEPLS2()
   size_t nthreads = 4;
   initMatrix(&y_validation);
   initMatrix(&y_validation_residuals);
-  //BootstrapRandomGroupsCV(&minpt, 5, 20, _EPLS_, &y_validation, &y_validation_residuals, nthreads, NULL, 2, eparm, Averaging);
-  LeaveOneOut(&minpt, _EPLS_, &y_validation, &y_validation_residuals, nthreads, NULL, 2, eparm, Averaging);
+  //BootstrapRandomGroupsCV(&minpt, 5, 20, _EPLS_, y_validation, y_validation_residuals, nthreads, NULL, 2, eparm, Averaging);
+  LeaveOneOut(&minpt, _EPLS_, y_validation, y_validation_residuals, nthreads, NULL, 2, eparm, Averaging);
   //PrintMatrix(y);
   //PrintMatrix(y_validation);
   matrix *q2;
@@ -480,7 +480,7 @@ void TestEPLS2()
   initMatrix(&q2);
   initMatrix(&sdep);
   initMatrix(&bias);
-  EPLSRegressionStatistics(y, y_validation, &q2, &sdep, &bias);
+  EPLSRegressionStatistics(y, y_validation, q2, sdep, bias);
   puts("Q2 Fixed Random Subspace Method EPLS");
   PrintMatrix(q2);
   puts("Standard Deviation Prediction Error Fixed Random Subspace Method EPLS");
@@ -559,8 +559,8 @@ void TestEPLS1()
   size_t nthreads = 1;
   initMatrix(&y_validation);
   initMatrix(&y_validation_residuals);
-  BootstrapRandomGroupsCV(&minpt, 5, 20, _EPLS_, &y_validation, &y_validation_residuals, nthreads, NULL, 2, eparm, Averaging);
-  //LeaveOneOut(&minpt, _EPLS_, &y_validation, &y_validation_residuals, nthreads, NULL, 2, eparm, Averaging);
+  BootstrapRandomGroupsCV(&minpt, 5, 20, _EPLS_, y_validation, y_validation_residuals, nthreads, NULL, 2, eparm, Averaging);
+  //LeaveOneOut(&minpt, _EPLS_, y_validation, y_validation_residuals, nthreads, NULL, 2, eparm, Averaging);
   /*PrintMatrix(y);
   PrintMatrix(y_validation);*/
   matrix *q2;
@@ -569,7 +569,7 @@ void TestEPLS1()
   initMatrix(&q2);
   initMatrix(&sdep);
   initMatrix(&bias);
-  EPLSRegressionStatistics(y, y_validation, &q2, &sdep, &bias);
+  EPLSRegressionStatistics(y, y_validation, q2, sdep, bias);
   puts("Q2 Bagging EPLS");
   PrintMatrix(q2);
   puts("Standard Deviation Prediction Error Bagging EPLS");

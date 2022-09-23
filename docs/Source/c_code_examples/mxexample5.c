@@ -13,7 +13,7 @@ int main(void)
     PrintMatrix(m); // Print to video the matrix 
 
     initMatrix(&m_inv); // Initialize the matrix to invert
-    MatrixInversion(m, &m_inv); // Invert the matrix
+    MatrixInversion(m, m_inv); // Invert the matrix
 
     double det = fabs(MatrixDeterminant(m)); // Calculate the determinant
 

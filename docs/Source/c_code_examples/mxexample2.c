@@ -15,7 +15,7 @@ int main(void)
     initMatrix(&mx); // Initialize the empty matrix with rows and columns equal to 0
 
     for(i = 0; i < 5; i++){
-        MatrixAppendRow(&mx, row); // Append 5 times the row to the matrix mx
+        MatrixAppendRow(mx, row); // Append 5 times the row to the matrix mx
     }
 
     PrintMatrix(mx); // Print to video the matrix 

@@ -59,7 +59,7 @@ void SubspaceMatrix(matrix *mx, uivector *featureids, matrix **x_subspace)
   size_t i, j, p;
   p = featureids->size;
   if(mx->row != (*x_subspace)->row && p != (*x_subspace)->col)
-    ResizeMatrix(x_subspace, mx->row, p);
+    ResizeMatrix((*x_subspace), mx->row, p);
 
   for(j = 0; j < p; j++){
     size_t j_id = featureids->data[j];
@@ -102,15 +102,23 @@ void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautos
       initMatrix(&y_test);
       initMatrix(&y_test_predicted);
       initUIVector(&testids);
-      train_test_split(mx, my, testsize, &x_train, &y_train, &x_test, &y_test, &testids, &srand_init);
+      train_test_split(mx,
+                       my,
+                       testsize,
+                       x_train,
+                       y_train,
+                       x_test,
+                       y_test,
+                       testids,
+                       &srand_init);
       srand_init++;
       NewPLSModel(&m->models[it]);
       PLS(x_train, y_train, nlv, xautoscaling, yautoscaling, m->models[it], s);
       /*
        * MODEL SDEP will be used to apply a future prediction weight for the model
        */
-      PLSYPredictorAllLV(x_test, m->models[it], NULL, &y_test_predicted);
-      PLSRegressionStatistics(y_test, y_test_predicted, NULL, &m->models[it]->sdep, &m->models[it]->bias);
+      PLSYPredictorAllLV(x_test, m->models[it], NULL, y_test_predicted);
+      PLSRegressionStatistics(y_test, y_test_predicted, NULL, m->models[it]->sdep, m->models[it]->bias);
       DelUIVector(&testids);
       DelMatrix(&y_test_predicted);
       DelMatrix(&x_train);
@@ -179,15 +187,23 @@ void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautos
          initMatrix(&y_test);
          initMatrix(&y_test_predicted);
          initUIVector(&testids);
-         train_test_split(mx, my, testsize, &x_train, &y_train, &x_test, &y_test, &testids, &srand_init);
+         train_test_split(mx,
+                          my,
+                          testsize,
+                          x_train,
+                          y_train,
+                          x_test,
+                          y_test,
+                          testids,
+                          &srand_init);
          srand_init++;
          SubspaceMatrix(x_train, m->model_feature_ids[it], &x_subspace);
          NewPLSModel(&m->models[it]);
          PLS(x_subspace, y_train, nlv, xautoscaling, yautoscaling, m->models[it], s);
          /* MODEL SDEP will be used to apply a future prediction weight for the model */
          SubspaceMatrix(x_test, m->model_feature_ids[it], &x_test_subspace);
-         PLSYPredictorAllLV(x_test_subspace, m->models[it], NULL, &y_test_predicted);
-         PLSRegressionStatistics(y_test, y_test_predicted, NULL, &m->models[it]->sdep, &m->models[it]->bias);
+         PLSYPredictorAllLV(x_test_subspace, m->models[it], NULL, y_test_predicted);
+         PLSRegressionStatistics(y_test, y_test_predicted, NULL, m->models[it]->sdep, m->models[it]->bias);
          DelMatrix(&x_train);
          DelMatrix(&y_train);
          DelMatrix(&x_test);
@@ -213,7 +229,7 @@ void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, tensor
 {
   size_t i, j, k;
 
-  ResizeMatrix(y, mx->row, m->ny*m->nlv);
+  ResizeMatrix((*y), mx->row, m->ny*m->nlv);
 
   matrix *x_subspace;
   matrix *tot_yweight;
@@ -229,14 +245,14 @@ void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, tensor
       if(m->model_feature_ids != NULL){
         //PrintUIVector(m->model_feature_ids[i]);
         SubspaceMatrix(mx, m->model_feature_ids[i], &x_subspace);
-        PLSYPredictorAllLV(x_subspace,  m->models[i], &tscores_, &model_py);
+        PLSYPredictorAllLV(x_subspace,  m->models[i], tscores_, model_py);
       }
       else{
-        PLSYPredictorAllLV(mx,  m->models[i], &tscores_, &model_py);
+        PLSYPredictorAllLV(mx,  m->models[i], tscores_, model_py);
       }
 
       if(tscores != NULL){
-        TensorAppendMatrix(tscores, tscores_);
+        TensorAppendMatrix((*tscores), tscores_);
       }
 
       /* Check if a model error is calculated for a weighed average.
@@ -315,17 +331,17 @@ void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, tensor
     initTensor(&model_py);
     for(i = 0; i < m->n_models; i++){
       initMatrix(&tscores_);
-      AddTensorMatrix(&model_py, mx->row, m->ny*m->nlv);
+      AddTensorMatrix(model_py, mx->row, m->ny*m->nlv);
       if(m->model_feature_ids != NULL){
         SubspaceMatrix(mx, m->model_feature_ids[i], &x_subspace);
-        PLSYPredictorAllLV(x_subspace,  m->models[i], &tscores_, &model_py->m[i]);
+        PLSYPredictorAllLV(x_subspace,  m->models[i], tscores_, model_py->m[i]);
       }
       else{
-        PLSYPredictorAllLV(mx,  m->models[i], &tscores_, &model_py->m[i]);
+        PLSYPredictorAllLV(mx,  m->models[i], tscores_, model_py->m[i]);
       }
 
       if(tscores != NULL)
-        TensorAppendMatrix(tscores, tscores_);
+        TensorAppendMatrix((*tscores), tscores_);
 
       DelMatrix(&tscores_);
     }
@@ -353,13 +369,22 @@ void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, tensor
   DelMatrix(&tot_yweight);
 }
 
-void EPLSRegressionStatistics(matrix *my_true, matrix *my_pred, matrix** ccoeff, matrix **stdev, matrix **bias)
+void EPLSRegressionStatistics(matrix *my_true,
+                              matrix *my_pred,
+                              matrix *ccoeff,
+                              matrix *stdev,
+                              matrix *bias)
 {
   /* recall to PLS method */
   PLSRegressionStatistics(my_true, my_pred, ccoeff, stdev, bias);
 }
 
-void EPLSDiscriminantAnalysisStatistics(matrix *my_true, matrix *my_score, tensor **roc, matrix **roc_auc, tensor **precision_recall, matrix **precision_recall_ap)
+void EPLSDiscriminantAnalysisStatistics(matrix *my_true,
+                                        matrix *my_score,
+                                        tensor *roc,
+                                        matrix *roc_auc,
+                                        tensor *precision_recall,
+                                        matrix *precision_recall_ap)
 {
   /*recall to PLS method */
   PLSDiscriminantAnalysisStatistics(my_true, my_score, roc, roc_auc, precision_recall, precision_recall_ap);

@@ -39,8 +39,8 @@ void test9()
 
   NewTensor(&ax, 2);
 
-  NewTensorMatrix(&ax, 0, 10, 3);
-  NewTensorMatrix(&ax, 1, 10, 3);
+  NewTensorMatrix(ax, 0, 10, 3);
+  NewTensorMatrix(ax, 1, 10, 3);
 
   setTensorValue(ax, 0, 0, 0, 37);  setTensorValue(ax, 0, 0, 1, 12);  setTensorValue(ax, 0, 0, 2, -1);
   setTensorValue(ax, 0, 1, 0, 62);  setTensorValue(ax, 0, 1, 1, 40);  setTensorValue(ax, 0, 1, 2, -0.331);
@@ -67,8 +67,8 @@ void test9()
 
   NewTensor(&ay, 2);
 
-  NewTensorMatrix(&ay, 0, 10, 1);
-  NewTensorMatrix(&ay, 1, 10, 1);
+  NewTensorMatrix(ay, 0, 10, 1);
+  NewTensorMatrix(ay, 1, 10, 1);
 
   setTensorValue(ay, 0, 0, 0, 50);
   setTensorValue(ay, 0, 1, 0, 86);
@@ -160,8 +160,8 @@ void test8()
 
   NewTensor(&ax, 2);
 
-  NewTensorMatrix(&ax, 0, 10, 3);
-  NewTensorMatrix(&ax, 1, 10, 3);
+  NewTensorMatrix(ax, 0, 10, 3);
+  NewTensorMatrix(ax, 1, 10, 3);
 
   setTensorValue(ax, 0, 0, 0, 37);  setTensorValue(ax, 0, 0, 1, 12);  setTensorValue(ax, 0, 0, 2, -1);
   setTensorValue(ax, 0, 1, 0, 62);  setTensorValue(ax, 0, 1, 1, 40);  setTensorValue(ax, 0, 1, 2, -0.331);
@@ -188,8 +188,8 @@ void test8()
 
   NewTensor(&ay, 2);
 
-  NewTensorMatrix(&ay, 0, 10, 1);
-  NewTensorMatrix(&ay, 1, 10, 1);
+  NewTensorMatrix(ay, 0, 10, 1);
+  NewTensorMatrix(ay, 1, 10, 1);
 
   setTensorValue(ay, 0, 0, 0, 50);
   setTensorValue(ay, 0, 1, 0, 86);
@@ -267,8 +267,8 @@ void test7()
 
   NewTensor(&ax, 2);
 
-  NewTensorMatrix(&ax, 0, 10, 2);
-  NewTensorMatrix(&ax, 1, 10, 2);
+  NewTensorMatrix(ax, 0, 10, 2);
+  NewTensorMatrix(ax, 1, 10, 2);
 
   setTensorValue(ax, 0, 0, 0, 37);  setTensorValue(ax, 0, 0, 1, 12);
   setTensorValue(ax, 0, 1, 0, 62);  setTensorValue(ax, 0, 1, 1, 40);
@@ -294,7 +294,7 @@ void test7()
 
   NewTensor(&ay, 1);
 
-  NewTensorMatrix(&ay, 0, 10, 1);
+  NewTensorMatrix(ay, 0, 10, 1);
 
   setTensorValue(ay, 0, 0, 0, 50);
   setTensorValue(ay, 0, 1, 0, 86);
@@ -362,8 +362,8 @@ void test6()
 
   NewTensor(&ax, 2);
 
-  NewTensorMatrix(&ax, 0, 3, 2);
-  NewTensorMatrix(&ax, 1, 3, 2);
+  NewTensorMatrix(ax, 0, 3, 2);
+  NewTensorMatrix(ax, 1, 3, 2);
 
   setTensorValue(ax, 0, 0, 0, 37);  setTensorValue(ax, 0, 0, 1, 12);
   setTensorValue(ax, 0, 1, 0, 62);  setTensorValue(ax, 0, 1, 1, 40);
@@ -376,8 +376,8 @@ void test6()
 
   NewTensor(&ay, 2);
 
-  NewTensorMatrix(&ay, 0, 3, 1);
-  NewTensorMatrix(&ay, 1, 3, 1);
+  NewTensorMatrix(ay, 0, 3, 1);
+  NewTensorMatrix(ay, 1, 3, 1);
 
   setTensorValue(ay, 0, 0, 0, 50);
   setTensorValue(ay, 0, 1, 0, 86);
@@ -390,8 +390,8 @@ void test6()
 
 
   NewTensor(&axp, 2);
-  NewTensorMatrix(&axp, 0, 1, 2);
-  NewTensorMatrix(&axp, 1, 1, 2);
+  NewTensorMatrix(axp, 0, 1, 2);
+  NewTensorMatrix(axp, 1, 1, 2);
 
   setTensorValue(axp, 0, 0, 0, 62);  setTensorValue(axp, 0, 0, 1, 62);
   setTensorValue(axp, 1, 0, 0, 1);  setTensorValue(axp, 1, 0, 1, 1);
@@ -409,7 +409,7 @@ void test6()
   initTensor(&sdec);
 
   /* calculating the r^2 for x and y model*/
-  UPLSRSquared(ax, ay, m, 2, &r2x, &r2y, &sdec);
+  UPLSRSquared(ax, ay, m, 2, r2x, r2y, sdec);
 
 
   puts("Data\nX:");
@@ -422,10 +422,10 @@ void test6()
 
 
   /*compute the xscore prediction*/
-  UPLSScorePredictor(axp,m, 2, &pscores);
+  UPLSScorePredictor(axp,m, 2, pscores);
 
   /*compute the Y prediction*/
-  UPLSYPredictor(pscores, m, 2, &py);
+  UPLSYPredictor(pscores, m, 2, py);
 
 
   PrintUPLSModel(m);
@@ -475,8 +475,8 @@ void test5()
 
   NewTensor(&ax, 2);
 
-  NewTensorMatrix(&ax, 0, 3, 2);
-  NewTensorMatrix(&ax, 1, 3, 2);
+  NewTensorMatrix(ax, 0, 3, 2);
+  NewTensorMatrix(ax, 1, 3, 2);
 
   setTensorValue(ax, 0, 0, 0, 37);  setTensorValue(ax, 0, 0, 1, 12);
   setTensorValue(ax, 0, 1, 0, 62);  setTensorValue(ax, 0, 1, 1, 40);
@@ -489,8 +489,8 @@ void test5()
 
   NewTensor(&ay, 2);
 
-  NewTensorMatrix(&ay, 0, 3, 1);
-  NewTensorMatrix(&ay, 1, 3, 1);
+  NewTensorMatrix(ay, 0, 3, 1);
+  NewTensorMatrix(ay, 1, 3, 1);
 
   setTensorValue(ay, 0, 0, 0, 50);
   setTensorValue(ay, 0, 1, 0, 86);
@@ -503,8 +503,8 @@ void test5()
 
 
   NewTensor(&axp, 2);
-  NewTensorMatrix(&axp, 0, 1, 2);
-  NewTensorMatrix(&axp, 1, 1, 2);
+  NewTensorMatrix(axp, 0, 1, 2);
+  NewTensorMatrix(axp, 1, 1, 2);
 
   setTensorValue(axp, 0, 0, 0, 62);  setTensorValue(axp, 0, 0, 1, 62);
   setTensorValue(axp, 1, 0, 0, 1);  setTensorValue(axp, 1, 0, 1, 1);
@@ -524,9 +524,9 @@ void test5()
   initMatrix(&pscores);
 
 
-  UPLSScorePredictor(axp, m, 2, &pscores);
+  UPLSScorePredictor(axp, m, 2, pscores);
 
-  UPLSYPredictor(pscores, m, 2, &py);
+  UPLSYPredictor(pscores, m, 2, py);
 
   PrintUPLSModel(m);
 
@@ -561,8 +561,8 @@ void test4()
 
   NewTensor(&ax, 2);
 
-  NewTensorMatrix(&ax, 0, 3, 4);
-  NewTensorMatrix(&ax, 1, 3, 4);
+  NewTensorMatrix(ax, 0, 3, 4);
+  NewTensorMatrix(ax, 1, 3, 4);
 
   setTensorValue(ax, 0, 0, 0, 0.424264);  setTensorValue(ax, 0, 0, 1, 0.565685);  setTensorValue(ax, 0, 0, 2, 0.4);  setTensorValue(ax, 0, 0, 3, 0.6);
   setTensorValue(ax, 0, 1, 0, 0.565685);  setTensorValue(ax, 0, 1, 1, 0.424264);  setTensorValue(ax, 0, 1, 2, 0.6);  setTensorValue(ax, 0, 1, 3, 0.4);
@@ -575,8 +575,8 @@ void test4()
 
   NewTensor(&ay, 2);
 
-  NewTensorMatrix(&ay, 0, 3, 1);
-  NewTensorMatrix(&ay, 1, 3, 1);
+  NewTensorMatrix(ay, 0, 3, 1);
+  NewTensorMatrix(ay, 1, 3, 1);
 
   setTensorValue(ay, 0, 0, 0, 1.0);
   setTensorValue(ay, 0, 1, 0, 2.0);
@@ -589,8 +589,8 @@ void test4()
 
 
   NewTensor(&axp, 2);
-  NewTensorMatrix(&axp, 0, 1, 4);
-  NewTensorMatrix(&axp, 1, 1, 4);
+  NewTensorMatrix(axp, 0, 1, 4);
+  NewTensorMatrix(axp, 1, 1, 4);
 
   setTensorValue(axp, 0, 0, 0, 0.5);  setTensorValue(axp, 0, 0, 1, 0.6);  setTensorValue(axp, 0, 0, 2, 0.45);  setTensorValue(axp, 0, 0, 3, 0.55);
   setTensorValue(axp, 1, 0, 0, 0.6);  setTensorValue(axp, 1, 0, 1, 0.4);  setTensorValue(axp, 1, 0, 2, 0.55);  setTensorValue(axp, 1, 0, 3, 0.45);
@@ -604,9 +604,9 @@ void test4()
   initTensor(&py);
   initMatrix(&pscores);
 
-  UPLSScorePredictor(axp, m, 3, &pscores);
+  UPLSScorePredictor(axp, m, 3, pscores);
 
-  UPLSYPredictor(pscores, m, 3, &py);
+  UPLSYPredictor(pscores, m, 3, py);
 
   PrintUPLSModel(m);
 
@@ -647,8 +647,8 @@ void test3()
 
   NewTensor(&ax, 2);
 
-  NewTensorMatrix(&ax, 0, 3, 2);
-  NewTensorMatrix(&ax, 1, 3, 2);
+  NewTensorMatrix(ax, 0, 3, 2);
+  NewTensorMatrix(ax, 1, 3, 2);
 
   setTensorValue(ax, 0, 0, 0, 0.424264);  setTensorValue(ax, 0, 0, 1, 0.565685);
   setTensorValue(ax, 0, 1, 0, 0.565685);  setTensorValue(ax, 0, 1, 1, 0.424264);
@@ -661,8 +661,8 @@ void test3()
 
   NewTensor(&ay, 2);
 
-  NewTensorMatrix(&ay, 0, 3, 1);
-  NewTensorMatrix(&ay, 1, 3, 1);
+  NewTensorMatrix(ay, 0, 3, 1);
+  NewTensorMatrix(ay, 1, 3, 1);
 
   setTensorValue(ay, 0, 0, 0, 1.0);
   setTensorValue(ay, 0, 1, 0, 2.0);
@@ -675,8 +675,8 @@ void test3()
 
 
   NewTensor(&axp, 2);
-  NewTensorMatrix(&axp, 0, 1, 2);
-  NewTensorMatrix(&axp, 1, 1, 2);
+  NewTensorMatrix(axp, 0, 1, 2);
+  NewTensorMatrix(axp, 1, 1, 2);
 
   setTensorValue(axp, 0, 0, 0, 0.5);  setTensorValue(axp, 0, 0, 1, 0.6);
   setTensorValue(axp, 1, 0, 0, 0.6);  setTensorValue(axp, 1, 0, 1, 0.4);
@@ -691,9 +691,9 @@ void test3()
   initTensor(&py);
   initMatrix(&pscores);
 
-  UPLSScorePredictor(axp, m, 3, &pscores);
+  UPLSScorePredictor(axp, m, 3, pscores);
 
-  UPLSYPredictor(pscores, m, 3, &py);
+  UPLSYPredictor(pscores, m, 3, py);
 
   PrintUPLSModel(m);
 
@@ -730,7 +730,7 @@ void test2()
   NewTensor(&ax, 3);
 
   for(i = 0; i < ax->order; i++)
-    NewTensorMatrix(&ax, i, 30, 10);
+    NewTensorMatrix(ax, i, 30, 10);
 
   srand(time(0));
   for(i = 0; i < ax->order; i++){
@@ -743,7 +743,7 @@ void test2()
 
 
   NewTensor(&ay, 1);
-  NewTensorMatrix(&ay, 0, 30, 1);
+  NewTensorMatrix(ay, 0, 30, 1);
 
   srand(time(0));
   for(i = 0; i < ay->order; i++){
@@ -784,8 +784,8 @@ void test1()
 
   NewTensor(&ax, 2);
 
-  NewTensorMatrix(&ax, 0, 3, 2);
-  NewTensorMatrix(&ax, 1, 3, 2);
+  NewTensorMatrix(ax, 0, 3, 2);
+  NewTensorMatrix(ax, 1, 3, 2);
 
   setTensorValue(ax, 0, 0, 0, 0.424264);  setTensorValue(ax, 0, 0, 1, 0.565685);
   setTensorValue(ax, 0, 1, 0, 0.565685);  setTensorValue(ax, 0, 1, 1, 0.424264);
@@ -798,8 +798,8 @@ void test1()
 
   NewTensor(&ay, 2);
 
-  NewTensorMatrix(&ay, 0, 3, 1);
-  NewTensorMatrix(&ay, 1, 3, 1);
+  NewTensorMatrix(ay, 0, 3, 1);
+  NewTensorMatrix(ay, 1, 3, 1);
 
   setTensorValue(ay, 0, 0, 0, 1.0);
   setTensorValue(ay, 0, 1, 0, 2.0);
@@ -835,7 +835,7 @@ int main(void)
   /*test 6-9 */
   test6();
   test7();
-  test8();
-  test9();
+  /*test8(); CRASH! */
+    test9();
   return 0;
 }

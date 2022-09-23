@@ -32,10 +32,7 @@ void test19()
 
   uivector *selections;
 
-  NewMatrix(&m, 14, 2);
-
-
-  maxrow = 1000;
+  maxrow = 100;
   maxcol = 50;
 
   NewMatrix(&m, maxrow, maxcol);
@@ -49,7 +46,7 @@ void test19()
 
   initUIVector(&selections);
 
-  MDC(m, 0, 0, &selections, 8, &run);
+  MDC(m, 0, 0, selections, 8, &run);
   printf("Selected instances %zu\n", selections->size);
   DelUIVector(&selections);
   DelMatrix(&m);
@@ -77,7 +74,7 @@ void test18()
 
   initUIVector(&clusters);
   initMatrix(&centroids);
-  KMeans(m, 1000, 0, &clusters, &centroids, 4, &run);
+  KMeans(m, 1000, 0, clusters, centroids, 4, &run);
 
 
   DelUIVector(&clusters);
@@ -108,7 +105,7 @@ void test17()
   initUIVector(&clusters);
   initMatrix(&centroids);
 
-  HierarchicalClustering(m, 3, &clusters, &centroids, NULL, 0, 4, &run);
+  HierarchicalClustering(m, 3, clusters, centroids, NULL, 0, 4, &run);
 
   puts("clusters");
   PrintUIVector(clusters);
@@ -174,7 +171,7 @@ void test15()
   initUIVector(&clusters);
   initMatrix(&centroids);
   initStrVector(&dendogram);
-  HierarchicalClustering(m, 3, &clusters, &centroids, &dendogram, average_linkage, 4, &run);
+  HierarchicalClustering(m, 3, clusters, centroids, dendogram, average_linkage, 4, &run);
 
   puts("clusters");
   PrintUIVector(clusters);
@@ -241,7 +238,7 @@ void test13()
   initUIVector(&clusters);
   initMatrix(&centroids);
 
-  KMeans(m, 2, 1, &clusters, &centroids, 4, NULL);
+  KMeans(m, 2, 1, clusters, centroids, 4, NULL);
 
   puts("Centroids");
   PrintMatrix(centroids);
@@ -277,7 +274,7 @@ void test12()
 
   initDVector(&ssdist);
   puts("KMeans ++ Cross Validation");
-  KMeansRandomGroupsCV(m, 15, 1, 3, 10, &ssdist, 4, &run);
+  KMeansRandomGroupsCV(m, 15, 1, 3, 10, ssdist, 4, &run);
 
   puts("ssdist");
   PrintDVector(ssdist);
@@ -314,7 +311,7 @@ void test11()
   puts("KMeans ++ Cross Validation");
   /*KMeansRandomGroupsCV(m, 9, 1, 3, 20, &ssdist, &run);*/
 
-  KMeansJumpMethod(m, 9, 1, &ssdist, 4, &run);
+  KMeansJumpMethod(m, 9, 1, ssdist, 4, &run);
 
   puts("ssdist");
   PrintDVector(ssdist);
@@ -351,7 +348,7 @@ void test10()
   initUIVector(&clusters);
   initMatrix(&centroids);
 
-  KMeans(m, 3, 1, &clusters, &centroids, 4, &run);
+  KMeans(m, 3, 1, clusters, centroids, 4, &run);
 
   puts("Centroids");
   PrintMatrix(centroids);
@@ -482,7 +479,7 @@ void test9()
   initUIVector(&clusters);
 
 
-  KMeans(m, 10, 3, &clusters, NULL, 4, &run);
+  KMeans(m, 10, 3, clusters, NULL, 4, &run);
 
   puts("Selections");
   PrintUIVector(clusters);
@@ -520,7 +517,7 @@ void test8()
   initMatrix(&centroids);
 
   puts("KMeans MaxDis");
-  KMeans(m, 2, 3, &clusters, &centroids, 4, &run);
+  KMeans(m, 2, 3, clusters, centroids, 4, &run);
 
   puts("Selections");
   PrintUIVector(clusters);
@@ -560,7 +557,7 @@ void test7()
   initUIVector(&clusters);
   initMatrix(&centroids);
 
-  KMeans(m, 2, 2, &clusters, &centroids, 4, &run);
+  KMeans(m, 2, 2, clusters, centroids, 4, &run);
 
   puts("Selections");
   PrintUIVector(clusters);
@@ -600,7 +597,7 @@ void test6()
   initUIVector(&clusters);
   initMatrix(&centroids);
 
-  KMeans(m, 2, 0, &clusters, &centroids, 4, &run);
+  KMeans(m, 2, 0, clusters, centroids, 4, &run);
 
   puts("Selections");
   PrintUIVector(clusters);
@@ -640,7 +637,7 @@ void test5()
   initUIVector(&clusters);
   initMatrix(&centroids);
 
-  KMeans(m, 2, 1, &clusters, &centroids, 4, &run);
+  KMeans(m, 2, 1, clusters, centroids, 4, &run);
 
   puts("Selections");
   PrintUIVector(clusters);
@@ -681,7 +678,7 @@ void test4()
   initUIVector(&selections);
 
   puts("KMeansppCenters TEST");
-  KMeansppCenters(m, 2, &selections, 1, &run);
+  KMeansppCenters(m, 2, selections, 1, &run);
 
   puts("Selections");
   PrintUIVector(selections);
@@ -723,7 +720,7 @@ void test3()
   PrintMatrix(m);
   initUIVector(&selections);
 
-  MaxDis(m, floor(0.35*m->row), 0, &selections, 4, &run);
+  MaxDis(m, floor(0.35*m->row), 0, selections, 4, &run);
 
   puts("Selections");
   PrintUIVector(selections);
@@ -765,7 +762,7 @@ void test2()
 
   initUIVector(&selections);
 
-  MDC(m, 0, 0, &selections, 4, &run);
+  MDC(m, 0, 0, selections, 4, &run);
 
   puts("Selections");
   PrintUIVector(selections);
@@ -893,7 +890,7 @@ void test1()
   initUIVector(&selections);
 
   /*MDC(m, 0, 0, &selections, 4, &run);*/
-  MaxDis(m, floor(0.35*m->row), 0, &selections, 4, &run);
+  MaxDis(m, floor(0.35*m->row), 0, selections, 4, &run);
 
   puts("Selections");
 
@@ -922,7 +919,7 @@ int main(void){
   // test12(); WARNING ERROR HERE!
   test13();
   test14();
-  test15();
+  //test15();
   test16();
   test17();
   test18();

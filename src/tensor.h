@@ -37,18 +37,18 @@ typedef struct{
 
 void initTensor(tensor **t);
 void NewTensor(tensor** t, size_t order_);
-void NewTensorMatrix(tensor **t, size_t order, size_t row, size_t col);
-void AddTensorMatrix(tensor **t, size_t row, size_t col);
+void NewTensorMatrix(tensor *t, size_t order, size_t row, size_t col);
+void AddTensorMatrix(tensor *t, size_t row, size_t col);
 
 void DelTensor(tensor**t);
 
 void PrintTensor(tensor *t);
 void setTensorValue(tensor *t, size_t order, size_t row, size_t col, double val);
 double getTensorValue(tensor *t, size_t order, size_t row, size_t col);
-void TensorAppendMatrix(tensor **tdst, matrix *msrc);
-void TensorAppendMatrixAt(tensor **tdst, size_t order, matrix *msrc);
-void TensorAppendColumn(tensor **t, size_t order, dvector* column);
-void TensorAppendRow(tensor **t, size_t order, dvector* row);
+void TensorAppendMatrix(tensor *tdst, matrix *msrc);
+void TensorAppendMatrixAt(tensor *tdst, size_t order, matrix *msrc);
+void TensorAppendColumn(tensor *t, size_t order, dvector* column);
+void TensorAppendRow(tensor *t, size_t order, dvector* row);
 void TensorSet(tensor *t, double val);
 void TensorCopy(tensor *asrc, tensor **adst);
 
@@ -62,8 +62,8 @@ void TensorAppendColPlane(tensor **t, matrix *col);
 
 /*  Matrix Operations */
 void MeanCenteredTensor(tensor *t, tensor *tc);
-void TensorColAverage(tensor *t, matrix **colaverage);
-void TensorColSDEV(tensor *t, matrix **colsdev);
+void TensorColAverage(tensor *t, matrix *colaverage);
+void TensorColSDEV(tensor *t, matrix *colsdev);
 void TensorTranspose(tensor *t1, tensor *t2);
 
 void TransposedTensorDVectorProduct(tensor *t, dvector *v, matrix *p);

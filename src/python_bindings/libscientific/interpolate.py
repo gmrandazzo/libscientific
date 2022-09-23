@@ -24,7 +24,7 @@ lsci = LoadLibrary()
 
 
 lsci.cubic_spline_interpolation.argtypes = [ctypes.POINTER(mx.matrix),
-                                            ctypes.POINTER(ctypes.POINTER(mx.matrix))]
+                                            ctypes.POINTER(mx.matrix)]
 lsci.cubic_spline_interpolation.restype = None
 
 
@@ -45,12 +45,12 @@ def cubic_spline_interpolation(xy, S):
     elif "Matrix" in str(type(S)):
         S_ = S.mx
 
-    lsci.cubic_spline_interpolation(xy_, ctypes.pointer(S_))
+    lsci.cubic_spline_interpolation(xy_, S_)
 
 
 lsci.cubic_spline_predict.argtypes = [ctypes.POINTER(vect.dvector),
                                       ctypes.POINTER(mx.matrix),
-                                      ctypes.POINTER(ctypes.POINTER(vect.dvector))]
+                                      ctypes.POINTER(vect.dvector)]
 lsci.cubic_spline_predict.restype = None
 
 
@@ -76,7 +76,7 @@ def cubic_spline_predict(x, S, yp):
     else:
         yp_ = yp
 
-    lsci.cubic_spline_predict(x_, S_, ctypes.pointer(yp_))
+    lsci.cubic_spline_predict(x_, S_, yp_)
 
 
 if __name__ in "__main__":

@@ -73,7 +73,7 @@ def NewDVector(vlst):
     return d
 
 
-lsci.DVectorResize.argtypes = [ctypes.POINTER(ctypes.POINTER(dvector)),
+lsci.DVectorResize.argtypes = [ctypes.POINTER(dvector),
                                ctypes.c_size_t]
 lsci.DVectorResize.restype = None
 
@@ -83,7 +83,7 @@ def DVectorResize(d, size):
     DVectorResize: Resize an already allocated or reallocate a libscientific
                    double vector
     """
-    lsci.DVectorResize(ctypes.pointer(d), size)
+    lsci.DVectorResize(d, size)
 
 
 lsci.DelDVector.argtypes = [ctypes.POINTER(ctypes.POINTER(dvector))]
@@ -169,7 +169,7 @@ def DVectorToList(d):
     return dlst
 
 
-lsci.DVectorAppend.argtypes = [ctypes.POINTER(ctypes.POINTER(dvector)),
+lsci.DVectorAppend.argtypes = [ctypes.POINTER(dvector),
                                ctypes.c_double]
 lsci.DVectorAppend.restype = None
 
@@ -180,7 +180,7 @@ def DVectorAppend(d, val):
     return lsci.DVectorAppend(d, val);
 
 
-lsci.DVectorRemoveAt.argtypes = [ctypes.POINTER(ctypes.POINTER(dvector)),
+lsci.DVectorRemoveAt.argtypes = [ctypes.POINTER(dvector),
                                  ctypes.c_size_t]
 lsci.DVectorRemoveAt.restype = None
 
@@ -191,7 +191,7 @@ def DVectorRemoveAt(d, indx):
     return lsci.DVectorRemoveAt(d, indx);
 
 lsci.DVectorCopy.argtypes = [ctypes.POINTER(dvector),
-                             ctypes.POINTER(ctypes.POINTER(dvector))]
+                             ctypes.POINTER(dvector)]
 lsci.DVectorCopy.restype = None
 
 def DVectorCopy(src):
@@ -199,7 +199,7 @@ def DVectorCopy(src):
     Create a copy of dvector d to a
     """
     dst = initDVector()
-    lsci.DVectorCopy(src, ctypes.pointer(dst))
+    lsci.DVectorCopy(src, dst)
     return dst
 
 
@@ -248,14 +248,14 @@ class DVector(object):
 
     def data_ptr(self):
         return self.d[0].data
-    
+
     def append(self, value):
         return DVectorAppend(self.d, value)
-    
+
     def extend(self, lst):
         for item in lst:
             DVectorAppend(self.d, item)
-    
+
     def tolist(self):
         return DVectorToList(self.d)
 
@@ -281,19 +281,19 @@ if __name__ in "__main__":
     print("print the list converted from the double vector")
     for item in dlst:
         print(item)
-    
+
     print("Add at the end the value -123")
     DVectorAppend(d.d, -123)
     d.debug()
-    
+
     print("Append in a different way -123 at the end")
     d.append(-123)
     d.debug()
-    
+
     print("remove at index 1, then value -2")
     DVectorRemoveAt(d.d, 1)
     d.debug()
-    
+
     print("Extend d with b")
     print("b:")
     b = [random() for j in range(4)]
@@ -301,13 +301,11 @@ if __name__ in "__main__":
     d.extend(b)
     print("d extended:")
     d.debug()
-    
+
     print("Create a copy of d.d in q")
     q = DVectorCopy(d.d)
     PrintDVector(q)
     DelDVector(q)
-    
+
     print("Check if the double vector d have the value -123")
     print(DVectorHasValue(d.d, -13.0000))
-    
-    

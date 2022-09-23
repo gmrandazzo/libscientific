@@ -120,7 +120,7 @@ def PLS_(x, y, nlv, xscaling, yscaling, mpls):
 
 lsci.PLSBetasCoeff.argtypes = [ctypes.POINTER(PLSMODEL),
                                ctypes.c_size_t,
-                               ctypes.POINTER(ctypes.POINTER(vect.dvector))]
+                               ctypes.POINTER(vect.dvector)]
 lsci.PLSBetasCoeff.restype = None
 
 
@@ -128,14 +128,14 @@ def PLSBetasCoeff(mpls, nlv, bcoeff):
     """
     PLSBetasCoeff calculation
     """
-    lsci.PLSBetasCoeff(mpls, nlv, ctypes.pointer(ctypes.pointer(bcoeff)))
+    lsci.PLSBetasCoeff(mpls, nlv, ctypes.pointer(bcoeff))
 
 
 
 lsci.PLSScorePredictor.argtypes = [ctypes.POINTER(mx.matrix),
                                    ctypes.POINTER(PLSMODEL),
                                    ctypes.c_size_t,
-                                   ctypes.POINTER(ctypes.POINTER(mx.matrix))]
+                                   ctypes.POINTER(mx.matrix)]
 lsci.PLSScorePredictor.restype = None
 
 
@@ -146,7 +146,7 @@ def PLSScorePredictor(x, mpls, nlv, pscores):
     lsci.PLSScorePredictor(x,
                            mpls,
                            nlv,
-                           ctypes.pointer(pscores))
+                           pscores)
 
 
 # void PLSYPredictor(matrix *tscore, PLSMODEL *model, size_t nlv, matrix **y);
@@ -154,7 +154,7 @@ def PLSScorePredictor(x, mpls, nlv, pscores):
 lsci.PLSYPredictor.argtypes = [ctypes.POINTER(mx.matrix),
                                ctypes.POINTER(PLSMODEL),
                                ctypes.c_size_t,
-                               ctypes.POINTER(ctypes.POINTER(mx.matrix))]
+                               ctypes.POINTER(mx.matrix)]
 lsci.PLSYPredictor.restype = None
 
 
@@ -170,8 +170,8 @@ def PLSYPredictor(xscores, mpls, nlv, predicted_y):
 
 lsci.PLSYPredictorAllLV.argtypes = [ctypes.POINTER(mx.matrix),
                                     ctypes.POINTER(PLSMODEL),
-                                    ctypes.POINTER(ctypes.POINTER(mx.matrix)),
-                                    ctypes.POINTER(ctypes.POINTER(mx.matrix))]
+                                    ctypes.POINTER(mx.matrix),
+                                    ctypes.POINTER(mx.matrix)]
 lsci.PLSYPredictorAllLV.restype = None
 
 
@@ -182,8 +182,8 @@ def PLSYPredictorAllLV(x, mpls, predicted_scores, predicted_y):
     """
     lsci.PLSYPredictorAllLV(x,
                             mpls,
-                            ctypes.pointer(predicted_scores),
-                            ctypes.pointer(predicted_y))
+                            predicted_scores,
+                            predicted_y)
 
 
 

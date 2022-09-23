@@ -34,7 +34,7 @@
  * 2 Iris Virginica
  */
 
-void iris(matrix **x, matrix **y);
+void iris(matrix *x, matrix *y);
 
 /*
  * Residential Building Dataset
@@ -61,7 +61,7 @@ void iris(matrix **x, matrix **y);
  * doi: 10.1016/0095-0696(78)90006-2.
  */
 
-void boston_house_price(matrix **x, matrix **y);
+void boston_house_price(matrix *x, matrix *y);
 
 /*
  * Residential Building Data set
@@ -106,6 +106,6 @@ void boston_house_price(matrix **x, matrix **y);
  * - Actual construction costs (output)
  *
  */
-void residential_building(matrix **x, matrix **y);
+void residential_building(matrix *x, matrix *y);
 
 #endif

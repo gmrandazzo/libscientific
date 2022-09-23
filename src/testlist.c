@@ -40,7 +40,7 @@ void test1()
 
   printf("Appending dvector to dvectorlist\n");
   initDVectorList(&lst);
-  DVectorListAppend(&lst, v);
+  DVectorListAppend(lst, v);
 
   printf("Final output\n");
   for(i = 0; i < lst->size; i++){

@@ -26,10 +26,9 @@
 #include "numeric.h"
 #include "algebra.h"
 
-
-void Test34()
+void Test32()
 {
-
+  puts("Test 32: Calculate DVectorMatrixDotProduct");
   matrix *x;
   dvector *v, *r;
 
@@ -61,7 +60,8 @@ void Test34()
 }
 
 
-void Test33(){
+void Test31(){
+  puts("Test 31: Calculate the matrix determinant");
   matrix *m;
   NewMatrix(&m, 3, 3);
   m->data[0][0] = 3;
@@ -80,10 +80,12 @@ void Test33(){
   if(det == -580){
     printf("Matrix determinant %f   :OK\n", det);
   }
+  DelMatrix(&m);
 }
 
-void Test32(){
+void Test30(){
   /*Large matrix*/
+  puts("Test 30: Calculate descriptive statistics from a matrix");
   matrix *mx;
   matrix *ds;
   int nrow = 356123;
@@ -98,37 +100,36 @@ void Test32(){
   }
   initMatrix(&ds);
   puts("Calculating Matrix Statistics Descriptive");
-  MatrixColDescStat(mx, &ds);
+  MatrixColDescStat(mx, ds);
   PrintMatrix(ds);
   DelMatrix(&ds);
   DelMatrix(&mx);
 }
 
-void Test31()
+void Test29()
 {
   matrix *m, *m_inv;
-  puts("Test 31: Matrix Pseudoinversion");
-  NewMatrix(&m, 6, 5);
+  puts("Test 29: Matrix Pseudoinversion");
+  NewMatrix(&m, 5, 5);
 
   m->data[0][0] = 8.79; m->data[0][1] = 9.93; m->data[0][2] = 9.83; m->data[0][3] = 5.45; m->data[0][4] = 3.16;
   m->data[1][0] = 6.11; m->data[1][1] = 6.91; m->data[1][2] = 5.04; m->data[1][3] = -0.27; m->data[1][4] = 7.98;
   m->data[2][0] = -9.15; m->data[2][1] = -7.93; m->data[2][2] = 4.86; m->data[2][3] = 4.85; m->data[2][4] = 3.01;
   m->data[3][0] = 9.57; m->data[3][1] = 1.64; m->data[3][2] = 8.83; m->data[3][3] = 0.74; m->data[3][4] = 5.80;
   m->data[4][0] = -3.49; m->data[4][1] = 4.02; m->data[4][2] = 9.80; m->data[4][3] =  10.00; m->data[4][4] = 4.27;
-  m->data[5][0] =  9.84; m->data[5][1] = 0.15; m->data[5][2] = -8.99; m->data[5][3] = -6.02; m->data[5][4] = -5.31;
 
   initMatrix(&m_inv);
-  MatrixPseudoinversion(m,  &m_inv);
+  MatrixPseudoinversion(m,  m_inv);
   PrintMatrix(m);
   PrintMatrix(m_inv);
   DelMatrix(&m);
   DelMatrix(&m_inv);
 }
 
-void Test30()
+void Test28()
 {
   matrix *mxin, *mxout;
-  puts("Test 30: SVN Scaling Pretreatment");
+  puts("Test 28: SVN Scaling Pretreatment");
   NewMatrix(&mxin, 3, 3);
   mxin->data[0][0] = 1; mxin->data[0][1] = 2; mxin->data[0][2] = 3;
   mxin->data[1][0] = 4; mxin->data[1][1] = 5; mxin->data[1][2] = 0;
@@ -136,16 +137,16 @@ void Test30()
 
   PrintMatrix(mxin);
   initMatrix(&mxout);
-  MatrixSVNScaling(mxin,  &mxout);
+  MatrixSVNScaling(mxin,  mxout);
   PrintMatrix(mxout);
   DelMatrix(&mxin);
   DelMatrix(&mxout);
 }
 
-void Test29()
+void Test27()
 {
   matrix *m, *t;
-  puts("Test 29: Transpose a matrix of 700000 rows and 128 columns");
+  puts("Test 27: Transpose a matrix of 700000 rows and 128 columns");
   NewMatrix(&m, 700000, 128);
   NewMatrix(&t, 128, 700000);
   MatrixTranspose(m, t);
@@ -154,92 +155,193 @@ void Test29()
   DelMatrix(&m);
 }
 
-void Test28BIS()
+void Test26()
 {
   matrix *m, *U, *S, *V_T;
-  puts("Test 28: Computing Singular Value Decomposition");
-
-  /*NewMatrix(&m, 3, 3);
-  m->data[0][0] = 15.629; m->data[0][1] = -6.399; m->data[0][2] = -4.843;
-  m->data[1][0] = 5.305; m->data[1][1] = 14.513; m->data[1][2] = -3.903;
-  m->data[2][0] = 2.822; m->data[2][1] = -1.792; m->data[2][2] = -4.535;*/
+  matrix *Ur, *Sr, *V_Tr; /* Results */
+  puts("Test 26: Computing Singular Value Decomposition Lapack method");
 
   NewMatrix(&m, 2, 2);
   m->data[0][0] = 7; m->data[0][1] = 2;
   m->data[1][0] = 3; m->data[1][1] = 4;
 
-  puts("INIT MATRIX");
-  PrintMatrix(m);
-
   initMatrix(&U);
   initMatrix(&S);
   initMatrix(&V_T);
 
-  SVD(m, &U, &S, &V_T);
+  SVDlapack(m, U, S, V_T);
 
-  puts("U"); PrintMatrix(U);
-  puts("S"); PrintMatrix(S);
-  puts("V_T"); PrintMatrix(V_T);
+  NewMatrix(&Ur, 2, 2);
+  NewMatrix(&Sr, 2, 2);
+  NewMatrix(&V_Tr, 2, 2);
+  Ur->data[0][0] = -0.847; Ur->data[0][1] = -0.532;
+  Ur->data[1][0] = -0.532; Ur->data[1][1] = 0.847;
+  Sr->data[0][0] = 8.438; Sr->data[1][1] = 0.f;
+  Sr->data[0][0] = 8.438; Sr->data[0][1] = 0.f;
+  Sr->data[1][0] = 0.f; Sr->data[1][1] = 2.607;
+  V_Tr->data[0][0] = -0.892; V_Tr->data[0][1] = -0.453;
+  V_Tr->data[1][0] = -0.453; V_Tr->data[1][1] = 0.892;
 
-  DelMatrix(&U);
-  DelMatrix(&S);
-  DelMatrix(&V_T);
-  DelMatrix(&m);
-}
-
-void Test28()
-{
-  matrix *m, *U, *S, *V_T;
-  puts("Test 28: Computing Singular Value Decomposition");
-
-  NewMatrix(&m, 5, 5);
-  m->data[0][0] = 2; m->data[0][1] = 0; m->data[0][2] = 8; m->data[0][3] = 6; m->data[0][4] = 0;
-  m->data[1][0] = 1; m->data[1][1] = 6; m->data[1][2] = 0; m->data[1][3] = 1; m->data[1][4] = 7;
-  m->data[2][0] = 5; m->data[2][1] = 0; m->data[2][2] = 7; m->data[2][3] = 4; m->data[2][4] = 0;
-  m->data[3][0] = 7; m->data[3][1] = 0; m->data[3][2] = 8; m->data[3][3] = 5; m->data[3][4] = 0;
-  m->data[3][0] = 0; m->data[3][1] = 10; m->data[4][2] = 0; m->data[4][3] = 0; m->data[4][4] = 7;
-
-  puts("INIT MATRIX");
-  PrintMatrix(m);
-
-  initMatrix(&U);
-  initMatrix(&S);
-  initMatrix(&V_T);
-
-  SVD(m, &U, &S, &V_T);
-
-  puts("U"); PrintMatrix(U);
-  puts("S"); PrintMatrix(S);
-  puts("V_T"); PrintMatrix(V_T);
-
-  DelMatrix(&U);
-  DelMatrix(&S);
-  DelMatrix(&V_T);
-  DelMatrix(&m);
-}
-
-void Test27()
-{
-  size_t i, j, n;
-  dvector *eval;
-  matrix *A, *evect;
-  n = 100;
-  NewMatrix(&A, n, n);
-  srand(n);
-  for(i = 0; i < n; i++){
-    for(j = 0; j < n; j++){
-      setMatrixValue(A, i, j, randDouble(-1, 1));
+  int ok = 1;
+  for(int i = 0; i < 2; i++){
+    for(int j = 0; j < 2; j++){
+      if(FLOAT_EQ(U->data[i][j], Ur->data[i][j], 1e-2) &&
+         FLOAT_EQ(S->data[i][j], Sr->data[i][j], 1e-2) &&
+         FLOAT_EQ(V_T->data[i][j], V_Tr->data[i][j], 1e-2)){
+         continue;
+      }
+      else{
+        ok = 0;
+        break;
+      }
     }
   }
 
-  puts("Test 27: Calculate Eigenvectors Eigenvalue for a random matrix");
+  if(ok == 1)
+    puts("SVD Lapack: OK");
+  else{
+    printf("Problem on SVD Lapack decomposition\n");
+    puts("Current answer");
+    puts("U"); PrintMatrix(U);
+    puts("S"); PrintMatrix(S);
+    puts("V_T"); PrintMatrix(V_T);
+    puts("Correct answer");
+    puts("U"); PrintMatrix(Ur);
+    puts("S"); PrintMatrix(Sr);
+    puts("V_T"); PrintMatrix(V_T);
+  }
+
+  DelMatrix(&Ur);
+  DelMatrix(&Sr);
+  DelMatrix(&V_Tr);
+  DelMatrix(&U);
+  DelMatrix(&S);
+  DelMatrix(&V_T);
+  DelMatrix(&m);
+}
+
+void Test25()
+{
+  matrix *m, *U, *S, *V_T;
+  matrix *Ur, *Sr, *V_Tr; /* Results */
+  puts("Test 25: Computing Singular Value Decomposition internal method");
+
+  NewMatrix(&m, 2, 2);
+  m->data[0][0] = 7; m->data[0][1] = 2;
+  m->data[1][0] = 3; m->data[1][1] = 4;
+
+  initMatrix(&U);
+  initMatrix(&S);
+  initMatrix(&V_T);
+
+  SVDlapack(m, U, S, V_T);
+
+  NewMatrix(&Ur, 2, 2);
+  NewMatrix(&Sr, 2, 2);
+  NewMatrix(&V_Tr, 2, 2);
+  Ur->data[0][0] = -0.847; Ur->data[0][1] = -0.532;
+  Ur->data[1][0] = -0.532; Ur->data[1][1] = 0.847;
+  Sr->data[0][0] = 8.438; Sr->data[0][1] = 0.f;
+  Sr->data[1][0] = 0.f; Sr->data[1][1] = 2.607;
+  V_Tr->data[0][0] = -0.892; V_Tr->data[0][1] = -0.453;
+  V_Tr->data[1][0] = -0.453; V_Tr->data[1][1] = 0.892;
+
+  int ok = 1;
+  for(int i = 0; i < 2; i++){
+    for(int j = 0; j < 2; j++){
+      if(FLOAT_EQ(U->data[i][j], Ur->data[i][j], 1e-2) &&
+         FLOAT_EQ(S->data[i][j], Sr->data[i][j], 1e-2) &&
+         FLOAT_EQ(V_T->data[i][j], V_Tr->data[i][j], 1e-2)){
+         continue;
+      }
+      else{
+        ok = 0;
+        break;
+      }
+    }
+  }
+
+  if(ok == 1)
+    puts("SVD Internal method: OK");
+  else{
+    printf("Problem on SVD decomposition\n");
+    puts("Current answer");
+    puts("U"); PrintMatrix(U);
+    puts("S"); PrintMatrix(S);
+    puts("V_T"); PrintMatrix(V_T);
+    puts("Correct answer");
+    puts("U"); PrintMatrix(Ur);
+    puts("S"); PrintMatrix(Sr);
+    puts("V_T"); PrintMatrix(V_T);
+  }
+
+  DelMatrix(&Ur);
+  DelMatrix(&Sr);
+  DelMatrix(&V_Tr);
+  DelMatrix(&U);
+  DelMatrix(&S);
+  DelMatrix(&V_T);
+  DelMatrix(&m);
+}
+
+void Test24()
+{
+  dvector *eval, *eval_answer;
+  matrix *A, *evect, *evect_answer;
+  NewMatrix(&A, 3, 3);
+  A->data[0][0] = 7; A->data[0][1] = 2; A->data[0][2] = 5;
+  A->data[1][0] = 3; A->data[1][1] = 4; A->data[1][2] = 8;
+  A->data[2][0] = 7; A->data[2][1] = 3; A->data[2][2] = 9;
+
+  puts("Test 24: Calculate Eigenvectors Eigenvalue for a random matrix");
   /*
   puts("Matrix");
   PrintMatrix(A);*/
   initDVector(&eval);
   initMatrix(&evect);
-  EVectEval(A, &eval, &evect);
+  EVectEval(A, eval, evect);
 
+  NewDVector(&eval_answer, 3);
+  NewMatrix(&evect_answer, 3, 3);
+  eval_answer->data[0] = 16.393; eval_answer->data[1] = 2.425;  eval_answer->data[2] = 1.183;
+
+  evect_answer->data[0][0] = -0.630 ; evect_answer->data[0][1] = -0.853; evect_answer->data[0][2] = -0.700;
+  evect_answer->data[1][0] = -0.277; evect_answer->data[1][1] = 0.116; evect_answer->data[1][2] = -0.225;
+  evect_answer->data[2][0] = -0.726; evect_answer->data[2][1] = 0.508; evect_answer->data[2][2] = 0.678;
+
+  int ok = 1;
+  for(int i = 0; i < 3; i++){
+    if(FLOAT_EQ(eval_answer->data[i], eval->data[i], 1e-2)){
+      for(int j = 0; j < 3; j++){
+        if(FLOAT_EQ(evect_answer->data[i][j], evect->data[i][j], 1e-2)){
+          continue;
+        }
+        else{
+          ok = 0;
+          break;
+        }
+      }
+    }
+    else{
+      ok = 0;
+      break;
+    }
+  }
+
+  if(ok == 1)
+    puts("Eigenvectors/eigenvalues decomposition method: OK");
+  else{
+    printf("Problem on eigenvectors/eigenvalues decomposition\n");
+    puts("Current answer");
+    puts("eigenvalues"); PrintDVector(eval);
+    puts("eigenvectors"); PrintMatrix(evect);
+    puts("Correct answer");
+    puts("eigenvalues"); PrintDVector(eval_answer);
+    puts("eigenvectors"); PrintMatrix(evect_answer);
+  }
+
+  DelMatrix(&evect_answer);
+  DelDVector(&eval_answer);
   /*puts("Eigenvalue"); PrintDVector(eval);
   puts("Eigenvectors"); PrintMatrix(evect);*/
 
@@ -248,25 +350,8 @@ void Test27()
   DelMatrix(&A);
 }
 
-void Test26()
-{
-  matrix *m;
-  NewMatrix(&m, 3, 3);
 
-  m->data[0][0] = -149; m->data[0][1] = -50; m->data[0][2] = -154;
-  m->data[1][0] = 537; m->data[1][1] = 180; m->data[1][2] = 546;
-  m->data[2][0] = -27; m->data[2][1] = -9; m->data[2][2] = -25;
-
-  puts("Test 26: Householder Reduction for a matrix");
-  puts("Matrix");
-  PrintMatrix(m);
-  HouseholderReduction(m);
-  puts("Householder Hessenberg form");
-  PrintMatrix(m);
-  DelMatrix(&m);
-}
-
-void Test25()
+void Test23()
 {
   dvector *a, *r;
   matrix *b;
@@ -279,7 +364,7 @@ void Test25()
   b->data[2][0] = 0; b->data[2][1] = 1; b->data[2][2] = 3;
 
 
-  puts("Test 25: Compute vector T matrix Division");
+  puts("Test 23: Compute vector T matrix Division");
   initDVector(&r);
   DVectorTransposedMatrixDivision(a, b, r);
   puts("Vector T");
@@ -293,7 +378,7 @@ void Test25()
   DelMatrix(&b);
 }
 
-void Test24()
+void Test22()
 {
   dvector *eval;
   matrix *A, *evect;
@@ -308,13 +393,13 @@ void Test24()
   A->data[6][5] = 1;
   A->data[7][6] = 1;
 
-  puts("Test 24: Calculate Eigenvectors Eigenvalue for a sparse matrix");
+  puts("Test 22: Calculate Eigenvectors Eigenvalue for a sparse matrix");
 
   puts("Matrix");
   PrintMatrix(A);
   initDVector(&eval);
   initMatrix(&evect);
-  EVectEval(A, &eval, &evect);
+  EVectEval(A, eval, evect);
 
   puts("Eigenvalue"); PrintDVector(eval);
   puts("Eigenvectors"); PrintMatrix(evect);
@@ -324,66 +409,15 @@ void Test24()
   DelMatrix(&A);
 }
 
-void Test23()
-{
-  dvector *x;
-  matrix *h;
-  NewDVector(&x, 4);
-  x->data[0] = 1;
-  x->data[1] = 2;
-  x->data[2] = 3;
-  x->data[3] = 4;
-
-  puts("Test 23: Build HouseholderMatrix from Vector");
-  initMatrix(&h);
-  HouseholderMatrix(x, h);
-
-  PrintMatrix(h);
-
-  DelMatrix(&h);
-  DelDVector(&x);
-}
-
-void Test22()
-{
-  matrix *m, *L, *U, *mbis;
-  NewMatrix(&m, 3, 3);
-  puts("Test 22: LU Decomposition");
-
-  m->data[0][0] = 8; m->data[0][1] = 2; m->data[0][2] = 9;
-  m->data[1][0] = 4; m->data[1][1] = 9; m->data[1][2] = 4;
-  m->data[2][0] = 6; m->data[2][1] = 7; m->data[2][2] = 9;
-
-  initMatrix(&L);
-  initMatrix(&U);
-
-  LUDecomposition(m, &L, &U);
-
-  puts("L"); PrintMatrix(L);
-  puts("U"); PrintMatrix(U);
-
-  NewMatrix(&mbis, m->row, m->col);
-  MatrixDotProduct(L, U, mbis);
-
-  PrintMatrix(m);
-  PrintMatrix(mbis);
-
-  DelMatrix(&mbis);
-  DelMatrix(&L);
-  DelMatrix(&U);
-  DelMatrix(&m);
-}
 
 void Test21()
 {
   matrix *m, *U, *S, *V_T, *US, *mbis;
   puts("Test 21: Computing Singular Value Decomposition");
 
-  NewMatrix(&m, 4, 2);
+  NewMatrix(&m, 2, 2);
   m->data[0][0] = 2; m->data[0][1] = 4;
   m->data[1][0] = 1; m->data[1][1] = 3;
-  m->data[2][0] = 0; m->data[2][1] = 0;
-  m->data[3][0] = 0; m->data[3][1] = 0;
 
   puts("INIT MATRIX");
   PrintMatrix(m);
@@ -392,7 +426,7 @@ void Test21()
   initMatrix(&S);
   initMatrix(&V_T);
 
-  SVD(m, &U, &S, &V_T);
+  SVD(m, U, S, V_T);
 
   puts("U"); PrintMatrix(U);
   puts("S"); PrintMatrix(S);
@@ -431,7 +465,7 @@ void Test20()
 
   initMatrix(&Q);
   initMatrix(&R);
-  QRDecomposition(m, &Q, &R);
+  QRDecomposition(m, Q, R);
 
   puts("Q"); PrintMatrix(Q);
   puts("R"); PrintMatrix(R);
@@ -463,7 +497,7 @@ void Test19()
   initMatrix(&Q);
   initMatrix(&R);
 
-  QRDecomposition(m, &Q, &R);
+  QRDecomposition(m, Q, R);
 
   puts("Q"); PrintMatrix(Q);
   puts("R"); PrintMatrix(R);
@@ -476,7 +510,7 @@ void Test19()
 
   initDVector(&eval);
   initMatrix(&evect);
-  EVectEval(m, &eval, &evect);
+  EVectEval(m, eval, evect);
 
   puts("Eigenvalues"); PrintDVector(eval);
   puts("Eigenvectors"); PrintMatrix(evect);
@@ -505,7 +539,7 @@ void Test18()
 
   initMatrix(&covm);
 
-  MatrixCovariance(m, &covm);
+  MatrixCovariance(m, covm);
 
   puts("Matrix to for covariance matrix");
   PrintMatrix(m);
@@ -525,7 +559,7 @@ void Test17()
   NewMatrix(&m, 10, 4);
   for(i = 0; i < 10; i++){
     for(j = 0; j < 4; j++){
-      srand(time(0)+i+j+rand());
+      srand(i+j);
       setMatrixValue(m, i, j, randDouble(1, 24));
     }
   }
@@ -620,13 +654,13 @@ void Test14()
 
   for(i = 0; i < nrow; i++){
     for(j = 0; j < ncol; j++){
-      srand(time(0)+i+j+rand());
+      srand(i+j);
       setMatrixValue(m1, i, j, randDouble(1, 24));
     }
   }
 
   initDVector(&d1);
-  MatrixColAverage(m1, &d1);
+  MatrixColAverage(m1, d1);
 
 
   for(i = 0; i < nrow; i++){
@@ -646,7 +680,7 @@ void Test14()
   }
 
   initDVector(&d2);
-  MatrixColAverage(m2, &d2);
+  MatrixColAverage(m2, d2);
 
   for(i = 0; i < ncol; i++){
     printf("%f == %f (%f)\n", getDVectorValue(d1, i), exp(getDVectorValue(d2, i)), getDVectorValue(d2, i));
@@ -671,14 +705,14 @@ void Test13()
 
   for(i = 0; i < nrow; i++){
     for(j = 0; j < ncol; j++){
-      srand(time(0)+i+j+rand());
+      srand(i+j);
       setMatrixValue(m, i, j, randDouble(-19, 24));
     }
   }
 
   initMatrix(&covm);
 
-  MatrixCovariance(m, &covm);
+  MatrixCovariance(m, covm);
 
   puts("Matrix to for covariance matrix");
   PrintMatrix(m);
@@ -705,7 +739,7 @@ void Test12()
   setMatrixValue(m, 5, 0, 15.168);   setMatrixValue(m, 5, 1, 16.1);
 
   initMatrix(&covm);
-  MatrixCovariance(m, &covm);
+  MatrixCovariance(m, covm);
 
   puts("Covariance Matrix");
   PrintMatrix(covm);
@@ -725,14 +759,14 @@ void Test11()
 
   for(i = 0; i < n; i++){
     for(j = 0; j < n; j++){
-      srand(time(0)+i+j+rand());
+      srand(i+j);
       setMatrixValue(m1, i, j, randDouble(-19, 24));
     }
   }
 
   initMatrix(&m2);
 
-  MatrixInversion(m1, &m2);
+  MatrixInversion(m1, m2);
 
   puts("Matrix to invert");
   PrintMatrix(m1);
@@ -770,7 +804,7 @@ void Test10()
 
   initMatrix(&m2);
 
-  MatrixInversion(m1, &m2);
+  MatrixInversion(m1, m2);
 
   puts("Matrix to invert");
   PrintMatrix(m1);
@@ -794,7 +828,7 @@ void Test9()
   setMatrixValue(m1, 1, 0, 2.0);   setMatrixValue(m1, 1, 1, 1.0);   setMatrixValue(m1, 1, 2, 3.0);
   setMatrixValue(m1, 2, 0, 6.0);   setMatrixValue(m1, 2, 1, 9.0);   setMatrixValue(m1, 2, 2, 4.0);
 
-  MatrixLUInversion(m1, &m2);
+  MatrixLUInversion(m1, m2);
 
   puts("Matrix to invert");
   PrintMatrix(m1);
@@ -814,7 +848,7 @@ void Test8()
 
   initMatrix(&m);
 
-  ResizeMatrix(&m, 10, 4);
+  ResizeMatrix(m, 10, 4);
   for(i = 0; i < m->row; i++){
     for(j = 0; j < m->col; j++){
       setMatrixValue(m, i, j, i+j);
@@ -826,7 +860,7 @@ void Test8()
 
   puts("Resizin Matrix to 5 x 2");
 
-  ResizeMatrix(&m, 5, 2);
+  ResizeMatrix(m, 5, 2);
 
   for(i = 0; i < m->row; i++){
     for(j = 0; j < m->col; j++){
@@ -874,7 +908,7 @@ void Test7()
 
   initDVector(&colmean);
 
-  MatrixColAverage(m2, &colmean);
+  MatrixColAverage(m2, colmean);
 
   puts("Column Average");
   PrintDVector(colmean);
@@ -1025,7 +1059,7 @@ void Test4()
   NewMatrix(&t, 15, 10);
 
   puts("Test 4");
-  srand(time(0));
+  srand(12);
   for(i = 0; i < 10; i++){
     for(j = 0; j < 15; j++){
       setMatrixValue(m, i, j, i+j);
@@ -1049,7 +1083,7 @@ void Test3()
   matrix *m;
   dvector *col;
 
-  srand(time(0));
+  srand(12);
 
   printf("Test 3 Appending Column\n");
 
@@ -1066,7 +1100,7 @@ void Test3()
     col->data[i] = rand() % 50;
   }
 
-  MatrixAppendCol(&m, col);
+  MatrixAppendCol(m, col);
 
   DelDVector(&col);
 
@@ -1087,7 +1121,7 @@ void Test2()
   matrix *m;
   dvector *row;
 
-  srand(time(0));
+  srand(12);
 
   printf("Test 2: Appending Row\n");
 
@@ -1105,7 +1139,7 @@ void Test2()
   }
 
 
-  MatrixAppendRow(&m, row);
+  MatrixAppendRow(m, row);
 
   DelDVector(&row);
 
@@ -1149,41 +1183,38 @@ void Test1()
 
 int main(void)
 {
-  /*Test1();
+  Test1();
   Test2();
   Test3();
   Test4();
   Test5();
-  Test5_bis();*/
-  /*Test6();
+  Test5_bis();
+  Test6();
   Test7();
   Test8();
-  Test9();*/
-  /*Test10();
+  Test9();
+  Test10();
   Test11();
   Test12();
   Test13();
   Test14();
   Test15();
-  Test16();*/
-  /*Test17();*/
+  Test16();
+  Test17();
   Test18();
-  /*Test19();*/
-  /*Test20();
-  Test21();*/
-  /*Test22();
+  Test19();
+  Test20();
+  Test21();
+  Test22();
   Test23();
-  Test24();*/
-  /*Test25();
+  Test24();
+  Test25();
   Test26();
   Test27();
-  Test28();*/
-  Test28BIS();
-  /*Test29();
+  Test28();
+  Test29();
   Test30();
   Test31();
   Test32();
-  Test33();*/
-  Test34();
   return 0;
 }

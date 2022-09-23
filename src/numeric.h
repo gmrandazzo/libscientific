@@ -61,11 +61,11 @@ double square(double x);
  * selection = vector of selected id
  *
  */
-void StochasticUniversalSample(dvector *fitness, size_t nselect, size_t init, uivector **selection);
+void StochasticUniversalSample(dvector *fitness, size_t nselect, size_t init, uivector *selection);
 
-void RouletteWheelselection(dvector *fitness, size_t nselect, size_t init, uivector **selection);
+void RouletteWheelselection(dvector *fitness, size_t nselect, size_t init, uivector *selection);
 
-void Combinations(uivector *num, matrix **comb);
+void Combinations(uivector *num, matrix *comb);
 
 /* Description: calculate area of a curve.
  * If intervals > 0 will interpolate the curve

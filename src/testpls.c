@@ -95,11 +95,11 @@ void TestPLS13()
   minpt.xautoscaling = 1;
   minpt.yautoscaling = 0;
 
-  KFoldCV(&minpt, groups, _PLS_, &m->predicted_y, &m->pred_residuals, 4, NULL, 0);
+  KFoldCV(&minpt, groups, _PLS_, m->predicted_y, m->pred_residuals, 4, NULL, 0);
 
   //PrintMatrix(m->predicted_y);
 
-  PLSRegressionStatistics(y, m->predicted_y, &m->q2y, &m->sdep, &m->bias);
+  PLSRegressionStatistics(y, m->predicted_y, m->q2y, m->sdep, m->bias);
 
   /*PrintMatrix(y);
   PrintMatrix(m->predicted_y);*/
@@ -113,9 +113,9 @@ void TestPLS13()
   initMatrix(&xpredscores);
   initMatrix(&ypred);
 
-  PLSScorePredictor(xpred, m, 2, &xpredscores);
+  PLSScorePredictor(xpred, m, 2, xpredscores);
 
-  PLSYPredictor(xpredscores, m, 1, &ypred);
+  PLSYPredictor(xpredscores, m, 1, ypred);
 
   /*puts("\nPrediction scores...");
   puts("x");
@@ -216,10 +216,15 @@ void TestPLS12()
   minpt.xautoscaling = 1;
   minpt.yautoscaling = 0;
 
-  BootstrapRandomGroupsCV(&minpt, 3, 100, _PLS_, &m->predicted_y, &m->pred_residuals, 4, NULL, 0);
+  BootstrapRandomGroupsCV(&minpt, 3, 100, _PLS_, m->predicted_y, m->pred_residuals, 4, NULL, 0);
   PrintMatrix(m->predicted_y);
 
-  PLSDiscriminantAnalysisStatistics(y, m->predicted_y, &m->roc_validation, &m->roc_auc_validation, &m->precision_recall_validation, &m->precision_recall_ap_validation);
+  PLSDiscriminantAnalysisStatistics(y,
+                                    m->predicted_y,
+                                    m->roc_validation,
+                                    m->roc_auc_validation,
+                                    m->precision_recall_validation,
+                                    m->precision_recall_ap_validation);
 
   PrintPLSModel(m);
 
@@ -236,9 +241,9 @@ void TestPLS12()
   initMatrix(&xpredscores);
   initMatrix(&ypred);
 
-  PLSScorePredictor(xpred, m, 2, &xpredscores);
+  PLSScorePredictor(xpred, m, 2, xpredscores);
 
-  PLSYPredictor(xpredscores, m, 1, &ypred);
+  PLSYPredictor(xpredscores, m, 1, ypred);
 
   /*puts("\nPrediction scores...");
   puts("x");
@@ -293,9 +298,9 @@ void TestPLS11()
   minpt.xautoscaling = 1;
   minpt.yautoscaling = 0;
 
-  //LeaveOneOut(&minpt, _PLS_, &predicted_y, &predicted_residuals, 4, NULL, 0);
-  BootstrapRandomGroupsCV(&minpt, 5, 20, _PLS_, &predicted_y, &predicted_residuals, 4, NULL, 0);
-  PLSRegressionStatistics(my, predicted_y, &q2, &sdep, &bias);
+  //LeaveOneOut(&minpt, _PLS_, predicted_y, predicted_residuals, 4, NULL, 0);
+  BootstrapRandomGroupsCV(&minpt, 5, 20, _PLS_, predicted_y, predicted_residuals, 4, NULL, 0);
+  PLSRegressionStatistics(my, predicted_y, q2, sdep, bias);
 
   puts("Q2 Cross Validation");
   PrintMatrix(q2);
@@ -321,7 +326,7 @@ void TestPLS10()
 
   initMatrix(&x);
   initMatrix(&y);
-  residential_building(&x, &y);
+  residential_building(x, y);
 
   NewPLSModel(&m);
   PLS(x, y, 5, 1, 1, m, NULL);
@@ -333,12 +338,12 @@ void TestPLS10()
   minpt.xautoscaling = 1;
   minpt.yautoscaling = 1;
 
-  LeaveOneOut(&minpt, _PLS_, &m->predicted_y, &m->pred_residuals, 4, NULL, 0);
-  PLSRegressionStatistics(y, m->predicted_y, &m->q2y, &m->sdep, &m->bias);
+  LeaveOneOut(&minpt, _PLS_, m->predicted_y, m->pred_residuals, 4, NULL, 0);
+  PLSRegressionStatistics(y, m->predicted_y, m->q2y, m->sdep, m->bias);
 
   ValidationArg varg;
   varg.vtype = BootstrapRGCV;
-  YScrambling(&minpt, _PLS_, varg, 20, &m->yscrambling, 4, NULL);
+  YScrambling(&minpt, _PLS_, varg, 20, m->yscrambling, 4, NULL);
 
   /*PrintPLSModel(m);*/
   puts("Q^2");
@@ -432,8 +437,8 @@ void TestPLS9()
   initMatrix(&sdec);
   initMatrix(&bias);
 
-  PLSYPredictorAllLV(x, m, NULL, &m->recalculated_y);
-  PLSRegressionStatistics(y, m->recalculated_y, &r2y, &sdec, &bias);
+  PLSYPredictorAllLV(x, m, NULL, m->recalculated_y);
+  PLSRegressionStatistics(y, m->recalculated_y, r2y, sdec, bias);
 
   PrintPLSModel(m);
 
@@ -449,9 +454,9 @@ void TestPLS9()
   initMatrix(&xpredscores);
   initMatrix(&ypred);
 
-  PLSScorePredictor(xpred, m, 2, &xpredscores);
+  PLSScorePredictor(xpred, m, 2, xpredscores);
 
-  PLSYPredictor(xpredscores, m, 1, &ypred);
+  PLSYPredictor(xpredscores, m, 1, ypred);
 
   puts("\nPrediction scores...");
   puts("x");
@@ -518,9 +523,9 @@ void TestPLS8()
   initMatrix(&xpredscores);
   initMatrix(&ypred);
 
-  PLSScorePredictor(xpred, m, 2, &xpredscores);
+  PLSScorePredictor(xpred, m, 2, xpredscores);
 
-  PLSYPredictor(xpredscores, m, 2, &ypred);
+  PLSYPredictor(xpredscores, m, 2, ypred);
 
 
   puts("\nPrediction scores...");
@@ -582,9 +587,9 @@ void TestPLS7()
   initMatrix(&xpredscores);
   initMatrix(&ypred);
 
-  PLSScorePredictor(xpred, m, 2, &xpredscores);
+  PLSScorePredictor(xpred, m, 2, xpredscores);
 
-  PLSYPredictor(xpredscores, m, 2, &ypred);
+  PLSYPredictor(xpredscores, m, 2, ypred);
 
 
   puts("\nPrediction scores...");
@@ -647,9 +652,9 @@ void TestPLS6()
   initMatrix(&xpredscores);
   initMatrix(&ypred);
 
-  PLSScorePredictor(xpred, m, 4, &xpredscores);
+  PLSScorePredictor(xpred, m, 4, xpredscores);
 
-  PLSYPredictor(xpredscores, m, 4, &ypred);
+  PLSYPredictor(xpredscores, m, 4, ypred);
 
   puts("\nPrediction scores...");
   puts("x");
@@ -677,7 +682,7 @@ void TestPLS5()
 
   initMatrix(&x);
   initMatrix(&y);
-  residential_building(&x, &y);
+  residential_building(x, y);
 
   puts("Matrix X and Y");
   PrintMatrix(x);
@@ -698,8 +703,8 @@ void TestPLS5()
 
   initMatrix(&predicted_y);
   initMatrix(&pred_residuals);
-  BootstrapRandomGroupsCV(&minpt, 5, 20, _PLS_, &predicted_y, &pred_residuals, 4, &run, 0);
-  PLSRegressionStatistics(y, predicted_y, &q2y, &sdep, NULL);
+  BootstrapRandomGroupsCV(&minpt, 5, 20, _PLS_, predicted_y, pred_residuals, 4, &run, 0);
+  PLSRegressionStatistics(y, predicted_y, q2y, sdep, NULL);
 
   puts("Q2 Cross Validation");
   PrintMatrix(q2y);
@@ -775,9 +780,9 @@ void TestPLS4()
   initMatrix(&xpredscores);
   initMatrix(&ypred);
 
-  PLSScorePredictor(xpred, m, 2, &xpredscores);
+  PLSScorePredictor(xpred, m, 2, xpredscores);
 
-  PLSYPredictor(xpredscores, m, 2, &ypred);
+  PLSYPredictor(xpredscores, m, 2, ypred);
 
   puts("\nPrediction scores...");
   puts("x");
@@ -854,9 +859,9 @@ void TestPLS3()
   initMatrix(&xpredscores);
   initMatrix(&ypred);
 
-  PLSScorePredictor(xpred, m, 2, &xpredscores);
+  PLSScorePredictor(xpred, m, 2, xpredscores);
 
-  PLSYPredictor(xpredscores, m, 2, &ypred);
+  PLSYPredictor(xpredscores, m, 2, ypred);
 
   puts("\nPrediction scores...");
   puts("x");
@@ -884,7 +889,7 @@ void TestPLS2()
 
   initMatrix(&x);
   initMatrix(&y);
-  boston_house_price(&x, &y);
+  boston_house_price(x,  y);
 
   NewPLSModel(&m);
   ssignal run = SIGSCIENTIFICRUN;
@@ -899,9 +904,9 @@ void TestPLS2()
   minpt.xautoscaling = 1;
   minpt.yautoscaling = 0;
 
-  //BootstrapRandomGroupsCV(&minpt, 3, 100, _PLS_, &m->predicted_y, &m->pred_residuals, 4, NULL, 0);
-  LeaveOneOut(&minpt, _PLS_, &m->predicted_y, &m->pred_residuals, 4, &run, 0);
-  PLSRegressionStatistics(y, m->predicted_y, &m->q2y, &m->sdep, &m->bias);
+  //BootstrapRandomGroupsCV(&minpt, 3, 100, _PLS_, m->predicted_y, m->pred_residuals, 4, NULL, 0);
+  LeaveOneOut(&minpt, _PLS_, m->predicted_y, m->pred_residuals, 4, &run, 0);
+  PLSRegressionStatistics(y, m->predicted_y, m->q2y, m->sdep, m->bias);
   PrintMatrix(m->predicted_y);
   puts("Q2 Cross Validation");
   PrintMatrix(m->q2y);
@@ -978,9 +983,9 @@ void TestPLS1()
   minpt.xautoscaling = 0;
   minpt.yautoscaling = 0;
 
-  BootstrapRandomGroupsCV(&minpt, 3, 100, _PLS_, &m->predicted_y, &m->pred_residuals, 1, NULL, 0);
-  //LeaveOneOut(&minpt, _PLS_, &m->predicted_y, &m->pred_residuals, 4, NULL, 0);
-  PLSRegressionStatistics(y, m->predicted_y, &m->q2y, &m->sdep, &m->bias);
+  BootstrapRandomGroupsCV(&minpt, 3, 100, _PLS_, m->predicted_y, m->pred_residuals, 1, NULL, 0);
+  //LeaveOneOut(&minpt, _PLS_, m->predicted_y, m->pred_residuals, 4, NULL, 0);
+  PLSRegressionStatistics(y, m->predicted_y, m->q2y, m->sdep, m->bias);
   PrintMatrix(m->predicted_y);
   puts("Q2 Cross Validation");
   PrintMatrix(m->q2y);
@@ -1001,7 +1006,7 @@ void TestPLS1()
   puts("BETA COEFFICIENTS");
   initDVector(&betas);
 
-  PLSBetasCoeff(m, GetLVCCutoff(m->q2y)+1, &betas);
+  PLSBetasCoeff(m, GetLVCCutoff(m->q2y)+1, betas);
   PrintDVector(betas);
 
   puts("PREDICTED Y");
@@ -1025,7 +1030,7 @@ int main(void)
   TestPLS4();
   TestPLS5();
 
-  /*test 6-13 */
+  /*test 6-13*/
   TestPLS6();
   TestPLS7();
   TestPLS8();

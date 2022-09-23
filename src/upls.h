@@ -104,18 +104,30 @@ int CheckArrays(tensor *X_, tensor *Y_);
  *
  * recalc_residuals & recalculated_y  have size row = number of objects  and col = number of column y * number of principal component and order is the same order of the Y dependent variable. Ex. if we calculate 5 component in 2 y the size will be 10
  */
-void UPLS(tensor *X_, tensor *Y_, size_t npc, size_t xautoscaling, size_t yautoscaling, UPLSMODEL *m, ssignal *s);
+void UPLS(tensor *X_,
+          tensor *Y_,
+          size_t npc,
+          size_t xautoscaling,
+          size_t yautoscaling,
+          UPLSMODEL *m,
+          ssignal *s);
 
 /* Description: Predict Score variable through the UPLSMODEL m.
  * This Function is used by UPLSRSquared and UPLSRSquared_SSErr_SStot
  */
-void UPLSScorePredictor(tensor *X_, UPLSMODEL *m, size_t npc, matrix **ptscores);
+void UPLSScorePredictor(tensor *X_,
+                        UPLSMODEL *m,
+                        size_t npc,
+                        matrix *ptscores);
 
 /*
  * Description: Predict the dependent variable through UPLSMODEL m.
  * The output will of this function is an tensor with the size of the tensor of dependent variable used during the generation of the model.
  */
-void UPLSYPredictor(matrix *tscores, UPLSMODEL *m, size_t npc, tensor **py);
+void UPLSYPredictor(matrix *tscores,
+                    UPLSMODEL *m,
+                    size_t npc,
+                    tensor *py);
 
 /*
  * Description: Calculation The RSquared for the objects in the model UPLSMODEL m.
@@ -127,7 +139,13 @@ void UPLSYPredictor(matrix *tscores, UPLSMODEL *m, size_t npc, tensor **py);
  *       - the colunm for each matrix in tensor correspond to a layer of the Y dependen value, and so is equal to the Y->order if Y is the starting tensor for the model generation.
  *
  */
-void UPLSRSquared(tensor *X_, tensor *Y_, UPLSMODEL *m, size_t npc, dvector **r2x, tensor **r2y, tensor **sdec);
+void UPLSRSquared(tensor *X_,
+                  tensor *Y_,
+                  UPLSMODEL *m,
+                  size_t npc,
+                  dvector *r2x,
+                  tensor *r2y,
+                  tensor *sdec);
 
 /*
  * Description: Calculation of the regression sum of squares and total sum of squares (proportional to the sample variance).
@@ -141,7 +159,15 @@ void UPLSRSquared(tensor *X_, tensor *Y_, UPLSMODEL *m, size_t npc, dvector **r2
  *       - the colunm for each matrix in tensor correspond to a layer of the Y dependen value, and so is equal to the Y->order if Y is the starting tensor for the model generation.
  *
  */
-void UPLSRSquared_SSErr_SStot(tensor *X_, tensor *Y_, UPLSMODEL *m, size_t npc, dvector** xss_err, dvector **xss_tot, tensor** yss_err, tensor** yss_tot, tensor** predicted_y);
+void UPLSRSquared_SSErr_SStot(tensor *X_,
+                              tensor *Y_,
+                              UPLSMODEL *m,
+                              size_t npc,
+                              dvector *xss_err,
+                              dvector *xss_tot,
+                              tensor *yss_err,
+                              tensor *yss_tot,
+                              tensor *predicted_y);
 
 /*
  * Description: Calculate the consistency of model to prevent Overfitting.

@@ -50,14 +50,14 @@ void NewTensor(tensor** t, size_t order_)
   }
 }
 
-void NewTensorMatrix(tensor **t, size_t order, size_t row, size_t col)
+void NewTensorMatrix(tensor *t, size_t order, size_t row, size_t col)
 {
-  if((*t)->order != 0){
-    if(order < (*t)->order){
-      NewMatrix(&(*t)->m[order], row, col);
+  if(t->order != 0){
+    if(order < t->order){
+      NewMatrix(&t->m[order], row, col);
     }
     else{
-      fprintf(stderr, "Error! Order not in range order. order: %u > ordersize: %u\n", (unsigned int)order, (unsigned int)(*t)->order);
+      fprintf(stderr, "Error! Order not in range order. order: %u > ordersize: %u\n", (unsigned int)order, (unsigned int)t->order);
     }
   }
   else{
@@ -66,23 +66,23 @@ void NewTensorMatrix(tensor **t, size_t order, size_t row, size_t col)
   }
 }
 
-void AddTensorMatrix(tensor **t, size_t row, size_t col)
+void AddTensorMatrix(tensor *t, size_t row, size_t col)
 {
-   if((*t)->order > 0){
+   if(t->order > 0){
     /*if((*t)->m[(*t)->order-1]->row != row){
       fprintf(stderr, "Error while appending matrix to tensor! Object size differ: matrix: %u;  tensor: %u", (unsigned int)row, (unsigned int)(*t)->m[(*t)->order-1]->row);
       abort();
     }
     else{*/
-      (*t)->order += 1;
-      (*t)->m = xrealloc((*t)->m, sizeof(matrix*)*(*t)->order);
-      NewMatrix(&(*t)->m[(*t)->order-1], row, col);
+      t->order += 1;
+      t->m = xrealloc(t->m, sizeof(matrix*)*t->order);
+      NewMatrix(&t->m[t->order-1], row, col);
 /*     }*/
   }
   else{
-    (*t)->order = 1;
-    (*t)->m = xmalloc(sizeof(matrix*)*1);
-    NewMatrix(&(*t)->m[0], row, col);
+    t->order = 1;
+    t->m = xmalloc(sizeof(matrix*)*1);
+    NewMatrix(&t->m[0], row, col);
   }
 }
 
@@ -161,31 +161,31 @@ double getTensorValue(tensor *t, size_t i, size_t j, size_t k){
   }
 }
 
-void TensorAppendMatrix(tensor **tdst, matrix *msrc)
+void TensorAppendMatrix(tensor *tdst, matrix *msrc)
 {
-  if((*tdst)->order > 0){
-    if((*tdst)->m[(*tdst)->order-1]->row != msrc->row){
-      fprintf(stderr, "Error while appending matrix to tensor! Object size differ: matrix: %u;  tensor: %u", (unsigned int)msrc->row, (unsigned int)(*tdst)->m[(*tdst)->order-1]->row);
+  if(tdst->order > 0){
+    if(tdst->m[tdst->order-1]->row != msrc->row){
+      fprintf(stderr, "Error while appending matrix to tensor! Object size differ: matrix: %u;  tensor: %u", (unsigned int)msrc->row, (unsigned int)tdst->m[tdst->order-1]->row);
       abort();
     }
     else{
-      (*tdst)->order += 1;
-      (*tdst)->m = xrealloc((*tdst)->m, sizeof(matrix*)*(*tdst)->order);
-      NewMatrix(&(*tdst)->m[(*tdst)->order-1], msrc->row, msrc->col);
-      MatrixCopy(msrc, &(*tdst)->m[(*tdst)->order-1]);
+      tdst->order += 1;
+      tdst->m = xrealloc(tdst->m, sizeof(matrix*)*tdst->order);
+      NewMatrix(&tdst->m[tdst->order-1], msrc->row, msrc->col);
+      MatrixCopy(msrc, &tdst->m[tdst->order-1]);
     }
   }
   else{
-    (*tdst)->order = 1;
-    (*tdst)->m = xmalloc(sizeof(matrix*)*1);
-    NewMatrix(&(*tdst)->m[0], msrc->row, msrc->col);
-    MatrixCopy(msrc, &(*tdst)->m[0]);
+    tdst->order = 1;
+    tdst->m = xmalloc(sizeof(matrix*)*1);
+    NewMatrix(&tdst->m[0], msrc->row, msrc->col);
+    MatrixCopy(msrc, &tdst->m[0]);
   }
 }
 
-void TensorAppendMatrixAt(tensor **tdst, size_t order, matrix *msrc)
+void TensorAppendMatrixAt(tensor *tdst, size_t order, matrix *msrc)
 {
-  if(order < (*tdst)->order){
+  if(order < tdst->order){
     fprintf(stderr, "Module not developed. Work in progress...\n");
     fflush(stderr);
     abort();
@@ -205,10 +205,10 @@ void TensorAppendMatrixAt(tensor **tdst, size_t order, matrix *msrc)
  * n is the order number
  * column is the columnvector to append
  */
-void TensorAppendColumn(tensor **t, size_t n, dvector* column)
+void TensorAppendColumn(tensor *t, size_t n, dvector* column)
 {
-  if(n < (*t)->order){
-    MatrixAppendCol(&(*t)->m[n], column);
+  if(n < t->order){
+    MatrixAppendCol(t->m[n], column);
     /*
     if(column->size == (*t)->m[n]->row){
       MatrixAppendCol(&(*t)->m[n], column);
@@ -221,8 +221,8 @@ void TensorAppendColumn(tensor **t, size_t n, dvector* column)
     */
   }
   else{
-    if(n > (*t)->order){
-      fprintf(stderr, "Error! Order number too high. %u > %u\n", (unsigned int)n, (unsigned int)(*t)->order );
+    if(n > t->order){
+      fprintf(stderr, "Error! Order number too high. %u > %u\n", (unsigned int)n, (unsigned int)t->order );
     }
     else{
       fprintf(stderr, "Error! Order 0!\n");
@@ -237,20 +237,20 @@ void TensorAppendColumn(tensor **t, size_t n, dvector* column)
  * n is the order number
  * column is the columnvector to append
  */
-void TensorAppendRow(tensor **t, size_t n, dvector* row)
+void TensorAppendRow(tensor *t, size_t n, dvector* row)
 {
-  if(n < (*t)->order){
-    if(row->size != (*t)->m[n]->col){
-      MatrixAppendRow(&(*t)->m[n], row);
+  if(n < t->order){
+    if(row->size != t->m[n]->col){
+      MatrixAppendRow(t->m[n], row);
     }
     else{
-      fprintf(stderr, "Error! The column number differ %u != %u\n", (unsigned int)row->size, (unsigned int)(*t)->m[n]->col);
+      fprintf(stderr, "Error! The column number differ %u != %u\n", (unsigned int)row->size, (unsigned int)t->m[n]->col);
       fflush(stderr);
       abort();
     }
   }
   else{
-    fprintf(stderr, "Error! Order number too high. %u > %u\n", (unsigned int)n, (unsigned int)(*t)->order);
+    fprintf(stderr, "Error! Order number too high. %u > %u\n", (unsigned int)n, (unsigned int)t->order);
     fflush(stderr);
     abort();
   }
@@ -322,25 +322,25 @@ void MeanCenteredTensor(tensor *t, tensor *tc)
   }
 }
 
-void TensorColAverage(tensor *t, matrix **colaverage)
+void TensorColAverage(tensor *t, matrix *colaverage)
 {
   size_t i;
   dvector *v;
   for(i = 0; i < t->order; i++){
     initDVector(&v);
-    MatrixColAverage(t->m[i], &v);
+    MatrixColAverage(t->m[i], v);
     MatrixAppendCol(colaverage, v);
     DelDVector(&v);
   }
 }
 
-void TensorColSDEV(tensor *t, matrix **colsdev)
+void TensorColSDEV(tensor *t, matrix *colsdev)
 {
   size_t i;
   dvector *v;
   for(i = 0; i < t->order; i++){
     initDVector(&v);
-    MatrixColSDEV(t->m[i], &v);
+    MatrixColSDEV(t->m[i], v);
     MatrixAppendCol(colsdev, v);
     DelDVector(&v);
   }

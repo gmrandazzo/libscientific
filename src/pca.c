@@ -49,7 +49,7 @@ void DelPCAModel(PCAMODEL** m)
 }
 
 
-void calcVarExpressed(double ss, dvector *eval, dvector **varexp) /* ss is the sum of squares, eval = eigenvalue  varexp is an object that is resized for each component */
+void calcVarExpressed(double ss, dvector *eval, dvector *varexp) /* ss is the sum of squares, eval = eigenvalue  varexp is an object that is resized for each component */
 {
   size_t i;
   /*double a;*/
@@ -128,7 +128,7 @@ void PCA(matrix *mx, size_t scaling, size_t npc, PCAMODEL* model, ssignal *s)
   MatrixCheck(mx);
 
   /*CENTERING */
-  MatrixColAverage(mx, &(model->colaverage));
+  MatrixColAverage(mx, model->colaverage);
   for(j = 0; j < mx->col; j++){
     for(i = 0; i < mx->row; i++){
       if(FLOAT_EQ(mx->data[i][j], MISSING, 1e-1)){
@@ -142,13 +142,13 @@ void PCA(matrix *mx, size_t scaling, size_t npc, PCAMODEL* model, ssignal *s)
 
   if(scaling > 0){
     if(scaling == 1){
-      MatrixColSDEV(mx, &(model->colscaling));
+      MatrixColSDEV(mx, model->colscaling);
     }
     else if(scaling == 2){
-      MatrixColRMS(mx, &(model->colscaling));
+      MatrixColRMS(mx, model->colscaling);
     }
     else if(scaling == 3){ /* PARETO Autoscaling */
-      MatrixColSDEV(mx, &(model->colscaling));
+      MatrixColSDEV(mx, model->colscaling);
       for(i = 0; i < model->colscaling->size; i++){
         model->colscaling->data[i] = sqrt(model->colscaling->data[i]);
       }
@@ -156,15 +156,15 @@ void PCA(matrix *mx, size_t scaling, size_t npc, PCAMODEL* model, ssignal *s)
     else if(scaling == 4){ /* Range Scaling */
       for(i = 0; i < mx->col; i++){
         MatrixColumnMinMax(mx, i, &min, &max);
-        DVectorAppend(&model->colscaling, (max - min));
+        DVectorAppend(model->colscaling, (max - min));
       }
     }
     else if(scaling == 5){ /* Level Scaling  */
-      DVectorCopy(model->colaverage, &model->colscaling);
+      DVectorCopy(model->colaverage, model->colscaling);
     }
     else{
       for(i = 0; i < model->colaverage->size; i++){
-        DVectorAppend(&model->colscaling, 1.0);
+        DVectorAppend(model->colscaling, 1.0);
       }
     }
 
@@ -203,9 +203,9 @@ void PCA(matrix *mx, size_t scaling, size_t npc, PCAMODEL* model, ssignal *s)
   NewDVector(&eval, npc);
 
 
-  ResizeMatrix(&(model->scores), E->row, npc);
-  ResizeMatrix(&(model->loadings), E->col, npc);
-  ResizeMatrix(&(model->dmodx), E->row, npc);
+  ResizeMatrix(model->scores, E->row, npc);
+  ResizeMatrix(model->loadings, E->col, npc);
+  ResizeMatrix(model->dmodx, E->row, npc);
 
   /*setDVectorValue(obj_d, 0, calcObjectDistance(E)); */
   for(pc = 0; pc < npc; pc++){
@@ -287,7 +287,7 @@ void PCA(matrix *mx, size_t scaling, size_t npc, PCAMODEL* model, ssignal *s)
       */
 
       initDVector(&colvar);
-      MatrixColVar(E, &colvar);
+      MatrixColVar(E, colvar);
 
       /* Step 1: select the column vector t with the largest column variance */
       j = 0;
@@ -418,7 +418,7 @@ void PCA(matrix *mx, size_t scaling, size_t npc, PCAMODEL* model, ssignal *s)
     }
   }
 
-  calcVarExpressed(ss, eval, &(model->varexp));
+  calcVarExpressed(ss, eval, model->varexp);
 
   DelDVector(&eval);
   DelDVector(&t);
@@ -438,7 +438,7 @@ void PCA(matrix *mx, size_t scaling, size_t npc, PCAMODEL* model, ssignal *s)
  * t_a*=X*p_a/p_a'p_a  (look at the 4.step of NIPALS Algorithm)
  *
  */
-void PCAScorePredictor(matrix *mx, PCAMODEL *model, size_t npc, matrix **pscores)
+void PCAScorePredictor(matrix *mx, PCAMODEL *model, size_t npc, matrix *pscores)
 {
   size_t i ,j, k;
   matrix *E; /* data matrix of mean centred object */
@@ -504,7 +504,7 @@ void PCAScorePredictor(matrix *mx, PCAMODEL *model, size_t npc, matrix **pscores
     for(j = 0; j < t->size; j++){
       t->data[j] /= mod_p;
       /* and set the result score to the output*/
-      (*pscores)->data[j][i] = t->data[j];
+      pscores->data[j][i] = t->data[j];
     }
 
     /* Remove residual...*/
@@ -539,7 +539,7 @@ void PCAIndVarPredictor(matrix* t,
                         dvector* colaverage,
                         dvector* colscaling,
                         size_t npc,
-                        matrix** mx)
+                        matrix *mx)
 {
 
   size_t pc, i, j;
@@ -553,24 +553,24 @@ void PCAIndVarPredictor(matrix* t,
   for(pc = 0; pc < npc; pc++){
     for(i = 0; i < t->row; i++){
       for(j = 0; j < p->row; j++){
-        (*mx)->data[i][j] += t->data[i][pc]*p->data[j][pc];
+        mx->data[i][j] += t->data[i][pc]*p->data[j][pc];
       }
     }
   }
 
   if(colaverage->size > 0){
     if(colscaling->size > 0){
-      for(i = 0; i < (*mx)->row; i++){
-        for(j = 0; j < (*mx)->col; j++){
-          (*mx)->data[i][j] *= colscaling->data[j];
-          (*mx)->data[i][j] += colaverage->data[j];
+      for(i = 0; i < mx->row; i++){
+        for(j = 0; j < mx->col; j++){
+          mx->data[i][j] *= colscaling->data[j];
+          mx->data[i][j] += colaverage->data[j];
         }
       }
     }
     else{
-      for(i = 0; i < (*mx)->row; i++){
-        for(j = 0; j < (*mx)->col; j++){
-          (*mx)->data[i][j] += colaverage->data[j];
+      for(i = 0; i < mx->row; i++){
+        for(j = 0; j < mx->col; j++){
+          mx->data[i][j] += colaverage->data[j];
         }
       }
     }
@@ -578,7 +578,7 @@ void PCAIndVarPredictor(matrix* t,
 }
 
 
-void PCARSquared(matrix *mx, PCAMODEL *model, size_t npc, dvector** r2)
+void PCARSquared(matrix *mx, PCAMODEL *model, size_t npc, dvector *r2)
 {
   size_t pc, i, j;
   matrix *recalcy;
@@ -595,9 +595,9 @@ void PCARSquared(matrix *mx, PCAMODEL *model, size_t npc, dvector** r2)
     initMatrix(&recalcx);
     initMatrix(&recalcscores);
 
-    PCAScorePredictor(mx, model, npc, &recalcscores);
+    PCAScorePredictor(mx, model, npc, recalcscores);
 
-    PCAIndVarPredictor(recalcscores, model->loadings, model->colaverage, model->colscaling, pc, &recalcx);
+    PCAIndVarPredictor(recalcscores, model->loadings, model->colaverage, model->colscaling, pc, recalcx);
 
     /* r2 is cumulative because the X is all the matrix */
     n = d = 0.f;
@@ -634,7 +634,13 @@ void PCARSquared(matrix *mx, PCAMODEL *model, size_t npc, dvector** r2)
  *
  */
 /* npc number of pricipal components, g = number of groups */
-void PCARankValidation(matrix *mx, size_t npc, size_t scaling, size_t group, size_t iterations, dvector **r2, ssignal *s)
+void PCARankValidation(matrix *mx,
+                       size_t npc,
+                       size_t scaling,
+                       size_t group,
+                       size_t iterations,
+                       dvector *r2,
+                       ssignal *s)
 {
   size_t iterations_, i, j, k, n, g;
   matrix *gid;
@@ -760,7 +766,7 @@ void PCARankValidation(matrix *mx, size_t npc, size_t scaling, size_t group, siz
 
         initDVector(&predictr2x);
 
-        PCARSquared(predictX, subm, npc, &predictr2x);
+        PCARSquared(predictX, subm, npc, predictr2x);
 
         if(iterations_ == 0 && g == 0){
           for(i = 0; i < predictr2x->size; i++){
@@ -769,7 +775,7 @@ void PCARankValidation(matrix *mx, size_t npc, size_t scaling, size_t group, siz
         }
         else{
           for(i = 0; i < predictr2x->size; i++){
-            (*r2)->data[i] += predictr2x->data[i];
+            r2->data[i] += predictr2x->data[i];
           }
         }
 
@@ -784,12 +790,12 @@ void PCARankValidation(matrix *mx, size_t npc, size_t scaling, size_t group, siz
   DelMatrix(&gid);
 
   /*Finalize the output by dividing for the number of iterations*/
-  for(i = 0; i < (*r2)->size; i++){
-    (*r2)->data[i] /= group*iterations;
+  for(i = 0; i < r2->size; i++){
+    r2->data[i] /= group*iterations;
   }
 }
 
-void GetResidualMatrix(matrix* mx, PCAMODEL* model, size_t pc, matrix** rmx)
+void GetResidualMatrix(matrix* mx, PCAMODEL* model, size_t pc, matrix *rmx)
 {
   size_t i, j, k;
   ResizeMatrix(rmx, mx->row, mx->col);
@@ -797,37 +803,33 @@ void GetResidualMatrix(matrix* mx, PCAMODEL* model, size_t pc, matrix** rmx)
   /*CENTERING */
   for(j = 0; j < mx->col; j++){
     for(i = 0; i < mx->row; i++){
-      (*rmx)->data[i][j] = mx->data[i][j] - model->colaverage->data[j];
-      /*setMatrixValue((*rmx), i, j, getMatrixValue(mx, i, j) - getDVectorValue(model->colaverage, j));*/
+      rmx->data[i][j] = mx->data[i][j] - model->colaverage->data[j];
     }
   }
 
   if(model->colscaling->size > 0){
-    for(j = 0; j < (*rmx)->col; j++){
+    for(j = 0; j < rmx->col; j++){
       if(FLOAT_EQ(getDVectorValue(model->colscaling, j), 0, EPSILON)){
-        for(i = 0; i< (*rmx)->row; i++){
-          /*setMatrixValue((*rmx), i, j, 0);*/
-          (*rmx)->data[i][j] = 0.f;
+        for(i = 0; i< rmx->row; i++){
+          rmx->data[i][j] = 0.f;
         }
       }
       else{
-        for(i = 0; i < (*rmx)->row; i++){
-          (*rmx)->data[i][j] /= model->colscaling->data[j];
-          /*setMatrixValue((*rmx), i, j, getMatrixValue((*rmx), i, j)/getDVectorValue(model->colscaling, j));*/
+        for(i = 0; i < rmx->row; i++){
+          rmx->data[i][j] /= model->colscaling->data[j];
         }
       }
     }
   }
 
    /* if the number of principal component selected is major of the permitted */
-  if(pc > (*rmx)->col)
-    pc = (*rmx)->col;    /* set the value to the max value */
+  if(pc > rmx->col)
+    pc = rmx->col;    /* set the value to the max value */
 
   for(k = 0; k < pc; k++){
-    for(i = 0; i < (*rmx)->row; i++){
-      for(j = 0; j < (*rmx)->col; j++){
-        (*rmx)->data[i][j] -= model->scores->data[i][k]*model->loadings->data[j][k];
-        /*setMatrixValue((*rmx), i, j, getMatrixValue((*rmx), i, j)-(getMatrixValue(model->scores, i, k)*getMatrixValue(model->loadings, j, k)));*/
+    for(i = 0; i < rmx->row; i++){
+      for(j = 0; j < rmx->col; j++){
+        rmx->data[i][j] -= model->scores->data[i][k]*model->loadings->data[j][k];
       }
     }
   }

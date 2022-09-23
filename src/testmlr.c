@@ -63,7 +63,7 @@ void test3()
   matrix *py_rgcv, *pres_rgcv;
   initMatrix(&py_rgcv);
   initMatrix(&pres_rgcv);
-  BootstrapRandomGroupsCV(&minpt, 3, 100, _MLR_, &py_rgcv, &pres_rgcv, 4, NULL, 0);
+  BootstrapRandomGroupsCV(&minpt, 3, 100, _MLR_, py_rgcv, pres_rgcv, 4, NULL, 0);
   puts("Bootstrap Random Group Cross Validation Predicted Y");
   PrintMatrix(py_rgcv);
   puts("Bootstrap Random Group Cross Validation Predicted Residuals Y");
@@ -73,7 +73,7 @@ void test3()
   initDVector(&q2);
   initDVector(&sdep);
   initDVector(&bias);
-  MLRRegressionStatistics(my, py_rgcv, &q2, &sdep, &bias);
+  MLRRegressionStatistics(my, py_rgcv, q2, sdep, bias);
 
   puts("Q2 LOO");
   PrintDVector(q2);
@@ -89,7 +89,7 @@ void test3()
   matrix *py_loo, *pres_loo;
   initMatrix(&py_loo);
   initMatrix(&pres_loo);
-  LeaveOneOut(&minpt, _MLR_, &py_loo, &pres_loo, 1, NULL, 0);
+  LeaveOneOut(&minpt, _MLR_, py_loo, pres_loo, 1, NULL, 0);
   puts("Leave One Out Predicted Y");
   PrintMatrix(py_loo);
   puts("Leave One Out Predicted Residuals Y");
@@ -98,7 +98,7 @@ void test3()
   initDVector(&q2);
   initDVector(&sdep);
   initDVector(&bias);
-  MLRRegressionStatistics(my, py_rgcv, &q2, &sdep, &bias);
+  MLRRegressionStatistics(my, py_rgcv, q2, sdep, bias);
 
   puts("Q2 LOO");
   PrintDVector(q2);
@@ -152,8 +152,8 @@ void test2()
 
   ValidationArg varg;
   varg.vtype = LOO;
-  YScrambling(&minpt, _MLR_, varg, 100, &m->r2q2scrambling, 4, &s);
-  LeaveOneOut(&minpt, _MLR_, &m->predicted_y, &m->pred_residuals, 4, &s, 0);
+  YScrambling(&minpt, _MLR_, varg, 100, m->r2q2scrambling, 4, &s);
+  LeaveOneOut(&minpt, _MLR_, m->predicted_y, m->pred_residuals, 4, &s, 0);
 
 
   PrintMLR(m);
@@ -199,12 +199,12 @@ void test1()
   minpt.mx = &mx;
   minpt.my = &my;
 
-  BootstrapRandomGroupsCV(&minpt, 2, 20, _MLR_, &m->predicted_y, &m->pred_residuals, 1, &s, 0);
+  BootstrapRandomGroupsCV(&minpt, 2, 20, _MLR_, m->predicted_y, m->pred_residuals, 1, &s, 0);
   //LeaveOneOut(&minpt, _MLR_, &m->predicted_y, &m->pred_residuals, 1, &s, 0);
 
   ValidationArg varg;
   varg.vtype = BootstrapRGCV;
-  YScrambling(&minpt, _MLR_, varg, 100, &m->r2q2scrambling, 4, &s);
+  YScrambling(&minpt, _MLR_, varg, 100, m->r2q2scrambling, 4, &s);
 
   PrintMLR(m);
 

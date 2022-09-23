@@ -24,8 +24,8 @@
 
 typedef struct{
   matrix *m1, *m2;
-  matrix **distances;
-  dvector **condensed_distances;
+  matrix *distances;
+  dvector *condensed_distances;
   size_t r_from, r_to;
 } dst_th_arg;
 
@@ -41,13 +41,13 @@ void *EuclideanWorker(void *arg_)
       for(j = 0; j < arg->m2->col; j++){
         dist += square(arg->m1->data[i][j] - arg->m2->data[k][j]);
       }
-      (*arg->distances)->data[k][i] = sqrt(dist);
+      arg->distances->data[k][i] = sqrt(dist);
     }
   }
   return 0;
 }
 
-void EuclideanDistance(matrix* m1, matrix* m2, matrix **distances, size_t nthreads)
+void EuclideanDistance(matrix* m1, matrix* m2, matrix *distances, size_t nthreads)
 {
   if(m1->col == m2->col){
     pthread_t *threads;
@@ -90,7 +90,7 @@ void EuclideanDistance(matrix* m1, matrix* m2, matrix **distances, size_t nthrea
     size_t i, j, k;
     double dist;
     // each column is a distance that correspond to m1->row
-    ResizeMatrix(distances, m2->row, m1->row);
+    ResizeMatrix((*distances), m2->row, m1->row);
 
 
     for(i = 0; i < m1->row; i++){
@@ -124,14 +124,14 @@ void *SquaredEuclideanWorker(void *arg_)
       for(j = 0; j < arg->m1->col; j++){
         dist += square(arg->m1->data[i][j] - arg->m2->data[k][j]);
       }
-      (*arg->distances)->data[k][i] = dist;
+      arg->distances->data[k][i] = dist;
     }
   }
 
   return 0;
 }
 
-void SquaredEuclideanDistance(matrix *m1, matrix *m2, matrix **distances, size_t nthreads)
+void SquaredEuclideanDistance(matrix *m1, matrix *m2, matrix *distances, size_t nthreads)
 {
   if(m1->col == m2->col){
     pthread_t *threads;
@@ -175,7 +175,7 @@ void SquaredEuclideanDistance(matrix *m1, matrix *m2, matrix **distances, size_t
     size_t i, j, k;
     double dist;
 
-    ResizeMatrix(distances, m2->row, m1->row);
+    ResizeMatrix((*distances), m2->row, m1->row);
 
     for(i = 0; i < m1->row; i++){
       for(k = 0; k < m2->row; k++){
@@ -207,13 +207,13 @@ void *ManhattanWorker(void *arg_)
       for(j = 0; j < arg->m2->col; j++){
         dist += fabs(arg->m1->data[i][j] - arg->m2->data[k][j]);
       }
-      (*arg->distances)->data[k][i] = dist;
+      arg->distances->data[k][i] = dist;
     }
   }
   return 0;
 }
 
-void ManhattanDistance(matrix* m1, matrix* m2, matrix** distances, size_t nthreads)
+void ManhattanDistance(matrix *m1, matrix *m2, matrix *distances, size_t nthreads)
 {
   if(m1->col == m2->col){
     pthread_t *threads;
@@ -291,13 +291,13 @@ void *CosineWorker(void *arg_)
         d_a += square(arg->m1->data[i][j]);
         d_b += square(arg->m2->data[k][j]);
       }
-      (*arg->distances)->data[k][i] = n/(sqrt(d_a)*sqrt(d_b));
+      arg->distances->data[k][i] = n/(sqrt(d_a)*sqrt(d_b));
     }
   }
   return 0;
 }
 
-void CosineDistance(matrix* m1, matrix* m2, matrix** distances, size_t nthreads)
+void CosineDistance(matrix *m1, matrix *m2, matrix *distances, size_t nthreads)
 {
   if(m1->col == m2->col){
     pthread_t *threads;
@@ -340,7 +340,7 @@ void CosineDistance(matrix* m1, matrix* m2, matrix** distances, size_t nthreads)
     size_t i, j, k;
     double n, d_a, d_b;
 
-    ResizeMatrix(distances, m2->row, m1->row);
+    ResizeMatrix((*distances), m2->row, m1->row);
 
     for(i = 0; i < m1->row; i++){
       for(k = 0; k < m2->row; k++){
@@ -371,16 +371,16 @@ double MatrixMahalanobisDistance(matrix* g1, matrix* g2)
     matrix *cov1, *cov2, *invcov;
 
     initDVector(&mean1);
-    MatrixColAverage(g1, &mean1);
+    MatrixColAverage(g1, mean1);
 
     initDVector(&mean2);
-    MatrixColAverage(g2, &mean2);
+    MatrixColAverage(g2, mean2);
 
     initMatrix(&cov1);
-    MatrixCovariance(g1, &cov1);
+    MatrixCovariance(g1, cov1);
 
     initMatrix(&cov2);
-    MatrixCovariance(g2, &cov2);
+    MatrixCovariance(g2, cov2);
 
     /* pooled covariance matrix in cov1*/
     for(i = 0; i < cov1->row; i++){
@@ -393,7 +393,7 @@ double MatrixMahalanobisDistance(matrix* g1, matrix* g2)
 
     initMatrix(&invcov);
 
-    MatrixInversion(cov1, &invcov);
+    MatrixInversion(cov1, invcov);
 
     NewDVector(&xdiff, mean1->size);
 
@@ -424,7 +424,7 @@ double MatrixMahalanobisDistance(matrix* g1, matrix* g2)
   }
 }
 
-void MahalanobisDistance(matrix* m, matrix **invcov, dvector **mu, dvector **dists)
+void MahalanobisDistance(matrix* m, matrix *invcov, dvector *mu, dvector *dists)
 {
   size_t i, j;
   dvector *x;
@@ -435,15 +435,15 @@ void MahalanobisDistance(matrix* m, matrix **invcov, dvector **mu, dvector **dis
 
   if(mu == NULL){
     initDVector(&colavg);
-    MatrixColAverage(m, &colavg);
+    MatrixColAverage(m, colavg);
   }
   else{
-    if((*mu)->size == m->col){
-      colavg = (*mu);
+    if(mu->size == m->col){
+      colavg = mu;
     }
-    else if((*mu)->size == 0){
-      colavg = (*mu);
-      MatrixColAverage(m, &colavg);
+    else if(mu->size == 0){
+      colavg = mu;
+      MatrixColAverage(m, colavg);
     }
     else{
       fprintf(stderr, "Unable to compute MahalanobisDistance. The size of mu differ from the matrix column size \n");
@@ -456,27 +456,27 @@ void MahalanobisDistance(matrix* m, matrix **invcov, dvector **mu, dvector **dis
   if(invcov == NULL){
     matrix *covmx;
     NewMatrix(&covmx, m->col, m->col);
-    MatrixCovariance(m, &covmx);
+    MatrixCovariance(m, covmx);
     NewMatrix(&inv_cov, m->col, m->col);
     /*MatrixInversion(covmx, &inv_cov);
     MatrixLUInversion(covmx, &inv_cov);*/
-    MatrixPseudoinversion(covmx, &inv_cov);
+    MatrixPseudoinversion(covmx, inv_cov);
     /*MatrixMoorePenrosePseudoinverse(covmx, &inv_cov);*/
     DelMatrix(&covmx);
   }
   else{
-    if((*invcov)->row == m->col && (*invcov)->col == m->col){
-      inv_cov = (*invcov);
+    if(invcov->row == m->col && invcov->col == m->col){
+      inv_cov = invcov;
     }
-    else if((*invcov)->row == 0 && (*invcov)->col == 0){
-      inv_cov = (*invcov);
+    else if(invcov->row == 0 && invcov->col == 0){
+      inv_cov = invcov;
       matrix *covmx;
       NewMatrix(&covmx, m->col, m->col);
-      MatrixCovariance(m, &covmx);
-      ResizeMatrix(&inv_cov, m->col, m->col);
+      MatrixCovariance(m, covmx);
+      ResizeMatrix(inv_cov, m->col, m->col);
       /*MatrixInversion(covmx, &inv_cov);
       MatrixLUInversion(covmx, &inv_cov);*/
-      MatrixPseudoinversion(covmx, &inv_cov);
+      MatrixPseudoinversion(covmx, inv_cov);
       /*MatrixMoorePenrosePseudoinverse(covmx, &inv_cov);*/
       DelMatrix(&covmx);
     }
@@ -498,7 +498,7 @@ void MahalanobisDistance(matrix* m, matrix **invcov, dvector **mu, dvector **dis
     }
 
     MT_DVectorMatrixDotProduct(inv_cov, x, p);
-    (*dists)->data[i] = sqrt(DVectorDVectorDotProd(p, x));
+    dists->data[i] = sqrt(DVectorDVectorDotProd(p, x));
     DVectorSet(p, 0.f);
   }
 
@@ -514,7 +514,7 @@ void MahalanobisDistance(matrix* m, matrix **invcov, dvector **mu, dvector **dis
   }
 }
 
-void CovarianceDistanceMap(matrix* mi, matrix **mo)
+void CovarianceDistanceMap(matrix* mi, matrix *mo)
 {
   size_t i, j;
   dvector *x;
@@ -524,13 +524,13 @@ void CovarianceDistanceMap(matrix* mi, matrix **mo)
   matrix *inv_cov;
   
   initDVector(&colavg);
-  MatrixColAverage(mi, &colavg);
+  MatrixColAverage(mi, colavg);
   
   NewMatrix(&covmx, mi->col, mi->col);
-  MatrixCovariance(mi, &covmx);
+  MatrixCovariance(mi, covmx);
 
   NewMatrix(&inv_cov, mi->col, mi->col);
-  MatrixInversion(covmx, &inv_cov);
+  MatrixInversion(covmx, inv_cov);
   DelMatrix(&covmx);
 
   ResizeMatrix(mo, mi->row, mi->col);
@@ -546,7 +546,7 @@ void CovarianceDistanceMap(matrix* mi, matrix **mo)
     MT_DVectorMatrixDotProduct(inv_cov, x, p);
 
     for(j = 0; j < mi->col; j++){
-      (*mo)->data[i][j] = p->data[j];
+      mo->data[i][j] = p->data[j];
     }
 
     DVectorSet(p, 0.f);
@@ -579,7 +579,7 @@ size_t square_to_condensed_index(size_t i, size_t j, size_t n)
 
 typedef struct{
   matrix *m;
-  dvector **distances;
+  dvector *distances;
   size_t r_from, r_to;
 } cdst_th_arg;
 
@@ -595,13 +595,13 @@ void *EuclideanCondensedWorker(void *arg_)
         dist += square(arg->m->data[i][j] - arg->m->data[k][j]);
       }
       size_t indx = square_to_condensed_index(i, k, arg->m->row);
-      (*arg->distances)->data[indx] = sqrt(dist);
+      arg->distances->data[indx] = sqrt(dist);
     }
   }
   return 0;
 }
 
-void EuclideanDistanceCondensed(matrix* m, dvector **distances, size_t nthreads)
+void EuclideanDistanceCondensed(matrix* m, dvector *distances, size_t nthreads)
 {
   pthread_t *threads;
   cdst_th_arg *args;
@@ -658,14 +658,14 @@ void *SquareEuclideanCondensedWorker(void *arg_)
         dist += square(arg->m->data[i][j] - arg->m->data[k][j]);
       }
       size_t indx = square_to_condensed_index(i, k, arg->m->row);
-      (*arg->distances)->data[indx] = dist;
+      arg->distances->data[indx] = dist;
     }
   }
   return 0;
 }
 
 /* Description: calculate the square euclidean distance in a condensed way */
-void SquaredEuclideanDistanceCondensed(matrix *m, dvector **distances, size_t nthreads)
+void SquaredEuclideanDistanceCondensed(matrix *m, dvector *distances, size_t nthreads)
 {
   pthread_t *threads;
   cdst_th_arg *args;
@@ -722,14 +722,14 @@ void *ManhattanCondensedWorker(void *arg_)
         dist += fabs(arg->m->data[i][j] - arg->m->data[k][j]);
       }
       size_t indx = square_to_condensed_index(i, k, arg->m->row);
-      (*arg->distances)->data[indx] = dist;
+      arg->distances->data[indx] = dist;
     }
   }
   return 0;
 }
 
 /* Description: calculate the manhattan distance in a condensed way */
-void ManhattanDistanceCondensed(matrix *m, dvector **distances, size_t nthreads)
+void ManhattanDistanceCondensed(matrix *m, dvector *distances, size_t nthreads)
 {
   pthread_t *threads;
   cdst_th_arg *args;
@@ -788,14 +788,14 @@ void *CosineCondensedWorker(void *arg_)
         d_b += square(arg->m->data[k][j]);
       }
       size_t indx = square_to_condensed_index(i, k, arg->m->row);
-      (*arg->distances)->data[indx] = n/(sqrt(d_a)*sqrt(d_b));
+      arg->distances->data[indx] = n/(sqrt(d_a)*sqrt(d_b));
     }
   }
   return 0;
 }
 
 /* Description: calculate the cosine distance in a condensed way */
-void CosineDistanceCondensed(matrix *m, dvector **distances, size_t nthreads)
+void CosineDistanceCondensed(matrix *m, dvector *distances, size_t nthreads)
 {
   pthread_t *threads;
   cdst_th_arg *args;

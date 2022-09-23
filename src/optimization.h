@@ -25,6 +25,6 @@
 #include "matrix.h"
 #include "numeric.h"
 
-double NelderMeadSimplex(double (*func)(), dvector *x0, dvector *step, double xtol, size_t iter, dvector **best);
+double NelderMeadSimplex(double (*func)(), dvector *x0, dvector *step, double xtol, size_t iter, dvector *best);
 
 #endif

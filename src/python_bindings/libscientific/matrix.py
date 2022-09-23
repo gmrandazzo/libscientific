@@ -88,7 +88,7 @@ def NewMatrix(a_):
     return m
 
 
-lsci.ResizeMatrix.argtypes = [ctypes.POINTER(ctypes.POINTER(matrix)),
+lsci.ResizeMatrix.argtypes = [ctypes.POINTER(matrix),
                               ctypes.c_size_t,
                               ctypes.c_size_t]
 lsci.ResizeMatrix.restype = None
@@ -99,7 +99,7 @@ def ResizeMatrix(m, nrows, ncols):
     ResizeMatrix: Resize an already allocated or reallocate a libscientific
                   matrix
     """
-    lsci.ResizeMatrix(ctypes.pointer(m), nrows, ncols)
+    lsci.ResizeMatrix(m, nrows, ncols)
 
 
 lsci.DelMatrix.argtypes = [ctypes.POINTER(ctypes.POINTER(matrix))]
@@ -122,7 +122,7 @@ def MatrixCheck(m):
     MatrixCheck: Find infinite and nan numbers and sobstitute
                  with MISSING value.
     """
-    lsci.DelMatrix(ctypes.pointer(m))
+    lsci.MatrixCheck(m)
 
 
 lsci.PrintMatrix.argtypes = [ctypes.POINTER(matrix)]
@@ -249,18 +249,15 @@ def setMissingMatrixValue(m, row, col):
     m[0].data[row][col] = misc.missing_value()
 
 
-lsci.MatrixAppendRow.argtypes = [ctypes.POINTER(ctypes.POINTER(matrix)),
+lsci.MatrixAppendRow.argtypes = [ctypes.POINTER(matrix),
                                  ctypes.POINTER(vector.dvector)]
 lsci.MatrixAppendRow.restype = None
 
 def MatrixAppendRow(mx, row):
-  """
-  void MatrixAppendRow(matrix **mx, dvector *row);
-  """
-  return lsci.MatrixAppendRow(ctypes.pointer(mx), row.d)
+  return lsci.MatrixAppendRow(mx, row.d)
 
 
-lsci.MatrixAppendCol.argtypes = [ctypes.POINTER(ctypes.POINTER(matrix)),
+lsci.MatrixAppendCol.argtypes = [ctypes.POINTER(matrix),
                                  ctypes.POINTER(vector.dvector)]
 lsci.MatrixAppendCol.restype = None
 
@@ -268,7 +265,7 @@ def MatrixAppendCol(mx, col):
   """
   void MatrixAppendCol(matrix **mx, dvector *col);
   """
-  return lsci.MatrixAppendCol(ctypes.pointer(mx), col.d)
+  return lsci.MatrixAppendCol(mx, col.d)
 
 
 lsci.MatrixDVectorDotProduct.argtypes = [ctypes.POINTER(matrix),
@@ -412,7 +409,7 @@ def MatrixTranspose(m, r):
 
 
 lsci.MatrixInversion.argtypes = [ctypes.POINTER(matrix),
-                                 ctypes.POINTER(ctypes.POINTER(matrix))]
+                                 ctypes.POINTER(matrix)]
 lsci.MatrixInversion.restype = None
 
 def MatrixInversion(m, r):
@@ -423,12 +420,12 @@ def MatrixInversion(m, r):
     */
     void MatrixInversion(matrix *m, matrix **m_inv);
     """
-    return lsci.MatrixInversion(m, ctypes.pointer(r))
+    return lsci.MatrixInversion(m, r)
 
 
 lsci.EVectEval.argtypes = [ctypes.POINTER(matrix),
-                           ctypes.POINTER(ctypes.POINTER(vector.dvector)),
-                           ctypes.POINTER(ctypes.POINTER(matrix))]
+                           ctypes.POINTER(vector.dvector),
+                           ctypes.POINTER(matrix)]
 lsci.EVectEval.restype = None
 
 def EVectEval(m, e_vect, e_val):
@@ -439,7 +436,7 @@ def EVectEval(m, e_vect, e_val):
     */
     void EVectEval(matrix *mx, dvector **eval, matrix **evect);
     """
-    return lsci.EVectEval(m, ctypes.pointer(e_vect), ctypes.pointer(e_val))
+    return lsci.EVectEval(m, e_vect, e_val)
 
 
 
@@ -484,12 +481,13 @@ class Matrix(object):
         DelMatrix(self.mx)
         del self.mx
         self.mx = MatrixFromNumpy(npmx)
-    
+
     def appendrow(self, row):
         row_ = vector.DVector(row)
+        print(type(row_))
         MatrixAppendRow(self.mx, row_)
         del row_
-        
+
     def appendcol(self, col):
         col_ = vector.DVector(col)
         MatrixAppendCol(self.mx, col_)
@@ -501,7 +499,7 @@ class Matrix(object):
       MatrixTranspose(self.mx, t)
       MatrixCopy(t, self.mx)
       del t
-    
+
     def getevectevals(self):
       e_vect_ = vector.initDVector()
       e_vals_ = initMatrix()
@@ -511,8 +509,8 @@ class Matrix(object):
       DelMatrix(e_vals_)
       vector.DelDVector(e_vect_)
       return e_vect, e_vals
-    
-    
+
+
     def debug(self):
         PrintMatrix(self.mx)
 
@@ -526,12 +524,12 @@ if __name__ in "__main__":
     a = [[random() for j in range(2)] for i in range(10)]
     print("Modify the row 4 column 1 with a string'aiuasd'")
     a[4][1] = "aiuasd"
-    
+
     print("Convert the list of list matrix into matrix type")
     m = Matrix(a)
     m.debug()
-    
-    
+
+
     print("Get value at row 1 column 1")
     print(m[1, 1])
     print("Set value at row 1 column 1 with value -2 ")
@@ -541,17 +539,17 @@ if __name__ in "__main__":
     mlst = m.tolist()
     for row in mlst:
         print(row)
-    
+
     print("Append the row [99, 100]")
     row = [99, 100]
     m.appendrow(row)
     m.debug()
-    
+
     print("Append the a col [80, 81, 82, 83, 84, 85, 86 ,87, 88, 89, 90]")
     col = [80, 81, 82, 83, 84, 85, 86 ,87, 88, 89, 90]
     m.appendcol(col)
     m.debug()
-    
+
     print("Test MatrixDVectorDotProduct")
     d = vector.DVector([1, 2, 3])
     r = vector.DVector([0 for i in range(11)])
@@ -564,7 +562,7 @@ if __name__ in "__main__":
     r.debug()
     del d
     del r
-    
+
     print("Test DVectorMatrixDotProduct")
     d = vector.DVector([i for i in range(1, 12)])
     r = vector.DVector([0 for i in range(3)])
@@ -578,7 +576,7 @@ if __name__ in "__main__":
     del d
     del r
     del m
-    
+
     print("Test DVectorTrasposedDVectorDotProduct")
     d1 = vector.DVector([i for i in range(10)])
     d2 = vector.DVector([i for i in range(10)])
@@ -588,7 +586,7 @@ if __name__ in "__main__":
     del d1
     del d2
     del m
-    
+
     print("Test DVectorTransposedMatrixDivision")
     d = vector.DVector([random() for i in range(10)])
     m = Matrix([[random() for j in range(10)] for i in range(10)])
@@ -609,7 +607,7 @@ if __name__ in "__main__":
     del m_t
     del m
     del r
-    
+
     print("Test RowColOuterProduct == DVectorTrasposedDVectorDotProduct")
     a = vector.DVector([i for i in range(10)])
     b = vector.DVector([i for i in range(10)])
@@ -619,22 +617,22 @@ if __name__ in "__main__":
     del a
     del b
     del r
-    
+
     print("Test MatrixTranspose")
     m = Matrix([[random() for j in range(3)] for i in range(10)])
     r = Matrix([[0 for j in range(10)] for i in range(3)])
     MatrixTranspose(m.mx, r.mx)
     m.debug()
     r.debug()
-    
+
     print("Test MatrixTranspose class inner method")
     m.transpose()
     m.debug()
     m.transpose()
-    
+
     del m
     del r
-    
+
     print("Test MatrixInversion")
     m = Matrix([[random() for j in range(4)] for i in range(4)])
     r = Matrix([])
@@ -852,30 +850,5 @@ void QRDecomposition(matrix *mx, matrix **Q, matrix **R);
  */
 void LUDecomposition(matrix *mx, matrix **L, matrix **U);
 
-/*
- * Description:
- * Householder Reflector vector
- */
-void HouseReflectorVect(dvector *x, dvector *u);
 
-/*
- * Description:
- * Householder Vector Matrix Multiplication
- */
-void HouseholderVectMatrixProduct(dvector *h, matrix *A, matrix *P);
-
-/*
- * Description:
- * Householder matrix
- */
-void HouseholderMatrix(dvector *v, matrix *h);
-
-/*
- * Description:
- *  Reduce a matrix to an Hessenberg form
- * - Householder implementation
- * - Cholesky implementation
- */
-void HouseholderReduction(matrix *mx);
-void CholeskyReduction(matrix *m);
 """

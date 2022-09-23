@@ -127,7 +127,7 @@ void UPCA(tensor *X_, size_t npc, size_t autoscaling, UPCAMODEL *m, ssignal *s)
     NewTensor(&X, X_->order);
 
     for(k = 0; k < X_->order; k++){
-      NewTensorMatrix(&X, k, X_->m[k]->row, X_->m[k]->col);
+      NewTensorMatrix(X, k, X_->m[k]->row, X_->m[k]->col);
 
     /* For Wold Geladi test enable this
     for(i = 0; i < X_->m[k]->row; i++)
@@ -140,8 +140,8 @@ void UPCA(tensor *X_, size_t npc, size_t autoscaling, UPCAMODEL *m, ssignal *s)
 
     for(k = 0; k < X_->order; k++){
       initDVector(&tmpv);
-      MatrixColAverage(X_->m[k], &tmpv);
-      MatrixAppendCol(&(m->colaverage), tmpv);
+      MatrixColAverage(X_->m[k], tmpv);
+      MatrixAppendCol(m->colaverage, tmpv);
       DelDVector(&tmpv);
 
       for(j = 0; j < X_->m[k]->col; j++){
@@ -164,27 +164,27 @@ void UPCA(tensor *X_, size_t npc, size_t autoscaling, UPCAMODEL *m, ssignal *s)
       if(autoscaling == 1){
         for(k = 0; k < X_->order; k++){
           initDVector(&tmpv);
-          MatrixColSDEV(X_->m[k], &tmpv);
-          MatrixAppendCol(&(m->colscaling), tmpv);
+          MatrixColSDEV(X_->m[k], tmpv);
+          MatrixAppendCol(m->colscaling, tmpv);
           DelDVector(&tmpv);
         }
       }
       else if(autoscaling == 2){
         for(k = 0; k < X_->order; k++){
           initDVector(&tmpv);
-          MatrixColRMS(X_->m[k], &tmpv);
-          MatrixAppendCol(&(m->colscaling), tmpv);
+          MatrixColRMS(X_->m[k], tmpv);
+          MatrixAppendCol(m->colscaling, tmpv);
           DelDVector(&tmpv);
         }
       }
       else if(autoscaling == 3){ /* PARETO Autoscaling */
         for(k = 0; k < X_->order; k++){
           initDVector(&tmpv);
-          MatrixColSDEV(X_->m[k], &tmpv);
+          MatrixColSDEV(X_->m[k], tmpv);
           for(i = 0; i < tmpv->size; i++){
             setDVectorValue(tmpv, i, sqrt(getDVectorValue(tmpv, i)));
           }
-          MatrixAppendCol(&(m->colscaling), tmpv);
+          MatrixAppendCol(m->colscaling, tmpv);
           DelDVector(&tmpv);
         }
       }
@@ -193,9 +193,9 @@ void UPCA(tensor *X_, size_t npc, size_t autoscaling, UPCAMODEL *m, ssignal *s)
           initDVector(&tmpv);
           for(i = 0; i < X_->m[k]->col; i++){
             MatrixColumnMinMax(X_->m[k], i, &min, &max);
-            DVectorAppend(&tmpv, (max-min));
+            DVectorAppend(tmpv, (max-min));
           }
-          MatrixAppendCol(&(m->colscaling), tmpv);
+          MatrixAppendCol(m->colscaling, tmpv);
           DelDVector(&tmpv);
         }
       }
@@ -206,9 +206,9 @@ void UPCA(tensor *X_, size_t npc, size_t autoscaling, UPCAMODEL *m, ssignal *s)
         for(k = 0; k < X_->order; k++){
           initDVector(&tmpv);
           for(i = 0; i < X_->m[k]->col; i++){
-            DVectorAppend(&tmpv, 1.0);
+            DVectorAppend(tmpv, 1.0);
           }
-          MatrixAppendCol(&(m->colscaling), tmpv);
+          MatrixAppendCol(m->colscaling, tmpv);
           DelDVector(&tmpv);
         }
       }
@@ -260,7 +260,7 @@ void UPCA(tensor *X_, size_t npc, size_t autoscaling, UPCAMODEL *m, ssignal *s)
         order = column = 0;
         for(i = 0; i < X->order; i++){
           initDVector(&colvar);
-          MatrixColVar(X->m[i], &colvar);
+          MatrixColVar(X->m[i], colvar);
 
           #ifdef DEBUG
           puts("Column Variance for chosing the best t-start column vector");
@@ -330,7 +330,7 @@ void UPCA(tensor *X_, size_t npc, size_t autoscaling, UPCAMODEL *m, ssignal *s)
 
           /*u-start is the larget column in P*/
           initDVector(&colvar);
-          MatrixColAverage(P, &colvar);
+          MatrixColAverage(P, colvar);
           j = 0;
           for(i = 1; i < colvar->size; i++){
             if(getDVectorValue(colvar, i) > getDVectorValue(colvar, j))
@@ -428,7 +428,7 @@ void UPCA(tensor *X_, size_t npc, size_t autoscaling, UPCAMODEL *m, ssignal *s)
 
           /*step 8 */
           initDVector(&t_diff);
-          DVectorDVectorDiff(t_new, t_old, &t_diff);
+          DVectorDVectorDiff(t_new, t_old, t_diff);
 
           a = DVectorDVectorDotProd(t_diff, t_diff);
 
@@ -444,8 +444,8 @@ void UPCA(tensor *X_, size_t npc, size_t autoscaling, UPCAMODEL *m, ssignal *s)
   /*         if(a/(t_new->size*DVectorDVectorDotProd(t_new, t_new)) < 1e-10){*/
           if(a/(t_new->size*DVectorDVectorDotProd(t_new, t_new)) < EPSILON){
             /* storing results */
-            MatrixAppendCol(&(m->scores), t_new);
-            TensorAppendMatrix(&(m->loadings), P);
+            MatrixAppendCol(m->scores, t_new);
+            TensorAppendMatrix(m->loadings, P);
             setDVectorValue(eval, pc, DVectorDVectorDotProd(t_new, t_new));
             break;
           }
@@ -478,7 +478,7 @@ void UPCA(tensor *X_, size_t npc, size_t autoscaling, UPCAMODEL *m, ssignal *s)
       }
     }
 
-    calcVarExpressed(ss, eval, &(m->varexp));
+    calcVarExpressed(ss, eval, m->varexp);
 
     DelDVector(&eval);
     DelMatrix(&P);
@@ -492,7 +492,10 @@ void UPCA(tensor *X_, size_t npc, size_t autoscaling, UPCAMODEL *m, ssignal *s)
   }
 }
 
-void UPCAScorePredictor(tensor *X_, UPCAMODEL *model, size_t npc, matrix **pscores)
+void UPCAScorePredictor(tensor *X_,
+                        UPCAMODEL *model,
+                        size_t npc,
+                        matrix *pscores)
 {
   size_t pc, i, j , k;
   tensor *X;
@@ -502,7 +505,7 @@ void UPCAScorePredictor(tensor *X_, UPCAMODEL *model, size_t npc, matrix **pscor
 
   NewTensor(&X, X_->order);
   for(k = 0; k < X_->order; k++){
-    NewTensorMatrix(&X, k, X_->m[k]->row, X_->m[k]->col);
+    NewTensorMatrix(X, k, X_->m[k]->row, X_->m[k]->col);
   }
 
   NewDVector(&t, X->m[0]->row);
@@ -566,7 +569,12 @@ void UPCAScorePredictor(tensor *X_, UPCAMODEL *model, size_t npc, matrix **pscor
  * X = TP' + ....
  *
  */
-void UPCAIndVarPredictor(matrix *T, tensor *P, matrix *colaverage, matrix *colscaling,  size_t npc, tensor **X)
+void UPCAIndVarPredictor(matrix *T,
+                         tensor *P,
+                         matrix *colaverage,
+                         matrix *colscaling,
+                         size_t npc,
+                         tensor *X)
 {
   size_t pc, i, j, k;
 
@@ -576,10 +584,10 @@ void UPCAIndVarPredictor(matrix *T, tensor *P, matrix *colaverage, matrix *colsc
     /*AddTensorMatrix(X, T->row, P->m[0]->col);*/
 
   for(pc = 0; pc < npc; pc++){
-    for(k = 0; k < (*X)->order; k++){
-      for(i = 0; i < (*X)->m[k]->row; i++){
-        for(j = 0; j < (*X)->m[k]->col; j++){
-          setTensorValue((*X), k, i, j, getTensorValue((*X), k, i, j) + (getMatrixValue(T, i, pc) * getTensorValue(P, pc, j, k)));
+    for(k = 0; k < X->order; k++){
+      for(i = 0; i < X->m[k]->row; i++){
+        for(j = 0; j < X->m[k]->col; j++){
+          setTensorValue(X, k, i, j, getTensorValue(X, k, i, j) + (getMatrixValue(T, i, pc) * getTensorValue(P, pc, j, k)));
         }
       }
     }
@@ -594,14 +602,14 @@ void UPCAIndVarPredictor(matrix *T, tensor *P, matrix *colaverage, matrix *colsc
   */
 
   if(colaverage->row > 0 && colaverage->col > 0){
-    for(k = 0; k < (*X)->order; k++){
-      for(i = 0; i < (*X)->m[k]->row; i++){
-        for(j = 0; j < (*X)->m[k]->col; j++){
+    for(k = 0; k < X->order; k++){
+      for(i = 0; i < X->m[k]->row; i++){
+        for(j = 0; j < X->m[k]->col; j++){
           if(colscaling->row > 0 && colscaling->col > 0){
-            setTensorValue((*X), k, i, j, (getTensorValue((*X), k, i, j) * getMatrixValue(colscaling, j, k)) + getMatrixValue(colaverage, j, k));
+            setTensorValue(X, k, i, j, (getTensorValue(X, k, i, j) * getMatrixValue(colscaling, j, k)) + getMatrixValue(colaverage, j, k));
           }
           else{
-            setTensorValue((*X), k, i, j, getTensorValue((*X), k, i, j) + getMatrixValue(colaverage, j, k));
+            setTensorValue(X, k, i, j, getTensorValue(X, k, i, j) + getMatrixValue(colaverage, j, k));
           }
         }
       }

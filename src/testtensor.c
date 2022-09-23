@@ -33,8 +33,8 @@ void test6()
   puts("Test 6 - the result of this vector is 455.000");
 
   NewTensor(&t1, 2);
-  NewTensorMatrix(&t1, 0, 1, 3);  /* i = 1 j = 3 */
-  NewTensorMatrix(&t1, 1, 1, 3);
+  NewTensorMatrix(t1, 0, 1, 3);  /* i = 1 j = 3 */
+  NewTensorMatrix(t1, 1, 1, 3);
 
   setTensorValue(t1, 0, 0, 0, 1); setTensorValue(t1, 0, 0, 1, 2);   setTensorValue(t1, 0, 0, 2, 3);
   setTensorValue(t1, 1, 0, 0, 4); setTensorValue(t1, 1, 0, 1, 5);   setTensorValue(t1, 1, 0, 2, 6);
@@ -68,12 +68,12 @@ void test5()
   puts("Test 5 - Computing Tensor Dvector dot Product");
 
   NewTensor(&t1, 2); /*k = 2 */
-  NewTensorMatrix(&t1, 0, 1, 3);  /* i = 1 j = 3 */
-  NewTensorMatrix(&t1, 1, 1, 3);
+  NewTensorMatrix(t1, 0, 1, 3);  /* i = 1 j = 3 */
+  NewTensorMatrix(t1, 1, 1, 3);
 
   NewTensor(&t2, 2);
-  NewTensorMatrix(&t2, 0, 3, 1);
-  NewTensorMatrix(&t2, 1, 3, 1);
+  NewTensorMatrix(t2, 0, 3, 1);
+  NewTensorMatrix(t2, 1, 3, 1);
 
 
   setTensorValue(t1, 0, 0, 0, 1); setTensorValue(t1, 0, 0, 1, 2);   setTensorValue(t1, 0, 0, 2, 3);
@@ -123,9 +123,9 @@ void test4()
   NewTensor(&tc, 4);
 
   for(i = 0; i < t->order; i ++){
-    NewTensorMatrix(&t, i, 5, i+1);
+    NewTensorMatrix(t, i, 5, i+1);
 
-    NewTensorMatrix(&tc, i, 5, i+1);
+    NewTensorMatrix(tc, i, 5, i+1);
 
     for(j = 0; j < t->m[i]->col; j++){
       for(k = 0; k < t->m[i]->row; k++){
@@ -158,8 +158,8 @@ void test3()
   NewTensor(&tc, 4);
 
   for(i = 0; i < t->order; i ++){
-    NewTensorMatrix(&t, i, 5, i+1);
-    NewTensorMatrix(&tc, i, 5, i+1);
+    NewTensorMatrix(t, i, 5, i+1);
+    NewTensorMatrix(tc, i, 5, i+1);
     for(j = 0; j < t->m[i]->col; j++){
       for(k = 0; k < t->m[i]->row; k++){
         setTensorValue(t, i, k, j, rand() % 300);
@@ -189,7 +189,7 @@ void test2()
   NewTensor(&t, 4);
 
   for(i = 0; i < t->order; i ++){
-    NewTensorMatrix(&t, i, 20, i+1);
+    NewTensorMatrix(t, i, 20, i+1);
     for(j = 0; j < t->m[i]->col; j++){
       for(k = 0; k < t->m[i]->row; k++){
         setTensorValue(t, i, k, j, rand() % 300);
@@ -221,7 +221,7 @@ void test1_2()
       }
     }
     /*PrintMatrix(m);*/
-    TensorAppendMatrix(&t, m); /*only with initTensor*/
+    TensorAppendMatrix(t, m); /*only with initTensor*/
   }
   DelMatrix(&m);
 
@@ -251,7 +251,7 @@ void test1_1()
     }
 
     /*PrintMatrix(m);*/
-    TensorAppendMatrixAt(&t, i, m); /*only with initTensor*/
+    TensorAppendMatrixAt(t, i, m); /*only with initTensor*/
     DelMatrix(&m);
   }
 
@@ -282,7 +282,7 @@ void test1()
     }
 
     /*PrintMatrix(m);*/
-    TensorAppendMatrix(&t, m); /*only with initTensor*/
+    TensorAppendMatrix(t, m); /*only with initTensor*/
     DelMatrix(&m);
   }
 

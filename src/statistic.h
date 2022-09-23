@@ -63,7 +63,11 @@ double BIAS(dvector *ytrue, dvector *ypred);
  *
  * Sensitivity = TP / TP + FN
  */
-void Sensitivity(dvector *tp, double thmin, double thmax, double thstep, matrix **s);
+void Sensitivity(dvector *tp,
+                 double thmin,
+                 double thmax,
+                 double thstep,
+                 matrix *s);
 
 /*
  * TP = True Positive
@@ -71,7 +75,12 @@ void Sensitivity(dvector *tp, double thmin, double thmax, double thstep, matrix 
  *
  * PPV = TP / TP + FP
  */
-void PositivePredictedValue(dvector *dtp, dvector *dtn, double thmin, double thmax, double thstep, matrix **p);
+void PositivePredictedValue(dvector *dtp,
+                            dvector *dtn,
+                            double thmin,
+                            double thmax,
+                            double thstep,
+                            matrix *p);
 
 /*
  * This function code the matrix to a sign matrix
@@ -86,9 +95,15 @@ void BifactorialMatrixExpansion(matrix* inmx, matrix* outmx);
 void YatesVarEffect(matrix *mx, dvector *veff);
 
 /* Description: calculate the ROC curve giving an y_true and an y_score */
-void ROC(dvector *y_true, dvector *y_score, matrix **roc, double *auc);
+void ROC(dvector *y_true,
+         dvector *y_score,
+         matrix *roc,
+         double *auc);
 
 /* Description: calculate the Precision-Recall curve giving an y_true and an y_score */
-void PrecisionRecall(dvector *y_true, dvector *y_score,  matrix **pr, double *ap);
+void PrecisionRecall(dvector *y_true,
+                     dvector *y_score,
+                     matrix *pr,
+                     double *ap);
 
 #endif

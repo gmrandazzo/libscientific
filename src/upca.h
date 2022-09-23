@@ -37,8 +37,17 @@ void DelUPCAModel(UPCAMODEL **m);
 int CheckTensor(tensor *X_);
 void UPCA(tensor *X_, size_t npc, size_t autoscaling, UPCAMODEL *m, ssignal *s);
 
-void UPCAScorePredictor(tensor *X_, UPCAMODEL *model, size_t npc, matrix **pscores);
-void UPCAIndVarPredictor(matrix *T, tensor *P, matrix *colaverage, matrix *colsdev,  size_t npc, tensor **X);
+void UPCAScorePredictor(tensor *X_,
+                        UPCAMODEL *model,
+                        size_t npc,
+                        matrix *pscores);
+
+void UPCAIndVarPredictor(matrix *T,
+                         tensor *P,
+                         matrix *colaverage,
+                         matrix *colsdev,
+                         size_t npc,
+                         tensor *X);
 
 void PrintUPCAModel(UPCAMODEL *m);
 

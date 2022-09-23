@@ -32,8 +32,8 @@ void test4()
 
   NewTensor(&t, 2);
 
-  NewTensorMatrix(&t, 0, 4, 2);
-  NewTensorMatrix(&t, 1, 4, 2);
+  NewTensorMatrix(t, 0, 4, 2);
+  NewTensorMatrix(t, 1, 4, 2);
 
   setTensorValue(t, 0, 0, 0, 7);  setTensorValue(t, 0, 0, 1, 9);
   setTensorValue(t, 0, 1, 0, 5);  setTensorValue(t, 0, 1, 1, 4);
@@ -75,8 +75,8 @@ void test3()
 
   NewTensor(&t, 2);
 
-  NewTensorMatrix(&t, 0, 3, 2);
-  NewTensorMatrix(&t, 1, 3, 2);
+  NewTensorMatrix(t, 0, 3, 2);
+  NewTensorMatrix(t, 1, 3, 2);
 
   setTensorValue(t, 0, 0, 0, 0.424264);  setTensorValue(t, 0, 0, 1, 0.565685);
   setTensorValue(t, 0, 1, 0, 0.565685);  setTensorValue(t, 0, 1, 1, 0.424264);
@@ -88,8 +88,8 @@ void test3()
 
 
   NewTensor(&tpred, 2);
-  NewTensorMatrix(&tpred, 0, 1, 2);
-  NewTensorMatrix(&tpred, 1, 1, 2);
+  NewTensorMatrix(tpred, 0, 1, 2);
+  NewTensorMatrix(tpred, 1, 1, 2);
 
   setTensorValue(tpred, 0, 0, 0, 0.5);  setTensorValue(tpred, 0, 0, 1, 0.6);
 
@@ -111,7 +111,7 @@ void test3()
   PrintTensor(tpred);
 
   initMatrix(&predscore);
-  UPCAScorePredictor(tpred, m, 12345, &predscore);
+  UPCAScorePredictor(tpred, m, 12345, predscore);
 
   puts("Predicted Scores");
   PrintMatrix(predscore);
@@ -139,7 +139,7 @@ void test2()
   NewTensor(&t, 5);
 
   for(i = 0; i < t->order; i++){
-    NewTensorMatrix(&t, i, 30, 10);
+    NewTensorMatrix(t, i, 30, 10);
   }
 
   srand(time(0));
@@ -180,8 +180,8 @@ void test1()
 
   NewTensor(&t, 2);
 
-  NewTensorMatrix(&t, 0, 3, 2);
-  NewTensorMatrix(&t, 1, 3, 2);
+  NewTensorMatrix(t, 0, 3, 2);
+  NewTensorMatrix(t, 1, 3, 2);
 
   setTensorValue(t, 0, 0, 0, 0.424264);  setTensorValue(t, 0, 0, 1, 0.565685);
   setTensorValue(t, 0, 1, 0, 0.565685);  setTensorValue(t, 0, 1, 1, 0.424264);

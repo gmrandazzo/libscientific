@@ -75,7 +75,7 @@ def PCA_(m, scaling, npc, mpca):
 lsci.PCAScorePredictor.argtypes = [ctypes.POINTER(mx.matrix),
                                    ctypes.POINTER(PCAMODEL),
                                    ctypes.c_size_t,
-                                   ctypes.POINTER(ctypes.POINTER(mx.matrix))]
+                                   ctypes.POINTER(mx.matrix)]
 lsci.PCAScorePredictor.restype = None
 
 
@@ -86,7 +86,7 @@ def PCAScorePredictor(m, mpca, npc, pscores):
     lsci.PCAScorePredictor(m,
                            mpca,
                            npc,
-                           ctypes.pointer(ctypes.pointer(m)))
+                           ctypes.pointer(m))
 
 
 lsci.PCAIndVarPredictor.argtypes = [ctypes.POINTER(mx.matrix),
@@ -94,7 +94,7 @@ lsci.PCAIndVarPredictor.argtypes = [ctypes.POINTER(mx.matrix),
                                     ctypes.POINTER(vect.dvector),
                                     ctypes.POINTER(vect.dvector),
                                     ctypes.c_size_t,
-                                    ctypes.POINTER(ctypes.POINTER(mx.matrix))]
+                                    ctypes.POINTER(mx.matrix)]
 lsci.PCAIndVarPredictor.restype = None
 
 
@@ -103,7 +103,7 @@ def PCAIndVarPredictor(t, p, colaverage, colscaling, npc, iv):
     PCAIndVarPredictor: Reconstruct the original matrix from PCA model,
                         scores and loadings
     """
-    lsci.PCAIndVarPredictor(t, p, colaverage, colscaling, npc, ctypes.pointer(iv))
+    lsci.PCAIndVarPredictor(t, p, colaverage, colscaling, npc, iv)
 
 
 lsci.PrintPCA.argtypes = [ctypes.POINTER(PCAMODEL)]

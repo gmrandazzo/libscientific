@@ -34,7 +34,7 @@ void test3()
   
   printf("Creating v1\n");
   for(i = 1; i < 100; i++){
-    IVectorAppend(&v1, i);
+    IVectorAppend(v1, i);
   }
   
 
@@ -71,7 +71,7 @@ void test2()
   
   printf("Appending 100 value\n");
   for(i = 0; i < 100; i++){
-    IVectorAppend(&v, i);
+    IVectorAppend(v, i);
   }
   
   printf("Final output\n");
@@ -100,7 +100,7 @@ void test1()
   }
   
   printf("Appending 123 to vector\n");
-  IVectorAppend(&v, 123);
+  IVectorAppend(v, 123);
   
   printf("Final output\n");
   for(i = 0; i < v->size; i++){

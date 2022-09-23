@@ -16,6 +16,9 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef MLR_H
+#define MLR_H
+
 #include "matrix.h"
 #include "scientificinfo.h"
 
@@ -50,11 +53,11 @@ void MLR(matrix *mx,
 
 void MLRPredictY(matrix* mx,
                  matrix *my,
-                 MLRMODEL* model,
-                 matrix** predicted_y,
-                 matrix** predicted_residuals,
-                 dvector** r2y,
-                 dvector** sdep);
+                 MLRMODEL *model,
+                 matrix *predicted_y,
+                 matrix *predicted_residuals,
+                 dvector *r2y,
+                 dvector *sdep);
 
 /*
  * Description: Calculate the correlation coefficient (ccoeff),
@@ -64,8 +67,10 @@ void MLRPredictY(matrix* mx,
  */
 void MLRRegressionStatistics(matrix *my_true,
                              matrix *my_pred,
-                             dvector** ccoeff,
-                             dvector **stdev,
-                             dvector **bias);
+                             dvector *ccoeff,
+                             dvector *stdev,
+                             dvector *bias);
 
 void PrintMLR(MLRMODEL *m);
+
+#endif

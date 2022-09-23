@@ -24,7 +24,7 @@ int main(void){
   }
  
   // We append a new number
-  DVectorAppend(&v, 123.4);
+  DVectorAppend(v, 123.4);
   
   // Print to video the result
   PrintDvector(v);

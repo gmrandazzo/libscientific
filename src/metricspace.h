@@ -25,25 +25,25 @@
 
 
 /* Description: calculate the euclidean distance between two matrix with the same column number */
-void EuclideanDistance(matrix* m1, matrix* m2, matrix **distances, size_t nthreads);
+void EuclideanDistance(matrix* m1, matrix* m2, matrix *distances, size_t nthreads);
 
 /* Description: calculate the square euclidean distance between two matrix with the same column number */
-void SquaredEuclideanDistance(matrix *m1, matrix *m2, matrix **distances, size_t nthreads);
+void SquaredEuclideanDistance(matrix *m1, matrix *m2, matrix *distances, size_t nthreads);
 
 /* Description: calculate the manhattan distance between two matrix with the same column number */
-void ManhattanDistance(matrix *m1, matrix *m2, matrix** distances, size_t nthreads);
+void ManhattanDistance(matrix *m1, matrix *m2, matrix *distances, size_t nthreads);
 
 /* Description: calculate the cosine distance between two matrix with the same column number */
-void CosineDistance(matrix *m1, matrix *m2, matrix** distances, size_t nthreads);
+void CosineDistance(matrix *m1, matrix *m2, matrix *distances, size_t nthreads);
 
 /* Description: calculate the Mahalanobis distance between two matrix with the same column number */
-double MatrixMahalanobisDistance(matrix* g1, matrix* g2);
+double MatrixMahalanobisDistance(matrix *g1, matrix *g2);
 
 /* Description: calculate the Mahalanobis distance of each point function of its distribution */
-void MahalanobisDistance(matrix* m, matrix **invcov, dvector **mu, dvector **dists);
+void MahalanobisDistance(matrix* m, matrix *invcov, dvector *mu, dvector *dists);
 
 /* Description: convert the matrix mi (mxn) into a covariance distance map (mxn) */
-void CovarianceDistanceMap(matrix* mi, matrix **mo);
+void CovarianceDistanceMap(matrix* mi, matrix *mo);
 
 /*
  * Distance matrix caalculation in a fast and less memory consuming way
@@ -52,15 +52,15 @@ void CovarianceDistanceMap(matrix* mi, matrix **mo);
 size_t square_to_condensed_index(size_t i, size_t j, size_t n);
 
 /* Description: calculate the euclidean distance matrix in a condensed way */
-void EuclideanDistanceCondensed(matrix* m, dvector **distances, size_t nthreads);
+void EuclideanDistanceCondensed(matrix* m, dvector *distances, size_t nthreads);
 
 /* Description: calculate the square euclidean distance in a condensed way */
-void SquaredEuclideanDistanceCondensed(matrix *m, dvector **distances, size_t nthreads);
+void SquaredEuclideanDistanceCondensed(matrix *m, dvector *distances, size_t nthreads);
 
 /* Description: calculate the manhattan distance in a condensed way */
-void ManhattanDistanceCondensed(matrix *m, dvector **distances, size_t nthreads);
+void ManhattanDistanceCondensed(matrix *m, dvector *distances, size_t nthreads);
 
 /* Description: calculate the cosine distance in a condensed way */
-void CosineDistanceCondensed(matrix *m, dvector **distances, size_t nthreads);
+void CosineDistanceCondensed(matrix *m, dvector *distances, size_t nthreads);
 
 #endif

@@ -37,17 +37,12 @@ void initStrVector(strvector **s);
 /* Delete a strvector */
 void DelStrVector(strvector **s);
 
-void StrVectorResize(strvector **s, size_t size_);
+void StrVectorResize(strvector *s, size_t size_);
 
 /* Append a value to a strvector */
-void StrVectorAppend(strvector **s, char *str);
-void StrVectorAppendInt(strvector **s, int val);
-void StrVectorAppendDouble(strvector **s, double val);
-
-/* Remove a string tu strvector
-UNSAFE!
-void StrVectorRemoveAt(strvector **d, size_t indx);
-*/
+void StrVectorAppend(strvector *s, char *str);
+void StrVectorAppendInt(strvector *s, int val);
+void StrVectorAppendDouble(strvector *s, double val);
 
 void setStr(strvector *s, size_t i, char *str);
 char* getStr(strvector *s, size_t i);
@@ -61,7 +56,7 @@ void PrintStrVector(strvector *s);
 /*Trim a string: remove \n*/
 char *Trim(char *s);
 /*Split a string and fill the splitted string into a strvector*/
-void SplitString(char *str, char *sep, strvector **tokens);
+void SplitString(char *str, char *sep, strvector *tokens);
 
 
 /* double vector */
@@ -78,18 +73,18 @@ void initDVector(dvector **d);
 void DelDVector(dvector **d);
 
 /* Resize a dvector */
-void DVectorResize(dvector **d, size_t size_);
+void DVectorResize(dvector *d, size_t size_);
 
 void PrintDVector(dvector *v);
 
 /* Append a value to a dvector */
-void DVectorAppend(dvector **d, double val);
+void DVectorAppend(dvector *d, double val);
 
 /* Remove a value to a dvector */
-void DVectorRemoveAt(dvector **d, size_t indx);
+void DVectorRemoveAt(dvector *d, size_t indx);
 
 /* Copy a Dvector from dsrc: source to ddst: destination */
-void DVectorCopy(dvector *dsrc, dvector **ddst);
+void DVectorCopy(dvector *dsrc, dvector *ddst);
 
 /* Append to a dvector an other dvector */
 dvector *DVectorExtend(dvector *d1, dvector *d2);
@@ -106,8 +101,8 @@ double DVectorDVectorDotProd(dvector *v1, dvector *v2); /* product between two v
 
 double DvectorModule(dvector *v); /* get the Dvector Module */
 void DVectNorm(dvector *v, dvector *nv); /* vector normalizing */
-void DVectorDVectorDiff(dvector *v1, dvector *v2, dvector **v3);
-void DVectorDVectorSum(dvector *v1, dvector *v2, dvector **v3);
+void DVectorDVectorDiff(dvector *v1, dvector *v2, dvector *v3);
+void DVectorDVectorSum(dvector *v1, dvector *v2, dvector *v3);
 void DVectorMinMax(dvector *v, double *min, double *max);
 void DVectorMean(dvector *d, double *mean);
 void DVectorMedian(dvector *d, double *mean);
@@ -129,10 +124,10 @@ void initIVector(ivector **d);
 void DelIVector(ivector **d);
 
 /* Append a ivector */
-void IVectorAppend(ivector **d, int val);
+void IVectorAppend(ivector *d, int val);
 
 /* Remove a value to a ivector */
-void IVectorRemoveAt(ivector **d, size_t indx);
+void IVectorRemoveAt(ivector *d, size_t indx);
 
 /* Append to a ivector an other ivector */
 ivector *IVectorExtend(ivector *d1, ivector *d2);
@@ -157,15 +152,15 @@ void initUIVector(uivector **d);
 /* Delete a uivector */
 void DelUIVector(uivector **d);
 
-void UIVectorResize(uivector **d, size_t size_);
+void UIVectorResize(uivector *d, size_t size_);
 
 void PrintUIVector(uivector *v);
 
 /* Append a uivector */
-void UIVectorAppend(uivector **d, size_t val);
+void UIVectorAppend(uivector *d, size_t val);
 
 /* Remove a value to uivector */
-void UIVectorRemoveAt(uivector **d, size_t indx);
+void UIVectorRemoveAt(uivector *d, size_t indx);
 
 /* Append to a uivector an other uivector */
 uivector *UIVectorExtend(uivector *d1, uivector *d2);

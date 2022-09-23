@@ -12,22 +12,22 @@
 #include <pthread.h>
 #include <stdarg.h>
 
-void random_kfold_group_generator(matrix **gid,
+void random_kfold_group_generator(matrix *gid,
                                   size_t ngroups,
                                   size_t nobj,
                                   unsigned int *srand_init)
 {
   /*equal distribution of objects*/
   ResizeMatrix(gid, ngroups, (size_t)ceil(nobj/(double)ngroups));
-  MatrixSet((*gid), -1); /*default is -1*/
+  MatrixSet(gid, -1); /*default is -1*/
   size_t i, j, k = 0, n;
-  for(i = 0; i <  (*gid)->row; i++){
-    for(j = 0; j <  (*gid)->col; j++){
+  for(i = 0; i <  gid->row; i++){
+    for(j = 0; j <  gid->col; j++){
       do{
         n = (size_t)myrand_r(srand_init) % nobj;
-      } while(ValInMatrix((*gid), n) == 1 && k < nobj);
+      } while(ValInMatrix(gid, n) == 1 && k < nobj);
       if(k < nobj){
-        (*gid)->data[i][j] = n;
+        gid->data[i][j] = n;
         k++;
       }
       else
@@ -40,10 +40,10 @@ void kfold_group_train_test_split(matrix *x,
                                   matrix *y,
                                   matrix *gid,
                                   size_t group_id,
-                                  matrix **x_train,
-                                  matrix **y_train,
-                                  matrix **x_test,
-                                  matrix **y_test)
+                                  matrix *x_train,
+                                  matrix *y_train,
+                                  matrix *x_test,
+                                  matrix *y_test)
 {
   /* Estimate how many objects are utilised to build the model and how many to predict */
   size_t i, j, k, l, n;
@@ -83,10 +83,10 @@ void kfold_group_train_test_split(matrix *x,
         int a =  (int)gid->data[i][j]; /* get the row index */
         if(a != -1){
           for(n = 0; n < x->col; n++){
-            (*x_train)->data[k][n] = x->data[a][n];
+            x_train->data[k][n] = x->data[a][n];
           }
           for(n = 0; n < y->col; n++){
-            (*y_train)->data[k][n] = y->data[a][n];
+            y_train->data[k][n] = y->data[a][n];
           }
           k++;
         }
@@ -100,12 +100,10 @@ void kfold_group_train_test_split(matrix *x,
         int a = (int)gid->data[i][j];
         if(a != -1){
           for(n = 0; n < x->col; n++){
-            //printf("x row: %ld/%ld x col  %ld/%ld; x_test row: %ld/%ld col %ld/%ld\n", a,x->row, n,x->col, l,(*x_test)->row, n,(*x_test)->col);
-            (*x_test)->data[l][n] = x->data[a][n];
+            x_test->data[l][n] = x->data[a][n];
           }
           for(n = 0; n < y->col; n++){
-            //printf("y row: %ld/%ld y col  %ld/%ld; y_train row: %ld/%ld col %ld/%ld\n", a,y->row, n,y->col, l,(*y_test)->row, n,(*y_test)->col);
-            (*y_test)->data[l][n] = y->data[a][n];
+            y_test->data[l][n] = y->data[a][n];
           }
           l++;
         }
@@ -120,11 +118,11 @@ void kfold_group_train_test_split(matrix *x,
 void train_test_split(matrix *x,
                       matrix *y,
                       double testsize,
-                      matrix **x_train,
-                      matrix **y_train,
-                      matrix **x_test,
-                      matrix **y_test,
-                      uivector **testids,
+                      matrix *x_train,
+                      matrix *y_train,
+                      matrix *x_test,
+                      matrix *y_test,
+                      uivector *testids,
                       unsigned int *srand_init)
 {
   size_t i, j, n, testsize_;
@@ -144,24 +142,24 @@ void train_test_split(matrix *x,
   for(i = 0; i < testsize_; i++){
     do{
       n = (size_t)myrand_r(srand_init) % x->row;
-    } while(UIVectorHasValue((*testids), n) == 0);
+    } while(UIVectorHasValue(testids, n) == 0);
     UIVectorAppend(testids, n);
 
     for(j = 0; j < x->col; j++){
-      (*x_test)->data[i][j] = x->data[n][j];
+      x_test->data[i][j] = x->data[n][j];
     }
     for(j = 0; j < y->col; j++){
-      (*y_test)->data[i][j] = y->data[n][j];
+      y_test->data[i][j] = y->data[n][j];
     }
   }
   /* Fill training set */
   for(i = 0, n = 0; i < x->row; i++){
-    if(UIVectorHasValue((*testids), i) == 1){
+    if(UIVectorHasValue(testids, i) == 1){
       for(j = 0; j < x->col; j++){
-        (*x_train)->data[n][j] = x->data[i][j];
+        x_train->data[n][j] = x->data[i][j];
       }
       for(j = 0; j < y->col; j++){
-        (*y_train)->data[n][j] = y->data[i][j];
+        y_train->data[n][j] = y->data[i][j];
       }
       n++;
     }
@@ -201,7 +199,7 @@ void *PLSRandomGroupCVModel(void *arg_)
 
   /* step 1 generate the random groups */
   initMatrix(&gid);
-  random_kfold_group_generator(&gid, arg->group, arg->mx->row, &arg->srand_init);
+  random_kfold_group_generator(gid, arg->group, arg->mx->row, &arg->srand_init);
 
   /*
   puts("Gid Matrix");
@@ -216,13 +214,20 @@ void *PLSRandomGroupCVModel(void *arg_)
     initMatrix(&x_test);
     initMatrix(&y_test); /* unused variable here .... */
 
-    kfold_group_train_test_split(arg->mx, arg->my, gid, g, &x_train,&y_train,&x_test, &y_test);
+    kfold_group_train_test_split(arg->mx,
+                                 arg->my,
+                                 gid,
+                                 g,
+                                 x_train,
+                                 y_train,
+                                 x_test,
+                                 y_test);
 
     NewPLSModel(&subm);
 
     PLS(x_train, y_train, arg->nlv, arg->xautoscaling, arg->yautoscaling, subm, NULL);
     initMatrix(&y_test_predicted);
-    PLSYPredictorAllLV(x_test, subm, NULL, &y_test_predicted);
+    PLSYPredictorAllLV(x_test, subm, NULL, y_test_predicted);
 
     for(j = 0, k = 0; j < gid->col; j++){
       int a = (int)gid->data[g][j]; /*object id*/
@@ -271,7 +276,7 @@ void *MLRRandomGroupCVModel(void *arg_)
 
   /* step 1 generate the random groups */
   initMatrix(&gid);
-  random_kfold_group_generator(&gid, arg->group, arg->mx->row, &arg->srand_init);
+  random_kfold_group_generator(gid, arg->group, arg->mx->row, &arg->srand_init);
 
   /*
   puts("Gid Matrix");
@@ -290,17 +295,17 @@ void *MLRRandomGroupCVModel(void *arg_)
                                  arg->my,
                                  gid,
                                  g,
-                                 &x_train,
-                                 &y_train,
-                                 &x_test,
-                                 &y_test);
+                                 x_train,
+                                 y_train,
+                                 x_test,
+                                 y_test);
 
     NewMLRModel(&subm);
 
     MLR(x_train, y_train, subm, NULL);
 
     initMatrix(&y_test_predicted);
-    MLRPredictY(x_test, NULL, subm, &y_test_predicted, NULL, NULL, NULL);
+    MLRPredictY(x_test, NULL, subm, y_test_predicted, NULL, NULL, NULL);
 
     for(j = 0, k = 0; j < gid->col; j++){
       int a = (int)gid->data[g][j]; /*object id*/
@@ -349,7 +354,7 @@ void *EPLSRandomGroupCVModel(void *arg_)
 
   /* step 1 generate the random groups */
   initMatrix(&gid);
-  random_kfold_group_generator(&gid,
+  random_kfold_group_generator(gid,
                                arg->group,
                                arg->mx->row,
                                &arg->srand_init);
@@ -365,7 +370,14 @@ void *EPLSRandomGroupCVModel(void *arg_)
     initMatrix(&y_train);
     initMatrix(&x_test);
     initMatrix(&y_test); /* unused variable here .... */
-    kfold_group_train_test_split(arg->mx, arg->my, gid, g, &x_train,&y_train,&x_test, &y_test);
+    kfold_group_train_test_split(arg->mx,
+                                 arg->my,
+                                 gid,
+                                 g,
+                                 x_train,
+                                 y_train,
+                                 x_test,
+                                 y_test);
 
     NewEPLSModel(&subm);
 
@@ -432,7 +444,7 @@ void *LDARandomGroupCVModel(void *arg_)
 
   /* step 1 generate the random groups */
   initMatrix(&gid);
-  random_kfold_group_generator(&gid, arg->group, arg->mx->row, &arg->srand_init);
+  random_kfold_group_generator(gid, arg->group, arg->mx->row, &arg->srand_init);
 
   /*
   puts("Gid Matrix");
@@ -451,10 +463,10 @@ void *LDARandomGroupCVModel(void *arg_)
                                  arg->my,
                                  gid,
                                  g,
-                                 &x_train,
-                                 &y_train,
-                                 &x_test,
-                                 &y_test);
+                                 x_train,
+                                 y_train,
+                                 x_test,
+                                 y_test);
 
     NewLDAModel(&subm);
 
@@ -465,7 +477,7 @@ void *LDARandomGroupCVModel(void *arg_)
     initMatrix(&probability);
     initMatrix(&mnpdf);
 
-    LDAPrediction(x_test, subm, &pfeatures, &probability, &mnpdf, &y_test_predicted);
+    LDAPrediction(x_test, subm, pfeatures, probability, mnpdf, y_test_predicted);
 
     for(j = 0, k = 0; j < gid->col; j++){
       int a = (int)gid->data[g][j]; /*object id*/
@@ -501,8 +513,8 @@ void BootstrapRandomGroupsCV(MODELINPUT *input,
                              size_t group,
                              size_t iterations,
                              AlgorithmType algo,
-                             matrix **predicted_y,
-                             matrix **pred_residuals,
+                             matrix *predicted_y,
+                             matrix *pred_residuals,
                              size_t nthreads,
                              ssignal *s,
                              int arg,
@@ -517,11 +529,16 @@ void BootstrapRandomGroupsCV(MODELINPUT *input,
   ELearningParameters eparm;
   CombinationRule crule = Averaging;
 
-  if(input->nlv > mx->col){
-    nlv = mx->col;
+  if(algo == _PLS_ || algo == _PLS_DA_ || algo == _EPLS_ || algo == _EPLS_DA_){
+    if(input->nlv > mx->col){
+      nlv = mx->col;
+    }
+    else{
+      nlv = input->nlv;
+    }
   }
   else{
-    nlv = input->nlv;
+    nlv = 0;
   }
 
   if(arg > 0){
@@ -641,10 +658,10 @@ void BootstrapRandomGroupsCV(MODELINPUT *input,
         sum_ypredictions->data[i][j] /= (double)predictcounter->data[i];
 
         if(predicted_y != NULL)
-          (*predicted_y)->data[i][j] = sum_ypredictions->data[i][j];
+          predicted_y->data[i][j] = sum_ypredictions->data[i][j];
 
         if(pred_residuals != NULL)
-          (*pred_residuals)->data[i][j] = sum_ypredictions->data[i][j] - my->data[i][(size_t)floor(j/nlv)];
+          pred_residuals->data[i][j] = sum_ypredictions->data[i][j] - my->data[i][(size_t)floor(j/nlv)];
       }
     }
 
@@ -692,7 +709,7 @@ void *MLRLOOModel_(void *arg_)
 
   MLR(arg->x_train, arg->y_train, subm, NULL);
 
-  MLRPredictY(arg->x_test, NULL, subm, &arg->y_test_predicted, NULL, NULL, NULL);
+  MLRPredictY(arg->x_test, NULL, subm, arg->y_test_predicted, NULL, NULL, NULL);
 
   DelMLRModel(&subm);
   return 0;
@@ -707,7 +724,7 @@ void *PLSLOOModel_(void *arg_)
   NewPLSModel(&subm);
   PLS(arg->x_train, arg->y_train, arg->nlv, arg->xautoscaling, arg->yautoscaling, subm, NULL);
   /* Predict Y for each latent variable */
-  PLSYPredictorAllLV(arg->x_test, subm, NULL, &arg->y_test_predicted);
+  PLSYPredictorAllLV(arg->x_test, subm, NULL, arg->y_test_predicted);
   DelPLSModel(&subm);
   return 0;
 }
@@ -741,7 +758,7 @@ void *LDALOOModel_(void *arg_)
   initMatrix(&probability);
   initMatrix(&mnpdf);
 
-  LDAPrediction(arg->x_test, subm, &pfeatures, &probability, &mnpdf, &arg->y_test_predicted);
+  LDAPrediction(arg->x_test, subm, pfeatures, probability, mnpdf, arg->y_test_predicted);
 
   DelMatrix(&mnpdf);
   DelMatrix(&probability);
@@ -752,8 +769,8 @@ void *LDALOOModel_(void *arg_)
 
 void LeaveOneOut(MODELINPUT *input,
                  AlgorithmType algo,
-                 matrix** predicted_y,
-                 matrix **pred_residuals,
+                 matrix *predicted_y,
+                 matrix *pred_residuals,
                  size_t nthreads,
                  ssignal *s,
                  int arg_,
@@ -773,11 +790,16 @@ void LeaveOneOut(MODELINPUT *input,
   ELearningParameters eparm;
   CombinationRule crule = Averaging;
 
-  if(input->nlv > mx->col){
-    nlv = mx->col;
+  if(algo == _PLS_ || algo == _PLS_DA_ || algo == _EPLS_ || algo == _EPLS_DA_){
+    if(input->nlv > mx->col){
+      nlv = mx->col;
+    }
+    else{
+      nlv = input->nlv;
+    }
   }
   else{
-    nlv = input->nlv;
+    nlv = 0;
   }
 
   if(arg_ > 0){
@@ -912,14 +934,14 @@ void LeaveOneOut(MODELINPUT *input,
     /*Finalize the output by dividing for the number of models*/
     if(predicted_y != NULL){
       ResizeMatrix(predicted_y, loopredictedy->row, loopredictedy->col);
-      MatrixCopy(loopredictedy, predicted_y);
+      MatrixCopy(loopredictedy, &predicted_y);
     }
 
     if(pred_residuals != NULL){
       ResizeMatrix(pred_residuals, my->row, my->col*nlv); /* each component have my->col ypsilon */
       for(i = 0; i < loopredictedy->row; i++){
         for(j = 0; j < loopredictedy->col; j++){
-          (*pred_residuals)->data[i][j] = loopredictedy->data[i][j] - my->data[i][(size_t)floor(j/nlv)];
+          pred_residuals->data[i][j] = loopredictedy->data[i][j] - my->data[i][(size_t)floor(j/nlv)];
         }
       }
     }
@@ -937,8 +959,8 @@ void LeaveOneOut(MODELINPUT *input,
 void KFoldCV(MODELINPUT *input,
              uivector *groups,
              AlgorithmType algo,
-             matrix **predicted_y,
-             matrix **pred_residuals,
+             matrix *predicted_y,
+             matrix *pred_residuals,
              size_t nthreads,
              ssignal *s,
              int arg,
@@ -1062,7 +1084,14 @@ void KFoldCV(MODELINPUT *input,
             initMatrix(&kcv_arg[th].x_test);
             initMatrix(&kcv_arg[th].y_test);
             initMatrix(&kcv_arg[th].y_test_predicted);
-            kfold_group_train_test_split(mx, my, gid, it+th, &kcv_arg[th].x_train, &kcv_arg[th].y_train, &kcv_arg[th].x_test, &kcv_arg[th].y_test);
+            kfold_group_train_test_split(mx,
+                                         my,
+                                         gid,
+                                         it+th,
+                                         kcv_arg[th].x_train,
+                                         kcv_arg[th].y_train,
+                                         kcv_arg[th].x_test,
+                                         kcv_arg[th].y_test);
 
             if(algo == _PLS_ || algo == _PLS_DA_){
               pthread_create(&threads[th], NULL, PLSLOOModel_, (void*) &kcv_arg[th]);
@@ -1119,7 +1148,7 @@ void KFoldCV(MODELINPUT *input,
     /*Finalize the output by dividing for the number of times that the object was predicted*/
 
     if(predicted_y != NULL){
-      MatrixCopy(y_predicted, predicted_y);
+      MatrixCopy(y_predicted, &predicted_y);
     }
 
     if(pred_residuals != NULL){
@@ -1127,7 +1156,7 @@ void KFoldCV(MODELINPUT *input,
 
       for(i = 0; i < y_predicted->row; i++){
         for(j = 0; j < y_predicted->col; j++){
-          (*pred_residuals)->data[i][j] = y_predicted->data[i][j] - my->data[i][(size_t)floor(j/nlv)];
+          pred_residuals->data[i][j] = y_predicted->data[i][j] - my->data[i][(size_t)floor(j/nlv)];
         }
       }
     }
@@ -1161,8 +1190,8 @@ void PLSRegressionYScramblingPipeline(matrix *mx,
                                       size_t nlv,
                                       ValidationArg varg,
                                       size_t nthreads,
-                                      dvector **r2,
-                                      dvector **q2)
+                                      dvector *r2,
+                                      dvector *q2)
 {
   size_t i;
   PLSMODEL *tmpmod;
@@ -1182,30 +1211,30 @@ void PLSRegressionYScramblingPipeline(matrix *mx,
   initMatrix(&py);
   initMatrix(&pres);
   if(varg.vtype == LOO){
-    LeaveOneOut(&minpt, _PLS_, &py, &pres, nthreads, NULL, 0);
+    LeaveOneOut(&minpt, _PLS_, py, pres, nthreads, NULL, 0);
   }
   else{
-    BootstrapRandomGroupsCV(&minpt, 3, 100, _PLS_, &py, &pres, 4, NULL, 0);
+    BootstrapRandomGroupsCV(&minpt, 3, 100, _PLS_, py, pres, 4, NULL, 0);
   }
 
   initMatrix(&tmpq2);
-  PLSRegressionStatistics(my, py, &tmpq2, NULL, NULL);
+  PLSRegressionStatistics(my, py, tmpq2, NULL, NULL);
 
   /*Computer r2y*/
   NewPLSModel(&tmpmod);
   PLS(mx, my, nlv, xautoscaling, yautoscaling, tmpmod, NULL);
 
   initMatrix(&yrec);
-  PLSYPredictorAllLV(mx, tmpmod, NULL, &yrec);
-  PLSRegressionStatistics(my, yrec, &(tmpmod->r2y_recalculated), NULL, NULL);
+  PLSYPredictorAllLV(mx, tmpmod, NULL, yrec);
+  PLSRegressionStatistics(my, yrec, tmpmod->r2y_recalculated, NULL, NULL);
 
   /* Calculate y real vs yscrambled and add other r2 q2 */
   size_t r2cutoff = GetLVCCutoff(tmpmod->r2y_recalculated);
   size_t q2cutoff = GetLVCCutoff(tmpq2);
 
   for(i = 0; i < my->col; i++){
-    (*r2)->data[i] = tmpmod->r2y_recalculated->data[r2cutoff][i];
-    (*q2)->data[i] = tmpq2->data[q2cutoff][i];
+    r2->data[i] = tmpmod->r2y_recalculated->data[r2cutoff][i];
+    q2->data[i] = tmpq2->data[q2cutoff][i];
   }
 
   DelMatrix(&yrec);
@@ -1222,8 +1251,8 @@ void PLSDiscriminantAnalysisYScramblingPipeline(matrix *mx,
                                                 size_t nlv,
                                                 ValidationArg varg,
                                                 size_t nthreads,
-                                                dvector **auc_recalc_,
-                                                dvector **auc_validation_)
+                                                dvector *auc_recalc_,
+                                                dvector *auc_validation_)
 {
   size_t i;
   PLSMODEL *tmpmod;
@@ -1245,10 +1274,10 @@ void PLSDiscriminantAnalysisYScramblingPipeline(matrix *mx,
   initMatrix(&py);
   initMatrix(&pres);
   if(varg.vtype == LOO){
-    LeaveOneOut(&minpt, _PLS_, &py, &pres, nthreads, NULL, 0);
+    LeaveOneOut(&minpt, _PLS_, py, pres, nthreads, NULL, 0);
   }
   else{
-    BootstrapRandomGroupsCV(&minpt, 3, 100, _PLS_, &py, &pres, 4, NULL, 0);
+    BootstrapRandomGroupsCV(&minpt, 3, 100, _PLS_, py, pres, 4, NULL, 0);
   }
 
 
@@ -1256,19 +1285,20 @@ void PLSDiscriminantAnalysisYScramblingPipeline(matrix *mx,
   NewPLSModel(&tmpmod);
   PLS(mx, my, nlv, xautoscaling, yautoscaling, tmpmod, NULL);
   initMatrix(&yrec);
-  PLSYPredictorAllLV(mx, tmpmod, NULL, &yrec);
-  PLSDiscriminantAnalysisStatistics(my, yrec, NULL, &auc_recalc, NULL, NULL);
+  initMatrix(&auc_recalc);
+  PLSYPredictorAllLV(mx, tmpmod, NULL, yrec);
+  PLSDiscriminantAnalysisStatistics(my, yrec, NULL, auc_recalc, NULL, NULL);
 
   /*compute the model invalidation */
   initMatrix(&auc_validation);
-  PLSDiscriminantAnalysisStatistics(my, py, NULL, &auc_validation, NULL, NULL);
+  PLSDiscriminantAnalysisStatistics(my, py, NULL, auc_validation, NULL, NULL);
 
   /* Calculate y real vs yscrambled and add other r2 q2 */
   size_t auc_cutoff = GetLVCCutoff(auc_validation);
 
   for(i = 0; i < my->col; i++){
-    (*auc_recalc_)->data[i] = auc_recalc->data[auc_cutoff][i];
-    (*auc_validation_)->data[i] = auc_validation->data[auc_cutoff][i];
+    auc_recalc_->data[i] = auc_recalc->data[auc_cutoff][i];
+    auc_validation_->data[i] = auc_validation->data[auc_cutoff][i];
   }
 
   DelMatrix(&yrec);
@@ -1284,8 +1314,8 @@ void MLRYScramblingPipeline(matrix *mx,
                             matrix *my,
                             ValidationArg varg,
                             size_t nthreads,
-                            dvector **r2,
-                            dvector **q2)
+                            dvector *r2,
+                            dvector *q2)
 {
   size_t i;
   MLRMODEL *tmpmod;
@@ -1302,25 +1332,25 @@ void MLRYScramblingPipeline(matrix *mx,
   initMatrix(&py);
   initMatrix(&pres);
   if(varg.vtype == LOO){
-    LeaveOneOut(&minpt, _MLR_, &py, &pres, nthreads, NULL, 0);
+    LeaveOneOut(&minpt, _MLR_, py, pres, nthreads, NULL, 0);
   }
   else{
-    BootstrapRandomGroupsCV(&minpt, 3, 100, _MLR_, &py, &pres, 4, NULL, 0);
+    BootstrapRandomGroupsCV(&minpt, 3, 100, _MLR_, py, pres, 4, NULL, 0);
   }
 
   initDVector(&tmpq2);
-  MLRRegressionStatistics(my, py, &tmpq2, NULL, NULL);
+  MLRRegressionStatistics(my, py, tmpq2, NULL, NULL);
 
   /*Computer r2y*/
   NewMLRModel(&tmpmod);
   MLR(mx, my, tmpmod, NULL);
 
   initMatrix(&yrec);
-  MLRPredictY(mx, my, tmpmod, &yrec,  NULL, &(tmpmod->r2y_model), NULL);
+  MLRPredictY(mx, my, tmpmod, yrec,  NULL, tmpmod->r2y_model, NULL);
 
   for(i = 0; i < my->col; i++){
-    (*r2)->data[i] = tmpmod->r2y_model->data[i];
-    (*q2)->data[i] = tmpq2->data[i];
+    r2->data[i] = tmpmod->r2y_model->data[i];
+    q2->data[i] = tmpq2->data[i];
   }
 
   DelMatrix(&yrec);
@@ -1335,8 +1365,8 @@ void LDAYScramblingPipeline(matrix *mx,
                             matrix *my,
                             ValidationArg varg,
                             size_t nthreads,
-                            dvector **auc_recalc_,
-                            dvector **auc_validation_)
+                            dvector *auc_recalc_,
+                            dvector *auc_validation_)
 {
   size_t i;
   LDAMODEL *tmpmod;
@@ -1355,10 +1385,10 @@ void LDAYScramblingPipeline(matrix *mx,
   /*compude q2y*/
   initMatrix(&py);
   if(varg.vtype == LOO){
-    LeaveOneOut(&minpt, _LDA_, &py, NULL, nthreads, NULL, 0);
+    LeaveOneOut(&minpt, _LDA_, py, NULL, nthreads, NULL, 0);
   }
   else{
-    BootstrapRandomGroupsCV(&minpt, 3, 100, _LDA_, &py, NULL, 4, NULL, 0);
+    BootstrapRandomGroupsCV(&minpt, 3, 100, _LDA_, py, NULL, 4, NULL, 0);
   }
 
   /*Computer the model in recalculation */
@@ -1370,7 +1400,7 @@ void LDAYScramblingPipeline(matrix *mx,
   initMatrix(&probability);
   initMatrix(&mnpdf);
 
-  LDAPrediction(mx, tmpmod, &pfeatures, &probability, &mnpdf, &yrec);
+  LDAPrediction(mx, tmpmod, pfeatures, probability, mnpdf, yrec);
 
   DelMatrix(&pfeatures);
   DelMatrix(&probability);
@@ -1381,13 +1411,14 @@ void LDAYScramblingPipeline(matrix *mx,
   LDAMulticlassStatistics(my,
                           yrec,
                           NULL,
-                          &roc_auc,
+                          roc_auc,
                           NULL,
-                          &pr_auc);
+                          pr_auc);
 
   for(i = 0; i < roc_auc->size; i++){
-    (*auc_recalc_)->data[i] = roc_auc->data[i];
+    auc_recalc_->data[i] = roc_auc->data[i];
   }
+
   DelDVector(&roc_auc);
   DelDVector(&pr_auc);
   initDVector(&roc_auc);
@@ -1395,11 +1426,11 @@ void LDAYScramblingPipeline(matrix *mx,
   LDAMulticlassStatistics(my,
                           py,
                           NULL,
-                          &roc_auc,
+                          roc_auc,
                           NULL,
-                          &pr_auc);
+                          pr_auc);
   for(i = 0; i < roc_auc->size; i++){
-    (*auc_validation_)->data[i] = roc_auc->data[i];
+    auc_validation_->data[i] = roc_auc->data[i];
   }
   DelDVector(&roc_auc);
   DelDVector(&pr_auc);
@@ -1411,7 +1442,7 @@ void LDAYScramblingPipeline(matrix *mx,
 
 void PermutedObservetCorrelation(matrix *my_true,
                                  matrix *my_perm,
-                                 dvector **ccoef,
+                                 dvector *ccoef,
                                  AlgorithmType algo)
 {
   size_t i, j;
@@ -1424,8 +1455,8 @@ void PermutedObservetCorrelation(matrix *my_true,
     initDVector(&yp);
 
     for(i = 0; i < my_true->row; i++){
-      DVectorAppend(&yt, my_true->data[i][j]);
-      DVectorAppend(&yp, my_perm->data[i][j]);
+      DVectorAppend(yt, my_true->data[i][j]);
+      DVectorAppend(yp, my_perm->data[i][j]);
     }
 
     if(algo == _PLS_ ||
@@ -1436,10 +1467,10 @@ void PermutedObservetCorrelation(matrix *my_true,
     else{
       matrix *roc;
       initMatrix(&roc);
-      ROC(yt, yp, &roc, &score);
+      ROC(yt, yp, roc, &score);
       DelMatrix(&roc);
     }
-    (*ccoef)->data[j] = score;
+    ccoef->data[j] = score;
     DelDVector(&yt);
     DelDVector(&yp);
   }
@@ -1449,11 +1480,11 @@ void YScrambling(MODELINPUT *input,
                  AlgorithmType algo,
                  ValidationArg varg,
                  size_t iterations,
-                 matrix **ccoeff_yscrambling,
+                 matrix *ccoeff_yscrambling,
                  size_t nthreads,
                  ssignal *s)
 {
-  size_t i, j, k, it;
+  size_t i, j, k, it, outcols;
   double ytmp;
 
   matrix *mx, *my;
@@ -1475,11 +1506,13 @@ void YScrambling(MODELINPUT *input,
    *  1: r2 for the model
    *  2: q2 for the model
    */
-  ResizeMatrix(ccoeff_yscrambling, 1+iterations, 3);
+
+
   if(algo == _PLS_ || algo == _PLS_DA_ || algo == _MLR_){
     NewDVector(&corrpermobs, my->col);
     NewDVector(&coeff_int, my->col);
     NewDVector(&coeff_valid, my->col);
+    outcols = my->col;
   }
   else{
     int n_classes = getNClasses((*input->my));
@@ -1489,9 +1522,13 @@ void YScrambling(MODELINPUT *input,
     NewDVector(&corrpermobs, n_classes);
     NewDVector(&coeff_int, n_classes);
     NewDVector(&coeff_valid, n_classes);
+    outcols = n_classes;
   }
 
-  PermutedObservetCorrelation(my, my, &corrpermobs, algo);
+
+  ResizeMatrix(ccoeff_yscrambling, 1+iterations, 3*outcols);
+
+  PermutedObservetCorrelation(my, my, corrpermobs, algo);
   /*The first row is the model not scrambled...*/
   if(algo == _PLS_){
     PLSRegressionYScramblingPipeline(mx,
@@ -1501,8 +1538,8 @@ void YScrambling(MODELINPUT *input,
                                      input->nlv,
                                      varg,
                                      nthreads,
-                                     &coeff_int,
-                                     &coeff_valid);
+                                     coeff_int,
+                                     coeff_valid);
   }
   else if(algo == _PLS_DA_){
     PLSDiscriminantAnalysisYScramblingPipeline(mx,
@@ -1512,31 +1549,33 @@ void YScrambling(MODELINPUT *input,
                                                input->nlv,
                                                varg,
                                                nthreads,
-                                               &coeff_int,
-                                               &coeff_valid);
+                                               coeff_int,
+                                               coeff_valid);
   }
   else if(algo == _MLR_){
     MLRYScramblingPipeline(mx,
                            my,
                            varg,
                            nthreads,
-                           &coeff_int,
-                           &coeff_valid);
+                           coeff_int,
+                           coeff_valid);
   }
   else if(algo == _LDA_){
     LDAYScramblingPipeline(mx,
                            my,
                            varg,
                            nthreads,
-                           &coeff_int,
-                           &coeff_valid);
+                           coeff_int,
+                           coeff_valid);
   }
 
-  for(j = 0; j < my->col; j++){
-    size_t mult = j*my->col;
-    (*ccoeff_yscrambling)->data[0][mult] = corrpermobs->data[j];
-    (*ccoeff_yscrambling)->data[0][mult+1] = coeff_int->data[j];
-    (*ccoeff_yscrambling)->data[0][mult+2] = coeff_valid->data[j];
+  for(j = 0, k = 0; j < outcols; j++){
+    ccoeff_yscrambling->data[0][k] = corrpermobs->data[j];
+    k++;
+    ccoeff_yscrambling->data[0][k] = coeff_int->data[j];
+    k++;
+    ccoeff_yscrambling->data[0][k] = coeff_valid->data[j];
+    k++;
   }
 
   for(it = 0; it < iterations; it++){
@@ -1553,7 +1592,7 @@ void YScrambling(MODELINPUT *input,
       }
     }
 
-    PermutedObservetCorrelation(my, randomY, &corrpermobs, algo);
+    PermutedObservetCorrelation(my, randomY, corrpermobs, algo);
     /*The first row is the model not scrambled...*/
     if(algo == _PLS_){
       PLSRegressionYScramblingPipeline(mx,
@@ -1563,8 +1602,8 @@ void YScrambling(MODELINPUT *input,
                                        input->nlv,
                                        varg,
                                        nthreads,
-                                       &coeff_int,
-                                       &coeff_valid);
+                                       coeff_int,
+                                       coeff_valid);
     }
     else if(algo == _PLS_DA_){
       PLSDiscriminantAnalysisYScramblingPipeline(mx,
@@ -1574,36 +1613,39 @@ void YScrambling(MODELINPUT *input,
                                                  input->nlv,
                                                  varg,
                                                  nthreads,
-                                                 &coeff_int,
-                                                 &coeff_valid);
+                                                 coeff_int,
+                                                 coeff_valid);
     }
     else if(algo == _MLR_){
       MLRYScramblingPipeline(mx,
                              randomY,
                              varg,
                              nthreads,
-                             &coeff_int,
-                             &coeff_valid);
+                             coeff_int,
+                             coeff_valid);
     }
     else if(algo == _LDA_){
       LDAYScramblingPipeline(mx,
                              randomY,
                              varg,
                              nthreads,
-                             &coeff_int,
-                             &coeff_valid);
+                             coeff_int,
+                             coeff_valid);
     }
 
 
-    for(j = 0; j < my->col; j++){
-      size_t mult = j*my->col;
-      (*ccoeff_yscrambling)->data[it+1][mult] = corrpermobs->data[j];
-      (*ccoeff_yscrambling)->data[it+1][mult+1] = coeff_int->data[j];
-      (*ccoeff_yscrambling)->data[it+1][mult+2] = coeff_valid->data[j];
+    for(j = 0, k = 0; j < outcols; j++){
+      ccoeff_yscrambling->data[it+1][k] = corrpermobs->data[j];
+      k++;
+      ccoeff_yscrambling->data[it+1][k] = coeff_int->data[j];
+      k++;
+      ccoeff_yscrambling->data[it+1][k] = coeff_valid->data[j];
+      k++;
     }
+
   }
 
-
+  PrintDVector(corrpermobs);
   DelDVector(&coeff_valid);
   DelDVector(&coeff_int);
   DelDVector(&corrpermobs);

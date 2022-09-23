@@ -140,7 +140,11 @@ double BIAS(dvector *ytrue, dvector *ypred)
  *
  * Sensitivity = TP / TP + FN
  */
-void Sensitivity(dvector *dtp, double thmin, double thmax, double thstep, matrix** s)
+void Sensitivity(dvector *dtp,
+                 double thmin,
+                 double thmax,
+                 double thstep,
+                 matrix *s)
 {
   size_t i, row, tp, fn;
   double dx;
@@ -150,7 +154,7 @@ void Sensitivity(dvector *dtp, double thmin, double thmax, double thstep, matrix
   row = 0;
   dx = thstep;
 
-  for(row = 0; row < (*s)->row; row++){
+  for(row = 0; row < s->row; row++){
     tp = fn = 0;
 
     for(i = 0; i < dtp->size; i++){
@@ -168,10 +172,12 @@ void Sensitivity(dvector *dtp, double thmin, double thmax, double thstep, matrix
     }
 
     if(tp == 0){
-      setMatrixValue((*s), row, 0, dx); setMatrixValue((*s), row, 1, 0);
+      s->data[row][0] = dx;
+      s->data[row][1] = 0.f;
     }
     else{
-      setMatrixValue((*s), row, 0, dx); setMatrixValue((*s), row, 1, (double)tp/(double)(tp+fn));
+      s->data[row][0] = dx;
+      s->data[row][1] = (double)tp/(double)(tp+fn);
     }
 
     dx+=thstep;
@@ -185,7 +191,12 @@ void Sensitivity(dvector *dtp, double thmin, double thmax, double thstep, matrix
  *
  * PPV = TP / TP + FP
  */
-void PositivePredictedValue(dvector* dtp, dvector* dtn, double thmin, double thmax, double thstep, matrix** p)
+void PositivePredictedValue(dvector* dtp,
+                            dvector* dtn,
+                            double thmin,
+                            double thmax,
+                            double thstep,
+                            matrix *p)
 {
   size_t i, row, tp, fp;
   double dx;
@@ -195,7 +206,7 @@ void PositivePredictedValue(dvector* dtp, dvector* dtn, double thmin, double thm
   row = 0;
   dx = thstep;
 
-  for(row = 0; row < (*p)->row; row++){
+  for(row = 0; row < p->row; row++){
     tp = fp = 0;
 
     for(i = 0; i < dtp->size; i++){
@@ -223,10 +234,12 @@ void PositivePredictedValue(dvector* dtp, dvector* dtn, double thmin, double thm
     }
 
     if(tp == 0){
-      setMatrixValue((*p), row, 0, dx); setMatrixValue((*p), row, 1, 0);
+      p->data[row][0] = dx;
+      p->data[row][1] = 0;
     }
     else{
-      setMatrixValue((*p), row, 0, dx); setMatrixValue((*p), row, 1, (double)tp/(double)(tp+fp));
+      p->data[row][0] = dx;
+      p->data[row][1] = (double)tp/(double)(tp+fp);
     }
 
     dx+=thstep;
@@ -244,7 +257,7 @@ void MatrixCode(matrix* inmx, matrix* outmx)
 {
   size_t i, j;
   double min, nmin, max, nmax, mid, step, tmp;
-  ResizeMatrix(&outmx, inmx->row, inmx->col);
+  ResizeMatrix(outmx, inmx->row, inmx->col);
 
   for(j = 0; j < inmx->col; j++){
     min = max = nmin = nmax = getMatrixValue(inmx, 0, j);
@@ -320,7 +333,7 @@ void BifactorialMatrixExpansion(matrix* inmx, matrix* outmx)
     comb = (n / (n_k *2));
   }
 
-  ResizeMatrix(&outmx, inmx->row, 2*inmx->col + comb + 1);
+  ResizeMatrix(outmx, inmx->row, 2*inmx->col + comb + 1);
 
 
   /* Generate the matrix */
@@ -358,13 +371,13 @@ void YatesVarEffect(matrix* mx, dvector* veff)
  *
  * Calculate the roc curve to plot and it's AUC
  */
-void ROC(dvector *y_true, dvector *y_score,  matrix **roc, double *auc)
+void ROC(dvector *y_true, dvector *y_score,  matrix *roc, double *auc)
 {
   size_t i;
   matrix *yy;
   initMatrix(&yy);
-  MatrixAppendCol(&yy, y_true);
-  MatrixAppendCol(&yy, y_score);
+  MatrixAppendCol(yy, y_true);
+  MatrixAppendCol(yy, y_score);
   MatrixReverseSort(yy, 1); /* sort by y_score*/
 
   dvector *roc_row;
@@ -407,7 +420,7 @@ void ROC(dvector *y_true, dvector *y_score,  matrix **roc, double *auc)
   }
   DelDVector(&roc_row);
   DelMatrix(&yy);
-  (*auc) = curve_area((*roc), 0);
+  (*auc) = curve_area(roc, 0);
   if(_isnan_((*auc)))
     (*auc) = 0.f;
 }
@@ -420,13 +433,16 @@ void ROC(dvector *y_true, dvector *y_score,  matrix **roc, double *auc)
  *
  * Calculate the precision-recall curve to plot and it's average precision
  */
-void PrecisionRecall(dvector *y_true, dvector *y_score,  matrix **pr, double *ap)
+void PrecisionRecall(dvector *y_true,
+                     dvector *y_score,
+                     matrix *pr,
+                     double *ap)
 {
   size_t i;
   matrix *yy;
   initMatrix(&yy);
-  MatrixAppendCol(&yy, y_true);
-  MatrixAppendCol(&yy, y_score);
+  MatrixAppendCol(yy, y_true);
+  MatrixAppendCol(yy, y_score);
   MatrixReverseSort(yy, 1); /* sort by y_score*/
 
   dvector *pr_row;
@@ -436,7 +452,7 @@ void PrecisionRecall(dvector *y_true, dvector *y_score,  matrix **pr, double *ap
   MatrixAppendRow(pr, pr_row);
   /*Calculate the number of tp and tn*/
   size_t n_tp = 0;
-  size_t n_tn = 0;
+
   for(i = 0; i < yy->row; i++){
     if(FLOAT_EQ(yy->data[i][0], MISSING, 1e-1)){
       continue;
@@ -445,8 +461,6 @@ void PrecisionRecall(dvector *y_true, dvector *y_score,  matrix **pr, double *ap
       if(FLOAT_EQ(yy->data[i][0], 1.0, 1e-1) == 1){
         n_tp += 1;
       }
-      else
-        n_tn += 1;
     }
   }
 
@@ -470,7 +484,7 @@ void PrecisionRecall(dvector *y_true, dvector *y_score,  matrix **pr, double *ap
   }
   DelDVector(&pr_row);
   DelMatrix(&yy);
-  (*ap) = curve_area((*pr), 0);
+  (*ap) = curve_area(pr, 0);
   if(_isnan_((*ap)))
     (*ap) = 0.f;
 }

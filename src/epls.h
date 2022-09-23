@@ -81,14 +81,23 @@ void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, tensor
  *              the bias of the prediction (bias) in a regression model.
  *              mx and my could be the training or the test datasets.
  */
-void EPLSRegressionStatistics(matrix *my_true, matrix *my_pred, matrix** ccoeff, matrix **stdev, matrix **bias);
+void EPLSRegressionStatistics(matrix *my_true,
+                              matrix *my_pred,
+                              matrix *ccoeff,
+                              matrix *stdev,
+                              matrix *bias);
 
 /*
  * Description: Calculate the roc curve, the auc, the precision recall curve,
  *              the precision_recall_auc of a classification model.
  *              mx and my could be the training or the test datasets.
  */
-void EPLSDiscriminantAnalysisStatistics(matrix *my_true, matrix *my_score, tensor **roc, matrix **roc_auc, tensor **precision_recall, matrix **precision_recall_ap);
+void EPLSDiscriminantAnalysisStatistics(matrix *my_true,
+                                        matrix *my_score,
+                                        tensor *roc,
+                                        matrix *roc_auc,
+                                        tensor *precision_recall,
+                                        matrix *precision_recall_ap);
 
 void PrintEPLSModel(EPLSMODEL *m);
 

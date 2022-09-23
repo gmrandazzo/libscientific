@@ -100,7 +100,7 @@ void CPCA(array *x, size_t npc, size_t scaling, CPCAMODEL *model)
       else if(scaling == 4){ /* Range Scaling */
         for(i = 0; i < mx->col; i++){
           MatrixColumnMinMax(x->m[k], i, &min, &max);
-          DVectorAppend(&colscaling, (max - min));
+          DVectorAppend(colscaling, (max - min));
         }
       }
       else if(scaling == 5){ /* Level Scaling  */
@@ -108,7 +108,7 @@ void CPCA(array *x, size_t npc, size_t scaling, CPCAMODEL *model)
       }
       else{
         for(int i = 0; i < model->colaverage[k]->d->size; i++){
-          DVectorAppend(&colscaling, 1.0);
+          DVectorAppend(colscaling, 1.0);
         }
       }
 

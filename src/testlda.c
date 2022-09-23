@@ -57,14 +57,14 @@ void Test6()
   minpt.mx = &x;
   minpt.my = &y;
 
-  BootstrapRandomGroupsCV(&minpt, 5, 20, _LDA_, &lda->predicted_y, &lda->predicted_residuals, 8, NULL, 0);
+  BootstrapRandomGroupsCV(&minpt, 5, 20, _LDA_, lda->predicted_y, lda->predicted_residuals, 8, NULL, 0);
 
   LDAMulticlassStatistics(y,
                           lda->predicted_y,
                           NULL,
-                          &lda->roc_aucs,
+                          lda->roc_aucs,
                           NULL,
-                          &lda->pr_aucs);
+                          lda->pr_aucs);
 
   puts("ROC AUCs");
   PrintDVector(lda->roc_aucs);
@@ -74,7 +74,7 @@ void Test6()
 
   ValidationArg varg;
   varg.vtype = BootstrapRGCV;
-  YScrambling(&minpt, _LDA_, varg, 100, &lda->yscrambling, 4, NULL);
+  YScrambling(&minpt, _LDA_, varg, 100, lda->yscrambling, 4, NULL);
   puts("YScrambling");
   PrintMatrix(lda->yscrambling);
   DelLDAModel(&lda);
@@ -128,14 +128,14 @@ void Test5()
   minpt.mx = &x;
   minpt.my = &y;
 
-  BootstrapRandomGroupsCV(&minpt, 5, 20, _LDA_, &lda->predicted_y, &lda->predicted_residuals, 8, NULL, 0);
+  BootstrapRandomGroupsCV(&minpt, 5, 20, _LDA_, lda->predicted_y, lda->predicted_residuals, 8, NULL, 0);
 
   LDAMulticlassStatistics(y,
                           lda->predicted_y,
                           NULL,
-                          &lda->roc_aucs,
+                          lda->roc_aucs,
                           NULL,
-                          &lda->pr_aucs);
+                          lda->pr_aucs);
 
   puts("ROC AUCs");
   PrintDVector(lda->roc_aucs);
@@ -160,7 +160,7 @@ void Test4()
   initMatrix(&x);
   initMatrix(&y);
 
-  iris(&x, &y);
+  iris(x, y);
 
   NewLDAModel(&lda);
   LDA(x, y, lda);
@@ -172,14 +172,14 @@ void Test4()
 
 
   //BootstrapRandomGroupsCV(&minpt, 3, 100, _LDA_, &lda->predicted_y, &lda->predicted_residuals, 1, NULL, 0);
-  LeaveOneOut(&minpt, _LDA_, &lda->predicted_y, &lda->predicted_residuals, 8, NULL, 0);
+  LeaveOneOut(&minpt, _LDA_, lda->predicted_y, lda->predicted_residuals, 8, NULL, 0);
 
   LDAMulticlassStatistics(y,
                           lda->predicted_y,
                           NULL,
-                          &lda->roc_aucs,
+                          lda->roc_aucs,
                           NULL,
-                          &lda->pr_aucs);
+                          lda->pr_aucs);
 
   puts("ROC AUCs");
   PrintDVector(lda->roc_aucs);
@@ -233,7 +233,7 @@ void Test3()
   initMatrix(&classpred);
   initMatrix(&mnpdf);
 
-  LDAPrediction(pred, lda, &predfeatures, &probability, &mnpdf, &classpred);
+  LDAPrediction(pred, lda, predfeatures, probability, mnpdf, classpred);
   puts("Probability");
   PrintMatrix(probability);
 
@@ -295,7 +295,7 @@ void Test2()
   initMatrix(&classpred);
   initMatrix(&mnpdf);
 
-  LDAPrediction(pred, lda, &predfeatures, &probability, &mnpdf, &classpred);
+  LDAPrediction(pred, lda, predfeatures, probability, mnpdf, classpred);
   puts("Probability");
   PrintMatrix(probability);
 
@@ -308,6 +308,7 @@ void Test2()
   puts("Predicted Multivariate Normal Profile Distribution");
   PrintMatrix(mnpdf);
 
+  DelMatrix(&mnpdf);
   DelMatrix(&predfeatures);
   DelMatrix(&pred);
   DelMatrix(&probability);

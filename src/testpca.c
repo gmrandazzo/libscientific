@@ -32,7 +32,7 @@ void test7()
 
   initMatrix(&m);
   initMatrix(&_);
-  iris(&m, &_);
+  iris(m, _);
 
   NewPCAModel(&model);
 
@@ -172,7 +172,7 @@ void test2()
   puts("Test 2");
   initDVector(&R);
 
-  PCARankValidation(m, 5, 1, 3, 20, &R, &run);
+  PCARankValidation(m, 5, 1, 3, 20, R, &run);
 
   puts("-----------------");
   puts("PC\t R^2");

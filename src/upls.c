@@ -223,7 +223,7 @@ void UPLS(tensor* X_, tensor* Y_, size_t npc, size_t xautoscaling, size_t yautos
     NewTensor(&X, X_->order);
 
     for(k = 0; k < X_->order; k++){
-      NewTensorMatrix(&X, k, X_->m[k]->row, X_->m[k]->col);
+      NewTensorMatrix(X, k, X_->m[k]->row, X_->m[k]->col);
 
       /* For Wold Geladi test enable this
       for(i = 0; i < X_->m[k]->row; i++)
@@ -236,8 +236,8 @@ void UPLS(tensor* X_, tensor* Y_, size_t npc, size_t xautoscaling, size_t yautos
 
     for(k = 0; k < X_->order; k++){
       initDVector(&tmpv);
-      MatrixColAverage(X_->m[k], &tmpv);
-      MatrixAppendCol(&(m->xcolaverage), tmpv);
+      MatrixColAverage(X_->m[k], tmpv);
+      MatrixAppendCol(m->xcolaverage, tmpv);
       DelDVector(&tmpv);
 
       for(j = 0; j < X_->m[k]->col; j++){
@@ -265,27 +265,27 @@ void UPLS(tensor* X_, tensor* Y_, size_t npc, size_t xautoscaling, size_t yautos
       if(xautoscaling == 1){
         for(k = 0; k < X_->order; k++){
           initDVector(&tmpv);
-          MatrixColSDEV(X_->m[k], &tmpv);
-          MatrixAppendCol(&(m->xcolscaling), tmpv);
+          MatrixColSDEV(X_->m[k], tmpv);
+          MatrixAppendCol(m->xcolscaling, tmpv);
           DelDVector(&tmpv);
         }
       }
       else if(xautoscaling == 2){
         for(k = 0; k < X_->order; k++){
           initDVector(&tmpv);
-          MatrixColRMS(X_->m[k], &tmpv);
-          MatrixAppendCol(&(m->xcolscaling), tmpv);
+          MatrixColRMS(X_->m[k], tmpv);
+          MatrixAppendCol(m->xcolscaling, tmpv);
           DelDVector(&tmpv);
         }
       }
       else if(xautoscaling == 3){ /* PARETO Autoscaling */
         for(k = 0; k < X_->order; k++){
           initDVector(&tmpv);
-          MatrixColSDEV(X_->m[k], &tmpv);
+          MatrixColSDEV(X_->m[k], tmpv);
           for(i = 0; i < tmpv->size; i++){
             setDVectorValue(tmpv, i, sqrt(getDVectorValue(tmpv, i)));
           }
-          MatrixAppendCol(&(m->xcolscaling), tmpv);
+          MatrixAppendCol(m->xcolscaling, tmpv);
           DelDVector(&tmpv);
         }
       }
@@ -294,9 +294,9 @@ void UPLS(tensor* X_, tensor* Y_, size_t npc, size_t xautoscaling, size_t yautos
           initDVector(&tmpv);
           for(i = 0; i < X_->m[k]->col; i++){
             MatrixColumnMinMax(X_->m[k], i, &min, &max);
-            DVectorAppend(&tmpv, (max-min));
+            DVectorAppend(tmpv, (max-min));
           }
-          MatrixAppendCol(&(m->xcolscaling), tmpv);
+          MatrixAppendCol(m->xcolscaling, tmpv);
           DelDVector(&tmpv);
         }
       }
@@ -307,9 +307,9 @@ void UPLS(tensor* X_, tensor* Y_, size_t npc, size_t xautoscaling, size_t yautos
         for(k = 0; k < X_->order; k++){
           initDVector(&tmpv);
           for(i = 0; i < X_->m[k]->col; i++){
-            DVectorAppend(&tmpv, 1.0);
+            DVectorAppend(tmpv, 1.0);
           }
-          MatrixAppendCol(&(m->xcolscaling), tmpv);
+          MatrixAppendCol(m->xcolscaling, tmpv);
           DelDVector(&tmpv);
         }
       }
@@ -357,7 +357,7 @@ void UPLS(tensor* X_, tensor* Y_, size_t npc, size_t xautoscaling, size_t yautos
     NewTensor(&Y, Y_->order);
 
     for(k = 0; k < Y_->order; k++){
-      NewTensorMatrix(&Y, k, Y_->m[k]->row, Y_->m[k]->col);
+      NewTensorMatrix(Y, k, Y_->m[k]->row, Y_->m[k]->col);
 
         /* For Wold Geladi test enable this
       for(i = 0; i < Y_->m[k]->row; i++)
@@ -371,8 +371,8 @@ void UPLS(tensor* X_, tensor* Y_, size_t npc, size_t xautoscaling, size_t yautos
 
     for(k = 0; k < Y_->order; k++){
       initDVector(&tmpv);
-      MatrixColAverage(Y_->m[k], &tmpv);
-      MatrixAppendCol(&(m->ycolaverage), tmpv);
+      MatrixColAverage(Y_->m[k], tmpv);
+      MatrixAppendCol(m->ycolaverage, tmpv);
       DelDVector(&tmpv);
 
       for(j = 0; j < Y_->m[k]->col; j++){
@@ -395,27 +395,27 @@ void UPLS(tensor* X_, tensor* Y_, size_t npc, size_t xautoscaling, size_t yautos
       if(yautoscaling == 1){
         for(k = 0; k < Y_->order; k++){
           initDVector(&tmpv);
-          MatrixColSDEV(Y_->m[k], &tmpv);
-          MatrixAppendCol(&(m->ycolscaling), tmpv);
+          MatrixColSDEV(Y_->m[k], tmpv);
+          MatrixAppendCol(m->ycolscaling, tmpv);
           DelDVector(&tmpv);
         }
       }
       else if(yautoscaling == 2){
         for(k = 0; k < Y_->order; k++){
           initDVector(&tmpv);
-          MatrixColRMS(Y_->m[k], &tmpv);
-          MatrixAppendCol(&(m->ycolscaling), tmpv);
+          MatrixColRMS(Y_->m[k], tmpv);
+          MatrixAppendCol(m->ycolscaling, tmpv);
           DelDVector(&tmpv);
         }
       }
       else if(yautoscaling == 3){ /* PARETO Autoscaling */
         for(k = 0; k < Y_->order; k++){
           initDVector(&tmpv);
-          MatrixColSDEV(Y_->m[k], &tmpv);
+          MatrixColSDEV(Y_->m[k], tmpv);
           for(i = 0; i < tmpv->size; i++){
             setDVectorValue(tmpv, i, sqrt(getDVectorValue(tmpv, i)));
           }
-          MatrixAppendCol(&(m->ycolscaling), tmpv);
+          MatrixAppendCol(m->ycolscaling, tmpv);
           DelDVector(&tmpv);
         }
       }
@@ -424,9 +424,9 @@ void UPLS(tensor* X_, tensor* Y_, size_t npc, size_t xautoscaling, size_t yautos
           initDVector(&tmpv);
           for(i = 0; i < Y_->m[k]->col; i++){
             MatrixColumnMinMax(Y_->m[k], i, &min, &max);
-            DVectorAppend(&tmpv, (max-min));
+            DVectorAppend(tmpv, (max-min));
           }
-          MatrixAppendCol(&(m->ycolscaling), tmpv);
+          MatrixAppendCol(m->ycolscaling, tmpv);
           DelDVector(&tmpv);
         }
       }
@@ -437,9 +437,9 @@ void UPLS(tensor* X_, tensor* Y_, size_t npc, size_t xautoscaling, size_t yautos
         for(k = 0; k < Y_->order; k++){
           initDVector(&tmpv);
           for(i = 0; i < Y_->m[k]->col; i++){
-            DVectorAppend(&tmpv, 1.0);
+            DVectorAppend(tmpv, 1.0);
           }
-          MatrixAppendCol(&(m->ycolscaling), tmpv);
+          MatrixAppendCol(m->ycolscaling, tmpv);
           DelDVector(&tmpv);
         }
       }
@@ -478,7 +478,7 @@ void UPLS(tensor* X_, tensor* Y_, size_t npc, size_t xautoscaling, size_t yautos
       order = column = 0;
       for(i = 0; i < Y->order; i++){
         initDVector(&colvar);
-        MatrixColVar(Y->m[i], &colvar);
+        MatrixColVar(Y->m[i], colvar);
 
         #ifdef DEBUG
         puts("Column Variance for chosing the best t-start column vector");
@@ -572,7 +572,7 @@ void UPLS(tensor* X_, tensor* Y_, size_t npc, size_t xautoscaling, size_t yautos
 
         /*s-start is the larget column in W*/
         initDVector(&colvar);
-        MatrixColAverage(W, &colvar);
+        MatrixColAverage(W, colvar);
 
         #ifdef DEBUG
         puts("Column Variance for select objects...");
@@ -663,7 +663,7 @@ void UPLS(tensor* X_, tensor* Y_, size_t npc, size_t xautoscaling, size_t yautos
         #endif
 
         initDVector(&t_diff);
-        DVectorDVectorDiff(t_new, t_old, &t_diff);
+        DVectorDVectorDiff(t_new, t_old, t_diff);
 
         a = DVectorDVectorDotProd(t_diff, t_diff);
 
@@ -678,8 +678,8 @@ void UPLS(tensor* X_, tensor* Y_, size_t npc, size_t xautoscaling, size_t yautos
 /*         if(a/(t_new->size*DVectorDVectorDotProd(t_new, t_new)) < 1e-10){ */
         if(a/(t_new->size*DVectorDVectorDotProd(t_new, t_new)) < UPLSCONVERGENCE){
           /* storing t score result */
-          MatrixAppendCol(&(m->xscores), t_new);
-          TensorAppendMatrix(&(m->xweights), W);
+          MatrixAppendCol(m->xscores, t_new);
+          TensorAppendMatrix(m->xweights, W);
           setDVectorValue(xeval, pc, DVectorDVectorDotProd(t_new, t_new));
           break;
         }
@@ -707,7 +707,7 @@ void UPLS(tensor* X_, tensor* Y_, size_t npc, size_t xautoscaling, size_t yautos
           setMatrixValue(Q, i, j, getMatrixValue(Q, i, j) / a);
 
       /*storing Q Loadings matrix */
-      TensorAppendMatrix(&(m->yloadings), Q);
+      TensorAppendMatrix(m->yloadings, Q);
 
       /* step 9: u = Y..Q/||Q||^2 */
       DVectorSet(u, 0.f);
@@ -721,7 +721,7 @@ void UPLS(tensor* X_, tensor* Y_, size_t npc, size_t xautoscaling, size_t yautos
 
 
       /* storing u score result */
-      MatrixAppendCol(&(m->yscores), u);
+      MatrixAppendCol(m->yscores, u);
 
 
       /* step 10: XLoadings => P = t'X/t't */
@@ -734,10 +734,10 @@ void UPLS(tensor* X_, tensor* Y_, size_t npc, size_t xautoscaling, size_t yautos
           setMatrixValue(P, i, j, getMatrixValue(P, i, j) / a);
 
       /*storing P Loadings matrix */
-      TensorAppendMatrix(&(m->xloadings), P);
+      TensorAppendMatrix(m->xloadings, P);
 
       /* step 11: b = t'u/t't */
-      DVectorAppend(&(m->b), (DVectorDVectorDotProd(u, t_new)) / a);
+      DVectorAppend((m->b), (DVectorDVectorDotProd(u, t_new)) / a);
 
       /* step 12: X = X - t (x) P     ;  Y = Y - t (x)  Q * b   N.B.: (x) = Scalar Product */
       /* remove computed component from X */
@@ -773,22 +773,22 @@ void UPLS(tensor* X_, tensor* Y_, size_t npc, size_t xautoscaling, size_t yautos
     }
 
 
-    calcVarExpressed(ssx, xeval, &(m->xvarexp));
+    calcVarExpressed(ssx, xeval, m->xvarexp);
 
     /*Recalculated y*/
     for(k = 0; k  < Y_->order; k++){
-      AddTensorMatrix(&m->recalculated_y, 0, 0);
+      AddTensorMatrix(m->recalculated_y, 0, 0);
     }
 
     for(i = 1; i <= npc; i++){
       tensor *recalculated_y;
       initTensor(&recalculated_y);
-      UPLSYPredictor(m->xscores, m, i, &recalculated_y);
+      UPLSYPredictor(m->xscores, m, i, recalculated_y);
 
       for(k = 0; k  < recalculated_y->order; k++){
         for(j = 0; j < recalculated_y->m[k]->col; j++){
           dvector *v = getMatrixColumn(recalculated_y->m[k], j);
-          TensorAppendColumn(&m->recalculated_y, k, v);
+          TensorAppendColumn(m->recalculated_y, k, v);
           DelDVector(&v);
         }
       }
@@ -797,7 +797,7 @@ void UPLS(tensor* X_, tensor* Y_, size_t npc, size_t xautoscaling, size_t yautos
 
     /*Calculate recalculated residuals */
     for(k = 0; k < Y_->order; k++){
-      AddTensorMatrix(&m->recalc_residuals, m->recalculated_y->m[k]->row, m->recalculated_y->m[k]->col);
+      AddTensorMatrix(m->recalc_residuals, m->recalculated_y->m[k]->row, m->recalculated_y->m[k]->col);
       for(i = 0; i < m->recalculated_y->m[k]->row; i++){
         for(j = 0; j < m->recalculated_y->m[k]->col; j++){
           setTensorValue(m->recalc_residuals, k, i, j, getTensorValue(m->recalculated_y, k, i, j) - getTensorValue(Y_, k, i, (size_t)floor(j/npc)));
@@ -824,7 +824,7 @@ void UPLS(tensor* X_, tensor* Y_, size_t npc, size_t xautoscaling, size_t yautos
 }
 
 
-void UPLSScorePredictor(tensor *X_,  UPLSMODEL *m, size_t npc, matrix **ptscores)
+void UPLSScorePredictor(tensor *X_,  UPLSMODEL *m, size_t npc, matrix *ptscores)
 {
   if(CheckPredTensors(X_, m->xloadings) == 0){
     size_t pc, i, j , k;
@@ -835,7 +835,7 @@ void UPLSScorePredictor(tensor *X_,  UPLSMODEL *m, size_t npc, matrix **ptscores
 
     NewTensor(&X, X_->order);
     for(k = 0; k < X_->order; k++){
-      NewTensorMatrix(&X, k, X_->m[k]->row, X_->m[k]->col);
+      NewTensorMatrix(X, k, X_->m[k]->row, X_->m[k]->col);
     }
 
     NewDVector(&t, X->m[0]->row);
@@ -898,7 +898,7 @@ void UPLSScorePredictor(tensor *X_,  UPLSMODEL *m, size_t npc, matrix **ptscores
 }
 
 /* Calculate predicted Y-values as Y = t1b1Q1 + t2b2Q2 + ...*/
-void UPLSYPredictor(matrix *tscores, UPLSMODEL *m, size_t npc, tensor **py)
+void UPLSYPredictor(matrix *tscores, UPLSMODEL *m, size_t npc, tensor *py)
 {
   size_t pc, i, j , k;
   /*
@@ -938,11 +938,11 @@ void UPLSYPredictor(matrix *tscores, UPLSMODEL *m, size_t npc, tensor **py)
   }
 
   for(pc = 0; pc < npc; pc++){
-    for(k = 0; k < (*py)->order; k++){
+    for(k = 0; k < py->order; k++){
       for(i = 0; i <  tscores->row; i++){
-        for(j = 0; j < (*py)->m[k]->col; j++){
+        for(j = 0; j < py->m[k]->col; j++){
           /*printf("[%u][%u][%u]  %f %f %f\n", (unsigned int)k, (unsigned int)i, (unsigned int)j, getDVectorValue(m->b, pc), getMatrixValue(tscores, i, pc), getTensorValue(m->yloadings, pc, j, k));*/
-          setTensorValue((*py), k, i, j, getTensorValue((*py), k, i, j) +  (getDVectorValue(m->b, pc) * getMatrixValue(tscores, i, pc) * getTensorValue(m->yloadings, pc, j, k)));
+          setTensorValue(py, k, i, j, getTensorValue(py, k, i, j) +  (getDVectorValue(m->b, pc) * getMatrixValue(tscores, i, pc) * getTensorValue(m->yloadings, pc, j, k)));
         }
       }
     }
@@ -957,12 +957,12 @@ void UPLSYPredictor(matrix *tscores, UPLSMODEL *m, size_t npc, tensor **py)
 
         if(m->ycolscaling != NULL && m->ycolscaling->data != NULL
           && m->ycolscaling->row > 0 && m->ycolscaling->col > 0){
-          for(i = 0; i < (*py)->m[k]->row; i++){
-            setTensorValue((*py), k, i, j, getTensorValue((*py), k, i, j) * getMatrixValue(m->ycolscaling, j, k));
+          for(i = 0; i < py->m[k]->row; i++){
+            setTensorValue(py, k, i, j, getTensorValue(py, k, i, j) * getMatrixValue(m->ycolscaling, j, k));
           }
         }
-        for(i = 0; i < (*py)->m[k]->row; i++){
-          setTensorValue((*py), k, i, j, getTensorValue((*py), k, i, j) + getMatrixValue(m->ycolaverage, j, k));
+        for(i = 0; i < py->m[k]->row; i++){
+          setTensorValue(py, k, i, j, getTensorValue(py, k, i, j) + getMatrixValue(m->ycolaverage, j, k));
         }
       }
     }
@@ -970,7 +970,7 @@ void UPLSYPredictor(matrix *tscores, UPLSMODEL *m, size_t npc, tensor **py)
 
 }
 
-void UPLSRSquared(tensor *X_, tensor *Y_, UPLSMODEL *m, size_t npc, dvector** r2x, tensor** r2y, tensor **sdec)
+void UPLSRSquared(tensor *X_, tensor *Y_, UPLSMODEL *m, size_t npc, dvector *r2x, tensor *r2y, tensor *sdec)
 {
   size_t pc, i, j, k;
   tensor *recalcy;
@@ -992,11 +992,11 @@ void UPLSRSquared(tensor *X_, tensor *Y_, UPLSMODEL *m, size_t npc, dvector** r2
     initTensor(&recalcx);
     initMatrix(&recalcscores);
 
-    UPLSScorePredictor(X_, m, pc, &recalcscores);
+    UPLSScorePredictor(X_, m, pc, recalcscores);
 
-    UPLSYPredictor(recalcscores, m, pc, &recalcy);
+    UPLSYPredictor(recalcscores, m, pc, recalcy);
 
-    UPCAIndVarPredictor(recalcscores, m->xloadings, m->xcolaverage, m->xcolscaling, pc, &recalcx);
+    UPCAIndVarPredictor(recalcscores, m->xloadings, m->xcolaverage, m->xcolscaling, pc, recalcx);
 
     for(k = 0; k < recalcy->order; k++){
       n = d = 0.f;
@@ -1039,7 +1039,15 @@ void UPLSRSquared(tensor *X_, tensor *Y_, UPLSMODEL *m, size_t npc, dvector** r2
   DelMatrix(&r2y_);
 }
 
-void UPLSRSquared_SSErr_SStot(tensor *X_, tensor *Y_, UPLSMODEL *m, size_t npc, dvector** xss_err, dvector **xss_tot, tensor** yss_err, tensor** yss_tot, tensor** predicted_y)
+void UPLSRSquared_SSErr_SStot(tensor *X_,
+                              tensor *Y_,
+                              UPLSMODEL *m,
+                              size_t npc,
+                              dvector *xss_err,
+                              dvector *xss_tot,
+                              tensor *yss_err,
+                              tensor *yss_tot,
+                              tensor *predicted_y)
 {
   size_t pc, i, j, k;
   tensor *recalcy;
@@ -1069,11 +1077,11 @@ void UPLSRSquared_SSErr_SStot(tensor *X_, tensor *Y_, UPLSMODEL *m, size_t npc, 
     initTensor(&recalcx);
     initMatrix(&recalcscores);
 
-    UPLSScorePredictor(X_, m, pc, &recalcscores);
+    UPLSScorePredictor(X_, m, pc, recalcscores);
 
-    UPLSYPredictor(recalcscores, m, pc, &recalcy);
+    UPLSYPredictor(recalcscores, m, pc, recalcy);
 
-    UPCAIndVarPredictor(recalcscores, m->xloadings, m->xcolaverage, m->xcolscaling, pc, &recalcx);
+    UPCAIndVarPredictor(recalcscores, m->xloadings, m->xcolaverage, m->xcolscaling, pc, recalcx);
 
     for(k = 0; k < recalcy->order; k++){
       n = d = 0.f;
@@ -1087,7 +1095,7 @@ void UPLSRSquared_SSErr_SStot(tensor *X_, tensor *Y_, UPLSMODEL *m, size_t npc, 
 
         if(predicted_y != NULL){
           tmp = getMatrixColumn(recalcy->m[k], j);
-          MatrixAppendCol(&(*predicted_y)->m[k], tmp);
+          MatrixAppendCol(predicted_y->m[k], tmp);
           DelDVector(&tmp);
         }
       }
@@ -1140,8 +1148,8 @@ void UPLSYScrambling(tensor *X_, tensor *Y_,
   NewTensor(&randomY, Y_->order);
   NewTensor(&sorted_y_id, Y_->order);
   for(i = 0; i < Y_->order; i++){
-    NewTensorMatrix(&randomY, i, Y_->m[i]->row, Y_->m[i]->col);
-    NewTensorMatrix(&sorted_y_id, i, Y_->m[i]->row, Y_->m[i]->col);
+    NewTensorMatrix(randomY, i, Y_->m[i]->row, Y_->m[i]->col);
+    NewTensorMatrix(sorted_y_id, i, Y_->m[i]->row, Y_->m[i]->col);
   }
 
   NewMatrix(&sorty, Y_->m[0]->row, 2);
@@ -1322,6 +1330,7 @@ void UPLSYScrambling(tensor *X_, tensor *Y_,
   DelTensor(&sorted_y_id);
 }
 
+/* DEPRECATED */
 void UPLSRandomGroupsCV(tensor *X_, tensor *Y_, size_t xautoscaling, size_t yautoscaling, size_t npc, size_t group, size_t iterations, dvector **r2x, tensor **q2y, tensor **sdep, tensor **predicted_y, tensor **pred_residuals, ssignal *s)
 {
   if(npc > 0 && X_->m[0]->row == Y_->m[0]->row && group > 0 && iterations > 0){
@@ -1364,13 +1373,13 @@ void UPLSRandomGroupsCV(tensor *X_, tensor *Y_, size_t xautoscaling, size_t yaut
     if(predicted_y != NULL){
       if(pred_residuals != NULL){
         for(k = 0; k < Y_->order; k++){
-          AddTensorMatrix(predicted_y, Y_->m[k]->row, Y_->m[k]->col*npc); /* each component have my->col ypsilon */
-          AddTensorMatrix(pred_residuals, Y_->m[k]->row, Y_->m[k]->col*npc); /* each component have my->col ypsilon */
+          AddTensorMatrix((*predicted_y), Y_->m[k]->row, Y_->m[k]->col*npc); /* each component have my->col ypsilon */
+          AddTensorMatrix((*pred_residuals), Y_->m[k]->row, Y_->m[k]->col*npc); /* each component have my->col ypsilon */
         }
       }
       else{
         for(k = 0; k < Y_->order; k++){
-          AddTensorMatrix(predicted_y, Y_->m[k]->row, Y_->m[k]->col*npc); /* each component have my->col ypsilon */
+          AddTensorMatrix((*predicted_y), Y_->m[k]->row, Y_->m[k]->col*npc); /* each component have my->col ypsilon */
         }
       }
 
@@ -1432,11 +1441,11 @@ void UPLSRandomGroupsCV(tensor *X_, tensor *Y_, size_t xautoscaling, size_t yaut
           NewTensor(&subY, Y_->order);
 
           for(k = 0; k < X_->order; k++){
-            NewTensorMatrix(&subX, k, n, X_->m[k]->col);
+            NewTensorMatrix(subX, k, n, X_->m[k]->col);
           }
 
           for(k = 0; k < Y_->order; k++){
-            NewTensorMatrix(&subY, k, n, Y_->m[k]->col);
+            NewTensorMatrix(subY, k, n, Y_->m[k]->col);
           }
 
 
@@ -1455,11 +1464,11 @@ void UPLSRandomGroupsCV(tensor *X_, tensor *Y_, size_t xautoscaling, size_t yaut
           NewTensor(&realY, Y_->order);
 
           for(k = 0; k < X_->order; k++){
-            NewTensorMatrix(&predictX, k, n, X_->m[k]->col);
+            NewTensorMatrix(predictX, k, n, X_->m[k]->col);
           }
 
           for(k = 0; k < Y_->order; k++){
-            NewTensorMatrix(&realY, k, n, Y_->m[k]->col);
+            NewTensorMatrix(realY, k, n, Y_->m[k]->col);
           }
 
           /* copy the submodel values */
@@ -1535,16 +1544,16 @@ void UPLSRandomGroupsCV(tensor *X_, tensor *Y_, size_t xautoscaling, size_t yaut
 
           if(predicted_y != NULL){
             initTensor(&predicty);
-            UPLSRSquared_SSErr_SStot(predictX, realY, subm, npc, &predictxss_err, &predictxss_tot, &predictyss_err, &predictyss_tot, &predicty);
+            UPLSRSquared_SSErr_SStot(predictX, realY, subm, npc, predictxss_err, predictxss_tot, predictyss_err, predictyss_tot, predicty);
           }
           else{
-            UPLSRSquared_SSErr_SStot(predictX, realY, subm, npc, &predictxss_err, &predictxss_tot, &predictyss_err, &predictyss_tot, NULL);
+            UPLSRSquared_SSErr_SStot(predictX, realY, subm, npc, predictxss_err, predictxss_tot, predictyss_err, predictyss_tot, NULL);
           }
 
           if(iterations_ == 0 && g == 0){
             for(i = 0; i < predictxss_err->size; i++){
-              DVectorAppend(&sumxss_err, getDVectorValue(predictxss_err, i));
-              DVectorAppend(&sumxss_tot, getDVectorValue(predictxss_tot, i));
+              DVectorAppend(sumxss_err, getDVectorValue(predictxss_err, i));
+              DVectorAppend(sumxss_tot, getDVectorValue(predictxss_tot, i));
             }
 
             TensorCopy(predictyss_err, &sumyss_err);
@@ -1646,11 +1655,11 @@ void UPLSRandomGroupsCV(tensor *X_, tensor *Y_, size_t xautoscaling, size_t yaut
 
     /*Finalize the output by dividing for the number of iterations*/
     for(i = 0; i < sumxss_err->size; i++){
-      DVectorAppend(r2x, 1 - (getDVectorValue(sumxss_err, i)/getDVectorValue(sumxss_tot, i)));
+      DVectorAppend((*r2x), 1 - (getDVectorValue(sumxss_err, i)/getDVectorValue(sumxss_tot, i)));
     }
 
     for(k = 0; k < sumyss_err->order; k++){
-      TensorAppendMatrix(q2y, sumyss_err->m[k]);
+      TensorAppendMatrix((*q2y), sumyss_err->m[k]);
       for(j = 0; j < sumyss_err->m[k]->col; j++){
         for(i = 0; i < sumyss_err->m[k]->row; i++){
           setTensorValue((*q2y), k, i, j, 1 - (getTensorValue((*q2y), k, i, j)/getTensorValue(sumyss_tot, k, i, j)));
@@ -1739,13 +1748,13 @@ void UPLSLOOCV(tensor* X_, tensor* Y_, size_t xautoscaling, size_t yautoscaling,
     if(predicted_y != NULL){
       if(pred_residuals != NULL){
         for(k = 0; k < Y_->order; k++){
-          AddTensorMatrix(predicted_y, Y_->m[k]->row, Y_->m[k]->col*npc); /* each component have my->col ypsilon */
-          AddTensorMatrix(pred_residuals, Y_->m[k]->row, Y_->m[k]->col*npc); /* each component have my->col ypsilon */
+          AddTensorMatrix((*predicted_y), Y_->m[k]->row, Y_->m[k]->col*npc); /* each component have my->col ypsilon */
+          AddTensorMatrix((*pred_residuals), Y_->m[k]->row, Y_->m[k]->col*npc); /* each component have my->col ypsilon */
         }
       }
       else{
         for(k = 0; k < Y_->order; k++){
-          AddTensorMatrix(predicted_y, Y_->m[k]->row, Y_->m[k]->col*npc); /* each component have my->col ypsilon */
+          AddTensorMatrix((*predicted_y), Y_->m[k]->row, Y_->m[k]->col*npc); /* each component have my->col ypsilon */
         }
       }
     }
@@ -1761,13 +1770,13 @@ void UPLSLOOCV(tensor* X_, tensor* Y_, size_t xautoscaling, size_t yautoscaling,
     initTensor(&sumyss_tot);
 
     for(k = 0; k < X_->order; k++){
-      NewTensorMatrix(&subX, k, X_->m[k]->row-1, X_->m[k]->col);
-      NewTensorMatrix(&predictX, k, 1, X_->m[k]->col);
+      NewTensorMatrix(subX, k, X_->m[k]->row-1, X_->m[k]->col);
+      NewTensorMatrix(predictX, k, 1, X_->m[k]->col);
     }
 
     for(k = 0; k < Y_->order; k++){
-      NewTensorMatrix(&subY, k, Y_->m[k]->row-1, Y_->m[k]->col);
-      NewTensorMatrix(&realY, k, 1, Y_->m[k]->col);
+      NewTensorMatrix(subY, k, Y_->m[k]->row-1, Y_->m[k]->col);
+      NewTensorMatrix(realY, k, 1, Y_->m[k]->col);
     }
 
     for(model = 0; model < X_->m[0]->row; model++){
@@ -1820,12 +1829,12 @@ void UPLSLOOCV(tensor* X_, tensor* Y_, size_t xautoscaling, size_t yautoscaling,
         initTensor(&predictyss_tot);
         initTensor(&predicty);
 
-        UPLSRSquared_SSErr_SStot(predictX, realY, subm, npc, &predictxss_err, &predictxss_tot, &predictyss_err, &predictyss_tot, &predicty);
+        UPLSRSquared_SSErr_SStot(predictX, realY, subm, npc, predictxss_err, predictxss_tot, predictyss_err, predictyss_tot, predicty);
 
         if(model == 0){
           for(i = 0; i < predictxss_err->size; i++){
-            DVectorAppend(&sumxss_err, getDVectorValue(predictxss_err, i));
-            DVectorAppend(&sumxss_tot, getDVectorValue(predictxss_tot, i));
+            DVectorAppend(sumxss_err, getDVectorValue(predictxss_err, i));
+            DVectorAppend(sumxss_tot, getDVectorValue(predictxss_tot, i));
           }
 
           TensorCopy(predictyss_err, &sumyss_err);
@@ -1927,12 +1936,12 @@ void UPLSLOOCV(tensor* X_, tensor* Y_, size_t xautoscaling, size_t yautoscaling,
     /*Finalize the output by dividing for the number of iterations*/
     if(r2x != NULL){
       for(i = 0; i < sumxss_err->size; i++){
-        DVectorAppend(r2x, 1 - (getDVectorValue(sumxss_err, i)/getDVectorValue(sumxss_tot, i)));
+        DVectorAppend((*r2x), 1 - (getDVectorValue(sumxss_err, i)/getDVectorValue(sumxss_tot, i)));
       }
     }
 
     for(k = 0; k < sumyss_err->order; k++){
-      TensorAppendMatrix(q2y, sumyss_err->m[k]);
+      TensorAppendMatrix((*q2y), sumyss_err->m[k]);
       for(j = 0; j < sumyss_err->m[k]->col; j++){
         for(i = 0; i < sumyss_err->m[k]->row; i++){
           setTensorValue((*q2y), k, i, j, 1 - (getTensorValue((*q2y), k, i, j)/getTensorValue(sumyss_tot, k, i, j)));
@@ -2099,7 +2108,7 @@ void UPLSCostPopulation(tensor *ax, tensor *ay,
 
   NewTensor(&subax, ax->order);
   for(k = 0; k < ax->order; k++){
-    NewTensorMatrix(&subax, k, ax->m[k]->row, subsize);
+    NewTensorMatrix(subax, k, ax->m[k]->row, subsize);
   }
 
 
@@ -2125,7 +2134,7 @@ void UPLSCostPopulation(tensor *ax, tensor *ay,
 
     NewTensor(&subpx, px->order);
     for(k = 0; k < px->order; k++){
-      NewTensorMatrix(&subpx, k, px->m[k]->row, subsize);
+      NewTensorMatrix(subpx, k, px->m[k]->row, subsize);
     }
 
     for(k = 0; k < px->order; k++){
@@ -2145,7 +2154,7 @@ void UPLSCostPopulation(tensor *ax, tensor *ay,
 
     initTensor(&r2y);
     initTensor(&sdec);
-    UPLSRSquared(subpx, py, m, npc, NULL, &r2y, &sdec);
+    UPLSRSquared(subpx, py, m, npc, NULL, r2y, sdec);
 
     if(r2y->order > 0){
       cutoff = UPLSGetPCModelCutOff(r2y);
@@ -2185,7 +2194,7 @@ void UPLSCostPopulation(tensor *ax, tensor *ay,
     NewUPLSModel(&m);
     UPLS(subax, ay, npc, xautoscaling, yautoscaling, m, s);
 
-    UPLSRSquared(subax, ay,  m, npc, &m->r2x_model, &m->r2y_model, &m->sdec);
+    UPLSRSquared(subax, ay,  m, npc, m->r2x_model, m->r2y_model, m->sdec);
 
     if(q2y->order > 0){
       cutoff = UPLSGetPCModelCutOff(q2y);
@@ -2234,7 +2243,7 @@ void UPLSCostPopulation(tensor *ax, tensor *ay,
 
     NewUPLSModel(&m);
     UPLS(subax, ay, npc, xautoscaling, yautoscaling, m, s);
-    UPLSRSquared(subax, ay,  m, npc, &m->r2x_model, &m->r2y_model, &m->sdec);
+    UPLSRSquared(subax, ay,  m, npc, m->r2x_model, m->r2y_model, m->sdec);
     if(q2y->order > 0){
       cutoff = UPLSGetPCModelCutOff(q2y);
 
@@ -2305,10 +2314,10 @@ void UPSLPSOVariableSelection(tensor *ax, tensor *ay, tensor *px, tensor *py,
   setDVectorValue(rowmap, 2, (cost_g_best  * (population_size - ax->m[0]->col -1)) /  (ax->m[0]->col*(1-cost_g_best )));
   setDVectorValue(rowmap, 3, ax->m[0]->col);
 
-  MatrixAppendRow(map, rowmap);
+  MatrixAppendRow((*map), rowmap);
 
   for(i = 0; i < ax->m[0]->col; i++){
-    UIVectorAppend(vardistribution, 1);
+    UIVectorAppend((*vardistribution), 1);
   }
 
   /*the best and global position are the same in the first model that have all the variable setted ON*/
@@ -2379,7 +2388,7 @@ void UPSLPSOVariableSelection(tensor *ax, tensor *ay, tensor *px, tensor *py,
       setDVectorValue(rowmap, 2, (cost_g_best  * (population_size - ax->m[0]->col -1)) /  (ax->m[0]->col*(1-cost_g_best )));
       setDVectorValue(rowmap, 3, nvarON);
 
-      MatrixAppendRow(map, rowmap);
+      MatrixAppendRow((*map), rowmap);
       DVectorSet(rowmap, 0.f);
     }
 
@@ -2507,7 +2516,7 @@ void UPSLPSOVariableSelection(tensor *ax, tensor *ay, tensor *px, tensor *py,
             setDVectorValue(rowmap, 2, (cost_g_best  * (population_size - ax->m[0]->col -1)) /  (ax->m[0]->col*(1-cost_g_best )));
             setDVectorValue(rowmap, 3, nvarON);
 
-            MatrixAppendRow(map, rowmap);
+            MatrixAppendRow((*map), rowmap);
 
             DVectorSet(rowmap, 0.f);
 
@@ -2531,7 +2540,7 @@ void UPSLPSOVariableSelection(tensor *ax, tensor *ay, tensor *px, tensor *py,
   */
 
   for(i = 0; i < best_model->size; i++){
-    UIVectorAppend(varselected, getUIVectorValue(best_model, i));
+    UIVectorAppend((*varselected), getUIVectorValue(best_model, i));
   }
 
   DelUIVector(&best_model);
@@ -2599,7 +2608,7 @@ void UPLSGAVariableSelection(tensor *ax, tensor *ay, tensor *px, tensor *py,
   NewUIVector(&popvector, ax->m[0]->col);
 
   for(i = 0; i < ax->m[0]->col; i++){
-    UIVectorAppend(vardistribution, 0);
+    UIVectorAppend((*vardistribution), 0);
   }
 
   NewDVector(&rowmap, 4); /* 1 = R2, 2 = Q2, 3 = f-test, 4 = number of variables ON */
@@ -2698,7 +2707,7 @@ void UPLSGAVariableSelection(tensor *ax, tensor *ay, tensor *px, tensor *py,
       setDVectorValue(rowmap, 2, getDVectorValue(model_f_distribution, i));
       setDVectorValue(rowmap, 3, (double)nvarON);
 
-      MatrixAppendRow(map, rowmap);
+      MatrixAppendRow((*map), rowmap);
       DVectorSet(rowmap, 0.f);
     }
 
@@ -2728,8 +2737,8 @@ void UPLSGAVariableSelection(tensor *ax, tensor *ay, tensor *px, tensor *py,
 
       initUIVector(&selectedid);
 
-      StochasticUniversalSample(modelsfitness, copy_selection, init, &selectedid);
-      /*RouletteWheelselection(modelsfitness, copy_selection, init, &selectedid);*/
+      StochasticUniversalSample(modelsfitness, copy_selection, init, selectedid);
+      /*RouletteWheelselection(modelsfitness, copy_selection, init, selectedid);*/
 
       k = 0;
       for(i = 0; i < selectedid->size; i++, k++){
@@ -2753,8 +2762,8 @@ void UPLSGAVariableSelection(tensor *ax, tensor *ay, tensor *px, tensor *py,
 
       initUIVector(&selectedid);
 
-      StochasticUniversalSample(modelsfitness, crossover_selection, init, &selectedid);
-      /*RouletteWheelselection(modelsfitness, crossover_selection, init, &selectedid);*/
+      StochasticUniversalSample(modelsfitness, crossover_selection, init, selectedid);
+      /*RouletteWheelselection(modelsfitness, crossover_selection, init, selectedid);*/
 
       for(i = 0; i < selectedid->size; i+=2){
 
@@ -2826,8 +2835,8 @@ void UPLSGAVariableSelection(tensor *ax, tensor *ay, tensor *px, tensor *py,
 
       initUIVector(&selectedid);
 
-      StochasticUniversalSample(modelsfitness, mutation_selection, init, &selectedid);
-  /*      RouletteWheelselection(modelsfitness, mutation_selection, init, &selectedid);*/
+      StochasticUniversalSample(modelsfitness, mutation_selection, init, selectedid);
+  /*      RouletteWheelselection(modelsfitness, mutation_selection, init, selectedid);*/
 
       for(i = 0; i < selectedid->size; i++){
 
@@ -2897,7 +2906,7 @@ void UPLSGAVariableSelection(tensor *ax, tensor *ay, tensor *px, tensor *py,
           setDVectorValue(rowmap, 2, getDVectorValue(model_f_distribution, i));
           setDVectorValue(rowmap, 3, nvarON);
 
-          MatrixAppendRow(map, rowmap);
+          MatrixAppendRow((*map), rowmap);
           DVectorSet(rowmap, 0.f);
         }
       }
@@ -2932,7 +2941,7 @@ void UPLSGAVariableSelection(tensor *ax, tensor *ay, tensor *px, tensor *py,
 
 
   for(i = 0; i < best_model->size; i++){
-    UIVectorAppend(varselected, getUIVectorValue(best_model,  i));
+    UIVectorAppend((*varselected), getUIVectorValue(best_model,  i));
   }
 
   DelDVector(&rowmap);

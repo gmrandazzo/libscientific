@@ -35,7 +35,7 @@ void test2()
 
   matrix *S;
   initMatrix(&S);
-  cubic_spline_interpolation(xy, &S);
+  cubic_spline_interpolation(xy, S);
 
 
   PrintMatrix(S);
@@ -88,7 +88,7 @@ void test1()
   xy->data[5][1] = 0.19;
 
   initMatrix(&interp_xy);
-  interpolate(xy, 10, &interp_xy);
+  interpolate(xy, 10, interp_xy);
   double area = curve_area(xy, 10);
   if(FLOAT_EQ(area, 1.822294, 1e-6)){
     printf("Area calculation OK!\n");

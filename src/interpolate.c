@@ -11,55 +11,43 @@
  * N.B.: If two points have different y but share same x the algorithm will fail
  */
 
-void cubic_spline_interpolation(matrix *xy, matrix **S)
+void cubic_spline_interpolation(matrix *xy, matrix *S)
 {
   size_t i;
   int j;
   size_t np1 = xy->row;
   size_t n = np1-1;
-  dvector *a, *b, *d, *h, *alpha, *c, *l, *u, *z;
-  NewDVector(&a, np1);
-  for(i = 0; i < np1; i++)
-    a->data[i] = xy->data[i][1];
+  double a[np1], b[n], d[n], h[n], alpha[n], c[np1], l[np1], u[np1], z[np1];
 
-  NewDVector(&b, n);
-  NewDVector(&d, n);
-  NewDVector(&h, n);
-  NewDVector(&alpha, n);
+  for(i = 0; i < np1; i++)
+    a[i] = xy->data[i][1];
+
   for(i = 0; i < n; i++){
-    h->data[i] = xy->data[i+1][0] - xy->data[i][0];
+    h[i] = xy->data[i+1][0] - xy->data[i][0];
   }
 
   for(i = 1; i < n; i++){
-    alpha->data[i] = 3.f/h->data[i]*(a->data[i+1]-a->data[i]) - 3.f/h->data[i-1]*(a->data[i]-a->data[i-1]);
+    alpha[i] = 3.f/h[i]*(a[i+1]-a[i]) - 3.f/h[i-1]*(a[i]-a[i-1]);
   }
 
-  /*PrintDVector(h);
-  PrintDVector(alpha);*/
+  l[0] = 1.f;
+  u[0] = 0.f;
+  z[0] = 0.f;
+  for(i = 1; i < n; i++){
+    l[i] = 2*(xy->data[i+1][0]-xy->data[i-1][0]) - h[i-1]*u[i-1];
+    u[i] = h[i]/l[i];
+    z[i] = (alpha[i]-h[i-1]*z[i-1])/l[i];
+  }
 
-  NewDVector(&c, np1);
-  NewDVector(&l, np1);
-  NewDVector(&u, np1);
-  NewDVector(&z, np1);
+  l[n] = 1.f;
+  z[n] = 0.f;
+  c[n] = 0.f;
 
-    l->data[0] = 1.f;
-    u->data[0] = 0.f;
-    z->data[0] = 0.f;
-    for(i = 1; i < n; i++){
-      l->data[i] = 2*(xy->data[i+1][0]-xy->data[i-1][0]) - h->data[i-1]*u->data[i-1];
-      u->data[i] = h->data[i]/l->data[i];
-      z->data[i] = (alpha->data[i]-h->data[i-1]*z->data[i-1])/l->data[i];
-    }
-
-    l->data[n] = 1.f;
-    z->data[n] = 0.f;
-    c->data[n] = 0.f;
-
-    for(j = n-1; j > -1; j--){
-        c->data[j] = z->data[j] - u->data[j]*c->data[j+1];
-        b->data[j] = (a->data[j+1]-a->data[j])/h->data[j] - (h->data[j]*(c->data[j+1]+2*c->data[j]))/3.f;
-        d->data[j] = (c->data[j+1]-c->data[j])/(3.f*h->data[j]);
-    }
+  for(j = n-1; j > -1; j--){
+    c[j] = z[j] - u[j]*c[j+1];
+    b[j] = (a[j+1]-a[j])/h[j] - (h[j]*(c[j+1]+2*c[j]))/3.f;
+    d[j] = (c[j+1]-c[j])/(3.f*h[j]);
+  }
 
     /* Write SPLINE EQUATIONS
      * first column is the x range
@@ -67,25 +55,15 @@ void cubic_spline_interpolation(matrix *xy, matrix **S)
      */
     ResizeMatrix(S, n, 5);
     for(i = 0; i < n; i++){
-      (*S)->data[i][0] = xy->data[i][0];
-      (*S)->data[i][1] = a->data[i];
-      (*S)->data[i][2] = b->data[i];
-      (*S)->data[i][3] = c->data[i];
-      (*S)->data[i][4] = d->data[i];
+      S->data[i][0] = xy->data[i][0];
+      S->data[i][1] = a[i];
+      S->data[i][2] = b[i];
+      S->data[i][3] = c[i];
+      S->data[i][4] = d[i];
     }
-
-    DelDVector(&a);
-    DelDVector(&b);
-    DelDVector(&d);
-    DelDVector(&h);
-    DelDVector(&alpha);
-    DelDVector(&c);
-    DelDVector(&l);
-    DelDVector(&u);
-    DelDVector(&z);
 }
 
-void cubic_spline_predict(dvector *x_, matrix *S, dvector **y_pred)
+void cubic_spline_predict(dvector *x_, matrix *S, dvector *y_pred)
 {
   size_t i, j, n;
   double x, xi, y;
@@ -122,18 +100,18 @@ void cubic_spline_predict(dvector *x_, matrix *S, dvector **y_pred)
       y = S->data[j][1] + S->data[j][2]*(x-xi) + S->data[j][3]*(x-xi)*(x-xi) + S->data[j][4]*(x-xi)*(x-xi)*(x-xi);
     }
 
-    (*y_pred)->data[i] = y;
+    y_pred->data[i] = y;
   }
 }
 
-void interpolate(matrix *xy, size_t npoints, matrix **interp_xy)
+void interpolate(matrix *xy, size_t npoints, matrix *interp_xy)
 {
   size_t i;
   double x, dx, xmin, xmax;
   matrix *S;
   dvector *x_interp, *y_pred;
   initMatrix(&S);
-  cubic_spline_interpolation(xy, &S);
+  cubic_spline_interpolation(xy, S);
 
   ResizeMatrix(interp_xy, npoints, 2);
   MatrixColumnMinMax(xy, 0, &xmin, &xmax);
@@ -146,10 +124,10 @@ void interpolate(matrix *xy, size_t npoints, matrix **interp_xy)
   }
 
   initDVector(&y_pred);
-  cubic_spline_predict(x_interp, S, &y_pred);
+  cubic_spline_predict(x_interp, S, y_pred);
   for(i = 0; i < x_interp->size; i++){
-    (*interp_xy)->data[i][0] = x_interp->data[i];
-    (*interp_xy)->data[i][1] = y_pred->data[i];
+    interp_xy->data[i][0] = x_interp->data[i];
+    interp_xy->data[i][1] = y_pred->data[i];
   }
 
   DelDVector(&x_interp);

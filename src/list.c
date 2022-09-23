@@ -48,13 +48,13 @@ void DelDVectorList(dvectorlist **lst)
   xfree((*lst));
 }
 
-void DVectorListAppend(dvectorlist **lst, dvector *d)
+void DVectorListAppend(dvectorlist *lst, dvector *d)
 {
   size_t i;
-  (*lst)->size += 1;
-  (*lst)->d = xrealloc((*lst)->d, sizeof(dvector*)*(*lst)->size);
-  NewDVector(&(*lst)->d[(*lst)->size-1], d->size);
+  lst->size += 1;
+  lst->d = xrealloc(lst->d, sizeof(dvector*)*lst->size);
+  NewDVector(&lst->d[lst->size-1], d->size);
   for(i = 0; i < d->size; i++){
-    (*lst)->d[(*lst)->size-1]->data[i] = d->data[i];
+    lst->d[lst->size-1]->data[i] = d->data[i];
   }
 }

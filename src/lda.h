@@ -63,26 +63,26 @@ void LDA(matrix *mx, matrix *my, LDAMODEL *lda);
  */
 void LDAPrediction(matrix *mx,
                    LDAMODEL *lda,
-                   matrix **pfeatures,
-                   matrix **probability,
-                   matrix **mnpdf,
-                   matrix **prediction);
+                   matrix *pfeatures,
+                   matrix *probability,
+                   matrix *mnpdf,
+                   matrix *prediction);
 
 /* Binary statistics */
 void LDAStatistics(dvector *y_true,
                    dvector *y_pred,
-                   matrix **roc,
+                   matrix *roc,
                    double *roc_auc,
-                   matrix **precision_recal,
+                   matrix *precision_recal,
                    double *pr_auc);
 
 /* Multiclass statistics */
 void LDAMulticlassStatistics(matrix *y_true,
                              matrix *y_pred,
-                             tensor **roc,
-                             dvector **roc_aucs,
-                             tensor **precision_recals,
-                             dvector **pr_aucs);
+                             tensor *roc,
+                             dvector *roc_aucs,
+                             tensor *precision_recals,
+                             dvector *pr_aucs);
 
 int getNClasses(matrix *my);
 

@@ -86,35 +86,52 @@ void DelPLSModel(PLSMODEL **m);
  * N.B.: all the dvector must be initialised.
  * See Geladi ref. for details
  */
-void LVCalc(matrix **X, matrix **Y, dvector **t, dvector **u, dvector **p, dvector **q, dvector **w, double *bcoef);
+void LVCalc(matrix *X, matrix *Y, dvector *t, dvector *u, dvector *p, dvector *q, dvector *w, double *bcoef);
 
 /*
  * Description PLS calculation from P. Geladi algorithm
  */
-void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautoscaling, PLSMODEL *model, ssignal *s);
+void PLS(matrix *mx,
+         matrix *my,
+         size_t nlv,
+         size_t xautoscaling,
+         size_t yautoscaling,
+         PLSMODEL *model,
+         ssignal *s);
 
 /*
  * Description: Calculate betas coefficients from a pls model at specific nlv latent variables
  */
-void PLSBetasCoeff(PLSMODEL *model, size_t nlv, dvector **betas);
+  void PLSBetasCoeff(PLSMODEL *model,
+                     size_t nlv,
+                     dvector *betas);
 
 /*
  * Description: Project a matrix and predict the scores into the new space.
  * This function is used before predict the Y values
  */
-void PLSScorePredictor(matrix *mx, PLSMODEL *model, size_t nlv, matrix **xscores);
+void PLSScorePredictor(matrix *mx,
+                       PLSMODEL *model,
+                       size_t nlv,
+                       matrix *xscores);
 
 /*
  * Description: Calculate the Y values at a specific lv number (nlv).
  * Output: y shape (y->row, y-col)
  */
-void PLSYPredictor(matrix *tscore, PLSMODEL *model, size_t nlv, matrix **y);
+void PLSYPredictor(matrix *tscore,
+                   PLSMODEL *model,
+                   size_t nlv,
+                   matrix *y);
 
 /*
  * Description: Calculate the Y values at all the lv.
  * Output: y shape (y->row, y->col*nlv)
  */
-void PLSYPredictorAllLV(matrix *mx, PLSMODEL *model, matrix **tscores, matrix **y);
+void PLSYPredictorAllLV(matrix *mx,
+                        PLSMODEL *model,
+                        matrix *tscores,
+                        matrix *y);
 
 
 /*
@@ -123,14 +140,23 @@ void PLSYPredictorAllLV(matrix *mx, PLSMODEL *model, matrix **tscores, matrix **
  *              the bias of the prediction (bias) in a regression model.
  *              mx and my could be the training or the test datasets.
  */
-void PLSRegressionStatistics(matrix *my_true, matrix *my_pred, matrix** ccoeff, matrix **rmse, matrix **bias);
+void PLSRegressionStatistics(matrix *my_true,
+                             matrix *my_pred,
+                             matrix *ccoeff,
+                             matrix *rmse,
+                             matrix *bias);
 
 /*
  * Description: Calculate the roc curve, the auc, the precision recall curve,
  *              the precision_recall_auc of a classification model.
  *              mx and my could be the training or the test datasets.
  */
-void PLSDiscriminantAnalysisStatistics(matrix *my_true, matrix *my_score, tensor **roc, matrix **roc_auc, tensor **precision_recall, matrix **precision_recall_ap);
+void PLSDiscriminantAnalysisStatistics(matrix *my_true,
+                                       matrix *my_score,
+                                       tensor *roc,
+                                       matrix *roc_auc,
+                                       tensor *precision_recall,
+                                       matrix *precision_recall_ap);
 
 /*
  * Description: Calculate the ROC curve with AUC and the Precision-Recall crurve with his
@@ -142,7 +168,7 @@ void PLSBinaryClassificationScores(matrix *mx, matrix *my, PLSMODEL *model, size
 /*
  * Description: Calculate the PLS Very important variables
  */
-void PLSVIP(PLSMODEL *model, matrix **vip);
+void PLSVIP(PLSMODEL *model, matrix *vip);
 
 /*
  * Description: Get the Cutoff based on the grow of r2, q2 in case of regression

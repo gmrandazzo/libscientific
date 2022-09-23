@@ -103,7 +103,7 @@ double randDouble(double low, double high)
 
 double square(double x){ return x*x; }
 
-void StochasticUniversalSample(dvector *fitness, size_t nselect, size_t init, uivector **selection)
+void StochasticUniversalSample(dvector *fitness, size_t nselect, size_t init, uivector *selection)
 {
   size_t i, k;
   double sum, ptr;
@@ -148,18 +148,13 @@ void StochasticUniversalSample(dvector *fitness, size_t nselect, size_t init, ui
   /*}*/
 }
 
-void RouletteWheelselection(dvector *fitness, size_t nselect, size_t init, uivector **selection)
+void RouletteWheelselection(dvector *fitness, size_t nselect, size_t init, uivector *selection)
 {
   size_t i, k;
-  double sum, sumfitness, ptr;
+  double sum, ptr;
   k = 0;
   sum = 0.f;
-  sumfitness = 0.f;
   srand(init);
-
-  for(i = 0; i < fitness->size; i++){
-    sumfitness += getDVectorValue(fitness, i);
-  }
 
   for(k = 0; k < nselect; k++){
     ptr = (double)rand()/(double)RAND_MAX;
@@ -176,7 +171,7 @@ void RouletteWheelselection(dvector *fitness, size_t nselect, size_t init, uivec
   }
 }
 
-void Combinations(uivector *num, matrix **comb)
+void Combinations(uivector *num, matrix *comb)
 {
   size_t temp;
   size_t i, j;
@@ -203,7 +198,7 @@ double curve_area(matrix *xy, size_t intervals)
   /*If intervals > 0 interpolate with natural cubic splines to have more fine area */
   if(intervals > 0){
     /* If two points have different y but share same x the algorithm will fail*/
-    interpolate(xy, intervals, &interp_xy);
+    interpolate(xy, intervals, interp_xy);
   }
   else{
     MatrixCopy(xy, &interp_xy);

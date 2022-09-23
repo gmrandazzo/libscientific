@@ -83,66 +83,54 @@ char* getStr(strvector *s, size_t i)
   return s->data[i];
 }
 
-void StrVectorAppend(strvector **s, char *str)
+void StrVectorAppend(strvector *s, char *str)
 {
   size_t i;
-  size_t size = (*s)->size+1;
+  size_t size = s->size+1;
   strvector *tmp;
-  NewStrVector(&tmp, (*s)->size);
+  NewStrVector(&tmp, s->size);
 
-  for(i = 0; i < (*s)->size; i++){
-    setStr(tmp, i, getStr((*s), i));
+  for(i = 0; i < s->size; i++){
+    setStr(tmp, i, getStr(s, i));
   }
 
-  (*s)->data = xrealloc((*s)->data, sizeof(char*)*size);
-//   (*s)->data[(*s)->size] = xmalloc(sizeof(char)*MAXCHARSIZE);
-  (*s)->data[(*s)->size] = xmalloc(sizeof(char));
-  (*s)->size += 1;
+  s->data = xrealloc(s->data, sizeof(char*)*size);
+//   s->data[s->size] = xmalloc(sizeof(char)*MAXCHARSIZE);
+  s->data[s->size] = xmalloc(sizeof(char));
+  s->size += 1;
 
   for(i = 0; i < tmp->size; i++){
-    setStr((*s), i, getStr(tmp, i));
+    setStr(s, i, getStr(tmp, i));
   }
 
-  setStr((*s), (*s)->size-1, str);
+  setStr(s, s->size-1, str);
 
   DelStrVector(&tmp);
 }
 
-/* UNSAFE!
-void StrVectorRemoveAt(strvector **d, size_t indx)
-{
-  if(indx < (*d)->size){
-    int elements_to_move = (*d)->size - indx - 1;
-    memmove( &(*d)->data[indx], &(*d)->data[indx+1], elements_to_move * sizeof(char));
-    (*d)->size -=1;
-  }
-  else{
-    return;
-  }
-}*/
 
-void StrVectorAppendInt(strvector** s, int val)
+void StrVectorAppendInt(strvector *s, int val)
 {
-  size_t size = (*s)->size+1;
+  size_t size = s->size+1;
   char str[MAXCHARSIZE];
-  (*s)->data = xrealloc((*s)->data, sizeof(char*)*size);
-  (*s)->size += 1;
-  /*(*s)->data[(*s)->size-1] = xmalloc(sizeof(char)*MAXCHARSIZE);
-  sprintf((*s)->data[(*s)->size-1], "%d", val);*/
+  s->data = xrealloc(s->data, sizeof(char*)*size);
+  s->size += 1;
+  /*s->data[s->size-1] = xmalloc(sizeof(char)*MAXCHARSIZE);
+  sprintf(s->data[s->size-1], "%d", val);*/
   sprintf(str, "%d", val);
-  (*s)->data[(*s)->size-1] = strdup(str);
+  s->data[s->size-1] = strdup(str);
 }
 
-void StrVectorAppendDouble(strvector** s, double val)
+void StrVectorAppendDouble(strvector *s, double val)
 {
-  size_t size = (*s)->size+1;
+  size_t size = s->size+1;
   char str[MAXCHARSIZE];
-  (*s)->data = xrealloc((*s)->data, sizeof(char*)*size);
-  (*s)->size += 1;
-  /*(*s)->data[(*s)->size-1] = xmalloc(sizeof(char)*MAXCHARSIZE);
-  sprintf((*s)->data[(*s)->size-1], "%f", val);*/
+  s->data = xrealloc(s->data, sizeof(char*)*size);
+  s->size += 1;
+  /*s->data[s->size-1] = xmalloc(sizeof(char)*MAXCHARSIZE);
+  sprintf(s->data[s->size-1], "%f", val);*/
   sprintf(str, "%f", val);
-  (*s)->data[(*s)->size-1] = strdup(str);
+  s->data[s->size-1] = strdup(str);
 }
 
 strvector *StrVectorExtend(strvector *s1, strvector *s2)
@@ -159,20 +147,20 @@ strvector *StrVectorExtend(strvector *s1, strvector *s2)
   return sext;
 }
 
-void StrVectorResize(strvector **s, size_t size_)
+void StrVectorResize(strvector *s, size_t size_)
 {
   size_t i;
-  if((*s)->size > 0){
-    for(i = 0; i < (*s)->size; i++)
-      xfree((*s)->data[i]);
-    xfree((*s)->data);
+  if(s->size > 0){
+    for(i = 0; i < s->size; i++)
+      xfree(s->data[i]);
+    xfree(s->data);
   }
 
-  (*s)->size = size_;
-  (*s)->data = xmalloc(sizeof(char*)*size_);
-  for(i = 0; i < (*s)->size; i++){
-    (*s)->data[i] = xmalloc(sizeof(char)*256);
-    memset((*s)->data[i], 0, 256);
+  s->size = size_;
+  s->data = xmalloc(sizeof(char*)*size_);
+  for(i = 0; i < s->size; i++){
+    s->data[i] = xmalloc(sizeof(char)*256);
+    memset(s->data[i], 0, 256);
   }
 }
 
@@ -198,7 +186,7 @@ char *Trim(char *s)
   return s;
 }
 
-void SplitString(char *str, char *sep, strvector **tokens)
+void SplitString(char *str, char *sep, strvector *tokens)
 {
   char *tl=NULL;
   /* Create a buffer of the correct length and copy the string into the buffer */
@@ -236,17 +224,17 @@ void DelDVector(dvector **d )
   }
 }
 
-void DVectorResize(dvector **d, size_t size_)
+void DVectorResize(dvector *d, size_t size_)
 {
   size_t i;
-  if((*d)->size > 0){
-    xfree((*d)->data);
+  if(d->size > 0){
+    xfree(d->data);
   }
 
-  (*d)->data = xmalloc(sizeof(double)*size_);
-  (*d)->size = size_;
-  for(i = 0; i < (*d)->size; i++){
-    (*d)->data[i] = +0.f;
+  d->data = xmalloc(sizeof(double)*size_);
+  d->size = size_;
+  for(i = 0; i < d->size; i++){
+    d->data[i] = +0.f;
   }
 }
 
@@ -260,47 +248,47 @@ void PrintDVector(dvector *v)
   }
 }
 
-void DVectorAppend(dvector **d, double val)
+void DVectorAppend(dvector *d, double val)
 {
-  size_t size = (*d)->size+1;
-  (*d)->data = xrealloc((*d)->data, sizeof(double)*size);
-  (*d)->size += 1;
-  (*d)->data[size-1] = val;
+  size_t size = d->size+1;
+  d->data = xrealloc(d->data, sizeof(double)*size);
+  d->size += 1;
+  d->data[size-1] = val;
 }
 
-void DVectorRemoveAt(dvector **d, size_t indx)
+void DVectorRemoveAt(dvector *d, size_t indx)
 {
-  if(indx < (*d)->size){
+  if(indx < d->size){
     // assuming that sizeOfArray is the count of valid elements in the array
-    int elements_to_move = (*d)->size - indx - 1;
-    memmove( &(*d)->data[indx], &(*d)->data[indx+1], elements_to_move * sizeof(double));
-    (*d)->size -=1;
+    int elements_to_move = d->size - indx - 1;
+    memmove( &d->data[indx], &d->data[indx+1], elements_to_move * sizeof(double));
+    d->size -=1;
   }
   else{
     return;
   }
 }
 
-void DVectorCopy(dvector* dsrc, dvector** ddst)
+void DVectorCopy(dvector* dsrc, dvector *ddst)
 {
   size_t i;
-  if((*ddst)->size == 0){
-    (*ddst)->size= dsrc->size;
-    (*ddst)->data = xmalloc(sizeof(double)*dsrc->size);
-    for(i = 0; i < (*ddst)->size; i++){
-      (*ddst)->data[i] = +0.f;
+  if(ddst->size == 0){
+    ddst->size= dsrc->size;
+    ddst->data = xmalloc(sizeof(double)*dsrc->size);
+    for(i = 0; i < ddst->size; i++){
+      ddst->data[i] = +0.f;
     }
   }
   else{
-    (*ddst)->size = dsrc->size;
-    (*ddst)->data = xrealloc((*ddst)->data, sizeof(double)*dsrc->size);
-    for(i = 0; i < (*ddst)->size; i++){
-      setDVectorValue((*ddst), i, +0.f);
+    ddst->size = dsrc->size;
+    ddst->data = xrealloc(ddst->data, sizeof(double)*dsrc->size);
+    for(i = 0; i < ddst->size; i++){
+      setDVectorValue(ddst, i, +0.f);
     }
   }
 
-  for(i = 0; i < (*ddst)->size; i++){
-    (*ddst)->data[i] = dsrc->data[i];
+  for(i = 0; i < ddst->size; i++){
+    ddst->data[i] = dsrc->data[i];
   }
 }
 
@@ -420,7 +408,7 @@ void DVectNorm(dvector *v, dvector *nv)
   }
 }
 
-void DVectorDVectorDiff(dvector* v1, dvector* v2, dvector **v3)
+void DVectorDVectorDiff(dvector *v1, dvector *v2, dvector *v3)
 {
   size_t i;
   if(v1->size == v2->size){
@@ -433,7 +421,7 @@ void DVectorDVectorDiff(dvector* v1, dvector* v2, dvector **v3)
   }
 }
 
-void DVectorDVectorSum(dvector* v1, dvector* v2, dvector** v3)
+void DVectorDVectorSum(dvector *v1, dvector *v2, dvector *v3)
 {
   size_t i;
   if(v1->size == v2->size){
@@ -556,21 +544,21 @@ void DelIVector(ivector **d )
   }
 }
 
-void IVectorAppend(ivector **d, int val)
+void IVectorAppend(ivector *d, int val)
 {
-  long int size = (*d)->size+1;
-  (*d)->data = xrealloc((*d)->data, sizeof(int)*size);
-  (*d)->size += 1;
-  (*d)->data[(*d)->size-1] = val;
+  long int size = d->size+1;
+  d->data = xrealloc(d->data, sizeof(int)*size);
+  d->size += 1;
+  d->data[d->size-1] = val;
 }
 
-void IVectorRemoveAt(ivector **d, size_t indx)
+void IVectorRemoveAt(ivector *d, size_t indx)
 {
-  if(indx < (*d)->size){
+  if(indx < d->size){
     // assuming that sizeOfArray is the count of valid elements in the array
-    int elements_to_move = (*d)->size - indx - 1;
-    memmove( &(*d)->data[indx], &(*d)->data[indx+1], elements_to_move * sizeof(int));
-    (*d)->size -=1;
+    int elements_to_move = d->size - indx - 1;
+    memmove(&d->data[indx], &d->data[indx+1], elements_to_move * sizeof(int));
+    d->size -=1;
   }
   else{
     return;
@@ -662,17 +650,17 @@ void DelUIVector(uivector **d )
   }
 }
 
-void UIVectorResize(uivector **d, size_t size_)
+void UIVectorResize(uivector *d, size_t size_)
 {
   size_t i;
-  if((*d)->size > 0){
-    xfree((*d)->data);
+  if(d->size > 0){
+    xfree(d->data);
   }
 
-  (*d)->data = xmalloc(sizeof(size_t*)*size_);
-  (*d)->size = size_;
-  for(i = 0; i < (*d)->size; i++)
-    setUIVectorValue((*d), i, 0);
+  d->data = xmalloc(sizeof(size_t*)*size_);
+  d->size = size_;
+  for(i = 0; i < d->size; i++)
+    setUIVectorValue(d, i, 0);
 }
 
 void PrintUIVector(uivector* v)
@@ -686,20 +674,20 @@ void PrintUIVector(uivector* v)
   }
 }
 
-void UIVectorAppend(uivector **d, size_t val)
+void UIVectorAppend(uivector *d, size_t val)
 {
-  size_t size = (*d)->size+1;
-  (*d)->data = xrealloc((*d)->data, sizeof(size_t)*size);
-  (*d)->size += 1;
-  (*d)->data[(*d)->size-1] = val;
+  size_t size = d->size+1;
+  d->data = xrealloc(d->data, sizeof(size_t)*size);
+  d->size += 1;
+  d->data[d->size-1] = val;
 }
 
-void UIVectorRemoveAt(uivector **d, size_t indx)
+void UIVectorRemoveAt(uivector *d, size_t indx)
 {
-  if(indx < (*d)->size){
-    int elements_to_move = (*d)->size - indx - 1;
-    memmove( &(*d)->data[indx], &(*d)->data[indx+1], elements_to_move * sizeof(size_t));
-    (*d)->size -=1;
+  if(indx < d->size){
+    int elements_to_move = d->size - indx - 1;
+    memmove( &d->data[indx], &d->data[indx+1], elements_to_move * sizeof(size_t));
+    d->size -=1;
   }
   else{
     return;

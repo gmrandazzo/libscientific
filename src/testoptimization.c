@@ -29,7 +29,7 @@ void test1(){
   x0->data[4] = 1.2;
 
   initDVector(&best);
-  double min = NelderMeadSimplex(&rosen, x0, NULL, 1e-10, 1000, &best);
+  double min = NelderMeadSimplex(&rosen, x0, NULL, 1e-10, 1000, best);
   /*printf("min results obtained: %f\n",  min);
   puts("Best results obtained vector");
   PrintDVector(best);*/

@@ -17,7 +17,7 @@ int main(void)
     initDVector(&eval);
     initMatrix(&evect);
 
-    EVectEval(m, &eval, &evect); // Calculate the eigenvectors and associated eigenvalues
+    EVectEval(m, eval, evect); // Calculate the eigenvectors and associated eigenvalues
 
     PrintDVector(eval); // Print to video the eigenvalues
     PrintMatrix(evect); // Print to video the eigenvectors. Each column correspond to an eingenvalue

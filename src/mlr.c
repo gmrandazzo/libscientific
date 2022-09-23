@@ -94,13 +94,13 @@ void MLR(matrix* mx, matrix* my, MLRMODEL* model, ssignal *s)
 
     OrdinaryLeastSquares(mx_, y_, b_);
 
-    MatrixAppendCol(&model->b, b_);
+    MatrixAppendCol(model->b, b_);
     DelDVector(&b_);
   }
 
   /* Recalculate y from model */
-  MatrixColAverage(my, &model->ymean);
-  MLRPredictY(mx, my, model, &model->recalculated_y, &model->recalc_residuals, &model->r2y_model, &model->sdec);
+  MatrixColAverage(my, model->ymean);
+  MLRPredictY(mx, my, model, model->recalculated_y, model->recalc_residuals, model->r2y_model, model->sdec);
 
   DelDVector(&y_);
   DelMatrix(&mx_);
@@ -113,17 +113,17 @@ void MLR(matrix* mx, matrix* my, MLRMODEL* model, ssignal *s)
  */
 void MLRPredictY(matrix* mx,
                  matrix *my,
-                 MLRMODEL* model,
-                 matrix** predicted_y,
-                 matrix** predicted_residuals,
-                 dvector** r2y,
-                 dvector** sdep)
+                 MLRMODEL *model,
+                 matrix *predicted_y,
+                 matrix *predicted_residuals,
+                 dvector *r2y,
+                 dvector *sdep)
 {
   if(mx->col == (model->b->row-1)){
     size_t i, j, k;
     double ypred, rss, tss;
 
-    if((*predicted_y)->row != mx->row && (*predicted_y)->col != model->b->col){
+    if(predicted_y->row != mx->row && predicted_y->col != model->b->col){
       ResizeMatrix(predicted_y, mx->row, model->b->col);
     }
 
@@ -133,7 +133,7 @@ void MLRPredictY(matrix* mx,
         for(j = 0; j < mx->col; j++){
           ypred += getMatrixValue(mx, i, j)*getMatrixValue(model->b, j+1, k);
         }
-        setMatrixValue((*predicted_y), i, k, ypred);
+        setMatrixValue(predicted_y, i, k, ypred);
       }
     }
 
@@ -154,9 +154,9 @@ void MLRPredictY(matrix* mx,
         rss = tss = 0.f;
         for(i = 0; i < my->row; i++){
           if(predicted_residuals != 0){
-            setMatrixValue((*predicted_residuals), i, j, getMatrixValue((*predicted_y), i, j) - getMatrixValue(my, i, j));
+            setMatrixValue(predicted_residuals, i, j, getMatrixValue(predicted_y, i, j) - getMatrixValue(my, i, j));
           }
-          rss += square(getMatrixValue(my, i, j) - getMatrixValue((*predicted_y), i, j));
+          rss += square(getMatrixValue(my, i, j) - getMatrixValue(predicted_y, i, j));
           tss += square(getMatrixValue(my, i, j) - getDVectorValue(model->ymean, j));
         }
 
@@ -177,9 +177,9 @@ void MLRPredictY(matrix* mx,
 
 void MLRRegressionStatistics(matrix *my_true,
                              matrix *my_pred,
-                             dvector** ccoeff,
-                             dvector **rmse,
-                             dvector **bias)
+                             dvector *ccoeff,
+                             dvector *rmse,
+                             dvector *bias)
 {
   size_t i, j;
   dvector *yt;
@@ -198,20 +198,20 @@ void MLRRegressionStatistics(matrix *my_true,
     initDVector(&yt);
     initDVector(&yp);
     for(i = 0; i < my_true->row; i++){
-      DVectorAppend(&yt, my_true->data[i][j]);
-      DVectorAppend(&yp, my_pred->data[i][j]);
+      DVectorAppend(yt, my_true->data[i][j]);
+      DVectorAppend(yp, my_pred->data[i][j]);
     }
 
     if(bias != NULL){
-      (*bias)->data[j] = BIAS(yt, yp);
+      bias->data[j] = BIAS(yt, yp);
     }
 
     if(ccoeff != NULL){
-      (*ccoeff)->data[j] = R2(yt, yp);
+      ccoeff->data[j] = R2(yt, yp);
     }
 
     if(rmse != NULL){
-      (*rmse)->data[j] = RMSE(yt, yp);
+      rmse->data[j] = RMSE(yt, yp);
     }
     DelDVector(&yt);
     DelDVector(&yp);

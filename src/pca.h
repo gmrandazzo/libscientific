@@ -36,7 +36,7 @@ typedef struct{
 void NewPCAModel(PCAMODEL **m);
 void DelPCAModel(PCAMODEL **m);
 
-void calcVarExpressed(double ss, dvector *eval, dvector **varexp);
+void calcVarExpressed(double ss, dvector *eval, dvector *varexp);
 double calcObjectDistance(matrix *m);
 
 /*
@@ -54,7 +54,7 @@ void PCA(matrix *mx,
 void PCAScorePredictor(matrix *mx,
                        PCAMODEL *model,
                        size_t npc,
-                       matrix **pscores);
+                       matrix *pscores);
 
 /*
  * Reconstruct the original matrix from PCA model, scores and loadings
@@ -64,19 +64,19 @@ void PCAIndVarPredictor(matrix *t,
                         dvector *colaverage,
                         dvector *colsdev,
                         size_t npc,
-                        matrix **mx);
+                        matrix *mx);
 
 void PCARSquared(matrix *mx,
                  PCAMODEL *model,
                  size_t npc,
-                 dvector** r2);
+                 dvector *r2);
 
 void PCARankValidation(matrix *mx,
                        size_t npc,
                        size_t scaling,
                        size_t group,
                        size_t iterations,
-                       dvector **r,
+                       dvector *r,
                        ssignal *s);
 
 /*Compute the residual matrix for a specific number of component.
@@ -85,7 +85,10 @@ void PCARankValidation(matrix *mx,
  * pc = max component to extract the residual matrix
  * rmx = residual matrix of output. must be initialized with initMatrix(&rmx)
  */
-void GetResidualMatrix(matrix *mx, PCAMODEL *model, size_t pc, matrix **rmx);
+void GetResidualMatrix(matrix *mx,
+                       PCAMODEL *model,
+                       size_t pc,
+                       matrix *rmx);
 
 void PrintPCA(PCAMODEL *m);
 

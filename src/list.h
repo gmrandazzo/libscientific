@@ -32,7 +32,7 @@ typedef struct{
 void initDVectorList(dvectorlist **lst);
 void NewDVectorList(dvectorlist **lst, size_t size_);
 void DelDVectorList(dvectorlist **lst);
-void DVectorListAppend(dvectorlist **lst, dvector *d);
+void DVectorListAppend(dvectorlist *lst, dvector *d);
 
 
 #endif

@@ -137,7 +137,14 @@ void DelPLSModel(PLSMODEL** m)
 * 12) w_new' = w_old'*||p_old'||
 *
 */
-void LVCalc(matrix **X, matrix **Y, dvector **t, dvector **u, dvector **p, dvector **q, dvector **w, double *bcoef)
+void LVCalc(matrix *X,
+            matrix *Y,
+            dvector *t,
+            dvector *u,
+            dvector *p,
+            dvector *q,
+            dvector *w,
+            double *bcoef)
 {
   size_t i, j, loop;
   double mod_p_old, dot_q, dot_t, dot_u, dot_w, deltat;
@@ -145,26 +152,26 @@ void LVCalc(matrix **X, matrix **Y, dvector **t, dvector **u, dvector **p, dvect
   matrix *X_, *Y_;
   dvector *t_, *u_, *p_, *q_, *w_;
   dvector *t_old;
-  
+
   mod_p_old = dot_q = dot_t = dot_u = dot_w = 0.f;
   initMatrix(&X_);
   initMatrix(&Y_);
-  MatrixCopy((*X), &X_);
-  MatrixCopy((*Y), &Y_);
+  MatrixCopy(X, &X_);
+  MatrixCopy(Y, &Y_);
 
-  NewDVector(&t_, (*t)->size);
-  NewDVector(&u_, (*u)->size);
-  NewDVector(&p_, (*p)->size);
-  NewDVector(&q_, (*q)->size);
-  NewDVector(&w_, (*w)->size);
-  NewDVector(&t_old, (*t)->size);
-  
+  NewDVector(&t_, t->size);
+  NewDVector(&u_, u->size);
+  NewDVector(&p_, p->size);
+  NewDVector(&q_, q->size);
+  NewDVector(&w_, w->size);
+  NewDVector(&t_old, t->size);
+
   /* Step 1: select the column vector u with the largest column average from Y  take u = some y_j */
   if(Y_->col > 1){
     dvector *Y_avg;
     initDVector(&Y_avg);
     //MatrixColVar((*Y), &Y_avg);
-    MatrixColVar(Y_, &Y_avg);
+    MatrixColVar(Y_, Y_avg);
     j = 0;
     for(i = 1; i < Y_avg->size; i++){
       if(Y_avg->data[i] > Y_avg->data[j])
@@ -218,7 +225,7 @@ void LVCalc(matrix **X, matrix **Y, dvector **t, dvector **u, dvector **p, dvect
     MatrixDVectorDotProduct(X_, w_, t_);
     dot_w = DVectorDVectorDotProd(w_, w_);
 
-    for(i = 0; i < (*t)->size; i++){
+    for(i = 0; i < t_->size; i++){
       t_->data[i] /= dot_w;
     }
 
@@ -339,8 +346,8 @@ void LVCalc(matrix **X, matrix **Y, dvector **t, dvector **u, dvector **p, dvect
     }
   }
 
-  MatrixCopy(X_, X);
-  MatrixCopy(Y_, Y);
+  MatrixCopy(X_, &X);
+  MatrixCopy(Y_, &Y);
   DVectorCopy(t_, t);
   DVectorCopy(p_, p);
   DVectorCopy(u_, u);
@@ -431,7 +438,7 @@ void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautosc
       /* MatrixColAverage skip missing value marked with MISSING
        * These values are automatically detected by MatrixCheck
        */
-      MatrixColAverage(mx, &(model->xcolaverage));
+      MatrixColAverage(mx, model->xcolaverage);
 
       for(j = 0; j < mx->col; j++){
         for(i = 0; i < mx->row; i++){
@@ -452,13 +459,13 @@ void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautosc
       */
       if(xautoscaling > 0){
         if(xautoscaling == 1){ /* SDEV Autoscaling */
-          MatrixColSDEV(mx, &(model->xcolscaling));
+          MatrixColSDEV(mx, model->xcolscaling);
         }
         else if(xautoscaling == 2){ /* RMS Autoscaling */
-          MatrixColRMS(mx, &(model->xcolscaling));
+          MatrixColRMS(mx, model->xcolscaling);
         }
         else if(xautoscaling == 3){ /* PARETO Autoscaling */
-          MatrixColSDEV(mx, &(model->xcolscaling));
+          MatrixColSDEV(mx, model->xcolscaling);
           for(i = 0; i < model->xcolscaling->size; i++){
             model->xcolscaling->data[i] = sqrt(model->xcolscaling->data[i]);
           }
@@ -466,15 +473,15 @@ void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautosc
         else if(xautoscaling == 4){ /* Range Scaling */
           for(i = 0; i < mx->col; i++){
             MatrixColumnMinMax(mx, i, &min, &max);
-            DVectorAppend(&model->xcolscaling, (max - min));
+            DVectorAppend(model->xcolscaling, (max - min));
           }
         }
         else if(xautoscaling == 5){ /* Level Scaling  */
-          DVectorCopy(model->xcolaverage, &model->xcolscaling);
+          DVectorCopy(model->xcolaverage, model->xcolscaling);
         }
         else{
           for(i = 0; i < model->xcolaverage->size; i++){
-            DVectorAppend(&model->xcolscaling, 1.0);
+            DVectorAppend(model->xcolscaling, 1.0);
           }
         }
 
@@ -505,7 +512,7 @@ void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautosc
       MatrixCheck(my);
 
       /*mean centering the y matrix*/
-      MatrixColAverage(my, &(model->ycolaverage));
+      MatrixColAverage(my, model->ycolaverage);
 
       for(j = 0; j < my->col; j++){
         for(i = 0; i < my->row; i++){
@@ -520,13 +527,13 @@ void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautosc
 
       if(yautoscaling > 0){
         if(yautoscaling == 1){ /* RMS Scaling: Divite for the Standar Deviation Column */
-          MatrixColSDEV(my, &(model->ycolscaling));
+          MatrixColSDEV(my, model->ycolscaling);
         }
         else if(yautoscaling == 2){ /* RMS Scaling: Divite for the Root Mean Square of the column */
-          MatrixColRMS(my, &(model->ycolscaling));
+          MatrixColRMS(my, model->ycolscaling);
         }
         else if(yautoscaling == 3){ /* PARETO Autoscaling */
-          MatrixColSDEV(my, &(model->ycolscaling));
+          MatrixColSDEV(my, model->ycolscaling);
           for(i = 0; i < model->ycolscaling->size; i++){
             model->ycolscaling->data[i] = sqrt(model->ycolscaling->data[i]);
           }
@@ -534,15 +541,15 @@ void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautosc
         else if(yautoscaling == 4){ /* Range Scaling */
           for(i = 0; i < my->col; i++){
             MatrixColumnMinMax(my, i, &min, &max);
-            DVectorAppend(&model->ycolscaling, (max - min));
+            DVectorAppend(model->ycolscaling, (max - min));
           }
         }
         else if(yautoscaling == 5){ /* Level Scaling  */
-          DVectorCopy(model->ycolaverage, &model->ycolscaling);
+          DVectorCopy(model->ycolaverage, model->ycolscaling);
         }
         else{
           for(i = 0; i < model->ycolaverage->size; i++){
-            DVectorAppend(&model->ycolscaling, 1.0);
+            DVectorAppend(model->ycolscaling, 1.0);
           }
         }
 
@@ -597,11 +604,11 @@ void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautosc
 
 
       /*RESIZE THE OUTPUT MATRIX*/
-      ResizeMatrix(&(model->xscores), X->row, nlv);
-      ResizeMatrix(&(model->xloadings), X->col, nlv);
-      ResizeMatrix(&(model->xweights), X->col, nlv);
-      ResizeMatrix(&(model->yscores), Y->row, nlv);
-      ResizeMatrix(&(model->yloadings), Y->col, nlv);
+      ResizeMatrix(model->xscores, X->row, nlv);
+      ResizeMatrix(model->xloadings, X->col, nlv);
+      ResizeMatrix(model->xweights, X->col, nlv);
+      ResizeMatrix(model->yscores, Y->row, nlv);
+      ResizeMatrix(model->yloadings, Y->col, nlv);
 
       #ifdef DEBUG
       puts("X mean centered");
@@ -617,7 +624,7 @@ void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautosc
         else{
           double bcoef = 0.f;
           /* Calculate the Latent Variable (LV) according the NIPALS algorithm */
-          LVCalc(&X, &Y, &t, &u, &p, &q, &w, &bcoef);
+          LVCalc(X, Y, t, u, p, q, w, &bcoef);
 
           #ifdef DEBUG
           printf("\n Deflated X\n");
@@ -635,7 +642,7 @@ void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautosc
           /* If more pairs (t,u) are needed go to 1. with X=Xnew and Y=Ynew.
           * Storing scores, loadings, weights, bcoefficients
           */
-          DVectorAppend(&(model->b), bcoef);
+          DVectorAppend((model->b), bcoef);
 
           for(i = 0; i < t->size; i++){
             model->xscores->data[i][pc] = t->data[i];
@@ -653,25 +660,25 @@ void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautosc
         }
       }
 
-      calcVarExpressed(ssx, xeval, &(model->xvarexp));
+      calcVarExpressed(ssx, xeval, model->xvarexp);
       /*calcVarExpressed(ssy, yeval, &(model->yvarexp)); */
 
       /* PLS Recaculated */
       for(i = 1; i <= nlv; i++){
         matrix *recalculated_y;
         initMatrix(&recalculated_y);
-        PLSYPredictor(model->xscores, model, i, &recalculated_y);
+        PLSYPredictor(model->xscores, model, i, recalculated_y);
 
         for(j = 0; j < recalculated_y->col; j++){
           dvector *v = getMatrixColumn(recalculated_y, j);
-          MatrixAppendCol(&model->recalculated_y, v);
+          MatrixAppendCol(model->recalculated_y, v);
           DelDVector(&v);
         }
         DelMatrix(&recalculated_y);
       }
 
       /* compute residuals */
-      ResizeMatrix(&model->recalc_residuals, my->row, my->col*nlv);
+      ResizeMatrix(model->recalc_residuals, my->row, my->col*nlv);
       for(i = 0; i < model->recalculated_y->row; i++){
         for(j = 0; j < model->recalculated_y->col; j++){
           model->recalc_residuals->data[i][j] = model->recalculated_y->data[i][j] - my->data[i][(size_t)floor(j/nlv)];
@@ -700,7 +707,7 @@ void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautosc
   }
 }
 
-void PLSBetasCoeff(PLSMODEL *model, size_t nlv, dvector **betas)
+void PLSBetasCoeff(PLSMODEL *model, size_t nlv, dvector *betas)
 {
   /* compute beta coefficient
    Wstar = W *(P'*W)^(-1);
@@ -727,7 +734,7 @@ void PLSBetasCoeff(PLSMODEL *model, size_t nlv, dvector **betas)
 
   matrix *PWinv;
   initMatrix(&PWinv);
-  MatrixInversion(PW, &PWinv);
+  MatrixInversion(PW, PWinv);
   DelMatrix(&PW);
 
   matrix *WStar;
@@ -741,7 +748,7 @@ void PLSBetasCoeff(PLSMODEL *model, size_t nlv, dvector **betas)
 
   DVectorResize(betas, model->xweights->row);
   for(i = 0; i < betas_->row; i++){
-    (*betas)->data[i] = betas_->data[i][0];
+    betas->data[i] = betas_->data[i][0];
   }
   // PrintDVector((*betas));
   DelMatrix(&WStar);
@@ -764,7 +771,10 @@ void PLSBetasCoeff(PLSMODEL *model, size_t nlv, dvector **betas)
  * For estimate the dependent variable
  * y = Sum btq'
  */
-void PLSScorePredictor(matrix *mx, PLSMODEL *model, size_t nlv, matrix **xscores)
+void PLSScorePredictor(matrix *mx,
+                       PLSMODEL *model,
+                       size_t nlv,
+                       matrix *xscores)
 {
   size_t pc, i ,j;
   matrix *X;
@@ -843,7 +853,7 @@ void PLSScorePredictor(matrix *mx, PLSMODEL *model, size_t nlv, matrix **xscores
     }
 
     for(i = 0; i < t->size; i++){
-      (*xscores)->data[i][pc] = t->data[i];
+      xscores->data[i][pc] = t->data[i];
       t->data[i] = 0.f;
     }
   }
@@ -863,7 +873,7 @@ void PLSScorePredictor(matrix *mx, PLSMODEL *model, size_t nlv, matrix **xscores
  *
  * Y = sum b*t*q'
  */
-void PLSYPredictor(matrix *tscore, PLSMODEL *model, size_t nlv, matrix **y)
+void PLSYPredictor(matrix *tscore, PLSMODEL *model, size_t nlv, matrix *y)
 {
   size_t lv, i, j;
   double _b;
@@ -880,7 +890,7 @@ void PLSYPredictor(matrix *tscore, PLSMODEL *model, size_t nlv, matrix **y)
 
     for(i = 0; i < tscore->row; i++){
       for(j = 0; j < model->yloadings->row; j++){
-        (*y)->data[i][j] += _b * tscore->data[i][lv] * model->yloadings->data[j][lv];
+        y->data[i][j] += _b * tscore->data[i][lv] * model->yloadings->data[j][lv];
       }
     }
   }
@@ -889,18 +899,18 @@ void PLSYPredictor(matrix *tscore, PLSMODEL *model, size_t nlv, matrix **y)
   if(model->ycolaverage->size > 0){
     for(j = 0; j < model->ycolaverage->size; j++){
       if(model->ycolscaling->size > 0 && model->ycolscaling != NULL && model->ycolscaling->data != NULL){
-        for(i = 0; i < (*y)->row; i++){
-          (*y)->data[i][j] *= model->ycolscaling->data[j];
+        for(i = 0; i < y->row; i++){
+          y->data[i][j] *= model->ycolscaling->data[j];
         }
       }
-      for(i = 0; i < (*y)->row; i++){
-        (*y)->data[i][j] += model->ycolaverage->data[j];
+      for(i = 0; i < y->row; i++){
+        y->data[i][j] += model->ycolaverage->data[j];
       }
     }
   }
 }
 
-void PLSYPredictorAllLV(matrix *mx, PLSMODEL *model, matrix **tscores, matrix **y)
+void PLSYPredictorAllLV(matrix *mx, PLSMODEL *model, matrix *tscores, matrix *y)
 {
   size_t lv, i, j, n_y, nlv;
   matrix *predicted_y;
@@ -910,7 +920,7 @@ void PLSYPredictorAllLV(matrix *mx, PLSMODEL *model, matrix **tscores, matrix **
     initMatrix(&predicted_xscores);
   }
   else{
-    predicted_xscores = (*tscores);
+    predicted_xscores = tscores;
   }
 
   nlv = model->b->size;
@@ -918,15 +928,15 @@ void PLSYPredictorAllLV(matrix *mx, PLSMODEL *model, matrix **tscores, matrix **
   n_y = model->yloadings->row;
   ResizeMatrix(y, mx->row, n_y*nlv);
 
-  PLSScorePredictor(mx, model, nlv, &predicted_xscores);
+  PLSScorePredictor(mx, model, nlv, predicted_xscores);
 
   for(lv = 0; lv < nlv; lv++){
     initMatrix(&predicted_y);
-    PLSYPredictor(predicted_xscores, model, lv+1, &predicted_y);
+    PLSYPredictor(predicted_xscores, model, lv+1, predicted_y);
 
     for(i = 0; i < mx->row; i++){
       for(j = 0; j < n_y; j++){
-        (*y)->data[i][n_y*lv+j] = predicted_y->data[i][j];
+        y->data[i][n_y*lv+j] = predicted_y->data[i][j];
       }
     }
     DelMatrix(&predicted_y);
@@ -937,7 +947,11 @@ void PLSYPredictorAllLV(matrix *mx, PLSMODEL *model, matrix **tscores, matrix **
   }
 }
 
-void PLSRegressionStatistics(matrix *my_true, matrix *my_pred, matrix** ccoeff, matrix **rmse, matrix **bias)
+void PLSRegressionStatistics(matrix *my_true,
+                             matrix *my_pred,
+                             matrix *ccoeff,
+                             matrix *rmse,
+                             matrix *bias)
 {
   size_t lv, i, j;
 
@@ -964,21 +978,21 @@ void PLSRegressionStatistics(matrix *my_true, matrix *my_pred, matrix** ccoeff, 
           continue;
         }
         else{
-          DVectorAppend(&yt, my_true->data[i][j]);
-          DVectorAppend(&yp, my_pred->data[i][my_true->col*lv+j]);
+          DVectorAppend(yt, my_true->data[i][j]);
+          DVectorAppend(yp, my_pred->data[i][my_true->col*lv+j]);
         }
       }
 
       if(bias != NULL){
-        (*bias)->data[lv][j] = BIAS(yt, yp);
+        bias->data[lv][j] = BIAS(yt, yp);
       }
 
       if(ccoeff != NULL){
-        (*ccoeff)->data[lv][j] = R2(yt, yp);
+        ccoeff->data[lv][j] = R2(yt, yp);
       }
 
       if(rmse != NULL){
-        (*rmse)->data[lv][j] = RMSE(yt, yp);
+        rmse->data[lv][j] = RMSE(yt, yp);
       }
 
       DelDVector(&yt);
@@ -987,7 +1001,12 @@ void PLSRegressionStatistics(matrix *my_true, matrix *my_pred, matrix** ccoeff, 
   }
 }
 
-void PLSDiscriminantAnalysisStatistics(matrix *my_true, matrix *my_score, tensor **roc, matrix **roc_auc, tensor **precision_recall, matrix **precision_recall_ap)
+void PLSDiscriminantAnalysisStatistics(matrix *my_true,
+                                       matrix *my_score,
+                                       tensor *roc,
+                                       matrix *roc_auc,
+                                       tensor *precision_recall,
+                                       matrix *precision_recall_ap)
 {
   size_t nlv, lv, i, j, k, n_y;
   matrix *roc_;
@@ -1023,21 +1042,21 @@ void PLSDiscriminantAnalysisStatistics(matrix *my_true, matrix *my_score, tensor
       }
 
       initMatrix(&roc_);
-      ROC(y_true, y_score,  &roc_, &auc);
+      ROC(y_true, y_score,  roc_, &auc);
       initMatrix(&pr_);
-      PrecisionRecall(y_true, y_score,  &pr_, &ap);
-      DVectorAppend(&auc_row, auc);
-      DVectorAppend(&ap_row, ap);
+      PrecisionRecall(y_true, y_score,  pr_, &ap);
+      DVectorAppend(auc_row, auc);
+      DVectorAppend(ap_row, ap);
 
       for(i = 0; i < my_true->row; i++){
         if(roc != NULL){
-          (*roc)->m[lv]->data[i][k] = roc_->data[i][0];
-          (*roc)->m[lv]->data[i][k+1] = roc_->data[i][1];
+          roc->m[lv]->data[i][k] = roc_->data[i][0];
+          roc->m[lv]->data[i][k+1] = roc_->data[i][1];
         }
 
         if(precision_recall != NULL){
-          (*precision_recall)->m[lv]->data[i][k] = pr_->data[i][0];
-          (*precision_recall)->m[lv]->data[i][k+1] = pr_->data[i][1];
+          precision_recall->m[lv]->data[i][k] = pr_->data[i][0];
+          precision_recall->m[lv]->data[i][k+1] = pr_->data[i][1];
         }
       }
       k+=2;
@@ -1061,10 +1080,11 @@ void PLSDiscriminantAnalysisStatistics(matrix *my_true, matrix *my_score, tensor
 }
 
 /*
+ * VIP: VARIABLE IMPORTANCE
  * VIP are calculated according to the formula:
  * VIP[j][pc] = sqrt(n_predvars * Sum((b[pc]^2*t[pc]*t^[pc]) * (w[j][pc]/||w[pc]||)^2) / Sum((b[pc]^2*t[pc]*t^[pc])))
  */
-void PLSVIP(PLSMODEL *model, matrix **vip)
+void PLSVIP(PLSMODEL *model, matrix *vip)
 {
   size_t nlv = model->xscores->col;
   size_t npred = model->xloadings->row;
@@ -1082,7 +1102,8 @@ void PLSVIP(PLSMODEL *model, matrix **vip)
       }
     }
   }
-
+  
+  /*WARNING: METHOD NOT READY!*/
 }
 
 int GetLVCCutoff_(matrix *rq2y){

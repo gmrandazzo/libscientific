@@ -37,7 +37,7 @@ void test6()
   }
 
   printf("Appending 123.4 to vector\n");
-  DVectorAppend(&v, 123.4);
+  DVectorAppend(v, 123.4);
 
   printf("The current output\n");
   for(i = 0; i < v->size; i++){
@@ -45,14 +45,14 @@ void test6()
   }
 
   printf("Removing the 19 elemen");
-  DVectorRemoveAt(&v, 19);
+  DVectorRemoveAt(v, 19);
   for(i = 0; i < v->size; i++){
    printf("%f\n", v->data[i]);
   }
 
   printf("Removing all the element one by one");
   while(v->size > 0){
-    DVectorRemoveAt(&v, 0);
+    DVectorRemoveAt(v, 0);
     for(i = 0; i < v->size; i++){
      printf("%f\n", v->data[i]);
     }
@@ -135,7 +135,7 @@ void test3()
   for(i = 1; i < 100; i++){
     double a = i*i;
     double val = i/(a);
-    DVectorAppend(&v1, val);
+    DVectorAppend(v1, val);
   }
 
 
@@ -175,7 +175,7 @@ void test2()
     double a = i*i;
     double val = i/(a);
 
-    DVectorAppend(&v, val);
+    DVectorAppend(v, val);
   }
 
   printf("Final output\n");
@@ -202,7 +202,7 @@ void test1()
   }
 
   printf("Appending 123.4 to vector\n");
-  DVectorAppend(&v, 123.4);
+  DVectorAppend(v, 123.4);
 
   printf("Final output\n");
   for(i = 0; i < v->size; i++){

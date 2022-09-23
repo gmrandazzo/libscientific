@@ -21,8 +21,10 @@
 
 #include "ica.h"
 
-
-
+/*
+ * See here:
+ * https://towardsdatascience.com/independent-component-analysis-ica-in-python-a0ef0db0955e
+ */
 void ICA(matrix *mx, size_t scaling, size_t npc, ICAMODEL *model, ssignal *s)
 {
   // 1. Calculate the PCA extracting
@@ -31,5 +33,5 @@ void ICA(matrix *mx, size_t scaling, size_t npc, ICAMODEL *model, ssignal *s)
   // S = W*X
   // W is the demelange matrix
   // X = loadings from PCA
-  
+
 }
