@@ -160,6 +160,14 @@ The eigenvector/eigenvalue is computed thanks to the dgeev.f code extracted from
   :language: c
   :linenos:
 
+Singular Value Decomposition of a square matrix
+-----------------------------------------------
+
+In this example we show how to factorize a square matrix using the singular value decomposition (SVD) method
+
+.. literalinclude:: c_code_examples/mxexample7.c
+   :language: c
+   :lineos:
 
 Tensor operations
 =================
