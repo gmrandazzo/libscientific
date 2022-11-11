@@ -1,174 +1,3 @@
-set(Lapack_SRCS
-# Code for Matrix inversion and LU Decomposition
-3dpart-lapack-3.8.0/dbdsdc.f
-3dpart-lapack-3.8.0/dbdsqr.f
-3dpart-lapack-3.8.0/dgebd2.f
-3dpart-lapack-3.8.0/dgebrd.f
-3dpart-lapack-3.8.0/dgelq2.f
-3dpart-lapack-3.8.0/dgelqf.f
-3dpart-lapack-3.8.0/dgeqr2.f
-3dpart-lapack-3.8.0/dgeqrf.f
-3dpart-lapack-3.8.0/dgesdd.f
-3dpart-lapack-3.8.0/disnan.f
-3dpart-lapack-3.8.0/dlabrd.f
-3dpart-lapack-3.8.0/dlacpy.f
-3dpart-lapack-3.8.0/dlaed6.f
-3dpart-lapack-3.8.0/dlaisnan.f
-3dpart-lapack-3.8.0/dlamch.f
-3dpart-lapack-3.8.0/dlamrg.f
-3dpart-lapack-3.8.0/dlange.f
-3dpart-lapack-3.8.0/dlanst.f
-3dpart-lapack-3.8.0/dlapy2.f
-3dpart-lapack-3.8.0/dlarf.f
-3dpart-lapack-3.8.0/dlarfb.f
-3dpart-lapack-3.8.0/dlarfg.f
-3dpart-lapack-3.8.0/dlarft.f
-3dpart-lapack-3.8.0/dlartg.f
-3dpart-lapack-3.8.0/dlas2.f
-3dpart-lapack-3.8.0/dlascl.f
-3dpart-lapack-3.8.0/dlasd0.f
-3dpart-lapack-3.8.0/dlasd1.f
-3dpart-lapack-3.8.0/dlasd2.f
-3dpart-lapack-3.8.0/dlasd3.f
-3dpart-lapack-3.8.0/dlasd4.f
-3dpart-lapack-3.8.0/dlasd5.f
-3dpart-lapack-3.8.0/dlasd6.f
-3dpart-lapack-3.8.0/dlasd7.f
-3dpart-lapack-3.8.0/dlasd8.f
-3dpart-lapack-3.8.0/dlasda.f
-3dpart-lapack-3.8.0/dlasdq.f
-3dpart-lapack-3.8.0/dlasdt.f
-3dpart-lapack-3.8.0/dlaset.f
-3dpart-lapack-3.8.0/dlasq1.f
-3dpart-lapack-3.8.0/dlasq2.f
-3dpart-lapack-3.8.0/dlasq3.f
-3dpart-lapack-3.8.0/dlasq4.f
-3dpart-lapack-3.8.0/dlasq5.f
-3dpart-lapack-3.8.0/dlasq6.f
-3dpart-lapack-3.8.0/dlasr.f
-3dpart-lapack-3.8.0/dlasrt.f
-3dpart-lapack-3.8.0/dlassq.f
-3dpart-lapack-3.8.0/dlasv2.f
-3dpart-lapack-3.8.0/dorg2r.f
-3dpart-lapack-3.8.0/dorgbr.f
-3dpart-lapack-3.8.0/dorgl2.f
-3dpart-lapack-3.8.0/dorglq.f
-3dpart-lapack-3.8.0/dorgqr.f
-3dpart-lapack-3.8.0/dorm2r.f
-3dpart-lapack-3.8.0/dormbr.f
-3dpart-lapack-3.8.0/dorml2.f
-3dpart-lapack-3.8.0/dormlq.f
-3dpart-lapack-3.8.0/dormqr.f
-3dpart-lapack-3.8.0/ieeeck.f
-3dpart-lapack-3.8.0/iladlc.f
-3dpart-lapack-3.8.0/iladlr.f
-3dpart-lapack-3.8.0/ilaenv.f
-3dpart-lapack-3.8.0/iparmq.f
-3dpart-lapack-3.8.0/lsame.f
-3dpart-lapack-3.8.0/xerbla.f
-
-
-3dpart-lapack-3.8.0/dgetri.f
-3dpart-lapack-3.8.0/dgetrf.f
-3dpart-lapack-3.8.0/dgetf2.f
-3dpart-lapack-3.8.0/dlaswp.f
-3dpart-lapack-3.8.0/dtrsm.f
-3dpart-lapack-3.8.0/dtrtri.f
-3dpart-lapack-3.8.0/dtrti2.f
-
-3dpart-lapack-3.8.0/daxpy.f
-3dpart-lapack-3.8.0/dbdsqr.f
-3dpart-lapack-3.8.0/dcopy.f
-3dpart-lapack-3.8.0/ddot.f
-3dpart-lapack-3.8.0/dgebak.f
-3dpart-lapack-3.8.0/dgebal.f
-3dpart-lapack-3.8.0/dgebd2.f
-3dpart-lapack-3.8.0/dgebrd.f
-3dpart-lapack-3.8.0/dgeev.f
-3dpart-lapack-3.8.0/dgehd2.f
-3dpart-lapack-3.8.0/dgehrd.f
-3dpart-lapack-3.8.0/dgelq2.f
-3dpart-lapack-3.8.0/dgelqf.f
-3dpart-lapack-3.8.0/dgemm.f
-3dpart-lapack-3.8.0/dgemv.f
-3dpart-lapack-3.8.0/dgeqr2.f
-3dpart-lapack-3.8.0/dgeqrf.f
-3dpart-lapack-3.8.0/dger.f
-3dpart-lapack-3.8.0/dgesvd.f
-3dpart-lapack-3.8.0/dhseqr.f
-3dpart-lapack-3.8.0/disnan.f
-3dpart-lapack-3.8.0/dlabad.f
-3dpart-lapack-3.8.0/dlabrd.f
-3dpart-lapack-3.8.0/dlacpy.f
-3dpart-lapack-3.8.0/dladiv.f
-3dpart-lapack-3.8.0/dlaexc.f
-3dpart-lapack-3.8.0/dlahqr.f
-3dpart-lapack-3.8.0/dlahr2.f
-3dpart-lapack-3.8.0/dlaisnan.f
-3dpart-lapack-3.8.0/dlaln2.f
-3dpart-lapack-3.8.0/dlamch.f
-3dpart-lapack-3.8.0/dlange.f
-3dpart-lapack-3.8.0/dlanv2.f
-3dpart-lapack-3.8.0/dlapy2.f
-3dpart-lapack-3.8.0/dlaqr0.f
-3dpart-lapack-3.8.0/dlaqr1.f
-3dpart-lapack-3.8.0/dlaqr2.f
-3dpart-lapack-3.8.0/dlaqr3.f
-3dpart-lapack-3.8.0/dlaqr4.f
-3dpart-lapack-3.8.0/dlaqr5.f
-3dpart-lapack-3.8.0/dlarf.f
-3dpart-lapack-3.8.0/dlarfb.f
-3dpart-lapack-3.8.0/dlarfg.f
-3dpart-lapack-3.8.0/dlarft.f
-3dpart-lapack-3.8.0/dlarfx.f
-3dpart-lapack-3.8.0/dlartg.f
-3dpart-lapack-3.8.0/dlas2.f
-3dpart-lapack-3.8.0/dlascl.f
-3dpart-lapack-3.8.0/dlaset.f
-3dpart-lapack-3.8.0/dlasq1.f
-3dpart-lapack-3.8.0/dlasq2.f
-3dpart-lapack-3.8.0/dlasq3.f
-3dpart-lapack-3.8.0/dlasq4.f
-3dpart-lapack-3.8.0/dlasq5.f
-3dpart-lapack-3.8.0/dlasq6.f
-3dpart-lapack-3.8.0/dlasr.f
-3dpart-lapack-3.8.0/dlasrt.f
-3dpart-lapack-3.8.0/dlassq.f
-3dpart-lapack-3.8.0/dlasv2.f
-3dpart-lapack-3.8.0/dlasy2.f
-3dpart-lapack-3.8.0/dnrm2.f
-3dpart-lapack-3.8.0/dorg2r.f
-3dpart-lapack-3.8.0/dorgbr.f
-3dpart-lapack-3.8.0/dorghr.f
-3dpart-lapack-3.8.0/dorgl2.f
-3dpart-lapack-3.8.0/dorglq.f
-3dpart-lapack-3.8.0/dorgqr.f
-3dpart-lapack-3.8.0/dorm2r.f
-3dpart-lapack-3.8.0/dormbr.f
-3dpart-lapack-3.8.0/dormhr.f
-3dpart-lapack-3.8.0/dorml2.f
-3dpart-lapack-3.8.0/dormlq.f
-3dpart-lapack-3.8.0/dormqr.f
-3dpart-lapack-3.8.0/drot.f
-3dpart-lapack-3.8.0/dscal.f
-3dpart-lapack-3.8.0/dswap.f
-3dpart-lapack-3.8.0/dtrevc.f
-3dpart-lapack-3.8.0/dtrexc.f
-3dpart-lapack-3.8.0/dtrmm.f
-3dpart-lapack-3.8.0/dtrmv.f
-3dpart-lapack-3.8.0/idamax.f
-3dpart-lapack-3.8.0/ieeeck.f
-3dpart-lapack-3.8.0/iladlc.f
-3dpart-lapack-3.8.0/iladlr.f
-3dpart-lapack-3.8.0/ilaenv.f
-3dpart-lapack-3.8.0/iparmq.f
-3dpart-lapack-3.8.0/lsame.f
-3dpart-lapack-3.8.0/lsamen.f
-3dpart-lapack-3.8.0/xerbla.f
-3dpart-lapack-3.8.0/dbdsqr.f
-3dpart-lapack-3.8.0/dgetrf2.f
-3dpart-lapack-3.8.0/dtrevc3.f)
-
 set(Scientific_C_SRCS memwrapper.c
                    scientificinfo.c
                    optimization.c
@@ -182,6 +11,7 @@ set(Scientific_C_SRCS memwrapper.c
                    statistic.c
                    metricspace.c
                    interpolate.c
+                   ica.c
                    pca.c
                    pls.c
                    epls.c
@@ -208,6 +38,7 @@ set(Scientific_C_H
                 statistic.h
                 metricspace.h
                 interpolate.h
+                ica.h
                 pca.h
                 pls.h
                 epls.h
@@ -232,6 +63,7 @@ set(TensorTest_SRC testtensor.c)
 set(AlgebraTest_SRC testalgebra.c)
 set(PCATest_SRC testpca.c)
 set(PLSTest_SRC testpls.c)
+set(ICATest_SRC testica.c)
 set(EPLSTest_SRC testepls.c)
 set(MPCATest_SRC testmwpca.c)
 set(MPLSTest_SRC testmwpls.c)
@@ -251,17 +83,11 @@ if(WIN32)
   set(CMAKE_STATIC_LIBRARY_SUFFIX ".dll")
 endif()
 
-if(LAPACK_FOUND)
-    add_library(libscientific SHARED ${Scientific_C_SRCS} ${Scientific_C_H})
-    set_target_properties(libscientific PROPERTIES VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH} SOVERSION ${VERSION_MAJOR} )
-    set_target_properties(libscientific PROPERTIES OUTPUT_NAME "scientific")
-    target_link_libraries(libscientific m pthread ${LAPACK_LIBRARIES})
-else()
-    add_library(libscientific SHARED ${Scientific_C_SRCS} ${Scientific_C_H} ${Lapack_SRCS})
-    set_target_properties(libscientific PROPERTIES VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH} SOVERSION ${VERSION_MAJOR} )
-    set_target_properties(libscientific PROPERTIES OUTPUT_NAME "scientific")
-    target_link_libraries(libscientific m pthread)
-endif()
+add_library(libscientific SHARED ${Scientific_C_SRCS} ${Scientific_C_H})
+set_target_properties(libscientific PROPERTIES VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH} SOVERSION ${VERSION_MAJOR} )
+set_target_properties(libscientific PROPERTIES OUTPUT_NAME "scientific")
+target_link_libraries(libscientific m pthread ${LAPACK_LIBRARIES})
+
 
 if(WIN32)
   install(TARGETS libscientific ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib COMPONENT library)

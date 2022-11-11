@@ -1,6 +1,8 @@
 libscientific
 =============
 
+[![Licence: GPL v3](https://img.shields.io/github/license/gmrandazzo/libscientific)](https://github.com/gmrandazzo/libscientific/blob/master/LICENSE)
+
 Documentation available at http://gmrandazzo.github.io/libscientific/
 
 Libscientific is a C framework for multivariate and other statistical analysis.

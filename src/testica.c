@@ -1,6 +1,6 @@
-/* ica.h
+/* testica.c
 *
-* Copyright (C) <2016>  Giuseppe Marco Randazzo
+* Copyright (C) <2022>  Giuseppe Marco Randazzo
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -16,29 +16,41 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ICA_H
-#define ICA_H
-
-#include "matrix.h"
-#include "vector.h"
+#include <stdlib.h>
+#include <stdlib.h>
+#include "numeric.h"
+#include "ica.h"
+#include "datasets.h"
 #include "scientificinfo.h"
 
-#define ICACONVERGENCE 1e-8
+void test1()
+{
+  puts("Test ICA 1: ICA on iris dataset");
+  matrix *m, *_;
+  PCAMODEL *model;
 
-typedef struct{
-  matrix *scores;
-  matrix *loadings;
-  matrix *dmodx;
-  dvector *varexp;
-  dvector *colaverage;
-  dvector *colscaling;
-} ICAMODEL;
+  initMatrix(&m);
+  initMatrix(&_);
+  iris(m, _);
 
-void NewICAModel(ICAMODEL **m);
-void DelICAModel(ICAMODEL **m);
+  NewICAModel(&model);
 
-void ICA(matrix *mx, size_t scaling, size_t n_signals, ICAMODEL *model, ssignal *s);
+  ICA(m, 1, 2, model, NULL);
+  PrintICA(model);
+  DelICAModel(&model);
+  DelMatrix(&m);
+  DelMatrix(&_);
+}
 
-void PrintICA(ICAMODEL *m);
 
-#endif
+int main(void)
+{
+  test1();
+  test2();
+  test3();
+  test4();
+  test5();
+  test6();
+  test7();
+  return 0;
+}
