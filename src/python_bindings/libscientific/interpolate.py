@@ -1,20 +1,21 @@
-# interpolate - libscientific python binding
-#
-# Copyright (C) <2019>  Giuseppe Marco Randazzo
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
+"""
+interpolate - libscientific python binding
+
+Copyright (C) <2019>  Giuseppe Marco Randazzo
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
 import ctypes
 from libscientific.loadlibrary import LoadLibrary
 import libscientific.matrix as mx
@@ -80,7 +81,14 @@ def cubic_spline_predict(x, S, yp):
 
 
 if __name__ in "__main__":
-    xy_ = [[-1.82,0.63], [-0.73,0.19], [-0.17,0.01], [-0.09,0.00], [0.15,0.01], [0.39,0.06], [0.86,0.24], [1.44,0.49]]
+    xy_ = [[-1.82,0.63],
+           [-0.73,0.19],
+           [-0.17,0.01],
+           [-0.09,0.00],
+           [0.15,0.01],
+           [0.39,0.06],
+           [0.86,0.24],
+           [1.44,0.49]]
     x_ = [-1.82, -0.73, -0.17, -0.09, 0.15, 0.39, 0.86, 1.44]
     xy = mx.NewMatrix(xy_)
     print("Origin matrix x->y to interpolate")

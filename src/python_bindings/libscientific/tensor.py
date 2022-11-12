@@ -1,20 +1,21 @@
-# tensor libscientific python binding
-#
-# Copyright (C) <2019>  Giuseppe Marco Randazzo
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
+"""
+tensor libscientific python binding
+
+Copyright (C) <2019>  Giuseppe Marco Randazzo
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
 import ctypes
 from libscientific.loadlibrary import LoadLibrary
 from libscientific import matrix as mx
@@ -24,10 +25,18 @@ lsci = LoadLibrary()
 
 
 class tensor(ctypes.Structure):
+    """
+    tensor data structure
+    """
     _fields_ = [
         ("m",    ctypes.POINTER(ctypes.POINTER(mx.matrix))),
         ("order",     ctypes.c_size_t)]
 
+    def __repr__(self):
+        return self.__class__.__name__
+
+    def __str__(self):
+        return self.__class__.__name__
 
 lsci.initTensor.argtypes = [ctypes.POINTER(ctypes.POINTER(tensor))]
 lsci.initTensor.restype = None
@@ -42,9 +51,6 @@ def initTensor():
     lsci.initTensor(ctypes.pointer(t))
     return t
 
-# Craking the code interview
-
-
 lsci.NewTensorMatrix.argtypes = [ctypes.POINTER(ctypes.POINTER(tensor)),
                                  ctypes.c_size_t,
                                  ctypes.c_size_t,
@@ -53,7 +59,7 @@ lsci.NewTensorMatrix.restype = None
 
 
 def NewTensorMatrix(t, k, row, col):
-    lsci.NewTensorMatrix(ctype.pointer(t), k, row, col);
+    lsci.NewTensorMatrix(ctype.pointer(t), k, row, col)
 
 lsci.AddTensorMatrix.argtypes = [ctypes.POINTER(ctypes.POINTER(tensor)),
                                  ctypes.c_size_t,
@@ -102,7 +108,7 @@ def NewTensor(a_):
                     val = None
 
                 if val is None:
-                    setMissingMatrixValue(m, i, j)
+                    mx.setMissingMatrixValue(m, i, j)
                 else:
                     lsci.setMatrixValue(m, i, j, val)
-    return m
+    return 

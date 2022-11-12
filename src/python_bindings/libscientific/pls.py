@@ -1,19 +1,21 @@
-# pls libscientific python binding
-#
-# Copyright (C) <2019>  Giuseppe Marco Randazzo
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+pls libscientific python binding
+
+Copyright (C) <2019>  Giuseppe Marco Randazzo
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
 import ctypes
 import libscientific.matrix as mx
 import libscientific.vector as vect
@@ -24,6 +26,9 @@ lsci = LoadLibrary()
 
 
 class PLSMODEL(ctypes.Structure):
+    """
+    PLSMODEL data structure
+    """
     _fields_ = [
         ("xscores", ctypes.POINTER(mx.matrix)),
         ("xloadings", ctypes.POINTER(mx.matrix)),
@@ -58,6 +63,12 @@ class PLSMODEL(ctypes.Structure):
         ("precision_recall_ap_recalculated", ctypes.POINTER(mx.matrix)),
         ("precision_recall_ap_validation", ctypes.POINTER(mx.matrix)),
         ("yscrambling", ctypes.POINTER(mx.matrix))]
+
+    def __repr__(self):
+        return self.__class__.__name__
+
+    def __str__(self):
+        return self.__class__.__name__
 
 
 lsci.NewPLSModel.argtypes = [ctypes.POINTER(ctypes.POINTER(PLSMODEL))]
@@ -177,8 +188,9 @@ lsci.PLSYPredictorAllLV.restype = None
 
 def PLSYPredictorAllLV(x, mpls, predicted_scores, predicted_y):
     """
-    PLSYPredictorAllLV: Predict the Y according the original feature matrix and the calculated pls model.
-                   This function is NOT dependent on PLSScorePredictor.
+    PLSYPredictorAllLV: Predict the Y according the original
+                        feature matrix and the calculated pls model.
+                        This function is NOT dependent on PLSScorePredictor.
     """
     lsci.PLSYPredictorAllLV(x,
                             mpls,
@@ -226,6 +238,9 @@ class PLS(object):
         self.mpls = None
 
     def fit(self, x_, y_, cross_validation=None):
+        """
+        Fit a pls model giving x matrix and y matrix
+        """
         x = None
         xalloc = False
         if "Matrix" not in str(type(x_)):
@@ -257,24 +272,45 @@ class PLS(object):
             del y
 
     def get_tscores(self):
+        """
+        Get the T-Scores
+        """
         return mx.MatrixToList(self.mpls[0].xscores)
 
     def get_uscores(self):
+        """
+        Get the U-Scores
+        """
         return mx.MatrixToList(self.mpls[0].yscores)
 
     def get_ploadings(self):
+        """
+        Get the P-Loadings
+        """
         return mx.MatrixToList(self.mpls[0].xloadings)
 
     def get_qloadings(self):
+        """
+        Get the Q-Loadings
+        """
         return mx.MatrixToList(self.mpls[0].yloadings)
 
     def get_weights(self):
+        """
+        Get the W-weigths
+        """
         return mx.MatrixToList(self.mpls[0].xweights)
 
     def get_exp_variance(self):
+        """
+        Get the explained variance
+        """
         return vect.DVectorToList(self.mpls[0].xvarexp)
 
     def predict(self, x_, nlv_=None):
+        """
+        Predict the y giving an x_ matrix
+        """
         x = mx.NewMatrix(x_)
         pscores_ = mx.initMatrix()
         py_ = mx.initMatrix()

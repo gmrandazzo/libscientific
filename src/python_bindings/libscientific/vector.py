@@ -1,20 +1,21 @@
-# vector libscientific python binding
-#
-# Copyright (C) <2019>  Giuseppe Marco Randazzo
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
+"""
+vector libscientific python binding
+
+Copyright (C) <2019>  Giuseppe Marco Randazzo
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
 import ctypes
 from libscientific.loadlibrary import LoadLibrary
 from libscientific import misc
@@ -23,15 +24,33 @@ lsci = LoadLibrary()
 
 
 class strvector(ctypes.Structure):
+    """
+    string vector class
+    """
     _fields_ = [
         ("data",    ctypes.POINTER(ctypes.POINTER(ctypes.c_char))),
         ("size",     ctypes.c_size_t)]
 
+    def __repr__(self):
+        return self.__class__.__name__
+
+    def __str__(self):
+        return self.__class__.__name__
+
 
 class dvector(ctypes.Structure):
+    """
+    double vector class
+    """
     _fields_ = [
         ("data",    ctypes.POINTER(ctypes.c_double)),
         ("size",     ctypes.c_size_t)]
+
+    def __repr__(self):
+        return self.__class__.__name__
+
+    def __str__(self):
+        return self.__class__.__name__
 
 
 lsci.initDVector.argtypes = [ctypes.POINTER(ctypes.POINTER(dvector))]
@@ -177,7 +196,7 @@ def DVectorAppend(d, val):
     """
     Append a value to a double vector d
     """
-    return lsci.DVectorAppend(d, val);
+    return lsci.DVectorAppend(d, val)
 
 
 lsci.DVectorRemoveAt.argtypes = [ctypes.POINTER(dvector),
@@ -188,7 +207,7 @@ def DVectorRemoveAt(d, indx):
     """
     Remove a value from a double vector d at index indx
     """
-    return lsci.DVectorRemoveAt(d, indx);
+    return lsci.DVectorRemoveAt(d, indx)
 
 lsci.DVectorCopy.argtypes = [ctypes.POINTER(dvector),
                              ctypes.POINTER(dvector)]
@@ -244,27 +263,48 @@ class DVector(object):
         setDVectorValue(self.d, key, value)
 
     def size(self):
+        """
+        return the size of the divector
+        """
         return self.d[0].size
 
     def data_ptr(self):
+        """
+        return the pointer to data
+        """
         return self.d[0].data
 
     def append(self, value):
+        """
+        Append a value to the dvector
+        """
         return DVectorAppend(self.d, value)
 
     def extend(self, lst):
+        """
+        Extend the dvector by adding a list
+        """
         for item in lst:
             DVectorAppend(self.d, item)
 
     def tolist(self):
+        """
+        Convert the dvector to a list
+        """
         return DVectorToList(self.d)
 
     def fromlist(self, vlst_):
+        """
+        Convert a list to a dvector
+        """
         DelDVector(self.d)
         del self.d
         self.d = NewDVector(vlst_)
 
     def debug(self):
+        """
+        Debug the divector
+        """
         PrintDVector(self.d)
 
 

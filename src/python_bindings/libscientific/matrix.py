@@ -1,20 +1,21 @@
-# matrix libscientific python binding
-#
-# Copyright (C) <2019>  Giuseppe Marco Randazzo
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
+"""
+matrix libscientific python binding
+
+Copyright (C) <2019>  Giuseppe Marco Randazzo
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
 import ctypes
 from libscientific.loadlibrary import LoadLibrary
 from libscientific import misc
@@ -23,10 +24,19 @@ from libscientific import vector
 lsci = LoadLibrary()
 
 class matrix(ctypes.Structure):
+    """
+    matrix class
+    """
     _fields_ = [
         ("data",    ctypes.POINTER(ctypes.POINTER(ctypes.c_double))),
         ("row",     ctypes.c_size_t),
         ("col",     ctypes.c_size_t)]
+
+    def __repr__(self):
+        return self.__class__.__name__
+
+    def __str__(self):
+        return self.__class__.__name__
 
 
 lsci.initMatrix.argtypes = [ctypes.POINTER(ctypes.POINTER(matrix))]
@@ -254,7 +264,7 @@ lsci.MatrixAppendRow.argtypes = [ctypes.POINTER(matrix),
 lsci.MatrixAppendRow.restype = None
 
 def MatrixAppendRow(mx, row):
-  return lsci.MatrixAppendRow(mx, row.d)
+    return lsci.MatrixAppendRow(mx, row.d)
 
 
 lsci.MatrixAppendCol.argtypes = [ctypes.POINTER(matrix),
@@ -262,10 +272,10 @@ lsci.MatrixAppendCol.argtypes = [ctypes.POINTER(matrix),
 lsci.MatrixAppendCol.restype = None
 
 def MatrixAppendCol(mx, col):
-  """
-  void MatrixAppendCol(matrix **mx, dvector *col);
-  """
-  return lsci.MatrixAppendCol(mx, col.d)
+    """
+    void MatrixAppendCol(matrix **mx, dvector *col);
+    """
+    return lsci.MatrixAppendCol(mx, col.d)
 
 
 lsci.MatrixDVectorDotProduct.argtypes = [ctypes.POINTER(matrix),
@@ -291,13 +301,11 @@ lsci.MT_MatrixDVectorDotProduct.restype = None
 
 
 def MT_MatrixDVectorDotProduct(m, v, r):
-  """
-  /* Multithread version of MatrixDVectorDotProduct */
-  void MT_MatrixDVectorDotProduct(matrix *mx, dvector *v, dvector *p);
-  """
-  return lsci.MT_MatrixDVectorDotProduct(m, v, r)
-
-
+    """
+    /* Multithread version of MatrixDVectorDotProduct */
+    void MT_MatrixDVectorDotProduct(matrix *mx, dvector *v, dvector *p);
+    """
+    return lsci.MT_MatrixDVectorDotProduct(m, v, r)
 
 
 lsci.DVectorMatrixDotProduct.argtypes = [ctypes.POINTER(matrix),
@@ -494,21 +502,21 @@ class Matrix(object):
         del col_
 
     def transpose(self,):
-      t = initMatrix()
-      ResizeMatrix(t, self.mx[0].col, self.mx[0].row)
-      MatrixTranspose(self.mx, t)
-      MatrixCopy(t, self.mx)
-      del t
+        t = initMatrix()
+        ResizeMatrix(t, self.mx[0].col, self.mx[0].row)
+        MatrixTranspose(self.mx, t)
+        MatrixCopy(t, self.mx)
+        del t
 
     def getevectevals(self):
-      e_vect_ = vector.initDVector()
-      e_vals_ = initMatrix()
-      EVectEval(self.mx, e_vect_, e_vals_)
-      e_vect = vector.DVectorToList(e_vect_)
-      e_vals = MatrixToList(e_vals_)
-      DelMatrix(e_vals_)
-      vector.DelDVector(e_vect_)
-      return e_vect, e_vals
+        e_vect_ = vector.initDVector()
+        e_vals_ = initMatrix()
+        EVectEval(self.mx, e_vect_, e_vals_)
+        e_vect = vector.DVectorToList(e_vect_)
+        e_vals = MatrixToList(e_vals_)
+        DelMatrix(e_vals_)
+        vector.DelDVector(e_vect_)
+        return e_vect, e_vals
 
 
     def debug(self):
@@ -655,9 +663,9 @@ if __name__ in "__main__":
     print("Test Eigen vectors/values inner method")
     e_vect, e_vals = m.getevectevals()
     for row in e_vect:
-      print(row)
+        print(row)
     for row in e_vals:
-      print(row)
+        print(row)
     del m
 
 """
