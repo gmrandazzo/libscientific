@@ -43,7 +43,7 @@ double calcObjectDistance(matrix *m);
  * Calculate a principal component analysis
  */
 void PCA(matrix *mx,
-         size_t scaling,
+         int scaling,
          size_t npc,
          PCAMODEL *model,
          ssignal *s);

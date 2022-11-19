@@ -21,6 +21,7 @@
 
 #include "memwrapper.h"
 #include "numeric.h"
+#include "preprocessing.h"
 #include "pca.h"
 #include "vector.h"
 #include "matrix.h"
@@ -49,24 +50,17 @@ void DelPCAModel(PCAMODEL** m)
 }
 
 
-void calcVarExpressed(double ss, dvector *eval, dvector *varexp) /* ss is the sum of squares, eval = eigenvalue  varexp is an object that is resized for each component */
+void calcVarExpressed(double ss, dvector *eval, dvector *varexp)
+/* ss is the sum of squares, eval = eigenvalue  varexp is an object that is resized for each component */
 {
   size_t i;
   /*double a;*/
   for(i = 0; i < eval->size; i++){
-    DVectorAppend(varexp, (getDVectorValue(eval, i)/ss) * 100);
+    DVectorAppend(varexp, (eval->data[i]/ss) * 100);
     #ifdef DEBUG
     printf("Variance expressed for PC %u\t %f\n", (unsigned int)i, (getDVectorValue(eval, i)/ss) * 100);
     #endif
   }
-
-  /*The latest value is calculated from the sum of the previous explained variance
-  a = 0.f;
-  for(i = 0; i < (*varexp)->size; i++)
-    a += getDVectorValue((*varexp), i);
-
-  DVectorAppend(varexp, 100 - a);
-  */
 }
 
 double calcObjectDistance(matrix *m)
@@ -110,7 +104,7 @@ double calcObjectDistance(matrix *m)
  * https://cran.r-project.org/web/packages/nipals/vignettes/nipals_algorithm.pdf
  *
  */
-void PCA(matrix *mx, size_t scaling, size_t npc, PCAMODEL* model, ssignal *s)
+void PCA(matrix *mx, int scaling, size_t npc, PCAMODEL* model, ssignal *s)
 {
   size_t i, j, pc;
   double degree_freedom;
@@ -118,85 +112,25 @@ void PCA(matrix *mx, size_t scaling, size_t npc, PCAMODEL* model, ssignal *s)
   dvector *p;
   dvector *colvar;
   dvector *eval; /* t't */
-
-  double min, max, mod_p, mod_t_old, mod_t_new, ss;
+  double mod_p, mod_t_old, mod_t_new, ss;
 
   matrix *E; /* data matrix of autoscaled / mean centred object */
   NewMatrix(&E, mx->row, mx->col);
 
-  /* check if matrix have nan or infinite and convert them to MISSING */
-  MatrixCheck(mx);
-
-  /*CENTERING */
-  MatrixColAverage(mx, model->colaverage);
-  for(j = 0; j < mx->col; j++){
-    for(i = 0; i < mx->row; i++){
-      if(FLOAT_EQ(mx->data[i][j], MISSING, 1e-1)){
-        continue;
-      }
-      else{
-        E->data[i][j] = mx->data[i][j] - model->colaverage->data[j];
-      }
-    }
-  }
-
-  if(scaling > 0){
-    if(scaling == 1){
-      MatrixColSDEV(mx, model->colscaling);
-    }
-    else if(scaling == 2){
-      MatrixColRMS(mx, model->colscaling);
-    }
-    else if(scaling == 3){ /* PARETO Autoscaling */
-      MatrixColSDEV(mx, model->colscaling);
-      for(i = 0; i < model->colscaling->size; i++){
-        model->colscaling->data[i] = sqrt(model->colscaling->data[i]);
-      }
-    }
-    else if(scaling == 4){ /* Range Scaling */
-      for(i = 0; i < mx->col; i++){
-        MatrixColumnMinMax(mx, i, &min, &max);
-        DVectorAppend(model->colscaling, (max - min));
-      }
-    }
-    else if(scaling == 5){ /* Level Scaling  */
-      DVectorCopy(model->colaverage, model->colscaling);
-    }
-    else{
-      for(i = 0; i < model->colaverage->size; i++){
-        DVectorAppend(model->colscaling, 1.0);
-      }
-    }
-
-    for(j = 0; j < E->col; j++){
-      if(FLOAT_EQ(getDVectorValue(model->colscaling, j), 0, EPSILON)){
-        for(i = 0; i< E->row; i++){
-          E->data[i][j] = 0.f;
-        }
-      }
-      else{
-        for(i = 0; i < E->row; i++){
-          if(FLOAT_EQ(E->data[i][j], MISSING, 1e-1)){
-            continue;
-          }
-          else{
-            E->data[i][j] /= model->colscaling->data[j];
-          }
-        }
-      }
-    }
-  }
+  /* Center and scale the input matrix */
+  MatrixPreprocess(mx, scaling, model->colaverage, model->colscaling, E);
 
    /* if the number of principal component selected is major of the permitted */
   if(npc > E->col)
     npc = E->col;    /* set the value to the max value */
 
-
+  /* sum of squares is equal doing trace(E_T*E) */
   ss = 0.f;
   for(i = 0; i < E->row; i++){
     for(j = 0; j < E->col; j++)
       ss += square(E->data[i][j]);
   }
+
 
   NewDVector(&t, E->row);
   NewDVector(&p, E->col);
@@ -312,11 +246,9 @@ void PCA(matrix *mx, size_t scaling, size_t npc, PCAMODEL* model, ssignal *s)
         /* calc the vectors product t'*t = Sum(t[i]^2) */
         mod_t_old = DVectorDVectorDotProd(t, t);
 
-//         if(mod_t_old > 1.0E-9){
-          /* division of (t'*E)/t'*t (mx.p/mx.mod_t_old) for calculate the p' vector that represents the loadings */
+        /* division of (t'*E)/t'*t (mx.p/mx.mod_t_old) for calculate the p' vector that represents the loadings */
         for(i = 0; i < p->size; i++)
           p->data[i] /= mod_t_old; /* now p' is the loadings vector calculated */
-//         }
 
         /* End Step 2 */
 
@@ -330,11 +262,9 @@ void PCA(matrix *mx, size_t scaling, size_t npc, PCAMODEL* model, ssignal *s)
 
         /* p'*p = Sum(p[i]^2) */
         mod_p = DVectorDVectorDotProd(p, p);
-//         if(mod_p > 1.0E-9){
+
         for(i = 0; i < E->row; i++)
           t->data[i] /= mod_p;
-//           setDVectorValue(t, i, getDVectorValue(t, i)/mod_p);
-//         }
 
         /* End Step 4 */
 
@@ -353,7 +283,7 @@ void PCA(matrix *mx, size_t scaling, size_t npc, PCAMODEL* model, ssignal *s)
         puts("....................");
         #endif
 
-        if(mod_t_new - mod_t_old <= PCACONVERGENCE && !_isnan_(mod_t_new)){
+        if(FLOAT_EQ(mod_t_new - mod_t_old, 0.f, PCACONVERGENCE) && !_isnan_(mod_t_new)){
           /* copy the loadings and score to the output data matrix */
           for(i = 0; i < t->size; i++){
             model->scores->data[i][pc] = t->data[i];
@@ -402,7 +332,7 @@ void PCA(matrix *mx, size_t scaling, size_t npc, PCAMODEL* model, ssignal *s)
           }
           /* End Step 6 */
 
-
+          /*t'*t correspond to the eigenvalue of the principal component*/
           eval->data[pc] = mod_t_new;
           break;
         }
@@ -417,6 +347,7 @@ void PCA(matrix *mx, size_t scaling, size_t npc, PCAMODEL* model, ssignal *s)
       mod_p = mod_t_old = mod_t_new = 0.f;
     }
   }
+
 
   calcVarExpressed(ss, eval, model->varexp);
 
@@ -457,7 +388,8 @@ void PCAScorePredictor(matrix *mx, PCAMODEL *model, size_t npc, matrix *pscores)
   if(model->colaverage->size > 0){
     for(j = 0; j < E->col; j++){
       for(i = 0; i < E->row; i++){
-        E->data[i][j] = mx->data[i][j] - model->colaverage->data[j];
+        //E->data[i][j] = mx->data[i][j] - model->colaverage->data[j];
+        E->data[i][j] = mx->data[i][j];
       }
     }
   }

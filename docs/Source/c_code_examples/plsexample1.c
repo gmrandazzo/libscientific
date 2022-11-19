@@ -91,7 +91,7 @@ int main(void)
     // Calculate the beta coefficients to see the importance of each feature
     puts("Beta coefficients");
     initDVector(&betas);
-    PLSBetasCoeff(m, GetLVCCutoff(m->q2y), &betas); // GetLVCCutoff select the best Q2 value from all the possibilities
+    PLSBetasCoeff(m, GetLVCCutoff(m->q2y), betas); // GetLVCCutoff select the best Q2 value from all the possibilities
     PrintDVector(betas);
 
     puts("PREDICTED VALUES");

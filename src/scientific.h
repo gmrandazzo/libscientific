@@ -37,6 +37,7 @@ extern "C" {
 
 #include <scientific/clustering.h>
 #include <scientific/pca.h>
+#include <scientific/cpca.h>
 #include <scientific/pls.h>
 #include <scientific/epls.h>
 #include <scientific/upca.h>

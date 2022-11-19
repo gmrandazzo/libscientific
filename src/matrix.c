@@ -1165,14 +1165,27 @@ void MatrixMoorePenrosePseudoinverse(matrix *m, matrix *inv)
   DelMatrix(&m_T);
 }
 
-void GenIdentityMatrix(matrix **m)
+void GenIdentityMatrix(matrix *m)
 {
   size_t i;
-  if((*m)->row == (*m)->col){
-    for(i=0; i < (*m)->row; i++){
-      (*m)->data[i][i]=1;
+  if(m->row == m->col){
+    for(i=0; i < m->row; i++){
+      m->data[i][i]=1;
     }
   }
+}
+
+
+double MatrixTrace(matrix *m)
+{
+  size_t i;
+  double tr = 0.f;
+  if(m->row == m->col){
+    for(i=0; i < m->row; i++){
+      tr += m->data[i][i];
+    }
+  }
+  return tr;
 }
 
 void MeanCenteredMatrix(matrix *m, matrix *mc)

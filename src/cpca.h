@@ -19,19 +19,22 @@
 #ifndef CPCA_H
 #define CPCA_H
 #include <stdio.h>
-#include "array.h"
+#include "tensor.h"
+#include "list.h"
 #include "matrix.h"
 #include "vector.h"
 #include "scientificinfo.h"
 
-#define CPCACONVERGENCE 1e-3
+#define CPCACONVERGENCE 1e-12
 
 typedef struct {
-  array *b_scores;
-  array *b_loadings;
-  matrix *sscores;
-  matrix *sweights;
-  dvector *expvar;
+  tensor *block_scores;
+  tensor *block_loadings;
+  matrix *super_scores;
+  matrix *super_weights;
+  dvector *scaling_factor;
+  dvector *total_expvar;
+  dvectorlist *block_expvar;
   dvectorlist *colaverage;
   dvectorlist *colscaling;
 } CPCAMODEL;
@@ -39,6 +42,27 @@ typedef struct {
 void NewCPCAModel(CPCAMODEL **m);
 void DelCPCAModel(CPCAMODEL **m);
 
-void CPCA(array *x, size_t npc, size_t scaling, CPCAMODEL *model);
+/*
+ * Consensus Principal Component Analysis
+ *
+ * ANALYSIS OF MULTIBLOCK AND HIERARCHICAL PCA AND PLS MODELS
+ * JOHAN A. WESTERHUIS, THEODORA KOURTI* AND JOHN F. MACGREGOR
+ * J. Chemometrics 12, 301–321 (1998)
+ *
+ * N.B.: The superscores of CPCA are the scores of a PCA!!
+ */
+void CPCA(tensor *x, int scaling, size_t npc, CPCAMODEL *model);
+
+
+/*
+ * Project objects in a CPCA model.
+ */
+void CPCAScorePredictor(tensor *mx,
+                        CPCAMODEL *model,
+                        size_t npc,
+                        matrix *p_super_scores,
+                        tensor *p_block_scores);
+
+void PrintCPCA(CPCAMODEL *m);
 
 #endif

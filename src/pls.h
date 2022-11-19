@@ -94,8 +94,8 @@ void LVCalc(matrix *X, matrix *Y, dvector *t, dvector *u, dvector *p, dvector *q
 void PLS(matrix *mx,
          matrix *my,
          size_t nlv,
-         size_t xautoscaling,
-         size_t yautoscaling,
+         int xautoscaling,
+         int yautoscaling,
          PLSMODEL *model,
          ssignal *s);
 

@@ -32,6 +32,11 @@ mx_to_video(loadings, 3)
 # Show the explained variance
 print(model.get_exp_variance())
 
+# Show the loadings
+print("Predict/Project new data into the PCA model")
+p_scores = model.predict(a)
+mx_to_video(p_scores)
+
 # Reconstruct the original PCA matrix from the 2 principal components
 print("Reconstruct the original PCA matrix using the PCA Model")
 ra = model.reconstruct_original_matrix()

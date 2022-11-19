@@ -172,7 +172,41 @@ In this example we show how to factorize a square matrix using the singular valu
 Tensor operations
 =================
 
-TO BE COMPLETED
+Tensor is a user-defined data type that contains:
+- order: the number of matrix
+- m: the array the 2D data array, which defines the tensor itself.
+
+The data array is selected explicitly as a double type to work with an extensive range of numbers.
+
+.. literalinclude:: ../../src/tensor.h
+   :language: c
+   :lines: 33-36
+
+
+Create/Allocate a tensor with a specific size
+---------------------------------------------
+Create a simple tensor of 3 blocks, 10 rows and 15 columns and fill it with numbers.
+
+Then print it to the terminal using "PrintTensor();"
+
+.. literalinclude:: c_code_examples/tnsexample1.c
+   :language: c
+   :linenos:
+
+
+Initialize an empty tensor and append different matrix to it
+------------------------------------------------------------
+
+An empty tensor is an object with matrix equal to 0. In that 
+object we can add dynamically different matrix with different 
+rows and columns.
+
+In this example we will initialize an empty tensor and we add different matrix to it
+
+.. literalinclude:: c_code_examples/tnsexample2.c
+   :language: c
+   :linenos:
+
 
 
 Multivariate analysis algorithms
@@ -190,6 +224,12 @@ and is adapted to run in multithreading to speed up the calculation.
 | DOI:10.1016/0003-2670(86)80028-9
 
 
+* CPCA implements the NIPALS algorithm described in the following publication:
+
+| ANALYSIS OF MULTIBLOCK AND HIERARCHICAL PCA AND PLS MODELS
+| JOHAN A. WESTERHUIS, THEODORA KOURTI* AND JOHN F. MACGREGOR
+| J. Chemometrics 12, 301–321 (1998)
+| DOI:/10.1002/(SICI)1099-128X(199809/10)12:5<301::AID-CEM515>3.0.CO;2-S
 
 Principal Component Analysis (PCA)
 ----------------------------------
@@ -198,6 +238,17 @@ Here is an example that shows how to compute a principal component analysis on a
 
 
 .. literalinclude:: c_code_examples/pcaexample1.c
+   :language: c
+   :linenos:
+
+
+Consensus Principal Component Analysis (CPCA)
+---------------------------------------------
+
+Here is an example that shows how to compute a consenus principal component analysis on a tensor.
+
+
+.. literalinclude:: c_code_examples/cpcaexample1.c
    :language: c
    :linenos:
 

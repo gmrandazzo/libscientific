@@ -137,7 +137,6 @@ void UPCA(tensor *X_, size_t npc, size_t autoscaling, UPCAMODEL *m, ssignal *s)
     }
 
     /* For Wold Geladi test disable this  */
-
     for(k = 0; k < X_->order; k++){
       initDVector(&tmpv);
       MatrixColAverage(X_->m[k], tmpv);
@@ -156,7 +155,6 @@ void UPCA(tensor *X_, size_t npc, size_t autoscaling, UPCAMODEL *m, ssignal *s)
           }
         }
       }
-
     }
 
     /* AUTOSCALING */

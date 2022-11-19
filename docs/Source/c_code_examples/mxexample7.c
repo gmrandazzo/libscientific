@@ -8,7 +8,7 @@ int main(void)
     matrix *m; // Definition of the matrix variable as a pointer
     matrix *U; // Definition of the complex unitary matrix
     matrix *S; // Definition of the rectangular diagnonal matrix with non-negative real numbers on diagonal
-    matrix Vt; // Definition of conjugate transpose of a complex unitary matrix
+    matrix *Vt; // Definition of conjugate transpose of a complex unitary matrix
 
     NewMatrix(&m, 10, 10); // Allocate the matrix to invert 
     MatrixInitRandomFloat(m, -3., 3.); // Random fill the matrix with values within a range -3 < x < 3

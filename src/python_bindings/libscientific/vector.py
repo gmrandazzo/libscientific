@@ -264,7 +264,7 @@ class DVector(object):
 
     def size(self):
         """
-        return the size of the divector
+        return the size of the dvector
         """
         return self.d[0].size
 
@@ -303,7 +303,7 @@ class DVector(object):
 
     def debug(self):
         """
-        Debug the divector
+        Debug the dvector
         """
         PrintDVector(self.d)
 

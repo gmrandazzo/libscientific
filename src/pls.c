@@ -19,6 +19,7 @@
 #include "memwrapper.h"
 #include "tensor.h"
 #include "matrix.h"
+#include "preprocessing.h"
 #include "pls.h"
 #include "pca.h" /*Using: MatrixAutoScaling(); and calcVarExpressed(); */
 #include "numeric.h" /* Using:  if(FLOAT_EQ(NumOne, NumTwo));*/
@@ -402,7 +403,7 @@ void LVCalc(matrix *X,
   *
   */
 
-void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautoscaling, PLSMODEL* model, ssignal *s)
+void PLS(matrix *mx, matrix *my, size_t nlv, int xautoscaling, int yautoscaling, PLSMODEL* model, ssignal *s)
 {
   if(nlv > 0){
     #ifdef DEBUG
@@ -424,154 +425,16 @@ void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautosc
     dvector *xeval;
     dvector *yeval;
 
-    double min, max, ssx;
+    double ssx;
 
     if(mx->row == my->row){
       if(nlv > mx->col) /* if the number of principal component selected is major of the permitted */
         nlv = mx->col;
 
       NewMatrix(&X, mx->row, mx->col);
-      /*
-       * First we have to detect if in the X or Y there are missing values.
-       */
-      MatrixCheck(mx);
-      /* MatrixColAverage skip missing value marked with MISSING
-       * These values are automatically detected by MatrixCheck
-       */
-      MatrixColAverage(mx, model->xcolaverage);
-
-      for(j = 0; j < mx->col; j++){
-        for(i = 0; i < mx->row; i++){
-          if(FLOAT_EQ(mx->data[i][j], MISSING, 1e-1)){
-            continue;
-          }
-          else{
-            X->data[i][j] = mx->data[i][j] - model->xcolaverage->data[j];
-          }
-        }
-      }
-
-     /* AUTOSCALING
-      * For autoscaling see:
-      * Centering scaling and trasfomrations: improving the biological information content of metabolomics dataset
-      * A van den Berg
-      * BMC Genomics 2006, 7:142  doi:101 186/147-214-7-142
-      */
-      if(xautoscaling > 0){
-        if(xautoscaling == 1){ /* SDEV Autoscaling */
-          MatrixColSDEV(mx, model->xcolscaling);
-        }
-        else if(xautoscaling == 2){ /* RMS Autoscaling */
-          MatrixColRMS(mx, model->xcolscaling);
-        }
-        else if(xautoscaling == 3){ /* PARETO Autoscaling */
-          MatrixColSDEV(mx, model->xcolscaling);
-          for(i = 0; i < model->xcolscaling->size; i++){
-            model->xcolscaling->data[i] = sqrt(model->xcolscaling->data[i]);
-          }
-        }
-        else if(xautoscaling == 4){ /* Range Scaling */
-          for(i = 0; i < mx->col; i++){
-            MatrixColumnMinMax(mx, i, &min, &max);
-            DVectorAppend(model->xcolscaling, (max - min));
-          }
-        }
-        else if(xautoscaling == 5){ /* Level Scaling  */
-          DVectorCopy(model->xcolaverage, model->xcolscaling);
-        }
-        else{
-          for(i = 0; i < model->xcolaverage->size; i++){
-            DVectorAppend(model->xcolscaling, 1.0);
-          }
-        }
-
-        for(j = 0; j < X->col; j++){
-          if(FLOAT_EQ(getDVectorValue(model->xcolscaling, j), 0, EPSILON)){
-            for(i = 0; i< X->row; i++){
-              X->data[i][j] = 0.f;
-            }
-          }
-          else{
-            for(i = 0; i < X->row; i++){
-              if(FLOAT_EQ(X->data[i][j], MISSING, 1e-1)){
-                continue;
-              }
-              else{
-                X->data[i][j] /= model->xcolscaling->data[j];
-              }
-            }
-          }
-        }
-      }
-
+      MatrixPreprocess(mx, xautoscaling, model->xcolaverage, model->xcolscaling, X);
       NewMatrix(&Y, my->row, my->col);
-
-      /*
-       * Check in in the my matrix there are missing values.
-       */
-      MatrixCheck(my);
-
-      /*mean centering the y matrix*/
-      MatrixColAverage(my, model->ycolaverage);
-
-      for(j = 0; j < my->col; j++){
-        for(i = 0; i < my->row; i++){
-          if(FLOAT_EQ(my->data[i][j], MISSING, 1e-1)){
-            continue;
-          }
-          else{
-            Y->data[i][j] = my->data[i][j] - model->ycolaverage->data[j];
-          }
-        }
-      }
-
-      if(yautoscaling > 0){
-        if(yautoscaling == 1){ /* RMS Scaling: Divite for the Standar Deviation Column */
-          MatrixColSDEV(my, model->ycolscaling);
-        }
-        else if(yautoscaling == 2){ /* RMS Scaling: Divite for the Root Mean Square of the column */
-          MatrixColRMS(my, model->ycolscaling);
-        }
-        else if(yautoscaling == 3){ /* PARETO Autoscaling */
-          MatrixColSDEV(my, model->ycolscaling);
-          for(i = 0; i < model->ycolscaling->size; i++){
-            model->ycolscaling->data[i] = sqrt(model->ycolscaling->data[i]);
-          }
-        }
-        else if(yautoscaling == 4){ /* Range Scaling */
-          for(i = 0; i < my->col; i++){
-            MatrixColumnMinMax(my, i, &min, &max);
-            DVectorAppend(model->ycolscaling, (max - min));
-          }
-        }
-        else if(yautoscaling == 5){ /* Level Scaling  */
-          DVectorCopy(model->ycolaverage, model->ycolscaling);
-        }
-        else{
-          for(i = 0; i < model->ycolaverage->size; i++){
-            DVectorAppend(model->ycolscaling, 1.0);
-          }
-        }
-
-
-        for(j = 0; j < Y->col; j++){
-          if(FLOAT_EQ(getDVectorValue(model->ycolscaling, j), 0, EPSILON)){
-            for(i = 0; i< Y->row; i++){
-              Y->data[i][j] = 0.f;
-            }
-          }
-          else{
-            for(i = 0; i < Y->row; i++){
-              if(FLOAT_EQ(Y->data[i][j], MISSING, 1e-1)){
-                continue;
-              }
-              else{
-                Y->data[i][j] /= model->ycolscaling->data[j];
-              }
-            }
-          }
-        }
-      }
+      MatrixPreprocess(my, yautoscaling, model->ycolaverage, model->ycolscaling, Y);
 
       /* calculating the sum of squares for x and y in order to extimate
       * the % of variance explained
@@ -1102,7 +965,7 @@ void PLSVIP(PLSMODEL *model, matrix *vip)
       }
     }
   }
-  
+
   /*WARNING: METHOD NOT READY!*/
 }
 

@@ -95,7 +95,7 @@ def PCAScorePredictor(m, mpca, npc, pscores):
     lsci.PCAScorePredictor(m,
                            mpca,
                            npc,
-                           ctypes.pointer(m))
+                           pscores)
 
 
 lsci.PCAIndVarPredictor.argtypes = [ctypes.POINTER(mx.matrix),
@@ -159,8 +159,8 @@ class PCA(object):
     def predict(self, m_):
         m = mx.NewMatrix(m_)
         pscores_ = mx.initMatrix()
-        PCAScorePredictor(m, self.mpca, self.npc, ctypes.pointer(pscores_))
-        pscores = pscores_.tolist()
+        PCAScorePredictor(m, self.mpca, self.npc, pscores_)
+        pscores = mx.MatrixToList(pscores_)
         mx.DelMatrix(m)
         del m
         mx.DelMatrix(pscores_)
@@ -217,3 +217,10 @@ if __name__ == '__main__':
     print("Reconstruct the original PCA matrix using the PCA Model")
     ra = model.reconstruct_original_matrix()
     mx_to_video(ra)
+    ps = model.predict(a)
+    for i in range(len(ps)):
+        row1 = ps[i]
+        row2 = scores[i]
+        print(row1)
+        print(row2)
+

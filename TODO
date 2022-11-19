@@ -1,7 +1,6 @@
+- FIX UPCA and UPLS and align to the current methods.
 - ADD MLR Statistics Output
 - ADD LDA Statistics Output
 - ADD MLR Yscrambling Pipeline
 - ADD LDA Yscrambling Pipeline
-- ADD NEURAL NETWORK BACK PROPAGATION
-- ADD TOPOLOGICAL ANALYISIS CODE
 - FIX CLUSTERING ALGORITHM hierachical clusterin

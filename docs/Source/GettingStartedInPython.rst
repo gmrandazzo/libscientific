@@ -84,9 +84,25 @@ modify its content and convert it again to a list of lists.
 Tensor operations
 =================
 
-TO BE COMPLETED
+Tensor is a user-defined data type that contains:
+- order: the number of matrix
+- m: the array the 2D data array, which defines the tensor itself.
+
+The data array in python uses the c language implementation.
+However, memory allocation/destruction is carried out directly from the python class.
+Hence there is no need to free up the memory manually
 
 
+Create a tensor in python
+--------------------------
+
+In this example, we show how to create a tensor from a list of list of lists (or numpy array),
+modify its content and convert it again to a list of lists.
+
+.. literalinclude:: python_code_examples/tnsexample1.py
+   :language: python
+   :linenos:
+   
 Multivariate analysis algorithms
 ================================
 
@@ -101,6 +117,12 @@ In particular, the algorithm described here is extracted from official libscient
 | Analytica Chimica Acta Volume 185, 1986, Pages 1–17
 | DOI:10.1016/0003-2670(86)80028-9
 
+* CPCA implements the NIPALS algorithm described in the following publication:
+
+| ANALYSIS OF MULTIBLOCK AND HIERARCHICAL PCA AND PLS MODELS
+| JOHAN A. WESTERHUIS, THEODORA KOURTI* AND JOHN F. MACGREGOR
+| J. Chemometrics 12, 301–321 (1998)
+| DOI:/10.1002/(SICI)1099-128X(199809/10)12:5<301::AID-CEM515>3.0.CO;2-S
 
 
 Principal Component Analysis (PCA)
@@ -114,7 +136,18 @@ Here is an example that shows to compute a principal component analysis on a mat
    :language: python
    :linenos:
 
+Consensus Principal Component Analysis (CPCA)
+---------------------------------------------
 
+Here is an example that shows how to compute a consenus principal component analysis on a tensor.
+
+
+.. literalinclude:: python_code_examples/cpcaexample1.py
+   :language: python
+   :linenos:
+
+
+   
 Partial Least Squares (PLS)
 ---------------------------
 

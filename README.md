@@ -12,11 +12,12 @@ Only left eigenvectors and eigenvalues are calculated using a third-party librar
 Actually libscientific is able to compute:
 
   - Multivariate analysis
-    - PCA (NIPALS ALGORITHM) [1]
-    - PLS (NIPALS ALGORITHM) [1]
-    - MLR (Ordinary least squares algorithm)
-    - UPCA [2]
-    - UPLS [2]
+    - Principal Component Analysis (PCA) NIPALS algorithm) [1]
+    - Partial Least Squares (PLS) NIPALS algorithm [1]
+    - Consensus PCA (CPCA) NIPALS algorithm [7]
+    - Multiple Linear Regression (MLR) Ordinary least squares algorithm
+    - Unfold PCA (UPCA) [2]
+    - Unfold PLS (UPLS) [2]
 
   - Pattern recognition
     - Fisher LDA
@@ -66,7 +67,7 @@ References:
 [1] P. Geladi, B.R. Kowalski
      Partial least-squares regression: a tutorial
      Analytica Chimica Acta Volume 185, 1986, Pages 1-17
-     DOI:10.1016/0003-2670(86)80028-9
+     DOI: 10.1016/0003-2670(86)80028-9
 
 [2] S. Wold, P. Geladi, K. Esbensen and J. Öhman
     MULTI-WAY PRINCIPAL COMPONENTSAND PLS-ANALYSIS
@@ -79,7 +80,7 @@ References:
     Pattern Analysis and Machine Intelligence, IEEE Transactions on
     Issue Date: Jul 2002
     On page(s): 881 - 892
-    DOI:10.1109/TPAMI.2002.1017616
+    DOI: 10.1109/TPAMI.2002.1017616
 
 [4] B.D. Hudson, R.M. Hyde, E. Rahr, J, Wood and J. Osman
     Parameter Based Methods for Compound Selection from Chemical Databases
@@ -90,13 +91,17 @@ References:
 [5] J. Holliday, P. Willett
     Definitions of "Dissimilarity" for Dissimilarity-Based Compound Selection
     Journal of Biomolecular Screening Volume 1, Number 3, 1996 Pages: 145-151
-    DOI:10.1177/108705719600100308
+    DOI: 10.1177/108705719600100308
 
 [6] R.D. Clark , P.C. Fox
     Statistical variation in progressive scrambling.
     J Comput Aided Mol Des. 2004 Jul-Sep;18(7-9):563-76.
-    DOI 10.1007/s10822-004-4077-z
+    DOI: 10.1007/s10822-004-4077-z
 
+[7] J. A. Westerhuis, T. Kourti and J.F. Macgregor
+    Analysis of multiblock and hierarchical PCA and PLS models
+    Journal of Chemometrics 1998 12, 301-321
+    DOI: 10.1002/(SICI)1099-128X(199809/10)12:5<301::AID-CEM515>3.0.CO;2-S
 License
 ============
 

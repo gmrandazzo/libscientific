@@ -214,9 +214,15 @@ void MatrixMoorePenrosePseudoinverse(matrix *m, matrix *inv);
 
 /*
  * Description:
+ * Return the trace of a square matrix
+ */
+double MatrixTrace(matrix *m);
+
+/*
+ * Description:
  * Generate the identity matrix
  */
-void GenIdentityMatrix(matrix **m);
+void GenIdentityMatrix(matrix *m);
 
 /*
  * Description:

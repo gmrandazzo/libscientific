@@ -105,7 +105,7 @@ lsci.PLS.argtypes = [ctypes.POINTER(mx.matrix),
 lsci.PLS.restype = None
 
 
-def PLS_(x, y, nlv, xscaling, yscaling, mpls):
+def PLS_Algorithm(x, y, nlv, xscaling, yscaling, mpls):
     """
     PLS: Calculate the PLS model using a matrix x and a matrix y
          according to the NIPALS algorithm
@@ -256,12 +256,12 @@ class PLS(object):
             yalloc = True
         else:
             y = y_
-        PLS_(x,
-             y,
-             self.nlv,
-             self.xscaling,
-             self.yscaling,
-             self.mpls)
+        PLS_Algorithm(x,
+                      y,
+                      self.nlv,
+                      self.xscaling,
+                      self.yscaling,
+                      self.mpls)
 
         if xalloc is True:
             mx.DelMatrix(x)
