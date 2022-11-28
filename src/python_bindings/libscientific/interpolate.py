@@ -17,71 +17,71 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import ctypes
-from libscientific.loadlibrary import LoadLibrary
+from libscientific.loadlibrary import load_libscientific_library
 import libscientific.matrix as mx
 import libscientific.vector as vect
 
-lsci = LoadLibrary()
+lsci = load_libscientific_library()
 
 
-lsci.cubic_spline_interpolation.argtypes = [ctypes.POINTER(mx.matrix),
-                                            ctypes.POINTER(mx.matrix)]
+lsci.cubic_spline_interpolation.argtypes = [ctypes.POINTER(mx.MATRIX),
+                                            ctypes.POINTER(mx.MATRIX)]
 lsci.cubic_spline_interpolation.restype = None
 
 
-def cubic_spline_interpolation(xy, S):
+def cubic_spline_interpolation(x_y, s_interp):
     """
-    CubicSplineInterpolation: Given a matrix xy, interpolate the npoints
+    CubicSplineInterpolation: Given a matrix x_y, interpolate the npoints
                               using a natural cubic spline approach
     """
-    xy_ = None
-    if "LP_matrix" in str(type(xy)):
-        xy_ = xy
-    elif "Matrix" in str(type(xy)):
-        xy_ = xy.mx
+    x_y_ = None
+    if isinstance(x_y, mx.Matrix):
+        x_y_ = x_y.mx
+    else:
+        x_y_ = x_y
 
-    S_ = None
-    if "LP_matrix" in str(type(S)):
-        S_ = S
-    elif "Matrix" in str(type(S)):
-        S_ = S.mx
+    s_interp_ = None
+    if isinstance(S, mx.Matrix):
+        s_interp_ = s_interp.mx
+    else:
+        s_interp_ = s_interp
 
-    lsci.cubic_spline_interpolation(xy_, S_)
+    lsci.cubic_spline_interpolation(x_y_, s_interp_)
 
 
-lsci.cubic_spline_predict.argtypes = [ctypes.POINTER(vect.dvector),
-                                      ctypes.POINTER(mx.matrix),
-                                      ctypes.POINTER(vect.dvector)]
+lsci.cubic_spline_predict.argtypes = [ctypes.POINTER(vect.DVECTOR),
+                                      ctypes.POINTER(mx.MATRIX),
+                                      ctypes.POINTER(vect.DVECTOR)]
 lsci.cubic_spline_predict.restype = None
 
 
-def cubic_spline_predict(x, S, yp):
+def cubic_spline_predict(x_cc, s_interp, y_pred):
     """
     Natural cubic spline prediction
     """
-    x_ = None
-    if "DVector" in str(type(x)):
-        x_ = x.d
+    x_cc_ = None
+    if isinstance(x, vect.DVector):
+        x_cc_ = x_cc.dvect
     else:
-        x_ = x
+        x_cc_ = x_cc
 
-    S_ = None
-    if "LP_matrix" in str(type(S)):
-        S_ = S
-    elif "Matrix" in str(type(S)):
-        S_ = S.mx
-
-    yp_ = None
-    if "DVector" in str(type(yp)):
-        yp_ = yp.d
+    s_interp_ = None
+    if isinstance(s_interp, mx.Matrix):
+        s_interp_ = s_interp.mx
     else:
-        yp_ = yp
+        s_interp_ = s_interp
 
-    lsci.cubic_spline_predict(x_, S_, yp_)
+    y_pred_ = None
+    if isinstance(y_pred, vect.DVector):
+        y_pred_ = y_pred.d
+    else:
+        y_pred_ = y_pred
+
+    lsci.cubic_spline_predict(x_cc_, s_interp_, y_pred_)
 
 
 if __name__ in "__main__":
-    xy_ = [[-1.82,0.63],
+    xy = [[-1.82,0.63],
            [-0.73,0.19],
            [-0.17,0.01],
            [-0.09,0.00],
@@ -89,21 +89,22 @@ if __name__ in "__main__":
            [0.39,0.06],
            [0.86,0.24],
            [1.44,0.49]]
-    x_ = [-1.82, -0.73, -0.17, -0.09, 0.15, 0.39, 0.86, 1.44]
-    xy = mx.NewMatrix(xy_)
+    x = [-1.82, -0.73, -0.17, -0.09, 0.15, 0.39, 0.86, 1.44]
+    xy = mx.new_matrix(xy)
     print("Origin matrix x->y to interpolate")
-    mx.PrintMatrix(xy)
-    S = mx.initMatrix()
+    mx.print_matrix(xy)
+    S = mx.init_matrix()
     cubic_spline_interpolation(xy, S)
     print("Spline interpolation coefficient matrix")
-    mx.PrintMatrix(S)
-    x = vect.DVector(x_)
+    mx.print_matrix(S)
+    x = vect.DVector(x)
     print("Vector to predict")
     x.debug()
-    yp = vect.initDVector()
+    yp = vect.init_dvector()
     cubic_spline_predict(x, S, yp)
 
     print("Prediction")
-    vect.PrintDVector(yp)
-    mx.DelMatrix(S)
-    vect.DelDVector(yp)
+    vect.print_dvector(yp)
+    mx.del_matrix(S)
+    vect.del_dvector(yp)
+    mx.del_matrix(xy)

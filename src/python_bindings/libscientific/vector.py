@@ -17,19 +17,19 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import ctypes
-from libscientific.loadlibrary import LoadLibrary
+from libscientific.loadlibrary import load_libscientific_library
 from libscientific import misc
 
-lsci = LoadLibrary()
+lsci = load_libscientific_library()
 
 
-class strvector(ctypes.Structure):
+class STRVECTOR(ctypes.Structure):
     """
-    string vector class
+    string vector data structure
     """
     _fields_ = [
-        ("data",    ctypes.POINTER(ctypes.POINTER(ctypes.c_char))),
-        ("size",     ctypes.c_size_t)]
+        ("data", ctypes.POINTER(ctypes.POINTER(ctypes.c_char))),
+        ("size", ctypes.c_size_t)]
 
     def __repr__(self):
         return self.__class__.__name__
@@ -38,13 +38,13 @@ class strvector(ctypes.Structure):
         return self.__class__.__name__
 
 
-class dvector(ctypes.Structure):
+class DVECTOR(ctypes.Structure):
     """
-    double vector class
+    double vector data structure
     """
     _fields_ = [
-        ("data",    ctypes.POINTER(ctypes.c_double)),
-        ("size",     ctypes.c_size_t)]
+        ("data", ctypes.POINTER(ctypes.c_double)),
+        ("size", ctypes.c_size_t)]
 
     def __repr__(self):
         return self.__class__.__name__
@@ -53,259 +53,236 @@ class dvector(ctypes.Structure):
         return self.__class__.__name__
 
 
-lsci.initDVector.argtypes = [ctypes.POINTER(ctypes.POINTER(dvector))]
+lsci.initDVector.argtypes = [ctypes.POINTER(ctypes.POINTER(DVECTOR))]
 lsci.initDVector.restype = None
 
 
-def initDVector():
+def init_dvector():
     """
     initDVector: Allocate in memory an empty libscientific double vector
     """
-    d = ctypes.POINTER(dvector)()
-    lsci.initDVector(ctypes.pointer(d))
-    return d
+    d_vect = ctypes.POINTER(DVECTOR)()
+    lsci.initDVector(ctypes.pointer(d_vect))
+    return d_vect
 
 
-lsci.NewDVector.argtypes = [ctypes.POINTER(ctypes.POINTER(dvector)),
+lsci.NewDVector.argtypes = [ctypes.POINTER(ctypes.POINTER(DVECTOR)),
                             ctypes.c_size_t]
 lsci.NewDVector.restype = None
 
 
-def NewDVector(vlst):
+def new_dvector(v_lst):
     """
     NewDVector: Allocate in memory a libscientific double vector from a list
     """
-    size = len(vlst)
-    d = ctypes.POINTER(dvector)()
-    lsci.NewDVector(ctypes.pointer(d), size)
+    size = len(v_lst)
+    d_vect = ctypes.POINTER(DVECTOR)()
+    lsci.NewDVector(ctypes.pointer(d_vect), size)
 
     for i in range(size):
         val = None
         try:
-            val = float(vlst[i])
+            val = float(v_lst[i])
         except ValueError:
             val = None
         if val is None:
-            lsci.setDVectorValue(d, i, misc.missing_value())
+            lsci.setDVectorValue(d_vect, i, misc.missing_value())
         else:
-            lsci.setDVectorValue(d, i, val)
-    return d
+            lsci.setDVectorValue(d_vect, i, val)
+    return d_vect
 
+lsci.DelDVector.argtypes = [ctypes.POINTER(ctypes.POINTER(DVECTOR))]
+lsci.DelDVector.restype = None
 
-lsci.DVectorResize.argtypes = [ctypes.POINTER(dvector),
+def del_dvector(dvect):
+    """
+    DelDVector: Delete an allocated libscientific double vector
+    """
+    lsci.initDVector(ctypes.pointer(dvect))
+
+lsci.DVectorResize.argtypes = [ctypes.POINTER(DVECTOR),
                                ctypes.c_size_t]
 lsci.DVectorResize.restype = None
 
 
-def DVectorResize(d, size):
+def dvector_resize(dvect, size):
     """
     DVectorResize: Resize an already allocated or reallocate a libscientific
                    double vector
     """
-    lsci.DVectorResize(d, size)
+    lsci.DVectorResize(dvect, size)
 
 
-lsci.DelDVector.argtypes = [ctypes.POINTER(ctypes.POINTER(dvector))]
-lsci.DelDVector.restype = None
-
-
-def DelDVector(d):
-    """
-    DelDVector: Delete an allocated libscientific double vector
-    """
-    lsci.DelDVector(ctypes.pointer(d))
-
-
-lsci.PrintDVector.argtypes = [ctypes.POINTER(dvector)]
+lsci.PrintDVector.argtypes = [ctypes.POINTER(DVECTOR)]
 lsci.PrintDVector.restype = None
 
 
-def PrintDVector(d):
+def print_dvector(dvect):
     """
     PrintDVector: Print to video a libscientific double vector
     """
-    lsci.PrintDVector(d)
+    lsci.PrintDVector(dvect)
 
 
-lsci.DVectorHasValue.argtypes = [ctypes.POINTER(dvector), ctypes.c_double]
+lsci.DVectorHasValue.argtypes = [ctypes.POINTER(DVECTOR), ctypes.c_double]
 lsci.DVectorHasValue.restype = ctypes.c_int
 
 
-def DVectorHasValue(v, val):
+def dvector_has_value(dvect, val):
     """
     DVectorHasValue: Check if a libscientific double vector contains an exact
                      value "val" and return 0 or 1 respectivelly for have or not have.
     """
-    return lsci.DVectorHasValue(v, val)
+    return lsci.DVectorHasValue(dvect, val)
 
 
-lsci.DVectorSet.argtypes = [ctypes.POINTER(dvector), ctypes.c_double]
+lsci.DVectorSet.argtypes = [ctypes.POINTER(DVECTOR), ctypes.c_double]
 lsci.DVectorSet.restype = None
 
 
-def DVectorSet(d, val):
+def dvector_set(dvect, val):
     """
     DVectorSet: Set all values of a libscientific double vector to "val"
     """
-    lsci.DVectorSet(d, val)
+    lsci.DVectorSet(dvect, val)
 
 
-lsci.setDVectorValue.argtypes = [ctypes.POINTER(dvector),
+lsci.setDVectorValue.argtypes = [ctypes.POINTER(DVECTOR),
                                  ctypes.c_size_t,
                                  ctypes.c_double]
 lsci.setDVectorValue.restype = None
 
 
-def setDVectorValue(d, row, value):
+def set_dvector_value(dvect, indx, val):
     """
     setDVectorValue: Set/modify a value in the row of a libscientific
                      double vector
     """
-    lsci.setDVectorValue(d, row, value)
+    lsci.setDVectorValue(dvect, indx, val)
 
 
-lsci.getDVectorValue.argtypes = [ctypes.POINTER(dvector),
+lsci.getDVectorValue.argtypes = [ctypes.POINTER(DVECTOR),
                                  ctypes.c_size_t]
 lsci.getDVectorValue.restype = ctypes.c_double
 
 
-def getDVectorValue(d, row):
+def get_dvector_value(dvect, indx):
     """
     getDVectorValue: Get a value in the row of a libscientific
                      double vector
     """
-    return lsci.getDVectorValue(d, row)
+    return lsci.getDVectorValue(dvect, indx)
 
 
-def DVectorToList(d):
-    dlst = []
+def dvector_tolist(dvect):
+    """
+    Convert a libscientific double vector into a python list
+    """
+    d_lst = []
     try:
-        for i in range(d[0].size):
-            dlst.append(d[0].data[i])
+        for i in range(dvect[0].size):
+            d_lst.append(dvect[0].data[i])
     except TypeError:
-        for i in range(d.size):
-            dlst.append(d.data[i])
-    return dlst
+        for i in range(dvect.size):
+            d_lst.append(dvect.data[i])
+    return d_lst
 
 
-lsci.DVectorAppend.argtypes = [ctypes.POINTER(dvector),
+lsci.DVectorAppend.argtypes = [ctypes.POINTER(DVECTOR),
                                ctypes.c_double]
 lsci.DVectorAppend.restype = None
 
-def DVectorAppend(d, val):
+def dvector_append(dvect, val):
     """
     Append a value to a double vector d
     """
-    return lsci.DVectorAppend(d, val)
+    return lsci.DVectorAppend(dvect, val)
 
 
-lsci.DVectorRemoveAt.argtypes = [ctypes.POINTER(dvector),
+lsci.DVectorRemoveAt.argtypes = [ctypes.POINTER(DVECTOR),
                                  ctypes.c_size_t]
 lsci.DVectorRemoveAt.restype = None
 
-def DVectorRemoveAt(d, indx):
+def dvector_remove_at(dvect, indx):
     """
     Remove a value from a double vector d at index indx
     """
-    return lsci.DVectorRemoveAt(d, indx)
+    return lsci.DVectorRemoveAt(dvect, indx)
 
-lsci.DVectorCopy.argtypes = [ctypes.POINTER(dvector),
-                             ctypes.POINTER(dvector)]
+lsci.DVectorCopy.argtypes = [ctypes.POINTER(DVECTOR),
+                             ctypes.POINTER(DVECTOR)]
 lsci.DVectorCopy.restype = None
 
-def DVectorCopy(src):
+def dvector_copy(dvect_src):
     """
     Create a copy of dvector d to a
     """
-    dst = initDVector()
-    lsci.DVectorCopy(src, dst)
-    return dst
+    dvect_dst = init_dvector()
+    lsci.DVectorCopy(dvect_src, dvect_dst)
+    return dvect_dst
 
 
-"""
-TODO: Implement this functions
-
-/* Append to a dvector an other dvector */
-dvector *DVectorExtend(dvector *d1, dvector *d2);
-
-/*Vector operations*/
-double DVectorDVectorDotProd(dvector *v1, dvector *v2); /* product between two vector */
-
-double DvectorModule(dvector *v); /* get the Dvector Module */
-void DVectNorm(dvector *v, dvector *nv); /* vector normalizing */
-void DVectorDVectorDiff(dvector *v1, dvector *v2, dvector **v3);
-void DVectorDVectorSum(dvector *v1, dvector *v2, dvector **v3);
-void DVectorMinMax(dvector *v, double *min, double *max);
-void DVectorMean(dvector *d, double *mean);
-void DVectorMedian(dvector *d, double *mean);
-void DVectorSDEV(dvector *d, double *sdev);
-void DVectorSort(dvector *v);
-
-
-"""
-
-
-class DVector(object):
+class DVector():
     """
     Translate a list  into a libscientific double vector
     """
-    def __init__(self, d_):
-        self.d = NewDVector(d_)
+    def __init__(self, dvect_):
+        self.dvect = new_dvector(dvect_)
 
     def __del__(self):
-        DelDVector(self.d)
-        del self.d
+        del_dvector(self.dvect)
+        del self.dvect
 
     def __getitem__(self, key):
         return self.data_ptr()[key]
 
     def __setitem__(self, key, value):
-        setDVectorValue(self.d, key, value)
+        set_dvector_value(self.dvect, key, value)
 
     def size(self):
         """
         return the size of the dvector
         """
-        return self.d[0].size
+        return self.dvect[0].size
 
     def data_ptr(self):
         """
         return the pointer to data
         """
-        return self.d[0].data
+        return self.dvect[0].data
 
     def append(self, value):
         """
         Append a value to the dvector
         """
-        return DVectorAppend(self.d, value)
+        return dvector_append(self.dvect, value)
 
-    def extend(self, lst):
+    def extend(self, v_lst):
         """
         Extend the dvector by adding a list
         """
-        for item in lst:
-            DVectorAppend(self.d, item)
+        for val in v_lst:
+            dvector_append(self.dvect, val)
 
     def tolist(self):
         """
         Convert the dvector to a list
         """
-        return DVectorToList(self.d)
+        return dvector_tolist(self.dvect)
 
     def fromlist(self, vlst_):
         """
         Convert a list to a dvector
         """
-        DelDVector(self.d)
-        del self.d
-        self.d = NewDVector(vlst_)
+        del_dvector(self.dvect)
+        del self.dvect
+        self.dvect = new_dvector(vlst_)
 
     def debug(self):
         """
         Debug the dvector
         """
-        PrintDVector(self.d)
+        print_dvector(self.dvect)
 
 
 if __name__ in "__main__":
@@ -323,7 +300,7 @@ if __name__ in "__main__":
         print(item)
 
     print("Add at the end the value -123")
-    DVectorAppend(d.d, -123)
+    dvector_append(d.dvect, -123)
     d.debug()
 
     print("Append in a different way -123 at the end")
@@ -331,7 +308,7 @@ if __name__ in "__main__":
     d.debug()
 
     print("remove at index 1, then value -2")
-    DVectorRemoveAt(d.d, 1)
+    dvector_remove_at(d.dvect, 1)
     d.debug()
 
     print("Extend d with b")
@@ -343,9 +320,9 @@ if __name__ in "__main__":
     d.debug()
 
     print("Create a copy of d.d in q")
-    q = DVectorCopy(d.d)
-    PrintDVector(q)
-    DelDVector(q)
+    q = dvector_copy(d.dvect)
+    print_dvector(q)
+    del_dvector(q)
 
     print("Check if the double vector d have the value -123")
-    print(DVectorHasValue(d.d, -13.0000))
+    print(dvector_has_value(d.dvect, -13.0000))

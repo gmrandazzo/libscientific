@@ -17,20 +17,19 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import ctypes
-from libscientific.loadlibrary import LoadLibrary
+from libscientific.loadlibrary import load_libscientific_library
 from libscientific import misc
 from libscientific import matrix as mx
 from libscientific import vector as vect
-from libscientific import misc
 
-lsci = LoadLibrary()
+lsci = load_libscientific_library()
 
-class tensor(ctypes.Structure):
+class TENSOR(ctypes.Structure):
     """
     tensor data structure
     """
     _fields_ = [
-        ("m", ctypes.POINTER(ctypes.POINTER(mx.matrix))),
+        ("m", ctypes.POINTER(ctypes.POINTER(mx.MATRIX))),
         ("order", ctypes.c_size_t)]
 
     def __repr__(self):
@@ -39,146 +38,176 @@ class tensor(ctypes.Structure):
     def __str__(self):
         return self.__class__.__name__
 
-lsci.initTensor.argtypes = [ctypes.POINTER(ctypes.POINTER(tensor))]
+lsci.initTensor.argtypes = [ctypes.POINTER(ctypes.POINTER(TENSOR))]
 lsci.initTensor.restype = None
 
-def initTensor():
+def init_tensor():
     """
     initTensor: Allocate in memory an empty libscientific tensor
     """
-    t = ctypes.POINTER(tensor)()
-    lsci.initTensor(ctypes.pointer(t))
-    return t
+    tns = ctypes.POINTER(TENSOR)()
+    lsci.initTensor(ctypes.pointer(tns))
+    return tns
 
 
-lsci.NewTensorMatrix.argtypes = [ctypes.POINTER(tensor),
+lsci.NewTensorMatrix.argtypes = [ctypes.POINTER(TENSOR),
                                  ctypes.c_size_t,
                                  ctypes.c_size_t,
                                  ctypes.c_size_t]
 lsci.NewTensorMatrix.restype = None
 
-def NewTensorMatrix(t, k, row, col):
-    lsci.NewTensorMatrix(t, k, row, col)
+def new_tensor_matrix(tns, k_indx, num_row, num_col):
+    """
+    Create a new matrix on tensor tns at index k_indx
+    """
+    lsci.NewTensorMatrix(tns, k_indx, num_row, num_col)
 
 
-lsci.AddTensorMatrix.argtypes = [ctypes.POINTER(tensor),
+lsci.AddTensorMatrix.argtypes = [ctypes.POINTER(TENSOR),
                                  ctypes.c_size_t,
                                  ctypes.c_size_t]
 lsci.AddTensorMatrix.restype = None
 
-def AddTensorMatrix(t, row, col):
-    lsci.AddTensorMatrix(t, row, col)
+def add_tensor_matrix(tns, num_row, num_col):
+    """
+    Add a new matrix to the tensor tns
+    """
+    lsci.AddTensorMatrix(tns, num_row, num_col)
 
 
-lsci.NewTensor.argtypes = [ctypes.POINTER(ctypes.POINTER(tensor)),
+lsci.NewTensor.argtypes = [ctypes.POINTER(ctypes.POINTER(TENSOR)),
                            ctypes.c_size_t]
 lsci.NewTensor.restype = None
 
-def NewTensor(a_):
+def new_tensor(tns_input_):
     """
     NewTensor: Allocate in memory a libscientific tensor
     from a list of lists of lists
     """
-    a = None
-    if "numpy" in str(type(a_)):
-        a = a_.tolist()
+    tns_input = None
+    if "numpy" in str(type(tns_input_)):
+        tns_input = tns_input_.tolist()
     else:
-        a = a_
-    order = len(a)
-    t = ctypes.POINTER(tensor)()
-    lsci.NewTensor(ctypes.pointer(t), order)
+        tns_input = tns_input_
+    order = len(tns_input)
+    tns = ctypes.POINTER(TENSOR)()
+    lsci.NewTensor(ctypes.pointer(tns), order)
     for k in range(order):
-        nrows = len(a[k])
-        ncols = len(a[k][0])
-        lsci.NewTensorMatrix(t, k, nrows, ncols)
+        nrows = len(tns_input[k])
+        ncols = len(tns_input[k][0])
+        lsci.NewTensorMatrix(tns, k, nrows, ncols)
         for i in range(nrows):
             for j in range(ncols):
                 val = None
                 try:
-                    val = float(a[k][i][j])
+                    val = float(tns_input[k][i][j])
                 except ValueError:
                     val = None
 
                 if val is None:
-                    t.contents.m[k].contents.data[i][j] = misc.missing_value()
+                    tns.contents.m[k].contents.data[i][j] = misc.missing_value()
                 else:
-                    t.contents.m[k].contents.data[i][j] = val
-    return t
+                    tns.contents.m[k].contents.data[i][j] = val
+    return tns
 
 
-lsci.DelTensor.argtypes = [ctypes.POINTER(ctypes.POINTER(tensor))]
+lsci.DelTensor.argtypes = [ctypes.POINTER(ctypes.POINTER(TENSOR))]
 lsci.DelTensor.restype = None
 
-def DelTensor(t):
-    lsci.DelTensor(ctypes.pointer(t))
+def del_tensor(tns):
+    """
+    Delete the moemory allocated tensor
+    """
+    lsci.DelTensor(ctypes.pointer(tns))
 
 
-lsci.PrintTensor.argtypes = [ctypes.POINTER(tensor)]
+lsci.PrintTensor.argtypes = [ctypes.POINTER(TENSOR)]
 lsci.PrintTensor.restype = None
 
-def PrintTensor(t):
-    lsci.PrintTensor(t)
+def print_tensor(tns):
+    """
+    Debug the tensor content
+    """
+    lsci.PrintTensor(tns)
 
 
-lsci.setTensorValue.argtypes = [ctypes.POINTER(tensor)]
+lsci.setTensorValue.argtypes = [ctypes.POINTER(TENSOR)]
 lsci.setTensorValue.restype = None
 
-def setTensorValue(t, k, i, j):
-    lsci.setTensorValue(t, k, i, j, val)
+def set_tensor_value(tns, k_indx, i_indx, j_indx, val):
+    """
+    Set the tensor value at indexes k_indx, i_indx, j_indx
+    """
+    lsci.setTensorValue(tns, k_indx, i_indx, j_indx, val)
 
 
-lsci.TensorAppendColumn.argtypes = [ctypes.POINTER(tensor),
+lsci.TensorAppendColumn.argtypes = [ctypes.POINTER(TENSOR),
                                     ctypes.c_size_t,
-                                    ctypes.POINTER(vect.dvector)]
+                                    ctypes.POINTER(vect.DVECTOR)]
 lsci.TensorAppendColumn.restype = None
 
-def TensorAppendColumn(t, k, cvect):
-    lsci.TensorAppendColumn(t, k, dvect)
+def tensor_append_column(tns, k_indx, dvect):
+    """
+    Append a colum to the matrix at index k_indx inside the tensor tns
+    """
+    lsci.TensorAppendColumn(tns, k_indx, dvect)
 
 
-lsci.TensorAppendRow.argtypes = [ctypes.POINTER(tensor),
+lsci.TensorAppendRow.argtypes = [ctypes.POINTER(TENSOR),
                                  ctypes.c_size_t,
-                                 ctypes.POINTER(vect.dvector)]
+                                 ctypes.POINTER(vect.DVECTOR)]
 lsci.TensorAppendRow.restype = None
 
-def TensorAppendRow(t, k, rvect):
-    lsci.TensorAppendRow(t, k, rvect)
+def tensor_append_row(tns, k_indx, dvect):
+    """
+    Append a row to the matrix at index k_indx inside the tensor tns
+    """
+    lsci.TensorAppendRow(tns, k_indx, dvect)
 
 
-lsci.TensorSet.argtypes = [ctypes.POINTER(tensor),
+lsci.TensorSet.argtypes = [ctypes.POINTER(TENSOR),
                            ctypes.c_double]
 lsci.TensorSet.restype = None
 
-def TensorSet(t, val):
-    lsci.TensorSet(t, val)
+def tensor_set(tns, val):
+    """
+    Set all the tensor values to a given value val
+    """
+    lsci.TensorSet(tns, val)
 
 
-lsci.TensorCopy.argtypes = [ctypes.POINTER(tensor),
-                           ctypes.POINTER(ctypes.POINTER(tensor))]
+lsci.TensorCopy.argtypes = [ctypes.POINTER(TENSOR),
+                           ctypes.POINTER(ctypes.POINTER(TENSOR))]
 lsci.TensorCopy.restype = None
 
-def TensorCopy(src, dst):
-    lsci.TensorCopy(src, ctypes.pointer(dst))
+def tensor_copy(src_tns, dst_tns):
+    """
+    Copy a source tensor to a destination tensor
+    """
+    lsci.TensorCopy(src_tns, ctypes.pointer(dst_tns))
 
 
-def TensorToList(t):
-    lst = []
-    for k in range(t.contents.order):
-        lst.append(mx.MatrixToList(t.contents.m[k]))
-    return lst
+def tensor_tolist(tns):
+    """
+    Convert a tensor to list
+    """
+    tns_lst = []
+    for k in range(tns.contents.order):
+        tns_lst.append(mx.matrix_to_list(tns.contents.m[k]))
+    return tns_lst
 
 
-class Tensor(object):
+class Tensor():
     """
     Translate a list of list of list into a libscientific tensor
     """
-    def __init__(self, t_):
-        self.t = NewTensor(t_)
+    def __init__(self, tns_):
+        self.tns = new_tensor(tns_)
 
     def __del__(self):
-        DelTensor(self.t)
-        del self.t
-        self.t = None
+        del_tensor(self.tns)
+        del self.tns
+        self.tns = None
 
     def __getitem__(self, keys):
         k, i, j = keys
@@ -187,58 +216,83 @@ class Tensor(object):
     def __setitem__(self, keys, value):
         k, i, j = keys
         self.data_ptr().m[k].contents.data[i][j] = value
-    
+
     def order(self):
+        """
+        Return the order of the tensor aka the number of matrix
+        constituting the tensor
+        """
         return self.data_ptr().order
-    
+
     def nrow(self, k):
+        """
+        Return the number of rows of the matrix k of the tensor
+        """
         return self.data_ptr().m[k].contents.row
 
     def ncol(self, k):
+        """
+        Return the number of column of the matrix k of the tensor
+        """
         return self.data_ptr().m[k].contents.col
 
     def data_ptr(self):
-        return self.t.contents
+        """
+        Return the tensor data pointer
+        """
+        return self.tns.contents
 
     def tolist(self):
-        return TensorToList(self.t)
+        """
+        Return the tensor as list
+        """
+        return tensor_tolist(self.tns)
 
-    def fromlist(self, t_):
-        DelTensor(self.t)
-        del self.t
-        self.t = NewTensor(t_)
+    def fromlist(self, tns_):
+        """
+        Get a tensor fro list
+        """
+        del_tensor(self.tns)
+        del self.tns
+        self.tns = new_tensor(tns_)
 
     def fromnumpy(self, npt):
-        t_ = npt.tolist()
-        DelTensor(self.t)
-        del self.t
-        self.t = NewTensor(t_)
+        """
+        Get a tensor from numpy
+        """
+        tns_ = npt.tolist()
+        del_tensor(self.tns)
+        del self.tns
+        self.tns = new_tensor(tns_)
 
     def debug(self):
-        PrintTensor(self.t)
+        """
+        Debug to video the tensor
+        """
+        print_tensor(self.tns)
 
 
 
 if __name__ in "__main__":
     print("Tensort Test")
     a = [[[1,2,3],[1,2,3]],[[4,5,6],[4,5,6]]]
-    t = NewTensor(a)
-    PrintTensor(t)
-    lst = TensorToList(t)
+    t = new_tensor(a)
+    print_tensor(t)
+    lst = tensor_tolist(t)
     print(lst)
-    AddTensorMatrix(t, 5, 6)
-    PrintTensor(t)
-    b = initTensor()
-    TensorCopy(t, b)
-    PrintTensor(b)
-    DelTensor(t)
-    DelTensor(b)
-    
-    t = initTensor()
-    AddTensorMatrix(t, 3, 2)
-    PrintTensor(t)
-    DelTensor(t)
-    
+    add_tensor_matrix(t, 5, 6)
+    print_tensor(t)
+    b = init_tensor()
+    tensor_copy(t, b)
+    print_tensor(b)
+    del_tensor(t)
+    del_tensor(b)
+
+    t = init_tensor()
+    add_tensor_matrix(t, 3, 2)
+    print_tensor(t)
+    del_tensor(t)
+
     t = Tensor(a)
     print(type(t))
     print(t.order())
@@ -248,7 +302,7 @@ if __name__ in "__main__":
     a[0][0][0] = -9876
     t.fromlist(a)
     t.debug()
-    
+
     import numpy as np
     a = np.array(a)
     a[0][1][1] = 765

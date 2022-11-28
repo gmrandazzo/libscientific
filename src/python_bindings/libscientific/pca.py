@@ -19,19 +19,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import ctypes
 import libscientific.matrix as mx
 import libscientific.vector as vect
-from libscientific.loadlibrary import LoadLibrary
+from libscientific.loadlibrary import load_libscientific_library
 
-lsci = LoadLibrary()
+lsci = load_libscientific_library()
 
 
 class PCAMODEL(ctypes.Structure):
+    """
+    PCA model data structure
+    """
     _fields_ = [
-        ("scores", ctypes.POINTER(mx.matrix)),
-        ("loadings", ctypes.POINTER(mx.matrix)),
-        ("dmodx", ctypes.POINTER(mx.matrix)),
-        ("varexp", ctypes.POINTER(vect.dvector)),
-        ("colaverage", ctypes.POINTER(vect.dvector)),
-        ("colscaling", ctypes.POINTER(vect.dvector))]
+        ("scores", ctypes.POINTER(mx.MATRIX)),
+        ("loadings", ctypes.POINTER(mx.MATRIX)),
+        ("dmodx", ctypes.POINTER(mx.MATRIX)),
+        ("varexp", ctypes.POINTER(vect.DVECTOR)),
+        ("colaverage", ctypes.POINTER(vect.DVECTOR)),
+        ("colscaling", ctypes.POINTER(vect.DVECTOR))]
 
     def __repr__(self):
         return self.__class__.__name__
@@ -45,9 +48,9 @@ lsci.NewPCAModel.argtypes = [ctypes.POINTER(ctypes.POINTER(PCAMODEL))]
 lsci.NewPCAModel.restype = None
 
 
-def NewPCAModel():
+def new_pca_model():
     """
-    NewPCAModel: Allocate in memory an empty libscientific PCA model
+    new_pca_model: Allocate in memory an empty libscientific PCA model
     """
     mpca = ctypes.POINTER(PCAMODEL)()
     lsci.NewPCAModel(ctypes.pointer(mpca))
@@ -58,14 +61,14 @@ lsci.DelPCAModel.argtypes = [ctypes.POINTER(ctypes.POINTER(PCAMODEL))]
 lsci.DelPCAModel.restype = None
 
 
-def DelPCAModel(mpca):
+def del_pca_model(mpca):
     """
-    DelPCAModel: Delete an allocated libscientific PCA model
+    del_pca_model: Delete an allocated libscientific PCA model
     """
     lsci.DelPCAModel(ctypes.pointer(mpca))
 
 
-lsci.PCA.argtypes = [ctypes.POINTER(mx.matrix),
+lsci.PCA.argtypes = [ctypes.POINTER(mx.MATRIX),
                      ctypes.c_size_t,
                      ctypes.c_size_t,
                      ctypes.POINTER(PCAMODEL),
@@ -73,131 +76,166 @@ lsci.PCA.argtypes = [ctypes.POINTER(mx.matrix),
 lsci.PCA.restype = None
 
 
-def PCA_(m, scaling, npc, mpca):
+def pca_algorithm(m_input, scaling, npc, mpca):
     """
     PCA: Calculate the PCA model for a matrix m using the NIPALS algorithm
     """
     ssignal = ctypes.c_int(0)
-    lsci.PCA(m, scaling, npc, mpca, ssignal)
+    lsci.PCA(m_input, scaling, npc, mpca, ssignal)
 
 
-lsci.PCAScorePredictor.argtypes = [ctypes.POINTER(mx.matrix),
+lsci.PCAScorePredictor.argtypes = [ctypes.POINTER(mx.MATRIX),
                                    ctypes.POINTER(PCAMODEL),
                                    ctypes.c_size_t,
-                                   ctypes.POINTER(mx.matrix)]
+                                   ctypes.POINTER(mx.MATRIX)]
 lsci.PCAScorePredictor.restype = None
 
 
-def PCAScorePredictor(m, mpca, npc, pscores):
+def pca_score_predictor(m_input, mpca, npc, pscores):
     """
-    PCAScorePredictor: Predict scores for a matrix m in the computed PCA modes
+    pca_score_predictor: Predict scores for a matrix m in the computed PCA modes
     """
-    lsci.PCAScorePredictor(m,
+    lsci.PCAScorePredictor(m_input,
                            mpca,
                            npc,
                            pscores)
 
 
-lsci.PCAIndVarPredictor.argtypes = [ctypes.POINTER(mx.matrix),
-                                    ctypes.POINTER(mx.matrix),
-                                    ctypes.POINTER(vect.dvector),
-                                    ctypes.POINTER(vect.dvector),
+lsci.PCAIndVarPredictor.argtypes = [ctypes.POINTER(mx.MATRIX),
+                                    ctypes.POINTER(mx.MATRIX),
+                                    ctypes.POINTER(vect.DVECTOR),
+                                    ctypes.POINTER(vect.DVECTOR),
                                     ctypes.c_size_t,
-                                    ctypes.POINTER(mx.matrix)]
+                                    ctypes.POINTER(mx.MATRIX)]
 lsci.PCAIndVarPredictor.restype = None
 
 
-def PCAIndVarPredictor(t, p, colaverage, colscaling, npc, iv):
+def pca_ind_var_predictor(scores_input,
+                          loadings_input,
+                          colaverage,
+                          colscaling,
+                          npc,
+                          ind_vars_out):
     """
-    PCAIndVarPredictor: Reconstruct the original matrix from PCA model,
-                        scores and loadings
+    pca_ind_var_predictor: Reconstruct the original matrix
+                           from PCA model using scores and loadings
     """
-    lsci.PCAIndVarPredictor(t, p, colaverage, colscaling, npc, iv)
+    lsci.PCAIndVarPredictor(scores_input,
+                            loadings_input,
+                            colaverage,
+                            colscaling,
+                            npc,
+                            ind_vars_out)
 
 
 lsci.PrintPCA.argtypes = [ctypes.POINTER(PCAMODEL)]
 lsci.PrintPCA.restype = None
 
 
-def PrintPCA(mpca):
+def print_pca(mpca):
     """
     PrintPCA: Print to video the PCA Model
     """
     lsci.PrintPCA(mpca)
 
 
-class PCA(object):
+class PCA():
+    """
+    PCA model class
+    """
     def __init__(self, scaling, npc):
-        self.mpca = NewPCAModel()
+        self.mpca = new_pca_model()
         self.scaling = scaling
         self.npc = npc
 
     def __del__(self):
         if self.mpca is not None:
-            DelPCAModel(self.mpca)
+            del_pca_model(self.mpca)
             del self.mpca
         self.mpca = None
 
-    def fit(self, m_):
-        if "Matrix" in str(type(m_)):
-            PCA_(m_, self.scaling, self.npc, self.mpca)
+    def fit(self, m_input):
+        """
+        fit a PCA model using an input matrix
+        """
+        if "Matrix" in str(type(m_input)):
+            pca_algorithm(m_input, self.scaling, self.npc, self.mpca)
         else:
-            m = mx.NewMatrix(m_)
-            PCA_(m, self.scaling, self.npc, self.mpca)
-            mx.DelMatrix(m)
-            del m
+            m_input_ = mx.new_matrix(m_input)
+            pca_algorithm(m_input_, self.scaling, self.npc, self.mpca)
+            mx.del_matrix(m_input_)
+            del m_input_
 
     def get_scores(self):
-        return mx.MatrixToList(self.mpca[0].scores)
+        """
+        get the PCA scores
+        """
+        return mx.matrix_to_list(self.mpca[0].scores)
 
     def get_loadings(self):
-        return mx.MatrixToList(self.mpca[0].loadings)
+        """
+        get the PCA loadings
+        """
+        return mx.matrix_to_list(self.mpca[0].loadings)
 
     def get_exp_variance(self):
-        return vect.DVectorToList(self.mpca[0].varexp)
+        """
+        get the PCA explained variance
+        """
+        return vect.dvector_tolist(self.mpca[0].varexp)
 
-    def predict(self, m_):
-        m = mx.NewMatrix(m_)
-        pscores_ = mx.initMatrix()
-        PCAScorePredictor(m, self.mpca, self.npc, pscores_)
-        pscores = mx.MatrixToList(pscores_)
-        mx.DelMatrix(m)
-        del m
-        mx.DelMatrix(pscores_)
+    def predict(self, m_input):
+        """
+        Project an input matrix into the PCA model
+        """
+        m_input_ = mx.new_matrix(m_input)
+        pscores_ = mx.init_matrix()
+        pca_score_predictor(m_input_, self.mpca, self.npc, pscores_)
+        pscores = mx.matrix_to_list(pscores_)
+        mx.del_matrix(m_input_)
+        del m_input_
+        mx.del_matrix(pscores_)
         del pscores_
         return pscores
 
     def reconstruct_original_matrix(self,
-                                    npc_=None,
-                                    scores_=None):
-        npc = None
-        if npc_ is None:
-            npc = self.npc
+                                    npc_input=None,
+                                    scores_input=None):
+        """
+        Reconstruct the original input matrix giving a
+        number of principal components to be used from scores and loadings
+        """
+        npc_ = None
+        if npc_input is None:
+            npc_ = self.npc
         else:
-            npc = npc_
+            npc_ = npc_input
 
-        scores = None
-        if scores_ is None:
-            scores = self.mpca[0].scores
+        scores_ = None
+        if scores_input is None:
+            scores_ = self.mpca[0].scores
         else:
-            scores = scores_
+            scores_ = scores_input
 
-        ivals = mx.initMatrix()
-        PCAIndVarPredictor(scores,
-                           self.mpca[0].loadings,
-                           self.mpca[0].colaverage,
-                           self.mpca[0].colscaling,
-                           npc,
-                           ivals)
-        omx = mx.MatrixToList(ivals)
-        mx.DelMatrix(ivals)
-        del ivals
+        ind_vars = mx.init_matrix()
+        pca_ind_var_predictor(scores_,
+                              self.mpca[0].loadings,
+                              self.mpca[0].colaverage,
+                              self.mpca[0].colscaling,
+                              npc_,
+                              ind_vars)
+        omx = mx.matrix_to_list(ind_vars)
+        mx.del_matrix(ind_vars)
+        del ind_vars
         return omx
 
 
 if __name__ == '__main__':
-    def mx_to_video(m, decimals=5):
-        for row in m:
+    def mx_to_video(m_input, decimals=5):
+        """
+        print a matrix to video
+        """
+        for row in m_input:
             print("\t".join([str(round(x, decimals)) for x in row]))
     import random
     random.seed(123456)
@@ -217,10 +255,7 @@ if __name__ == '__main__':
     print("Reconstruct the original PCA matrix using the PCA Model")
     ra = model.reconstruct_original_matrix()
     mx_to_video(ra)
-    ps = model.predict(a)
-    for i in range(len(ps)):
-        row1 = ps[i]
+    pred_scores = model.predict(a)
+    for i, row1 in enumerate(pred_scores):
         row2 = scores[i]
-        print(row1)
-        print(row2)
-
+        print(row1, row2)

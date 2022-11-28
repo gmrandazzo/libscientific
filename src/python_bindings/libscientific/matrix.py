@@ -17,15 +17,15 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import ctypes
-from libscientific.loadlibrary import LoadLibrary
+from libscientific.loadlibrary import load_libscientific_library
 from libscientific import misc
 from libscientific import vector
 
-lsci = LoadLibrary()
+lsci = load_libscientific_library()
 
-class matrix(ctypes.Structure):
+class MATRIX(ctypes.Structure):
     """
-    matrix class
+    matrix data structure
     """
     _fields_ = [
         ("data",    ctypes.POINTER(ctypes.POINTER(ctypes.c_double))),
@@ -39,47 +39,48 @@ class matrix(ctypes.Structure):
         return self.__class__.__name__
 
 
-lsci.initMatrix.argtypes = [ctypes.POINTER(ctypes.POINTER(matrix))]
+lsci.initMatrix.argtypes = [ctypes.POINTER(ctypes.POINTER(MATRIX))]
 lsci.initMatrix.restype = None
 
 
-def initMatrix():
+def init_matrix():
     """
-    initMatrix: Allocate in memory an empty libscientific matrix
+    init_matrix: Allocate in memory an empty libscientific matrix
     """
-    m = ctypes.POINTER(matrix)()
+    mtx = ctypes.POINTER(MATRIX)()
     # m = matrix()
-    lsci.initMatrix(ctypes.pointer(m))
-    return m
+    lsci.initMatrix(ctypes.pointer(mtx))
+    return mtx
 
 
-lsci.NewMatrix.argtypes = [ctypes.POINTER(ctypes.POINTER(matrix)),
+lsci.NewMatrix.argtypes = [ctypes.POINTER(ctypes.POINTER(MATRIX)),
                            ctypes.c_size_t,
                            ctypes.c_size_t]
 lsci.NewMatrix.restype = None
 
 
-def NewMatrix(a_):
+def new_matrix(mtx_input_):
     """
-    NewMatrix: Allocate in memory a libscientific matrix from a list of lists
+    new_matrix: Allocate in memory a libscientific matrix from a list of lists
     """
-    a = None
-    if "numpy" in str(type(a_)):
-        a = a_.tolist()
+    mtx_input = None
+    if "numpy" in str(type(mtx_input_)):
+        mtx_input = mtx_input_.tolist()
     else:
-        a = a_
+        mtx_input = mtx_input_
     nrows = None
     ncols = None
     try:
-        nrows = len(a)
+        nrows = len(mtx_input)
         try:
-            ncols = len(a[0])
+            ncols = len(mtx_input[0])
         except IndexError:
             ncols = 0
     except IndexError:
         nrows = 0
-    m = ctypes.POINTER(matrix)()
-    lsci.NewMatrix(ctypes.pointer(m),
+
+    mtx = ctypes.POINTER(MATRIX)()
+    lsci.NewMatrix(ctypes.pointer(mtx),
                    nrows,
                    ncols)
 
@@ -87,233 +88,242 @@ def NewMatrix(a_):
         for j in range(ncols):
             val = None
             try:
-                val = float(a[i][j])
+                val = float(mtx_input[i][j])
             except ValueError:
                 val = None
 
             if val is None:
-                setMissingMatrixValue(m, i, j)
+                set_missing_matrix_value(mtx, i, j)
             else:
-                lsci.setMatrixValue(m, i, j, val)
-    return m
+                lsci.setMatrixValue(mtx, i, j, val)
+    return mtx
 
 
-lsci.ResizeMatrix.argtypes = [ctypes.POINTER(matrix),
+lsci.ResizeMatrix.argtypes = [ctypes.POINTER(MATRIX),
                               ctypes.c_size_t,
                               ctypes.c_size_t]
 lsci.ResizeMatrix.restype = None
 
 
-def ResizeMatrix(m, nrows, ncols):
+def resize_matrix(mtx, nrows, ncols):
     """
-    ResizeMatrix: Resize an already allocated or reallocate a libscientific
+    resize_matrix: Resize an already allocated or reallocate a libscientific
                   matrix
     """
-    lsci.ResizeMatrix(m, nrows, ncols)
+    lsci.ResizeMatrix(mtx, nrows, ncols)
 
 
-lsci.DelMatrix.argtypes = [ctypes.POINTER(ctypes.POINTER(matrix))]
+lsci.DelMatrix.argtypes = [ctypes.POINTER(ctypes.POINTER(MATRIX))]
 lsci.DelMatrix.restype = None
 
 
-def DelMatrix(m):
+def del_matrix(mtx):
     """
-    DelMatrix: Delete an allocated libscientific matrix
+    del_matrix: Delete an allocated libscientific matrix
     """
-    lsci.DelMatrix(ctypes.pointer(m))
+    lsci.DelMatrix(ctypes.pointer(mtx))
 
 
-lsci.MatrixCheck.argtypes = [ctypes.POINTER(matrix)]
+lsci.MatrixCheck.argtypes = [ctypes.POINTER(MATRIX)]
 lsci.MatrixCheck.restype = None
 
 
-def MatrixCheck(m):
+def matrix_check(mtx):
     """
-    MatrixCheck: Find infinite and nan numbers and sobstitute
+    matrix_check: Find infinite and nan numbers and sobstitute
                  with MISSING value.
     """
-    lsci.MatrixCheck(m)
+    lsci.MatrixCheck(mtx)
 
 
-lsci.PrintMatrix.argtypes = [ctypes.POINTER(matrix)]
+lsci.PrintMatrix.argtypes = [ctypes.POINTER(MATRIX)]
 lsci.PrintMatrix.restype = None
 
 
-def PrintMatrix(m):
+def print_matrix(mtx):
     """
-    PrintMatrix: Print to video a libscientific matrix
+    print_matrix: Print to video a libscientific matrix
     """
-    lsci.PrintMatrix(m)
+    lsci.PrintMatrix(mtx)
 
 
-lsci.ValInMatrix.argtypes = [ctypes.POINTER(matrix), ctypes.c_double]
+lsci.ValInMatrix.argtypes = [ctypes.POINTER(MATRIX), ctypes.c_double]
 lsci.ValInMatrix.restype = ctypes.c_int
 
 
-def ValInMatrix(m, val):
+def val_in_matrix(mtx, val):
     """
-    ValInMatrix: Check if a libscientific matrix contains an exact value "val"
-                 and return 1 or 0 respectivelly for yes or no.
+    val_in_matrix: Check if a libscientific matrix contains an exact value "val"
+                   and return 1 or 0 respectivelly for yes or no.
     """
-    return lsci.ValInMatrix(m, val)
+    return lsci.ValInMatrix(mtx, val)
 
 
-lsci.MatrixSet.argtypes = [ctypes.POINTER(matrix), ctypes.c_double]
+lsci.MatrixSet.argtypes = [ctypes.POINTER(MATRIX), ctypes.c_double]
 lsci.MatrixSet.restype = None
 
 
-def MatrixSet(m, val):
+def matrix_set(mtx, val):
     """
-    MatrixSet: Set all values of a libscientific matrix to "val"
+    matrix_set: Set all values of a libscientific matrix to "val"
     """
-    lsci.MatrixSet(m, val)
+    lsci.MatrixSet(mtx, val)
 
 
-lsci.MatrixCopy.argtypes = [ctypes.POINTER(matrix),
-                            ctypes.POINTER(ctypes.POINTER(matrix))]
+lsci.MatrixCopy.argtypes = [ctypes.POINTER(MATRIX),
+                            ctypes.POINTER(ctypes.POINTER(MATRIX))]
 lsci.MatrixCopy.restype = None
 
 
-def MatrixCopy(msrc, mdst):
+def matrix_copy(msrc, mdst):
     """
-    MatrixCopy: Copy a libscientifi matrix to another allocated one
+    matrix_copy: Copy a libscientifi matrix to another allocated one
     """
     lsci.MatrixCopy(msrc, ctypes.pointer(mdst))
 
 
-lsci.setMatrixValue.argtypes = [ctypes.POINTER(matrix),
+lsci.setMatrixValue.argtypes = [ctypes.POINTER(MATRIX),
                                 ctypes.c_size_t,
                                 ctypes.c_size_t,
                                 ctypes.c_double]
 lsci.setMatrixValue.restype = None
 
 
-def setMatrixValue(m, irow, jcol, value):
+def set_matrix_value(mtx, irow, jcol, value):
     """
-    setMatrixValue: Set/modify a value in the irow and jcol of a libscientific
+    set_matrix_value: Set/modify a value in the irow and jcol of a libscientific
                     matrix
     """
-    lsci.setMatrixValue(m, irow, jcol, value)
+    lsci.setMatrixValue(mtx, irow, jcol, value)
 
 
-lsci.getMatrixValue.argtypes = [ctypes.POINTER(matrix),
+lsci.getMatrixValue.argtypes = [ctypes.POINTER(MATRIX),
                                 ctypes.c_size_t,
                                 ctypes.c_size_t]
 lsci.getMatrixValue.restype = ctypes.c_double
 
 
-def getMatrixValue(m, irow, jcol):
+def get_matrix_value(mtx, irow, jcol):
     """
-    getMatrixValue: Get a value in the irow and jcol of a libscientific
+    get_matrix_value: Get a value in the irow and jcol of a libscientific
                     matrix
     """
-    return lsci.getMatrixValue(m, irow, jcol)
+    return lsci.getMatrixValue(mtx, irow, jcol)
 
 
-def getMatrixRow(m, irow):
+def get_matrix_row(mtx, irow):
     """
-    getMatrixRow: Python version of getting a row from a libscientific matrix
+    get_matrix_row: Python version of getting a row from a libscientific matrix
     """
-    row = []
-    for j in range(m[0].col):
-        row.append(getMatrixValue(m, irow, j))
-    return row
+    row_lst = []
+    for j in range(mtx[0].col):
+        row_lst.append(get_matrix_value(mtx, irow, j))
+    return row_lst
 
 
-def getMatrixColumn(m, jcol):
+def get_matrix_column(mtx, jcol):
     """
     getMatrixColumn: Python version of getting a column from a libscientific
                      matrix
     """
-    col = []
-    for i in range(m[0].row):
-        col.append(getMatrixValue(m, i, jcol))
-    return col
+    col_lst = []
+    for i in range(mtx[0].row):
+        col_lst.append(get_matrix_value(mtx, i, jcol))
+    return col_lst
 
 
-def MatrixToList(m):
+def matrix_to_list(mtx):
     """
-    MatrixToList: Convert a libscientific matrix to list of list
+    matrix_to_list: Convert a libscientific matrix to list of list
     """
-    mlst = []
+    mtx_list = []
     try:
-        for i in range(m[0].row):
-            row = []
-            for j in range(m[0].col):
-                row.append(m[0].data[i][j])
-            mlst.append(row)
+        for i in range(mtx[0].row):
+            row_lst = []
+            for j in range(mtx[0].col):
+                row_lst.append(mtx[0].data[i][j])
+            mtx_list.append(row_lst)
     except TypeError:
-        for i in range(m.row):
-            row = []
-            for j in range(m.col):
-                row.append(m.data[i][j])
-            mlst.append(row)
-    return mlst
+        for i in range(mtx.row):
+            row_lst = []
+            for j in range(mtx.col):
+                row_lst.append(mtx.data[i][j])
+            mtx_list.append(row_lst)
+    return mtx_list
 
 
-def MatrixFromNumpy(npm):
-    return NewMatrix(npm.tolist())
+def matrix_from_numpy(npm):
+    """
+    Convert a numpy matrix into a libscientific matrix
+    """
+    return new_matrix(npm.tolist())
 
 
-def setMissingMatrixValue(m, row, col):
-    m[0].data[row][col] = misc.missing_value()
+def set_missing_matrix_value(mtx, row_id, col_id):
+    """
+    Set a value of a matrix into a missing value
+    """
+    mtx[0].data[row_id][col_id] = misc.missing_value()
 
 
-lsci.MatrixAppendRow.argtypes = [ctypes.POINTER(matrix),
-                                 ctypes.POINTER(vector.dvector)]
+lsci.MatrixAppendRow.argtypes = [ctypes.POINTER(MATRIX),
+                                 ctypes.POINTER(vector.DVECTOR)]
 lsci.MatrixAppendRow.restype = None
 
-def MatrixAppendRow(mx, row):
-    return lsci.MatrixAppendRow(mx, row.d)
+def matrix_append_row(mtx, row_vect):
+    """
+    Append to a libscientific matrix a row list
+    """
+    return lsci.MatrixAppendRow(mtx, row_vect.dvect)
 
 
-lsci.MatrixAppendCol.argtypes = [ctypes.POINTER(matrix),
-                                 ctypes.POINTER(vector.dvector)]
+lsci.MatrixAppendCol.argtypes = [ctypes.POINTER(MATRIX),
+                                 ctypes.POINTER(vector.DVECTOR)]
 lsci.MatrixAppendCol.restype = None
 
-def MatrixAppendCol(mx, col):
+def matrix_append_col(mtx, col_vect):
     """
-    void MatrixAppendCol(matrix **mx, dvector *col);
+    Append to a libscientific matrix a column list
     """
-    return lsci.MatrixAppendCol(mx, col.d)
+    return lsci.MatrixAppendCol(mtx, col_vect.dvect)
 
 
-lsci.MatrixDVectorDotProduct.argtypes = [ctypes.POINTER(matrix),
-                                         ctypes.POINTER(vector.dvector),
-                                         ctypes.POINTER(vector.dvector)]
+lsci.MatrixDVectorDotProduct.argtypes = [ctypes.POINTER(MATRIX),
+                                         ctypes.POINTER(vector.DVECTOR),
+                                         ctypes.POINTER(vector.DVECTOR)]
 lsci.MatrixDVectorDotProduct.restype = None
 
-def MatrixDVectorDotProduct(m, v, r):
+def matrix_dvector_dot_product(mtx, dvect, res):
     """
     /* Description:
     * matrix - row double vector product: the result is a row double vector
     * i.e.: X(10x5) * d(5x1) = r(10x1)
     */
-    void MatrixDVectorDotProduct(matrix *m, dvector *v, dvector *r);
+    void matrix_dvector_dot_product(matrix *mtx, dvector *v, dvector *r);
     """
-    return lsci.MatrixDVectorDotProduct(m, v, r)
+    return lsci.MatrixDVectorDotProduct(mtx, dvect, res)
 
 
-lsci.MT_MatrixDVectorDotProduct.argtypes = [ctypes.POINTER(matrix),
-                                            ctypes.POINTER(vector.dvector),
-                                            ctypes.POINTER(vector.dvector)]
+lsci.MT_MatrixDVectorDotProduct.argtypes = [ctypes.POINTER(MATRIX),
+                                            ctypes.POINTER(vector.DVECTOR),
+                                            ctypes.POINTER(vector.DVECTOR)]
 lsci.MT_MatrixDVectorDotProduct.restype = None
 
 
-def MT_MatrixDVectorDotProduct(m, v, r):
+def mt_matrix_dvector_dot_product(mtx, dvect, res):
     """
-    /* Multithread version of MatrixDVectorDotProduct */
+    /* Multithread version of matrix_dvector_dot_product */
     void MT_MatrixDVectorDotProduct(matrix *mx, dvector *v, dvector *p);
     """
-    return lsci.MT_MatrixDVectorDotProduct(m, v, r)
+    return lsci.MT_MatrixDVectorDotProduct(mtx, dvect, res)
 
 
-lsci.DVectorMatrixDotProduct.argtypes = [ctypes.POINTER(matrix),
-                                         ctypes.POINTER(vector.dvector),
-                                         ctypes.POINTER(vector.dvector)]
+lsci.DVectorMatrixDotProduct.argtypes = [ctypes.POINTER(MATRIX),
+                                         ctypes.POINTER(vector.DVECTOR),
+                                         ctypes.POINTER(vector.DVECTOR)]
 lsci.DVectorMatrixDotProduct.restype = None
 
-def DVectorMatrixDotProduct(m, v, r):
+def dvector_matrix_dot_product(mtx, dvect, res):
     """
     /* Description:
     * column double vector - matrix product: the result is a column double vector
@@ -321,29 +331,29 @@ def DVectorMatrixDotProduct(m, v, r):
     */
     void DVectorMatrixDotProduct(matrix *mx, dvector *v, dvector *p);
     """
-    return lsci.DVectorMatrixDotProduct(m, v, r)
+    return lsci.DVectorMatrixDotProduct(mtx, dvect, res)
 
 
 
-lsci.MT_DVectorMatrixDotProduct.argtypes = [ctypes.POINTER(matrix),
-                                            ctypes.POINTER(vector.dvector),
-                                            ctypes.POINTER(vector.dvector)]
+lsci.MT_DVectorMatrixDotProduct.argtypes = [ctypes.POINTER(MATRIX),
+                                            ctypes.POINTER(vector.DVECTOR),
+                                            ctypes.POINTER(vector.DVECTOR)]
 lsci.MT_DVectorMatrixDotProduct.restype = None
 
-def MT_DVectorMatrixDotProduct(m, v, r):
+def mt_dvector_matrix_dot_product(mtx, dvect, res):
     """
     /* Multithread version of DVectorMatrixDotProduct */
     void MT_DVectorMatrixDotProduct(matrix *mx, dvector *v, dvector *p);
     """
-    return lsci.MT_DVectorMatrixDotProduct(m, v, r)
+    return lsci.MT_DVectorMatrixDotProduct(mtx, dvect, res)
 
 
-lsci.DVectorTrasposedDVectorDotProduct.argtypes = [ctypes.POINTER(vector.dvector),
-                                                   ctypes.POINTER(vector.dvector),
-                                                   ctypes.POINTER(matrix)]
+lsci.DVectorTrasposedDVectorDotProduct.argtypes = [ctypes.POINTER(vector.DVECTOR),
+                                                   ctypes.POINTER(vector.DVECTOR),
+                                                   ctypes.POINTER(MATRIX)]
 lsci.DVectorTrasposedDVectorDotProduct.restype = None
 
-def DVectorTrasposedDVectorDotProduct(m, v, r):
+def dvector_transposed_dvector_dot_product(mtx, dvect, res):
     """
     /* Description:
     * transposed double vector - double vecrtor product: the result is a matrix
@@ -352,44 +362,44 @@ def DVectorTrasposedDVectorDotProduct(m, v, r):
     */
     void DVectorTrasposedDVectorDotProduct(dvector *v1, dvector *v2, matrix *m);
     """
-    return lsci.DVectorTrasposedDVectorDotProduct(m, v, r)
+    return lsci.DVectorTrasposedDVectorDotProduct(mtx, dvect, res)
 
 
-lsci.DVectorTransposedMatrixDivision.argtypes = [ctypes.POINTER(vector.dvector),
-                                                 ctypes.POINTER(matrix),
-                                                 ctypes.POINTER(vector.dvector)]
+lsci.DVectorTransposedMatrixDivision.argtypes = [ctypes.POINTER(vector.DVECTOR),
+                                                 ctypes.POINTER(MATRIX),
+                                                 ctypes.POINTER(vector.DVECTOR)]
 lsci.DVectorTransposedMatrixDivision.restype = None
 
-def DVectorTransposedMatrixDivision(v, m, r):
+def dvector_transposed_matrix_division(dvect, mtx, res):
     """
     /* r = v/mx  = (inv(mx^T)*v^T)^T*/
     void DVectorTransposedMatrixDivision(dvector *v, matrix *mx, dvector *r);
     """
-    return lsci.DVectorTransposedMatrixDivision(v, m, r)
+    return lsci.DVectorTransposedMatrixDivision(dvect, mtx, res)
 
 
-lsci.MatrixDotProduct.argtypes = [ctypes.POINTER(matrix),
-                                  ctypes.POINTER(matrix),
-                                  ctypes.POINTER(matrix)]
+lsci.MatrixDotProduct.argtypes = [ctypes.POINTER(MATRIX),
+                                  ctypes.POINTER(MATRIX),
+                                  ctypes.POINTER(MATRIX)]
 lsci.MatrixDotProduct.restype = None
 
-def MatrixDotProduct(m_t, m, r):
+def matrix_dot_product(mtx_t, mtx, res):
     """
     /*
     * Description:
     * Calculate the matrix matrix product
     */
-    void MatrixDotProduct(matrix *m_t, matrix *m, matrix *r);
+    void MatrixDotProduct(matrix *m_t, matrix *mtx, matrix *r);
     """
-    return lsci.MatrixDotProduct(m_t, m, r)
+    return lsci.MatrixDotProduct(mtx_t, mtx, res)
 
 
-lsci.RowColOuterProduct.argtypes = [ctypes.POINTER(vector.dvector),
-                                    ctypes.POINTER(vector.dvector),
-                                    ctypes.POINTER(matrix)]
+lsci.RowColOuterProduct.argtypes = [ctypes.POINTER(vector.DVECTOR),
+                                    ctypes.POINTER(vector.DVECTOR),
+                                    ctypes.POINTER(MATRIX)]
 lsci.RowColOuterProduct.restype = None
 
-def RowColOuterProduct(a, b, r):
+def row_col_outer_product(dvect_a, dvect_b, res):
     """
     /*
     * Description:
@@ -397,68 +407,89 @@ def RowColOuterProduct(a, b, r):
     */
     void RowColOuterProduct(dvector *a, dvector *b, matrix *m);
     """
-    return lsci.RowColOuterProduct(a, b, r)
+    return lsci.RowColOuterProduct(dvect_a, dvect_b, res)
 
 
-lsci.MatrixTranspose.argtypes = [ctypes.POINTER(matrix),
-                                 ctypes.POINTER(matrix)]
+lsci.MatrixTranspose.argtypes = [ctypes.POINTER(MATRIX),
+                                 ctypes.POINTER(MATRIX)]
 lsci.MatrixTranspose.restype = None
 
-def MatrixTranspose(m, r):
+def matrix_transpose(mtx, mtx_t):
     """
     /*
     * Description:
     * Generate a transpose matrix of m
     */
-    void MatrixTranspose(matrix *m, matrix *r);
+    void MatrixTranspose(matrix *mtx, matrix *r);
     """
-    return lsci.MatrixTranspose(m, r)
+    return lsci.MatrixTranspose(mtx, mtx_t)
 
 
 
-lsci.MatrixInversion.argtypes = [ctypes.POINTER(matrix),
-                                 ctypes.POINTER(matrix)]
+lsci.MatrixInversion.argtypes = [ctypes.POINTER(MATRIX),
+                                 ctypes.POINTER(MATRIX)]
 lsci.MatrixInversion.restype = None
 
-def MatrixInversion(m, r):
+def matrix_inversion(mtx, mtx_inv):
     """
     /*
     * Description:
     * Matrix inversion using the Gauss-Jordan algorithm
     */
-    void MatrixInversion(matrix *m, matrix **m_inv);
+    void MatrixInversion(matrix *mtx, matrix **m_inv);
     """
-    return lsci.MatrixInversion(m, r)
+    return lsci.MatrixInversion(mtx, mtx_inv)
 
 
-lsci.EVectEval.argtypes = [ctypes.POINTER(matrix),
-                           ctypes.POINTER(vector.dvector),
-                           ctypes.POINTER(matrix)]
+lsci.EVectEval.argtypes = [ctypes.POINTER(MATRIX),
+                           ctypes.POINTER(vector.DVECTOR),
+                           ctypes.POINTER(MATRIX)]
 lsci.EVectEval.restype = None
 
-def EVectEval(m, e_vect, e_val):
+def evect_eval(mtx, mtx_e_vect, mtx_e_val):
     """
-    /*
-    * Description:
-    * Eigenvectors and Eigenvalues with the QR Method
-    */
-    void EVectEval(matrix *mx, dvector **eval, matrix **evect);
+    Eigenvectors and Eigenvalues using a lapack method
     """
-    return lsci.EVectEval(m, e_vect, e_val)
+    return lsci.EVectEval(mtx, mtx_e_vect, mtx_e_val)
 
 
+lsci.SVD.argtypes = [ctypes.POINTER(MATRIX),
+                     ctypes.POINTER(MATRIX),
+                     ctypes.POINTER(MATRIX),
+                     ctypes.POINTER(MATRIX)]
+lsci.SVD.restype = None
 
-class Matrix(object):
+def svd(mtx, u_mtx, s_mtx, vt_mtx):
+    """
+    Calculate the SVD of a matrix mtx using the eigenvector/values lapack method
+    """
+    lsci.SVD(mtx, u_mtx, s_mtx, vt_mtx)
+
+
+lsci.SVDlapack.argtypes = [ctypes.POINTER(MATRIX),
+                           ctypes.POINTER(MATRIX),
+                           ctypes.POINTER(MATRIX),
+                           ctypes.POINTER(MATRIX)]
+lsci.SVDlapack.restype = None
+
+def svd_lapack(mtx, u_mtx, s_mtx, vt_mtx):
+    """
+    Calculate the SVD of a matrix mtx using the SVD lapack method
+    """
+    lsci.SVDlapack(mtx, u_mtx, s_mtx, vt_mtx)
+
+
+class Matrix():
     """
     Translate a list of list into a libscientific matrix
     """
     def __init__(self, mx_):
-        self.mx = NewMatrix(mx_)
+        self.mtx = new_matrix(mx_)
 
     def __del__(self):
-        DelMatrix(self.mx)
-        del self.mx
-        self.mx = None
+        del_matrix(self.mtx)
+        del self.mtx
+        self.mtx = None
 
     def __getitem__(self, keys):
         i, j = keys
@@ -466,61 +497,109 @@ class Matrix(object):
 
     def __setitem__(self, keys, value):
         i, j = keys
-        setMatrixValue(self.mx, i, j, value)
+        set_matrix_value(self.mtx, i, j, value)
 
     def nrow(self):
-        return self.mx[0].row
+        """
+        Return the number of rows of the matrix
+        """
+        return self.mtx[0].row
 
     def ncol(self):
-        return self.mx[0].col
+        """
+        Return the number of columns of the matrix
+        """
+        return self.mtx[0].col
 
     def data_ptr(self):
-        return self.mx[0].data
+        """
+        Return the matrix data pointer
+        """
+        return self.mtx[0].data
 
     def tolist(self):
-        return MatrixToList(self.mx)
+        """
+        Return the matrix into a list form
+        """
+        return matrix_to_list(self.mtx)
 
-    def fromlist(self, mx_):
-        DelMatrix(self.mx)
-        del self.mx
-        self.mx = NewMatrix(mx_)
+    def fromlist(self, mtx_):
+        """
+        Set the matrix from a list
+        """
+        del_matrix(self.mtx)
+        del self.mtx
+        self.mtx = new_matrix(mtx_)
 
     def fromnumpy(self, npmx):
-        DelMatrix(self.mx)
-        del self.mx
-        self.mx = MatrixFromNumpy(npmx)
+        """
+        Set the matrix from a numpy array
+        """
+        del_matrix(self.mtx)
+        del self.mtx
+        self.mtx = matrix_from_numpy(npmx)
 
-    def appendrow(self, row):
-        row_ = vector.DVector(row)
-        print(type(row_))
-        MatrixAppendRow(self.mx, row_)
-        del row_
+    def appendrow(self, row_lst_):
+        """
+        Append a row to the matrix
+        """
+        row_lst = vector.DVector(row_lst_)
+        matrix_append_row(self.mtx, row_lst)
+        del row_lst
 
-    def appendcol(self, col):
-        col_ = vector.DVector(col)
-        MatrixAppendCol(self.mx, col_)
-        del col_
+    def appendcol(self, col_lst_):
+        """
+        Append a columnt vector to the matrix
+        """
+        col_lst = vector.DVector(col_lst_)
+        matrix_append_col(self.mtx, col_lst)
+        del col_lst
 
     def transpose(self,):
-        t = initMatrix()
-        ResizeMatrix(t, self.mx[0].col, self.mx[0].row)
-        MatrixTranspose(self.mx, t)
-        MatrixCopy(t, self.mx)
-        del t
+        """
+        Transpose the matrix
+        """
+        mtx_t = init_matrix()
+        resize_matrix(mtx_t, self.mtx[0].col, self.mtx[0].row)
+        matrix_transpose(self.mtx, mtx_t)
+        matrix_copy(mtx_t, self.mtx)
+        del_matrix(mtx_t)
+        del mtx_t
 
-    def getevectevals(self):
-        e_vect_ = vector.initDVector()
-        e_vals_ = initMatrix()
-        EVectEval(self.mx, e_vect_, e_vals_)
-        e_vect = vector.DVectorToList(e_vect_)
-        e_vals = MatrixToList(e_vals_)
-        DelMatrix(e_vals_)
-        vector.DelDVector(e_vect_)
-        return e_vect, e_vals
+    def get_evect_evals(self):
+        """
+        Return the eigenvectors and eigenvalues of the matrix
+        """
+        mtx_e_vect_ = vector.init_dvector()
+        mtx_e_vals_ = init_matrix()
+        evect_eval(self.mtx,  mtx_e_vect_, mtx_e_vals_)
+        mtx_e_vect = vector.dvector_tolist( mtx_e_vect_)
+        mtx_e_vals = matrix_to_list( mtx_e_vals_)
+        del_matrix( mtx_e_vals_)
+        vector.del_dvector( mtx_e_vect_)
+        return  mtx_e_vect,  mtx_e_vals
 
+    def svd(self):
+        """
+        Return the SVD U,S and VT of the matrix
+        """
+        mtx_u = init_matrix()
+        mtx_s = init_matrix()
+        mtx_vt = init_matrix()
+        svd_lapack(self.mtx, mtx_u, mtx_s, mtx_vt)
+        mtx_u_lst = matrix_to_list(mtx_u)
+        mtx_s_lst = matrix_to_list(mtx_s)
+        mtx_vt_lst = matrix_to_list(mtx_vt)
+        del_matrix(mtx_u)
+        del_matrix(mtx_s)
+        del_matrix(mtx_vt)
+        return mtx_u_lst, mtx_s_lst, mtx_vt_lst
 
     def debug(self):
-        PrintMatrix(self.mx)
+        """
+        Debug the matrix content
+        """
+        print_matrix(self.mtx)
 
 
 if __name__ in "__main__":
@@ -558,38 +637,38 @@ if __name__ in "__main__":
     m.appendcol(col)
     m.debug()
 
-    print("Test MatrixDVectorDotProduct")
+    print("Test matrix_dvector_dot_product")
     d = vector.DVector([1, 2, 3])
     r = vector.DVector([0 for i in range(11)])
-    MatrixDVectorDotProduct(m.mx, d.d, r.d)
+    matrix_dvector_dot_product(m.mtx, d.dvect, r.dvect)
     r.debug()
     del r
     r = vector.DVector([0 for i in range(11)])
     print("Test MT_MatrixDVectorDotProduct")
-    MT_MatrixDVectorDotProduct(m.mx, d.d, r.d)
+    mt_matrix_dvector_dot_product(m.mtx, d.dvect, r.dvect)
     r.debug()
     del d
     del r
 
     print("Test DVectorMatrixDotProduct")
-    d = vector.DVector([i for i in range(1, 12)])
+    d = vector.DVector(list(range(1, 12)))
     r = vector.DVector([0 for i in range(3)])
-    DVectorMatrixDotProduct(m.mx, d.d, r.d)
+    dvector_matrix_dot_product(m.mtx, d.dvect, r.dvect)
     r.debug()
     del r
     r = vector.DVector([0 for i in range(3)])
     print("Test MT_DVectorMatrixDotProduct")
-    MT_DVectorMatrixDotProduct(m.mx, d.d, r.d)
+    mt_dvector_matrix_dot_product(m.mtx, d.dvect, r.dvect)
     r.debug()
     del d
     del r
     del m
 
     print("Test DVectorTrasposedDVectorDotProduct")
-    d1 = vector.DVector([i for i in range(10)])
-    d2 = vector.DVector([i for i in range(10)])
+    d1 = vector.DVector(list(range(10)))
+    d2 = vector.DVector(list(range(10)))
     m = Matrix([[0 for j in range(10)] for i in range(10)])
-    DVectorTrasposedDVectorDotProduct(d1.d, d2.d, m.mx)
+    dvector_transposed_dvector_dot_product(d1.dvect, d2.dvect, m.mtx)
     m.debug()
     del d1
     del d2
@@ -599,7 +678,7 @@ if __name__ in "__main__":
     d = vector.DVector([random() for i in range(10)])
     m = Matrix([[random() for j in range(10)] for i in range(10)])
     r = vector.DVector([0 for i in range(10)])
-    DVectorTransposedMatrixDivision(d.d, m.mx, r.d)
+    dvector_transposed_matrix_division(d.dvect, m.mtx, r.dvect)
     r.debug()
     del d
     del r
@@ -610,17 +689,17 @@ if __name__ in "__main__":
     m_t = Matrix([[random() for j in range(10)] for i in range(3)])
     m = Matrix([[random() for j in range(3)] for i in range(10)])
     r = Matrix([[0 for j in range(3)] for i in range(3)])
-    MatrixDotProduct(m_t.mx, m.mx, r.mx)
+    matrix_dot_product(m_t.mtx, m.mtx, r.mtx)
     r.debug()
     del m_t
     del m
     del r
 
     print("Test RowColOuterProduct == DVectorTrasposedDVectorDotProduct")
-    a = vector.DVector([i for i in range(10)])
-    b = vector.DVector([i for i in range(10)])
+    a = vector.DVector(list(range(10)))
+    b = vector.DVector(list(range(10)))
     r = Matrix([[0 for j in range(10)] for i in range(10)])
-    RowColOuterProduct(a.d, b.d, r.mx)
+    row_col_outer_product(a.dvect, b.dvect, r.mtx)
     r.debug()
     del a
     del b
@@ -629,7 +708,7 @@ if __name__ in "__main__":
     print("Test MatrixTranspose")
     m = Matrix([[random() for j in range(3)] for i in range(10)])
     r = Matrix([[0 for j in range(10)] for i in range(3)])
-    MatrixTranspose(m.mx, r.mx)
+    matrix_transpose(m.mtx, r.mtx)
     m.debug()
     r.debug()
 
@@ -645,7 +724,7 @@ if __name__ in "__main__":
     m = Matrix([[random() for j in range(4)] for i in range(4)])
     r = Matrix([])
     m.debug()
-    MatrixInversion(m.mx, r.mx)
+    matrix_inversion(m.mtx, r.mtx)
     r.debug()
     del r
     del m
@@ -655,208 +734,18 @@ if __name__ in "__main__":
     e_vect = vector.DVector([])
     e_vals = Matrix([])
     m.debug()
-    EVectEval(m.mx, e_vect.d, e_vals.mx)
+    evect_eval(m.mtx, e_vect.dvect, e_vals.mtx)
     e_vect.debug()
     e_vals.debug()
     del e_vect
     del e_vals
     print("Test Eigen vectors/values inner method")
-    e_vect, e_vals = m.getevectevals()
+    e_vect, e_vals = m.get_evect_evals()
     for row in e_vect:
         print(row)
     for row in e_vals:
         print(row)
+
+    u, s, vt = m.svd()
+
     del m
-
-"""
-/* Description:
- * Append unsigned int vector uivector as row
- */
-void MatrixAppendUIRow(matrix **mx, uivector *row);
-
-/* Description:
- * Append unsigned int vector uivector as column
- */
-void MatrixAppendUIRow(matrix **mx, uivector *row);
-
-
-/*
- * Description:
- * Matrix pseudo inversion using the SVD algorithm
- */
-void MatrixPseudoinversion(matrix *m, matrix **m_inv);
-
-/*
- * Description:
- * Matrix pseudo inversion using the Moore-Penrose pseudoinverse
- */
-void MatrixMoorePenrosePseudoinverse(matrix *m, matrix **inv);
-
-/*
- * Description:
- * Generate the identity matrix
- */
-void GenIdentityMatrix(matrix **m);
-
-/*
- * Description:
- * Calculate the mean centered matrix
- */
-void MeanCenteredMatrix(matrix *mx, matrix *mxc);
-
-/*
- * Description:
- * Calculate the pearson correlation matrix
- */
-void PearsonCorrelMatrix(matrix *mxsrc, matrix *mxdst);
-
-/*
- * Description:
- * Calculate the spearmann correlation matrix
- */
-void SpearmanCorrelMatrix(matrix *mxsrc, matrix *mxdst);
-
-/*Calculate the column Average for the matrix mx*/
-void MatrixColAverage(matrix *mx, dvector **colaverage);
-
-/*Calculate the row Average for the matrix mx*/
-void MatrixRowAverage(matrix *mx, dvector **rowaverage);
-
-/*Calculate the column Standard Deviation for the matrix mx*/
-void MatrixColSDEV(matrix *mx, dvector **colsdev);
-
-/*Calculate the column Root Mean Square for the matrix mx*/
-void MatrixColRMS(matrix* mx, dvector** colrms);
-
-/*Calculate the column variance for the matrix mx*/
-void MatrixColVar(matrix *mx, dvector **colvar);
-
-/* Calculate the matrix descriptive statistics:
- *  - Column Average
- *  - Column Median
- *  - Column Armonic Average
- *  - Column Variance Population
- *  - Column Variance Sample (Correcter Variance)
- *  - Column Standard Deviation
- *  - Column Standard Deviation Sample (Corrected Standard Deviation)
- *  - Column Max
- *  - Column Min
- */
-void MatrixColDescStat(matrix *mx, matrix **ds);
-
-/*Calculate the covariance matrix*/
-void MatrixCovariance(matrix *mx, matrix **cm);
-
-/* Transform a matrix into a logaritmic matrix */
-void Matrix2LogMatrix(matrix *mx_in, matrix **mx_out);
-
-/* Transform a matrix into a SQUARE matrix */
-void Matrix2SquareMatrix(matrix *mx_in, matrix **mx_out);
-
-/* Transform a matrix into a SQRT matrix */
-void Matrix2SQRTMatrix(matrix *mx_in, matrix **mx_out);
-
-/* Transform a matrix into ABS matrix */
-void Matrix2ABSMatrix(matrix *mx_in, matrix **mx_out);
-
-/*
- * Description:
- * Develop an interaction factors matrix
- * Es. Use in DOE
- */
-void Matrix2IntFactorsMatrix(matrix *mx_in, size_t factors, matrix **mx_out);
-
-/*
- * Description:
- * Transform a matrix into a row centered scaled matrix
- * Es. Use in Spectroscopy
- */
-void MatrixRowCenterScaling(matrix *mx_in, matrix **mx_out);
-
-/*
- * Description:
- * Transform a matrix into a SVN row scaled matrix
- * Es. Use in Spectroscopy
- */
-void MatrixSVNScaling(matrix *mx_in, matrix **mx_out);
-
-/*
- * Description:
- * calculate the square root of the sum of the squares
- * of all the elements in the matrix
- * ||X|| = double
- */
-double Matrixnorm(matrix *mx);
-double Matrix1norm(matrix *mx);
-
-/*
- * Description:
- * calculate the determinant of a matrix
- */
-double MatrixDeterminant(matrix *mx);
-
-/*
- * Description:
- * Normalize the matrix for the Matrixnorm value.
- * Each value of mx is divided by double Matrixnorm(matrix *mx);
- */
-void MatrixNorm(matrix *mx, matrix *nmx);
-
-/*
- * Description:
- * Find the minimum and maximum of a column in matrix
- */
-void MatrixColumnMinMax(matrix* mx, size_t col, double* min, double* max);
-
-/*
- * Description:
- * Sort of a matrix ba a column number col_n
- */
-void MatrixSort(matrix *mx, size_t col_n);
-
-/*
- * Description:
- * Reverse sort of a matrix by a column number col_n
- */
-void MatrixReverseSort(matrix* mx, size_t col_n);
-
-/*
- * Description:
- * find the maximum value in matrix and return the row and col indexes
- */
-void MatrixGetMaxValueIndex(matrix *mx, size_t *row, size_t *col);
-
-/*
- * Description:
- * find the minimum value in matrix and return the row and col indexes
- */
-void MatrixGetMinValueIndex(matrix *mx, size_t *row, size_t *col);
-
-
-/*
- * Description:
- * Singular Value Decomposition local implementation
- */
-void SVD(matrix* mx, matrix **U, matrix **S, matrix **VT);
-
-/*
- * Description:
- * Singular Value Decomposition lapack implementation
- */
-void SVDlapack(matrix *mx, matrix **u, matrix **s, matrix **vt);
-
-
-/*
- * Description:
- * QR Decomposition with the householder method
- */
-void QRDecomposition(matrix *mx, matrix **Q, matrix **R);
-
-/*
- * Description:
- * LU Decomposition with the householder method
- */
-void LUDecomposition(matrix *mx, matrix **L, matrix **U);
-
-
-"""

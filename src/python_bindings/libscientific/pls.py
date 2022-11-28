@@ -20,9 +20,9 @@ import ctypes
 import libscientific.matrix as mx
 import libscientific.vector as vect
 import libscientific.tensor as t
-from libscientific.loadlibrary import LoadLibrary
+from libscientific.loadlibrary import load_libscientific_library
 
-lsci = LoadLibrary()
+lsci = load_libscientific_library()
 
 
 class PLSMODEL(ctypes.Structure):
@@ -30,39 +30,39 @@ class PLSMODEL(ctypes.Structure):
     PLSMODEL data structure
     """
     _fields_ = [
-        ("xscores", ctypes.POINTER(mx.matrix)),
-        ("xloadings", ctypes.POINTER(mx.matrix)),
-        ("xweights", ctypes.POINTER(mx.matrix)),
-        ("yscores", ctypes.POINTER(mx.matrix)),
-        ("yloadings", ctypes.POINTER(mx.matrix)),
-        ("cweights", ctypes.POINTER(mx.matrix)),
-        ("b", ctypes.POINTER(vect.dvector)),
-        ("xvarexp", ctypes.POINTER(vect.dvector)),
-        ("xcolaverage", ctypes.POINTER(vect.dvector)),
-        ("xcolscaling", ctypes.POINTER(vect.dvector)),
-        ("ycolaverage", ctypes.POINTER(vect.dvector)),
-        ("ycolscaling", ctypes.POINTER(vect.dvector)),
-        ("recalculated_y", ctypes.POINTER(mx.matrix)),
-        ("recalc_residuals", ctypes.POINTER(mx.matrix)),
-        ("predicted_y", ctypes.POINTER(mx.matrix)),
-        ("pred_residuals", ctypes.POINTER(mx.matrix)),
-        ("recalc_residuals", ctypes.POINTER(mx.matrix)),
-        ("r2y_recalculated", ctypes.POINTER(mx.matrix)),
-        ("r2y_validation", ctypes.POINTER(mx.matrix)),
-        ("q2y", ctypes.POINTER(mx.matrix)),
-        ("sdep", ctypes.POINTER(mx.matrix)),
-        ("sdec", ctypes.POINTER(mx.matrix)),
-        ("bias", ctypes.POINTER(mx.matrix)),
-        ("roc_recalculated", ctypes.POINTER(t.tensor)),
-        ("roc_validation", ctypes.POINTER(t.tensor)),
-        ("roc_auc_recalculated", ctypes.POINTER(mx.matrix)),
-        ("roc_auc_validation", ctypes.POINTER(mx.matrix)),
-        ("roc_auc_validation", ctypes.POINTER(mx.matrix)),
-        ("precision_recall_recalculated", ctypes.POINTER(t.tensor)),
-        ("precision_recall_validation", ctypes.POINTER(t.tensor)),
-        ("precision_recall_ap_recalculated", ctypes.POINTER(mx.matrix)),
-        ("precision_recall_ap_validation", ctypes.POINTER(mx.matrix)),
-        ("yscrambling", ctypes.POINTER(mx.matrix))]
+        ("xscores", ctypes.POINTER(mx.MATRIX)),
+        ("xloadings", ctypes.POINTER(mx.MATRIX)),
+        ("xweights", ctypes.POINTER(mx.MATRIX)),
+        ("yscores", ctypes.POINTER(mx.MATRIX)),
+        ("yloadings", ctypes.POINTER(mx.MATRIX)),
+        ("cweights", ctypes.POINTER(mx.MATRIX)),
+        ("b", ctypes.POINTER(vect.DVECTOR)),
+        ("xvarexp", ctypes.POINTER(vect.DVECTOR)),
+        ("xcolaverage", ctypes.POINTER(vect.DVECTOR)),
+        ("xcolscaling", ctypes.POINTER(vect.DVECTOR)),
+        ("ycolaverage", ctypes.POINTER(vect.DVECTOR)),
+        ("ycolscaling", ctypes.POINTER(vect.DVECTOR)),
+        ("recalculated_y", ctypes.POINTER(mx.MATRIX)),
+        ("recalc_residuals", ctypes.POINTER(mx.MATRIX)),
+        ("predicted_y", ctypes.POINTER(mx.MATRIX)),
+        ("pred_residuals", ctypes.POINTER(mx.MATRIX)),
+        ("recalc_residuals", ctypes.POINTER(mx.MATRIX)),
+        ("r2y_recalculated", ctypes.POINTER(mx.MATRIX)),
+        ("r2y_validation", ctypes.POINTER(mx.MATRIX)),
+        ("q2y", ctypes.POINTER(mx.MATRIX)),
+        ("sdep", ctypes.POINTER(mx.MATRIX)),
+        ("sdec", ctypes.POINTER(mx.MATRIX)),
+        ("bias", ctypes.POINTER(mx.MATRIX)),
+        ("roc_recalculated", ctypes.POINTER(t.TENSOR)),
+        ("roc_validation", ctypes.POINTER(t.TENSOR)),
+        ("roc_auc_recalculated", ctypes.POINTER(mx.MATRIX)),
+        ("roc_auc_validation", ctypes.POINTER(mx.MATRIX)),
+        ("roc_auc_validation", ctypes.POINTER(mx.MATRIX)),
+        ("precision_recall_recalculated", ctypes.POINTER(t.TENSOR)),
+        ("precision_recall_validation", ctypes.POINTER(t.TENSOR)),
+        ("precision_recall_ap_recalculated", ctypes.POINTER(mx.MATRIX)),
+        ("precision_recall_ap_validation", ctypes.POINTER(mx.MATRIX)),
+        ("yscrambling", ctypes.POINTER(mx.MATRIX))]
 
     def __repr__(self):
         return self.__class__.__name__
@@ -75,9 +75,9 @@ lsci.NewPLSModel.argtypes = [ctypes.POINTER(ctypes.POINTER(PLSMODEL))]
 lsci.NewPLSModel.restype = None
 
 
-def NewPLSModel():
+def new_pls_model():
     """
-    NewPLSModel: Allocate in memory an empty libscientific PLS model
+    new_pls_model: Allocate in memory an empty libscientific PLS model
     """
     mpls = ctypes.POINTER(PLSMODEL)()
     lsci.NewPLSModel(ctypes.pointer(mpls))
@@ -88,15 +88,15 @@ lsci.DelPLSModel.argtypes = [ctypes.POINTER(ctypes.POINTER(PLSMODEL))]
 lsci.DelPLSModel.restype = None
 
 
-def DelPLSModel(mpls):
+def del_pls_model(mpls):
     """
-    DelPLSModel: Delete an allocated libscientific PLS model
+    del_pls_model: Delete an allocated libscientific PLS model
     """
     lsci.DelPLSModel(ctypes.pointer(mpls))
 
 
-lsci.PLS.argtypes = [ctypes.POINTER(mx.matrix),
-                     ctypes.POINTER(mx.matrix),
+lsci.PLS.argtypes = [ctypes.POINTER(mx.MATRIX),
+                     ctypes.POINTER(mx.MATRIX),
                      ctypes.c_size_t,
                      ctypes.c_size_t,
                      ctypes.c_size_t,
@@ -105,7 +105,7 @@ lsci.PLS.argtypes = [ctypes.POINTER(mx.matrix),
 lsci.PLS.restype = None
 
 
-def PLS_Algorithm(x, y, nlv, xscaling, yscaling, mpls):
+def pls_algorithm(x_input, y_input, nlv, x_scaling, y_scaling, mpls):
     """
     PLS: Calculate the PLS model using a matrix x and a matrix y
          according to the NIPALS algorithm
@@ -120,22 +120,22 @@ def PLS_Algorithm(x, y, nlv, xscaling, yscaling, mpls):
     """
     print(nlv)
     ssignal = ctypes.c_int(0)
-    lsci.PLS(x,
-             y,
+    lsci.PLS(x_input,
+             y_input,
              nlv,
-             xscaling,
-             yscaling,
+             x_scaling,
+             y_scaling,
              mpls,
              ctypes.pointer(ssignal))
 
 
 lsci.PLSBetasCoeff.argtypes = [ctypes.POINTER(PLSMODEL),
                                ctypes.c_size_t,
-                               ctypes.POINTER(vect.dvector)]
+                               ctypes.POINTER(vect.DVECTOR)]
 lsci.PLSBetasCoeff.restype = None
 
 
-def PLSBetasCoeff(mpls, nlv, bcoeff):
+def pls_beta_coefficients(mpls, nlv, bcoeff):
     """
     PLSBetasCoeff calculation
     """
@@ -143,56 +143,56 @@ def PLSBetasCoeff(mpls, nlv, bcoeff):
 
 
 
-lsci.PLSScorePredictor.argtypes = [ctypes.POINTER(mx.matrix),
+lsci.PLSScorePredictor.argtypes = [ctypes.POINTER(mx.MATRIX),
                                    ctypes.POINTER(PLSMODEL),
                                    ctypes.c_size_t,
-                                   ctypes.POINTER(mx.matrix)]
+                                   ctypes.POINTER(mx.MATRIX)]
 lsci.PLSScorePredictor.restype = None
 
 
-def PLSScorePredictor(x, mpls, nlv, pscores):
+def pls_score_predictor(x_input, mpls, nlv, p_scores):
     """
     PLSScorePredictor: Predict scores for a matrix m in the computed PLS modes
     """
-    lsci.PLSScorePredictor(x,
+    lsci.PLSScorePredictor(x_input,
                            mpls,
                            nlv,
-                           pscores)
+                           p_scores)
 
 
-# void PLSYPredictor(matrix *tscore, PLSMODEL *model, size_t nlv, matrix **y);
-
-lsci.PLSYPredictor.argtypes = [ctypes.POINTER(mx.matrix),
+lsci.PLSYPredictor.argtypes = [ctypes.POINTER(mx.MATRIX),
                                ctypes.POINTER(PLSMODEL),
                                ctypes.c_size_t,
-                               ctypes.POINTER(mx.matrix)]
+                               ctypes.POINTER(mx.MATRIX)]
 lsci.PLSYPredictor.restype = None
 
 
-def PLSYPredictor(xscores, mpls, nlv, predicted_y):
+def pls_y_predictor(x_scores, mpls, nlv, predicted_y):
     """
     PLSYPredictor: Predict the Y according the predicted scores and the calculated pls model.
-                   This function is dependent on PLSScorePredictor.
     """
-    lsci.PLSYPredictor(xscores, mpls, nlv, ctypes.pointer(ctypes.pointer(predicted_y)))
+    lsci.PLSYPredictor(x_scores,
+                       mpls,
+                       nlv,
+                       ctypes.pointer(ctypes.pointer(predicted_y)))
 
 
 # void PLSYPredictorAllLV(matrix *mx, PLSMODEL *model, matrix **tscores, matrix **y);
 
-lsci.PLSYPredictorAllLV.argtypes = [ctypes.POINTER(mx.matrix),
+lsci.PLSYPredictorAllLV.argtypes = [ctypes.POINTER(mx.MATRIX),
                                     ctypes.POINTER(PLSMODEL),
-                                    ctypes.POINTER(mx.matrix),
-                                    ctypes.POINTER(mx.matrix)]
+                                    ctypes.POINTER(mx.MATRIX),
+                                    ctypes.POINTER(mx.MATRIX)]
 lsci.PLSYPredictorAllLV.restype = None
 
 
-def PLSYPredictorAllLV(x, mpls, predicted_scores, predicted_y):
+def pls_y_predictor_all_lv(x_input, mpls, predicted_scores, predicted_y):
     """
     PLSYPredictorAllLV: Predict the Y according the original
                         feature matrix and the calculated pls model.
                         This function is NOT dependent on PLSScorePredictor.
     """
-    lsci.PLSYPredictorAllLV(x,
+    lsci.PLSYPredictorAllLV(x_input,
                             mpls,
                             predicted_scores,
                             predicted_y)
@@ -203,14 +203,14 @@ lsci.PrintPLSModel.argtypes = [ctypes.POINTER(PLSMODEL)]
 lsci.PrintPLSModel.restype = None
 
 
-def PrintPLS(mpls):
+def print_pls(mpls):
     """
     PrintPLS: Print to video the PLS Model
     """
     lsci.PrintPLSModel(mpls)
 
 
-class PLS(object):
+class PLS():
     """
     Partial least squares
         Arguments:
@@ -226,116 +226,120 @@ class PLS(object):
                 5 -> Level scaling
     """
     def __init__(self, nlv, xscaling=1, yscaling=0):
-        self.mpls = NewPLSModel()
+        self.mpls = new_pls_model()
         self.nlv = nlv
         self.xscaling = xscaling
         self.yscaling = yscaling
 
     def __del__(self):
         if self.mpls is not None:
-            DelPLSModel(self.mpls)
+            del_pls_model(self.mpls)
             del self.mpls
         self.mpls = None
 
-    def fit(self, x_, y_, cross_validation=None):
+    def fit(self, x_input, y_input):
         """
         Fit a pls model giving x matrix and y matrix
         """
-        x = None
+        x_input_ = None
         xalloc = False
-        if "Matrix" not in str(type(x_)):
-            x = mx.NewMatrix(x_)
+        if "Matrix" not in str(type(x_input)):
+            x_input_ = mx.new_matrix(x_input)
             xalloc = True
         else:
-            x = x_
+            x_input_ = x_input
 
-        y = None
+        y_input_ = None
         yalloc = False
-        if "Matrix" not in str(type(y_)):
-            y = mx.NewMatrix(y_)
+        if "Matrix" not in str(type(y_input)):
+            y_input_ = mx.new_matrix(y_input)
             yalloc = True
         else:
-            y = y_
-        PLS_Algorithm(x,
-                      y,
+            y_input_ = y_input
+
+        pls_algorithm(x_input_,
+                      y_input_,
                       self.nlv,
                       self.xscaling,
                       self.yscaling,
                       self.mpls)
 
         if xalloc is True:
-            mx.DelMatrix(x)
-            del x
+            mx.del_matrix(x_input_)
+            del x_input_
 
         if yalloc is True:
-            mx.DelMatrix(y)
-            del y
+            mx.del_matrix(y_input_)
+            del y_input_
 
     def get_tscores(self):
         """
         Get the T-Scores
         """
-        return mx.MatrixToList(self.mpls[0].xscores)
+        return mx.matrix_to_list(self.mpls[0].xscores)
 
     def get_uscores(self):
         """
         Get the U-Scores
         """
-        return mx.MatrixToList(self.mpls[0].yscores)
+        return mx.matrix_to_list(self.mpls[0].yscores)
 
     def get_ploadings(self):
         """
         Get the P-Loadings
         """
-        return mx.MatrixToList(self.mpls[0].xloadings)
+        return mx.matrix_to_list(self.mpls[0].xloadings)
 
     def get_qloadings(self):
         """
         Get the Q-Loadings
         """
-        return mx.MatrixToList(self.mpls[0].yloadings)
+        return mx.matrix_to_list(self.mpls[0].yloadings)
 
     def get_weights(self):
         """
         Get the W-weigths
         """
-        return mx.MatrixToList(self.mpls[0].xweights)
+        return mx.matrix_to_list(self.mpls[0].xweights)
 
     def get_exp_variance(self):
         """
         Get the explained variance
         """
-        return vect.DVectorToList(self.mpls[0].xvarexp)
+        return vect.dvector_tolist(self.mpls[0].xvarexp)
 
-    def predict(self, x_, nlv_=None):
+    def predict(self, x_input, nlv_=None):
         """
         Predict the y giving an x_ matrix
         """
-        x = mx.NewMatrix(x_)
-        pscores_ = mx.initMatrix()
-        py_ = mx.initMatrix()
+        x_input_ = mx.new_matrix(x_input)
+        p_scores_ = mx.init_matrix()
+        p_y_ = mx.init_matrix()
 
-        nlv = None
+
+        pls_y_predictor_all_lv(x_input_, self.mpls, p_scores_, p_y_)
+        p_scores = mx.matrix_to_list(p_scores_)
+
+        p_y = None
         if nlv_ is None:
-            nlv = self.nlv
+            p_y = mx.matrix_to_list(p_y_)
         else:
-            nlv = self.nlv
-
-        PLSYPredictorAllLV(x, self.mpls, pscores_, py_)
-        pscores = mx.MatrixToList(pscores_)
-        py = mx.MatrixToList(py_)
-        mx.DelMatrix(x)
-        del x
-        mx.DelMatrix(pscores_)
-        del pscores_
-        mx.DelMatrix(py_)
-        del py_
-        return py, pscores
+            p_y = [[row[nlv_-1]] for row in mx.matrix_to_list(p_y_)]
+        mx.del_matrix(x_input_)
+        del x_input_
+        mx.del_matrix(p_scores_)
+        del p_scores_
+        mx.del_matrix(p_y_)
+        del p_y_
+        return p_y, p_scores
 
 
 if __name__ == '__main__':
-    def mx_to_video(m, decimals=5):
-        for row in m:
+    def mx_to_video(m_input, decimals=5):
+        """
+        print a matrix to video
+        """
+        for row in m_input:
             print("\t".join([str(round(x, decimals)) for x in row]))
     import random
     random.seed(123456)

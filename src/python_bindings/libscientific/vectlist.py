@@ -18,18 +18,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import ctypes
 from libscientific import vector as vect
-from libscientific.loadlibrary import LoadLibrary
-from libscientific import misc
+from libscientific.loadlibrary import load_libscientific_library
 
-lsci = LoadLibrary()
+lsci = load_libscientific_library()
 
 
-class dvectlist(ctypes.Structure):
+class DVECTLIST(ctypes.Structure):
     """
-    dvector list class
+    DVECTLIST data structure
     """
     _fields_ = [
-        ("dvector", ctypes.POINTER(ctypes.POINTER(vect.dvector))),
+        ("dvector", ctypes.POINTER(ctypes.POINTER(vect.DVECTOR))),
         ("size", ctypes.c_size_t)]
 
     def __repr__(self):
@@ -39,132 +38,136 @@ class dvectlist(ctypes.Structure):
         return self.__class__.__name__
 
 
-lsci.initDVectorList.argtypes = [ctypes.POINTER(ctypes.POINTER(dvectlist))]
+lsci.initDVectorList.argtypes = [ctypes.POINTER(ctypes.POINTER(DVECTLIST))]
 lsci.initDVectorList.restype = None
 
 
-def initDVectorList():
+def init_dvector_list():
     """
-    initDVectorList: Allocate in memory an empty libscientific double vector list
+    init_dvector_list: Allocate in memory an empty libscientific double vector list
     """
-    dl = ctypes.POINTER(dvectlist)()
-    lsci.initDVector(ctypes.pointer(dl))
-    return dl
+    dvl = ctypes.POINTER((DVECTLIST))()
+    lsci.initDVectorList(ctypes.pointer(dvl))
+    return dvl
 
 
-def NewDVectorList(dl):
+def new_dvector_list(dvl_):
     """
-    NewDVectorList: Allocate in memory a libscientific double vector list
+    new_dvector_list: Allocate in memory a libscientific double vector list
     from a list of lists
     """
-    size = len(dl)
-    dl_ = initDVectorList()
-    for lst in dl:
-        DVectorListAppend(dl_, lst)
-    return dl_
+    dvl = init_dvector_list()
+    for v_lst in dvl_:
+        dvector_list_append(dvl, v_lst)
+    return dvl
 
 
-lsci.DelDVectorList.argtypes = [ctypes.POINTER(ctypes.POINTER(dvectlist))]
+lsci.DelDVectorList.argtypes = [ctypes.POINTER(ctypes.POINTER(DVECTLIST))]
 lsci.DelDVectorList.restype = None
 
 
-def DelDVectorList(dl):
+def del_dvector_list(dvl):
     """
-    DelDVectorList: Delete an allocated libscientific double vector
+    del_dvector_list: Delete an allocated libscientific double vector
     """
-    lsci.DelDVectorList(ctypes.pointer(dl))
+    lsci.DelDVectorList(ctypes.pointer(dvl))
 
 
-lsci.DVectorListAppend.argtypes = [ctypes.POINTER(dvectlist),
-                                   ctypes.POINTER(vect.dvector)]
+lsci.DVectorListAppend.argtypes = [ctypes.POINTER(DVECTLIST),
+                                   ctypes.POINTER(vect.DVECTOR)]
 lsci.DVectorListAppend.restype = None
 
-def DVectorListAppend(dl, dvect):
+def dvector_list_append(dvl, dvect):
     """
-    DVectorListAppend: Append a double vector to a DvectorList
+    dvector_list_append: Append a double vector to a DvectorList
     """
-    if type(dvect) == list:
-        lst_ = vect.NewDVector(dvect)
-        lsci.DVectorListAppend(dl, lst_)
-        vect.DelDVector(lst_)        
+    if isinstance(dvect, list):
+        dvect_ = vect.new_dvector(dvect)
+        lsci.DVectorListAppend(dvl, dvect_)
+        vect.del_dvector(dvect_)
+        del dvect_
     else:
-        lsci.DVectorListAppend(dl, dvect)
+        lsci.DVectorListAppend(dvl, dvect)
     return 0
 
 
-def DVectorListToList(dl):
-    lst = list()
-    for i in range(dl[0].size):
-        lst.append(vect.DVectorToList(dl[0].dvector[i].contents))
-    return lst
+def dvector_list_tolist(dvl):
+    """
+    convert a divector list into a list of lists
+    """
+    lsts = []
+    for i in range(dvl[0].size):
+        lsts.append(vect.dvector_tolist(dvl[0].dvector[i].contents))
+    return lsts
 
 
-class DVectorList(object):
+class DVectorList():
     """
     Translate a list  into a libscientific double vector
     """
-    def __init__(self, d_):
-        self.dl = NewDVectorList(d_)
+    def __init__(self, dvl_):
+        self.dvl = new_dvector_list(dvl_)
 
     def __del__(self):
-        DelDVectorList(self.dl)
-        del self.dl
+        del_dvector_list(self.dvl)
+        del self.dvl
 
     def __getitem__(self, key):
         return self.data_ptr()[key].contents
-    
-    def __setitem__(self, key, lst):
-        for i in range(len(lst)):
-                if i < self.data_ptr()[key].contents.size:
-                    self.data_ptr()[key].contents.data[i] = lst[i]
-                else:
-                    break
+
+    def __setitem__(self, key, v_lst):
+        for i, val in enumerate(v_lst):
+            if i < self.data_ptr()[key].contents.size:
+                self.data_ptr()[key].contents.data[i] = val
+            else:
+                break
         return 0
 
     def size(self):
         """
         return the size of the divector
         """
-        return self.dl[0].size
+        return self.dvl[0].size
 
     def data_ptr(self):
         """
         return the pointer to data
         """
-        return self.dl[0].dvector
+        return self.dvl[0].dvector
 
-    def append(self, lst):
+    def append(self, v_lst):
         """
         Append a value to the dvector
         """
-        if type(lst) == vect.dvector:
-            return DVectorAppend(self.dl, lst)
+        if isinstance(lst, vect.DVECTOR):
+            dvector_list_append(self.dvl, v_lst)
         else:
-            lst_ = vect.NewDVector(lst)
-            DVectorListAppend(self.dl, lst_)
-            vect.DelDVector(lst_)
-            return 0
+            dv_lst = vect.new_dvector(lst)
+            dvector_list_append(self.dvl, dv_lst)
+            vect.del_dvector(dv_lst)
+            del dv_lst
+        return 0
 
     def tolist(self):
         """
         Convert the dvector list to a list of list
         """
-        return DVectorListToList(self.dl)
+        return dvector_list_tolist(self.dvl)
 
-    def fromlist(self, vlst_):
+    def fromlist(self, v_lists):
         """
         Convert a list of list to a dvector list
         """
-        for lst in vlst_:
-            DVectorListAppend(self.dl, lst)
+        for v_lst in v_lists:
+            dvector_list_append(self.dvl, v_lst)
         return 0
 
     def debug(self):
         """
         Debug the double list vector
         """
-        for i in range(self.dl[0].size):
-            vect.PrintDVector(self.dl[0].dvector[i].contents)
+        for i in range(self.dvl[0].size):
+            vect.print_dvector(self.dvl[0].dvector[i].contents)
 
 
 if __name__ in "__main__":
@@ -173,7 +176,7 @@ if __name__ in "__main__":
     d = DVectorList(a)
     d.debug()
     print("get value")
-    vect.PrintDVector(d[1])
+    vect.print_dvector(d[1])
     print("set list")
     d[1] = [8, 8, 8, 8, 8, 8, 8, 8, 8, 8]
     dlst = d.tolist()
@@ -185,6 +188,5 @@ if __name__ in "__main__":
     lst = [9, 8, 7, 6]
     d.append(lst)
     print("Reappend ppend a list - low level")
-    DVectorListAppend(d.dl, lst)
+    dvector_list_append(d.dvl, lst)
     d.debug()
-

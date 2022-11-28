@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.18)
 set(AUTHOR "Giuseppe Marco Randazzo")
 set(VERSION_MAJOR 1)
 set(VERSION_MINOR 4)
-set(VERSION_PATCH 0)
+set(VERSION_PATCH 1)
 configure_file(src/scientificconfig.h.in scientificconfig.h)
 
 if(NOT CMAKE_BUILD_TYPE)

@@ -17,9 +17,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import ctypes
-from libscientific.loadlibrary import LoadLibrary
+from libscientific.loadlibrary import load_libscientific_library
 
-lsci = LoadLibrary()
+lsci = load_libscientific_library()
 
 lsci.GetScientificVersion.argtypes = (None)
 lsci.GetScientificVersion.restype = ctypes.c_char_p

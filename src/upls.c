@@ -25,6 +25,7 @@
 #include "upls.h"
 #include "upca.h"
 #include "pca.h"
+#include "preprocessing.h"
 #include "matrix.h"
 #include "vector.h"
 #include "numeric.h"
@@ -36,13 +37,13 @@ void NewUPLSModel(UPLSMODEL** m)
   initTensor(&(*m)->xloadings);
   initTensor(&(*m)->xweights);
   initDVector(&(*m)->xvarexp);
-  initMatrix(&(*m)->xcolaverage);
-  initMatrix(&(*m)->xcolscaling);
+  initDVectorList(&(*m)->xcolaverage);
+  initDVectorList(&(*m)->xcolscaling);
 
   initMatrix(&(*m)->yscores);
   initTensor(&(*m)->yloadings);
-  initMatrix(&(*m)->ycolaverage);
-  initMatrix(&(*m)->ycolscaling);
+  initDVectorList(&(*m)->ycolaverage);
+  initDVectorList(&(*m)->ycolscaling);
 
   initDVector(&(*m)->b);
 
@@ -68,13 +69,13 @@ void DelUPLSModel(UPLSMODEL** m)
   DelTensor(&(*m)->xloadings);
   DelTensor(&(*m)->xweights);
   DelDVector(&(*m)->xvarexp);
-  DelMatrix(&(*m)->xcolaverage);
-  DelMatrix(&(*m)->xcolscaling);
+  DelDVectorList(&(*m)->xcolaverage);
+  DelDVectorList(&(*m)->xcolscaling);
 
   DelMatrix(&(*m)->yscores);
   DelTensor(&(*m)->yloadings);
-  DelMatrix(&(*m)->ycolaverage);
-  DelMatrix(&(*m)->ycolscaling);
+  DelDVectorList(&(*m)->ycolaverage);
+  DelDVectorList(&(*m)->ycolscaling);
 
   DelDVector(&(*m)->b);
 
@@ -193,7 +194,13 @@ int CheckTensors(tensor *X_, tensor *Y_)
  *
  */
 
-void UPLS(tensor* X_, tensor* Y_, size_t npc, size_t xautoscaling, size_t yautoscaling, UPLSMODEL* m, ssignal *s)
+void UPLS(tensor* X_,
+          tensor* Y_,
+          size_t npc,
+          size_t xautoscaling,
+          size_t yautoscaling,
+          UPLSMODEL* m,
+          ssignal *s)
 {
 
   if(CheckTensors(X_, Y_) == 0){
@@ -221,116 +228,11 @@ void UPLS(tensor* X_, tensor* Y_, size_t npc, size_t xautoscaling, size_t yautos
     dvector *tmpv;
 
     NewTensor(&X, X_->order);
-
     for(k = 0; k < X_->order; k++){
       NewTensorMatrix(X, k, X_->m[k]->row, X_->m[k]->col);
-
-      /* For Wold Geladi test enable this
-      for(i = 0; i < X_->m[k]->row; i++)
-        for(j = 0; j < X_->m[k]->col; j++)
-          setTensorValue(X, k, i, j, getTensorValue(X_, k, i, j));
-      */
     }
 
-    /*MEAN CENTERING For Wold Geladi test disable this  */
-
-    for(k = 0; k < X_->order; k++){
-      initDVector(&tmpv);
-      MatrixColAverage(X_->m[k], tmpv);
-      MatrixAppendCol(m->xcolaverage, tmpv);
-      DelDVector(&tmpv);
-
-      for(j = 0; j < X_->m[k]->col; j++){
-        if(X_->m[k]->row > 1){
-          for(i = 0; i < X_->m[k]->row; i++){
-            setTensorValue(X, k, i, j, getTensorValue(X_, k, i, j) - getMatrixValue(m->xcolaverage, j, k));
-          }
-        }
-        else{
-          for(i = 0; i < X_->m[k]->row; i++){
-            setTensorValue(X, k, i, j, getTensorValue(X_, k, i, j));
-          }
-        }
-      }
-
-    }
-
-   /* AUTOSCALING
-    * For autoscaling see:
-    * Centering scaling and trasfomrations: improving the biological information content of metabolomics dataset
-    * A van den Berg
-    * BMC Genomics 2006, 7:142  doi:101 186/147-214-7-142
-    */
-    if(xautoscaling > 0){
-      if(xautoscaling == 1){
-        for(k = 0; k < X_->order; k++){
-          initDVector(&tmpv);
-          MatrixColSDEV(X_->m[k], tmpv);
-          MatrixAppendCol(m->xcolscaling, tmpv);
-          DelDVector(&tmpv);
-        }
-      }
-      else if(xautoscaling == 2){
-        for(k = 0; k < X_->order; k++){
-          initDVector(&tmpv);
-          MatrixColRMS(X_->m[k], tmpv);
-          MatrixAppendCol(m->xcolscaling, tmpv);
-          DelDVector(&tmpv);
-        }
-      }
-      else if(xautoscaling == 3){ /* PARETO Autoscaling */
-        for(k = 0; k < X_->order; k++){
-          initDVector(&tmpv);
-          MatrixColSDEV(X_->m[k], tmpv);
-          for(i = 0; i < tmpv->size; i++){
-            setDVectorValue(tmpv, i, sqrt(getDVectorValue(tmpv, i)));
-          }
-          MatrixAppendCol(m->xcolscaling, tmpv);
-          DelDVector(&tmpv);
-        }
-      }
-      else if(xautoscaling == 4){ /* Range Scaling */
-        for(k = 0; k < X_->order; k++){
-          initDVector(&tmpv);
-          for(i = 0; i < X_->m[k]->col; i++){
-            MatrixColumnMinMax(X_->m[k], i, &min, &max);
-            DVectorAppend(tmpv, (max-min));
-          }
-          MatrixAppendCol(m->xcolscaling, tmpv);
-          DelDVector(&tmpv);
-        }
-      }
-      else if(xautoscaling == 5){ /* Level Scaling  */
-        MatrixCopy(m->xcolaverage, &m->xcolscaling);
-      }
-      else{ /*no autoscaling so divide all for 1 */
-        for(k = 0; k < X_->order; k++){
-          initDVector(&tmpv);
-          for(i = 0; i < X_->m[k]->col; i++){
-            DVectorAppend(tmpv, 1.0);
-          }
-          MatrixAppendCol(m->xcolscaling, tmpv);
-          DelDVector(&tmpv);
-        }
-      }
-
-      for(k = 0; k < X->order; k++){
-        for(j = 0; j < X->m[k]->col; j++){
-          if(getMatrixValue(m->xcolscaling, j, k) == 0){
-            for(i = 0; i< X->m[k]->row; i++){
-              setTensorValue(X, k, i, j, 0.f);
-            }
-          }
-          else{
-            for(i = 0; i < X->m[k]->row; i++){
-              setTensorValue(X, k, i, j, getTensorValue(X, k, i, j)/getMatrixValue(m->xcolscaling, j, k));
-            }
-          }
-        }
-      }
-    }
-
-    /*END Disable*/
+    TensorPreprocess(X_, xautoscaling, m->xcolaverage, m->xcolscaling, X);
 
     if(npc > X->m[0]->col)
       npc = X->m[0]->col;
@@ -355,111 +257,11 @@ void UPLS(tensor* X_, tensor* Y_, size_t npc, size_t xautoscaling, size_t yautos
 
 
     NewTensor(&Y, Y_->order);
-
     for(k = 0; k < Y_->order; k++){
       NewTensorMatrix(Y, k, Y_->m[k]->row, Y_->m[k]->col);
-
-        /* For Wold Geladi test enable this
-      for(i = 0; i < Y_->m[k]->row; i++)
-        for(j = 0; j < Y_->m[k]->col; j++)
-          setTensorValue(Y, k, i, j, getTensorValue(Y_, k, i, j));
-     */
     }
 
-    /* For Wold Geladi test disable this */
-    /*MEAN CENTERING For Wold Geladi test disable this  */
-
-    for(k = 0; k < Y_->order; k++){
-      initDVector(&tmpv);
-      MatrixColAverage(Y_->m[k], tmpv);
-      MatrixAppendCol(m->ycolaverage, tmpv);
-      DelDVector(&tmpv);
-
-      for(j = 0; j < Y_->m[k]->col; j++){
-        if(Y_->m[k]->row > 1){
-          for(i = 0; i < Y_->m[k]->row; i++){
-            setTensorValue(Y, k, i, j, getTensorValue(Y_, k, i, j) - getMatrixValue(m->ycolaverage, j, k));
-          }
-        }
-        else{
-          for(i = 0; i < Y_->m[k]->row; i++){
-            setTensorValue(Y, k, i, j, getTensorValue(Y_, k, i, j));
-          }
-        }
-      }
-
-    }
-
-    /* AUTOSCALING */
-    if(yautoscaling > 0){
-      if(yautoscaling == 1){
-        for(k = 0; k < Y_->order; k++){
-          initDVector(&tmpv);
-          MatrixColSDEV(Y_->m[k], tmpv);
-          MatrixAppendCol(m->ycolscaling, tmpv);
-          DelDVector(&tmpv);
-        }
-      }
-      else if(yautoscaling == 2){
-        for(k = 0; k < Y_->order; k++){
-          initDVector(&tmpv);
-          MatrixColRMS(Y_->m[k], tmpv);
-          MatrixAppendCol(m->ycolscaling, tmpv);
-          DelDVector(&tmpv);
-        }
-      }
-      else if(yautoscaling == 3){ /* PARETO Autoscaling */
-        for(k = 0; k < Y_->order; k++){
-          initDVector(&tmpv);
-          MatrixColSDEV(Y_->m[k], tmpv);
-          for(i = 0; i < tmpv->size; i++){
-            setDVectorValue(tmpv, i, sqrt(getDVectorValue(tmpv, i)));
-          }
-          MatrixAppendCol(m->ycolscaling, tmpv);
-          DelDVector(&tmpv);
-        }
-      }
-      else if(yautoscaling == 4){ /* Range Scaling */
-        for(k = 0; k < Y_->order; k++){
-          initDVector(&tmpv);
-          for(i = 0; i < Y_->m[k]->col; i++){
-            MatrixColumnMinMax(Y_->m[k], i, &min, &max);
-            DVectorAppend(tmpv, (max-min));
-          }
-          MatrixAppendCol(m->ycolscaling, tmpv);
-          DelDVector(&tmpv);
-        }
-      }
-      else if(yautoscaling == 5){ /* Level Scaling  */
-        MatrixCopy(m->ycolaverage, &m->ycolscaling);
-      }
-      else{
-        for(k = 0; k < Y_->order; k++){
-          initDVector(&tmpv);
-          for(i = 0; i < Y_->m[k]->col; i++){
-            DVectorAppend(tmpv, 1.0);
-          }
-          MatrixAppendCol(m->ycolscaling, tmpv);
-          DelDVector(&tmpv);
-        }
-      }
-
-      for(k = 0; k < Y->order; k++){
-        for(j = 0; j < Y->m[k]->col; j++){
-          if(getMatrixValue(m->ycolscaling, j, k) == 0){
-            for(i = 0; i< Y->m[k]->row; i++){
-              setTensorValue(Y, k, i, j, 0.f);
-            }
-          }
-          else{
-            for(i = 0; i < Y->m[k]->row; i++){
-              setTensorValue(Y, k, i, j, getTensorValue(Y, k, i, j)/getMatrixValue(m->ycolscaling, j, k));
-            }
-          }
-        }
-      }
-    }
-
+    TensorPreprocess(Y_, yautoscaling, m->xcolaverage, m->xcolscaling, Y);
     /*END Disable */
 
     #ifdef DEBUG
@@ -844,20 +646,21 @@ void UPLSScorePredictor(tensor *X_,  UPLSMODEL *m, size_t npc, matrix *ptscores)
     for(k = 0; k < X_->order; k++){
       for(j = 0; j < X_->m[k]->col; j++){
         /* Mean Centering */
-        if(m->xcolaverage->row > 0 && m->xcolaverage->col > 0){
+        if(m->xcolaverage->size > 0 && m->xcolaverage->size > 0){
           for(i = 0; i < X_->m[k]->row; i++){
-            setTensorValue(X, k, i, j, getTensorValue(X_, k, i, j) -  getMatrixValue(m->xcolaverage, j, k));
+            X->m[k]->data[i][j] = X_->m[k]->data[i][j] - m->xcolaverage->d[k]->data[j];
           }
         }
         else{
           for(i = 0; i < X_->m[k]->row; i++){
+            X->m[k]->data[i][j] = X_->m[k]->data[i][j];
             setTensorValue(X, k, i, j, getTensorValue(X_, k, i, j));
           }
         }
 
-        if(m->xcolscaling->row > 0 && m->xcolscaling->col > 0){
+        if(m->xcolscaling->size > 0 && m->xcolscaling->size > 0){
           for(i = 0; i < X->m[k]->row; i++){
-            setTensorValue(X, k, i, j, getTensorValue(X, k, i, j) / getMatrixValue(m->xcolscaling, j,  k));
+            X->m[k]->data[i][j] = X_->m[k]->data[i][j]/m->xcolscaling->d[k]->data[j];
           }
         }
       }
@@ -949,25 +752,20 @@ void UPLSYPredictor(matrix *tscores, UPLSMODEL *m, size_t npc, tensor *py)
   }
 
   /* Adjusting to real Y value, so no autoscaled and autocentered */
-  if(m->ycolaverage != NULL && m->ycolaverage->data != NULL &&
-    m->ycolaverage->row > 0 && m->ycolaverage->col > 0){
+  if(m->ycolaverage->size > 0 && m->ycolscaling->size > 0){
 
-    for(k = 0; k < m->ycolaverage->col; k++){
-      for(j = 0; j < m->ycolaverage->row; j++){
-
-        if(m->ycolscaling != NULL && m->ycolscaling->data != NULL
-          && m->ycolscaling->row > 0 && m->ycolscaling->col > 0){
-          for(i = 0; i < py->m[k]->row; i++){
-            setTensorValue(py, k, i, j, getTensorValue(py, k, i, j) * getMatrixValue(m->ycolscaling, j, k));
-          }
-        }
+    for(k = 0; k < m->ycolaverage->size; k++){
+      for(j = 0; j < m->ycolaverage->size; j++){
         for(i = 0; i < py->m[k]->row; i++){
-          setTensorValue(py, k, i, j, getTensorValue(py, k, i, j) + getMatrixValue(m->ycolaverage, j, k));
+          py->m[k]->data[i][j] *= m->ycolscaling->d[k]->data[j];
+        }
+
+        for(i = 0; i < py->m[k]->row; i++){
+          py->m[k]->data[i][j] += m->ycolaverage->d[k]->data[j];
         }
       }
     }
   }
-
 }
 
 void UPLSRSquared(tensor *X_, tensor *Y_, UPLSMODEL *m, size_t npc, dvector *r2x, tensor *r2y, tensor *sdec)

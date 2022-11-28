@@ -21,6 +21,7 @@
 #include "tensor.h"
 #include "matrix.h"
 #include "vector.h"
+#include "preprocessing.h"
 #include "scientificinfo.h"
 
 #define UPLSCONVERGENCE 1e-3
@@ -33,10 +34,10 @@ typedef struct{
   matrix *yscores;
   tensor *yloadings;
   dvector *b;
-  matrix *xcolaverage;
-  matrix *xcolscaling;
-  matrix *ycolaverage;
-  matrix *ycolscaling;
+  dvectorlist *xcolaverage;
+  dvectorlist *xcolscaling;
+  dvectorlist *ycolaverage;
+  dvectorlist *ycolscaling;
   dvector *r2x_model;
   dvector *r2x_validation;
   tensor *r2y_model; /* each order correspond to a principal component; each row correspond to an y dependent variable and each col to an order */

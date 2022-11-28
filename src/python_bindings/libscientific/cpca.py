@@ -21,22 +21,25 @@ import libscientific.vectlist as vlst
 import libscientific.matrix as mx
 import libscientific.tensor as tns
 import libscientific.vector as vect
-from libscientific.loadlibrary import LoadLibrary
+from libscientific.loadlibrary import load_libscientific_library
 
-lsci = LoadLibrary()
+lsci = load_libscientific_library()
 
 
 class CPCAMODEL(ctypes.Structure):
+    """
+    CPCA model data structure
+    """
     _fields_ = [
-        ("block_scores", ctypes.POINTER(tns.tensor)),
-        ("block_loadings", ctypes.POINTER(tns.tensor)),
-        ("super_scores", ctypes.POINTER(mx.matrix)),
-        ("super_weights", ctypes.POINTER(mx.matrix)),
-        ("scaling_factor", ctypes.POINTER(vect.dvector)),
-        ("total_expvar", ctypes.POINTER(vect.dvector)),
-        ("block_expvar", ctypes.POINTER(vlst.dvectlist)),
-        ("colaverage", ctypes.POINTER(vlst.dvectlist)),
-        ("colscaling", ctypes.POINTER(vlst.dvectlist))]
+        ("block_scores", ctypes.POINTER(tns.TENSOR)),
+        ("block_loadings", ctypes.POINTER(tns.TENSOR)),
+        ("super_scores", ctypes.POINTER(mx.MATRIX)),
+        ("super_weights", ctypes.POINTER(mx.MATRIX)),
+        ("scaling_factor", ctypes.POINTER(vect.DVECTOR)),
+        ("total_expvar", ctypes.POINTER(vect.DVECTOR)),
+        ("block_expvar", ctypes.POINTER(vlst.DVECTLIST)),
+        ("colaverage", ctypes.POINTER(vlst.DVECTLIST)),
+        ("colscaling", ctypes.POINTER(vlst.DVECTLIST))]
 
     def __repr__(self):
         return self.__class__.__name__
@@ -50,9 +53,9 @@ lsci.NewCPCAModel.argtypes = [ctypes.POINTER(ctypes.POINTER(CPCAMODEL))]
 lsci.NewCPCAModel.restype = None
 
 
-def NewCPCAModel():
+def new_cpca_model():
     """
-    NewCPCAModel: Allocate in memory an empty libscientific CPCA model
+    new_cpca_model: Allocate in memory an empty libscientific CPCA model
     """
     mpca = ctypes.POINTER(CPCAMODEL)()
     lsci.NewCPCAModel(ctypes.pointer(mpca))
@@ -63,14 +66,14 @@ lsci.DelCPCAModel.argtypes = [ctypes.POINTER(ctypes.POINTER(CPCAMODEL))]
 lsci.DelCPCAModel.restype = None
 
 
-def DelCPCAModel(mpca):
+def del_cpca_model(mpca):
     """
-    DelCPCAModel: Delete an allocated libscientific CPCA model
+    del_cpca_model: Delete an allocated libscientific CPCA model
     """
     lsci.DelCPCAModel(ctypes.pointer(mpca))
 
 
-lsci.CPCA.argtypes = [ctypes.POINTER(tns.tensor),
+lsci.CPCA.argtypes = [ctypes.POINTER(tns.TENSOR),
                      ctypes.c_size_t,
                      ctypes.c_size_t,
                      ctypes.POINTER(CPCAMODEL),
@@ -78,27 +81,27 @@ lsci.CPCA.argtypes = [ctypes.POINTER(tns.tensor),
 lsci.CPCA.restype = None
 
 
-def CPCA_(m, scaling, npc, mpca):
+def cpca_algorithm(t_input, scaling, npc, mpca):
     """
     CPCA: Calculate the CPCA model for a matrix m using the NIPALS algorithm
     """
     ssignal = ctypes.c_int(0)
-    lsci.CPCA(m, scaling, npc, mpca, ssignal)
+    lsci.CPCA(t_input, scaling, npc, mpca, ssignal)
 
 
-lsci.CPCAScorePredictor.argtypes = [ctypes.POINTER(tns.tensor),
+lsci.CPCAScorePredictor.argtypes = [ctypes.POINTER(tns.TENSOR),
                                    ctypes.POINTER(CPCAMODEL),
                                    ctypes.c_size_t,
-                                   ctypes.POINTER(mx.matrix),
-                                   ctypes.POINTER(tns.tensor)]
+                                   ctypes.POINTER(mx.MATRIX),
+                                   ctypes.POINTER(tns.TENSOR)]
 lsci.CPCAScorePredictor.restype = None
 
 
-def CPCAScorePredictor(t, model, npc, p_super_scores, p_block_scores):
+def cpca_score_predictor(t_input, model, npc, p_super_scores, p_block_scores):
     """
-    CPCAScorePredictor: Predict scores for a matrix m in the computed CPCA modes
+    cpca_score_predictor: Predict scores for a matrix m in the computed CPCA modes
     """
-    lsci.CPCAScorePredictor(t,
+    lsci.CPCAScorePredictor(t_input,
                             model,
                             npc,
                             p_super_scores,
@@ -108,109 +111,142 @@ def CPCAScorePredictor(t, model, npc, p_super_scores, p_block_scores):
 lsci.PrintCPCA.argtypes = [ctypes.POINTER(CPCAMODEL)]
 lsci.PrintCPCA.restype = None
 
-def PrintCPCA(mpca):
+def print_cpca(mpca):
     """
     PrintCPCA: Print to video the CPCA Model
     """
     lsci.PrintCPCA(mpca)
 
 
-class CPCA(object):
+class CPCA():
+    """
+    CPCA model class
+    """
     def __init__(self, scaling, npc):
-        self.model = NewCPCAModel()
+        self.model = new_cpca_model()
         self.scaling = scaling
         self.npc = npc
 
     def __del__(self):
         if self.model is not None:
-            DelCPCAModel(self.model)
+            del_cpca_model(self.model)
             del self.model
         self.model = None
 
-    def fit(self, t_):
-        if "Tensor" in str(type(t_)):
-            CPCA_(t_, self.scaling, self.npc, self.model)
+    def fit(self, t_input):
+        """
+        fit a cpca model using an input tensor
+        """
+        if "Tensor" in str(type(t_input)):
+            cpca_algorithm(t_input, self.scaling, self.npc, self.model)
         else:
-            t = tns.NewTensor(t_)
-            CPCA_(t, self.scaling, self.npc, self.model)
-            tns.DelTensor(t)
-            del t
+            t_input_ = tns.new_tensor(t_input)
+            cpca_algorithm(t_input_, self.scaling, self.npc, self.model)
+            tns.del_tensor(t_input_)
+            del t_input_
 
     def get_super_scores(self):
-        return mx.MatrixToList(self.model[0].super_scores)
+        """
+        get the cpca super scores
+        """
+        return mx.matrix_to_list(self.model[0].super_scores)
 
     def get_super_weights(self):
-        return mx.MatrixToList(self.model[0].super_weights)
+        """
+        get the cpca super weights
+        """
+        return mx.matrix_to_list(self.model[0].super_weights)
 
     def get_block_scores(self):
-        return tns.TensorToList(self.model[0].block_scores)
-    
+        """
+        get the cpca block scores
+        """
+        return tns.tensor_tolist(self.model[0].block_scores)
+
     def get_block_loadings(self):
-        return tns.TensorToList(self.model[0].block_loadings)
+        """
+        get the cpca block loadings
+        """
+        return tns.tensor_tolist(self.model[0].block_loadings)
 
     def get_block_expvar(self):
-        return vlst.DVectorListToList(self.model[0].block_expvar)
-    
-    def get_total_exp_variance(self):
-        return vect.DVectorToList(self.model[0].total_expvar)
+        """
+        get the cpca block variance explained
+        """
+        return vlst.dvector_list_tolist(self.model[0].block_expvar)
 
-    def predict(self, t_):
-        t = tns.NewTensor(t_)
-        p_super_scores_ = mx.initMatrix()
-        p_block_scores_ = tns.initTensor()
-        
-        CPCAScorePredictor(t,
-                           self.model,
-                           self.npc,
-                           p_super_scores_,
-                           p_block_scores_)
-        p_super_scores = mx.MatrixToList(p_super_scores_)
-        p_block_scores = tns.TensorToList(p_block_scores_)
-        mx.DelMatrix(p_super_scores_)
+    def get_total_exp_variance(self):
+        """
+        get the cpca total variance explained
+        """
+        return vect.dvector_tolist(self.model[0].total_expvar)
+
+    def predict(self, t_input):
+        """
+        get the cpca block variance explained
+        """
+        t_input_ = tns.new_tensor(t_input)
+        p_super_scores_ = mx.init_matrix()
+        p_block_scores_ = tns.init_tensor()
+
+        cpca_score_predictor(t_input_,
+                            self.model,
+                            self.npc,
+                            p_super_scores_,
+                            p_block_scores_)
+        p_super_scores = mx.matrix_to_list(p_super_scores_)
+        p_block_scores = tns.tensor_tolist(p_block_scores_)
+        mx.del_matrix(p_super_scores_)
         del p_super_scores_
-        
-        tns.DelTensor(p_block_scores_)
+
+        tns.del_tensor(p_block_scores_)
         del p_block_scores_
-        
-        tns.DelTensor(t)
-        del t
+
+        tns.del_tensor(t_input_)
+        del t_input_
         return p_super_scores, p_block_scores
 
 
 if __name__ == '__main__':
-    def mx_to_video(m, decimals=5):
-        for row in m:
+    def mx_to_video(m_input, decimals=5):
+        """
+        print a matrix to video
+        """
+        for row in m_input:
             print("\t".join([str(round(x, decimals)) for x in row]))
 
-    def t_to_video(t):
+    def t_to_video(t_input):
+        """
+        print a tensor to video
+        """
         i = 1
-        for m in t:
-            print("Block: %d" % (i))
-            mx_to_video(m, 3)
+        for mx_input in t_input:
+            print(f"Block: {i}")
+            mx_to_video(mx_input, 3)
             i+=1
-    
+
     import random
     random.seed(123456)
     a = [[[random.random() for j in range(4)] for i in range(10)] for k in range(4)]
-    t = tns.NewTensor(a)
+    t = tns.new_tensor(a)
     print("Original Tensor")
     t_to_video(a)
     print("Computing CPCA ...")
-    model = CPCA(1, 2)
-    model.fit(a)
+    cpca = CPCA(1, 2)
+    cpca.fit(a)
     print("Showing the CPCA super scores")
-    sscores = model.get_super_scores()
+    sscores = cpca.get_super_scores()
     mx_to_video(sscores, 3)
     print("Showing the CPCA super weights")
-    sweights = model.get_super_weights()
+    sweights = cpca.get_super_weights()
     mx_to_video(sweights, 3)
     print("Showing the CPCA block scores")
-    block_scores = model.get_block_scores()
+    block_scores = cpca.get_block_scores()
     t_to_video(block_scores)
     print("Showing the CPCA block loadings")
-    block_loadings = model.get_block_loadings()
+    block_loadings = cpca.get_block_loadings()
     t_to_video(block_loadings)
 
-    print(model.get_total_exp_variance())
-    p_ss, p_bs = model.predict(a)
+    print(cpca.get_total_exp_variance())
+    p_ss, p_bs = cpca.predict(a)
     mx_to_video(p_ss, 3)
