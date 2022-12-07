@@ -156,5 +156,6 @@ update to the latest version of libscientific, make the changes and open a Pull 
 However, here are some recommendations.
 Before opening a Pull Request:
   * Be sure that your code it's working.
+  * No leaks. Run valgrind
   * Comment your code with Parameters, attributes, returns, notes, and References.
   * A test example is necessary.
