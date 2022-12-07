@@ -69,6 +69,11 @@ void SubspaceMatrix(matrix *mx, uivector *featureids, matrix **x_subspace)
   }
 }
 
+ELearningParameters initElearningParameters()
+{
+  return (ELearningParameters){ .n_models = 100, .trainsize = 0.3, .algorithm = Bagging, .r_fix = 4};
+}
+
 void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautoscaling, EPLSMODEL *m, ELearningParameters eparm, ssignal *s)
 {
   size_t i, j, it;
@@ -225,11 +230,11 @@ void EPLSGetSYLoadings(EPLSMODEL *m, CombinationRule crule, matrix *syloadings){
 void EPLSGetSWeights(EPLSMODEL *m, CombinationRule crule, matrix *sweights){}
 void EPLSGetSBetaCoefficients(EPLSMODEL *m, CombinationRule crule, matrix *sbetas){}
 
-void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, tensor **tscores, matrix **y)
+void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, tensor **tscores, matrix **py)
 {
   size_t i, j, k;
 
-  ResizeMatrix((*y), mx->row, m->ny*m->nlv);
+  ResizeMatrix((*py), mx->row, m->ny*m->nlv);
 
   matrix *x_subspace;
   matrix *tot_yweight;
@@ -277,7 +282,7 @@ void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, tensor
                * bias^2(y_mean) + var(y_mean) could be reduced!
                */
               double weight = pow(1.f/(m->models[i]->sdep->data[lv][ycol]*pow(m->models[i]->bias->data[lv][ycol],2)), 4);
-              (*y)->data[k][c] +=  weight*model_py->data[k][c];
+              (*py)->data[k][c] +=  weight*model_py->data[k][c];
               c++;
             }
           }
@@ -286,7 +291,7 @@ void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, tensor
       else{
         for(k = 0; k < model_py->row; k++){
           for(j = 0; j < model_py->col; j++){
-            (*y)->data[k][j] += model_py->data[k][j];
+            (*py)->data[k][j] += model_py->data[k][j];
           }
         }
       }
@@ -305,21 +310,21 @@ void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, tensor
         }
       }
 
-      for(i = 0; i < (*y)->row; i++){
+      for(i = 0; i < (*py)->row; i++){
         size_t c, lv, ycol;
         c = 0;
         for(lv = 0; lv < tot_yweight->row; lv++){
           for(ycol = 0; ycol < tot_yweight->col; ycol++){
-            (*y)->data[i][c] /= tot_yweight->data[lv][ycol];
+            (*py)->data[i][c] /= tot_yweight->data[lv][ycol];
             c++;
           }
         }
       }
     }
     else{
-      for(i = 0; i < (*y)->row; i++){
-        for(j = 0; j < (*y)->col; j++){
-          (*y)->data[i][j] /= (double)m->n_models;
+      for(i = 0; i < (*py)->row; i++){
+        for(j = 0; j < (*py)->col; j++){
+          (*py)->data[i][j] /= (double)m->n_models;
         }
       }
     }
@@ -354,7 +359,7 @@ void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, tensor
         }
         double median;
         DVectorMedian(v, &median);
-        (*y)->data[i][j] = median;
+        (*py)->data[i][j] = median;
       }
     }
     DelDVector(&v);

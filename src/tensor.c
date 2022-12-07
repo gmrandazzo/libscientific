@@ -110,12 +110,12 @@ void PrintTensor(tensor *t)
   }
 }
 
-void setTensorValue(tensor *t, size_t i, size_t j, size_t k, double val)
+void setTensorValue(tensor *t, size_t order, size_t row, size_t col, double val)
 {
-  if(i < (*t).order){
-    if(j < (*t).m[i]->row){
-      if(k < (*t).m[i]->col){
-        setMatrixValue((*t).m[i], j, k, val);
+  if(order < (*t).order){
+    if(row < (*t).m[order]->row){
+      if(col < (*t).m[order]->col){
+        setMatrixValue((*t).m[order], row, col, val);
       }
       else{
         fprintf(stderr, "setTensorValue Error! Wrong columnindex.\n");
@@ -136,11 +136,12 @@ void setTensorValue(tensor *t, size_t i, size_t j, size_t k, double val)
   }
 }
 
-double getTensorValue(tensor *t, size_t i, size_t j, size_t k){
-    if(i < (*t).order){
-    if(j < (*t).m[i]->row){
-      if(k < (*t).m[i]->col){
-        return getMatrixValue((*t).m[i], j, k);
+double getTensorValue(tensor *t, size_t order, size_t row, size_t col)
+{
+  if(order < (*t).order){
+    if(row < (*t).m[order]->row){
+      if(col < (*t).m[order]->col){
+        return getMatrixValue((*t).m[order], row, col);
       }
       else{
         fprintf(stderr, "getTensorValue Error! Wrong columnindex.\n");
@@ -205,10 +206,10 @@ void TensorAppendMatrixAt(tensor *tdst, size_t order, matrix *msrc)
  * n is the order number
  * column is the columnvector to append
  */
-void TensorAppendColumn(tensor *t, size_t n, dvector* column)
+void TensorAppendColumn(tensor *t, size_t order, dvector* column)
 {
-  if(n < t->order){
-    MatrixAppendCol(t->m[n], column);
+  if(order < t->order){
+    MatrixAppendCol(t->m[order], column);
     /*
     if(column->size == (*t)->m[n]->row){
       MatrixAppendCol(&(*t)->m[n], column);
@@ -221,8 +222,8 @@ void TensorAppendColumn(tensor *t, size_t n, dvector* column)
     */
   }
   else{
-    if(n > t->order){
-      fprintf(stderr, "Error! Order number too high. %u > %u\n", (unsigned int)n, (unsigned int)t->order );
+    if(order > t->order){
+      fprintf(stderr, "Error! Order number too high. %zu > %zu\n", order, t->order);
     }
     else{
       fprintf(stderr, "Error! Order 0!\n");
@@ -237,20 +238,20 @@ void TensorAppendColumn(tensor *t, size_t n, dvector* column)
  * n is the order number
  * column is the columnvector to append
  */
-void TensorAppendRow(tensor *t, size_t n, dvector* row)
+void TensorAppendRow(tensor *t, size_t order, dvector* row)
 {
-  if(n < t->order){
-    if(row->size != t->m[n]->col){
-      MatrixAppendRow(t->m[n], row);
+  if(order < t->order){
+    if(row->size != t->m[order]->col){
+      MatrixAppendRow(t->m[order], row);
     }
     else{
-      fprintf(stderr, "Error! The column number differ %u != %u\n", (unsigned int)row->size, (unsigned int)t->m[n]->col);
+      fprintf(stderr, "Error! The column number differ %zu != %zu\n", row->size, t->m[order]->col);
       fflush(stderr);
       abort();
     }
   }
   else{
-    fprintf(stderr, "Error! Order number too high. %u > %u\n", (unsigned int)n, (unsigned int)t->order);
+    fprintf(stderr, "Error! Order number too high. %zu > %zu\n", order, t->order);
     fflush(stderr);
     abort();
   }

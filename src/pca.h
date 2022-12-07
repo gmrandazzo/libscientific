@@ -62,7 +62,7 @@ void PCAScorePredictor(matrix *mx,
 void PCAIndVarPredictor(matrix *t,
                         matrix *p,
                         dvector *colaverage,
-                        dvector *colsdev,
+                        dvector *colscaling,
                         size_t npc,
                         matrix *mx);
 
@@ -76,7 +76,7 @@ void PCARankValidation(matrix *mx,
                        size_t scaling,
                        size_t group,
                        size_t iterations,
-                       dvector *r,
+                       dvector *r2,
                        ssignal *s);
 
 /*Compute the residual matrix for a specific number of component.

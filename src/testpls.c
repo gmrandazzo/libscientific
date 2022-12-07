@@ -88,9 +88,9 @@ void TestPLS13()
 
 
   /*VALIDATE THE MODEL */
-  MODELINPUT minpt;
-  minpt.mx = &x;
-  minpt.my = &y;
+  MODELINPUT minpt = initModelInput();
+  minpt.mx = x;
+  minpt.my = y;
   minpt.nlv = 4;
   minpt.xautoscaling = 1;
   minpt.yautoscaling = 0;
@@ -209,9 +209,9 @@ void TestPLS12()
 
 
   /*VALIDATE THE MODEL */
-  MODELINPUT minpt;
-  minpt.mx = &x;
-  minpt.my = &y;
+  MODELINPUT minpt = initModelInput();
+  minpt.mx = x;
+  minpt.my = y;
   minpt.nlv = 4;
   minpt.xautoscaling = 1;
   minpt.yautoscaling = 0;
@@ -291,9 +291,9 @@ void TestPLS11()
   initMatrix(&predicted_residuals);
 
 
-  MODELINPUT minpt;
-  minpt.mx = &mx;
-  minpt.my = &my;
+  MODELINPUT minpt = initModelInput();
+  minpt.mx = mx;
+  minpt.my = my;
   minpt.nlv = 10;
   minpt.xautoscaling = 1;
   minpt.yautoscaling = 0;
@@ -331,9 +331,9 @@ void TestPLS10()
   NewPLSModel(&m);
   PLS(x, y, 5, 1, 1, m, NULL);
 
-  MODELINPUT minpt;
-  minpt.mx = &x;
-  minpt.my = &y;
+  MODELINPUT minpt = initModelInput();
+  minpt.mx = x;
+  minpt.my = y;
   minpt.nlv = 5;
   minpt.xautoscaling = 1;
   minpt.yautoscaling = 1;
@@ -341,7 +341,7 @@ void TestPLS10()
   LeaveOneOut(&minpt, _PLS_, m->predicted_y, m->pred_residuals, 4, NULL, 0);
   PLSRegressionStatistics(y, m->predicted_y, m->q2y, m->sdep, m->bias);
 
-  ValidationArg varg;
+  ValidationArg varg = initValidationArg();
   varg.vtype = BootstrapRGCV;
   YScrambling(&minpt, _PLS_, varg, 20, m->yscrambling, 4, NULL);
 
@@ -694,9 +694,9 @@ void TestPLS5()
 
   ssignal run = SIGSCIENTIFICRUN;
 
-  MODELINPUT minpt;
-  minpt.mx = &x;
-  minpt.my = &y;
+  MODELINPUT minpt = initModelInput();
+  minpt.mx = x;
+  minpt.my = y;
   minpt.nlv = 5;
   minpt.xautoscaling = 1;
   minpt.yautoscaling = 1;
@@ -897,9 +897,9 @@ void TestPLS2()
   PLS(x, y, 5, 0, 0, m, &run);
 
   /*VALIDATE THE MODEL */
-  MODELINPUT minpt;
-  minpt.mx = &x;
-  minpt.my = &y;
+  MODELINPUT minpt = initModelInput();
+  minpt.mx = x;
+  minpt.my = y;
   minpt.nlv = 5;
   minpt.xautoscaling = 1;
   minpt.yautoscaling = 0;
@@ -976,9 +976,9 @@ void TestPLS1()
   PrintPLSModel(m);
 
   /*VALIDATE THE MODEL */
-  MODELINPUT minpt;
-  minpt.mx = &x;
-  minpt.my = &y;
+  MODELINPUT minpt = initModelInput();
+  minpt.mx = x;
+  minpt.my = y;
   minpt.nlv = 3;
   minpt.xautoscaling = 0;
   minpt.yautoscaling = 0;

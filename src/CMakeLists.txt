@@ -154,11 +154,11 @@ add_test(NAME testepls COMMAND testepls)
 
 add_executable(testmwpca ${MPCATest_SRC})
 target_link_libraries(testmwpca libscientific)
-#add_test(NAME testmwpca COMMAND testmwpca)
+add_test(NAME testmwpca COMMAND testmwpca)
 
 add_executable(testmwpls ${MPLSTest_SRC})
 target_link_libraries(testmwpls libscientific)
-#add_test(NAME testmwpls COMMAND testmwpls)
+add_test(NAME testmwpls COMMAND testmwpls)
 
 add_executable(testclustering ${CLUSTERINGTest_SRC})
 target_link_libraries(testclustering libscientific)

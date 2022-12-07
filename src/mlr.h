@@ -65,11 +65,11 @@ void MLRPredictY(matrix* mx,
  *              the bias of the prediction (bias) in a regression model.
  *              mx and my could be the training or the test datasets.
  */
-void MLRRegressionStatistics(matrix *my_true,
-                             matrix *my_pred,
-                             dvector *ccoeff,
-                             dvector *stdev,
-                             dvector *bias);
+ void MLRRegressionStatistics(matrix *my_true,
+                              matrix *my_pred,
+                              dvector *ccoeff,
+                              dvector *rmse,
+                              dvector *bias);
 
 void PrintMLR(MLRMODEL *m);
 

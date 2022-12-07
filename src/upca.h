@@ -47,7 +47,7 @@ void UPCAScorePredictor(tensor *X_,
 void UPCAIndVarPredictor(matrix *T,
                          tensor *P,
                          dvectorlist *colaverage,
-                         dvectorlist *colsdev,
+                         dvectorlist *colscaling,
                          size_t npc,
                          tensor *X);
 

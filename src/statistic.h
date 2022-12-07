@@ -63,7 +63,7 @@ double BIAS(dvector *ytrue, dvector *ypred);
  *
  * Sensitivity = TP / TP + FN
  */
-void Sensitivity(dvector *tp,
+void Sensitivity(dvector *dtp,
                  double thmin,
                  double thmax,
                  double thstep,

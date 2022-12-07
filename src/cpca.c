@@ -77,7 +77,7 @@ static inline void CalcBlockLoadings(matrix *Xb, dvector *t, dvector *p){
  */
 void CPCA(tensor *x, int scaling, size_t npc, CPCAMODEL *model)
 {
-  size_t i, j, k, c, pc;
+  size_t i, j, k, pc;
   matrix *T_T, *T;
   matrix *Eb_T, *Eb_T_E;
   dvector *t_b, *t, *t_new;
@@ -113,7 +113,7 @@ void CPCA(tensor *x, int scaling, size_t npc, CPCAMODEL *model)
   * we apply the following scaling to X for the PCA analysis
   * (step 1)
   */
-  c = 0; //Column
+  int c = 0; //Column
   for(k = 0; k < x->order; k++){
     double m = sqrt((double)x->m[k]->col);
     DVectorAppend(model->scaling_factor, m);
@@ -129,7 +129,7 @@ void CPCA(tensor *x, int scaling, size_t npc, CPCAMODEL *model)
  /* if the number of principal component selected is major of the permitted
   * set the value to the max value
   */
-  for(k = 0; j < Eb->order; k++){
+  for(k = 0; k < Eb->order; k++){
     if(npc > Eb->m[k]->col){
       npc = Eb->m[k]->col;
     }
@@ -401,7 +401,7 @@ void CPCAScorePredictor(tensor *x,
 
   if(npc > model->super_scores->col)
     npc = model->super_scores->col;
-  
+
   NewTensor(&Eb, x->order);
   for(k = 0; k < Eb->order; k++){
     NewTensorMatrix(Eb, k, x->m[k]->row, x->m[k]->col);

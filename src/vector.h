@@ -48,7 +48,7 @@ void setStr(strvector *s, size_t i, char *str);
 char* getStr(strvector *s, size_t i);
 
 /* Append to a strvector an other strvector */
-strvector *StrVectorExtend(strvector *d1, strvector *d2);
+strvector *StrVectorExtend(strvector *s1, strvector *s2);
 void PrintStrVector(strvector *s);
 
 /*operations with string*/
@@ -105,7 +105,7 @@ void DVectorDVectorDiff(dvector *v1, dvector *v2, dvector *v3);
 void DVectorDVectorSum(dvector *v1, dvector *v2, dvector *v3);
 void DVectorMinMax(dvector *v, double *min, double *max);
 void DVectorMean(dvector *d, double *mean);
-void DVectorMedian(dvector *d, double *mean);
+void DVectorMedian(dvector *d, double *median);
 void DVectorSDEV(dvector *d, double *sdev);
 void DVectorSort(dvector *v);
 
@@ -117,7 +117,7 @@ typedef struct{
 } ivector;
 
 /* Allocate a ivector */
-void NewIVector(ivector** d, size_t size_);
+void NewIVector(ivector** d, size_t size);
 void initIVector(ivector **d);
 
 /* Delete a ivector */

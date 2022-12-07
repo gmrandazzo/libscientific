@@ -53,12 +53,9 @@ void test3()
 
   PrintMLR(m);
 
-  MODELINPUT minpt;
-  minpt.mx = &mx;
-  minpt.my = &my;
-  minpt.nlv = 0;
-  minpt.xautoscaling = 0;
-  minpt.yautoscaling = 0;
+  MODELINPUT minpt = initModelInput();
+  minpt.mx = mx;
+  minpt.my = my;
 
   matrix *py_rgcv, *pres_rgcv;
   initMatrix(&py_rgcv);
@@ -146,11 +143,11 @@ void test2()
   MLR(mx, my, m, &s);
 
 
-  MODELINPUT minpt;
-  minpt.mx = &mx;
-  minpt.my = &my;
+  MODELINPUT minpt = initModelInput();
+  minpt.mx = mx;
+  minpt.my = my;
 
-  ValidationArg varg;
+  ValidationArg varg = initValidationArg();
   varg.vtype = LOO;
   YScrambling(&minpt, _MLR_, varg, 100, m->r2q2scrambling, 4, &s);
   LeaveOneOut(&minpt, _MLR_, m->predicted_y, m->pred_residuals, 4, &s, 0);
@@ -195,14 +192,14 @@ void test1()
   MLR(mx, my, m, &s);
 
   /*VALIDATE THE MODEL */
-  MODELINPUT minpt;
-  minpt.mx = &mx;
-  minpt.my = &my;
+  MODELINPUT minpt = initModelInput();
+  minpt.mx = mx;
+  minpt.my = my;
 
   BootstrapRandomGroupsCV(&minpt, 2, 20, _MLR_, m->predicted_y, m->pred_residuals, 1, &s, 0);
   //LeaveOneOut(&minpt, _MLR_, &m->predicted_y, &m->pred_residuals, 1, &s, 0);
 
-  ValidationArg varg;
+  ValidationArg varg = initValidationArg();
   varg.vtype = BootstrapRGCV;
   YScrambling(&minpt, _MLR_, varg, 100, m->r2q2scrambling, 4, &s);
 

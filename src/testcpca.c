@@ -10,6 +10,7 @@ void PrepareMatrix4PCA(tensor *t, CPCAMODEL *model, matrix *X)
 {
   size_t i, j, k, c, row, col;
   col = 0;
+  row = 0;
   for(k = 0; k < t->order; k++){
     row = t->m[k]->row;
     col += t->m[k]->col;

@@ -18,12 +18,15 @@ void cubic_spline_interpolation(matrix *xy, matrix *S)
   size_t np1 = xy->row;
   size_t n = np1-1;
   double a[np1], b[n], d[n], h[n], alpha[n], c[np1], l[np1], u[np1], z[np1];
-
-  for(i = 0; i < np1; i++)
+  
+  for(i = 0; i < np1; i++){
     a[i] = xy->data[i][1];
+    c[i] = l[i] = u[i] = z[i] = 0.f; /* initialize */
+  }
 
   for(i = 0; i < n; i++){
     h[i] = xy->data[i+1][0] - xy->data[i][0];
+    b[i] = d[i] = alpha[i] = 0.f; /* initialize */
   }
 
   for(i = 1; i < n; i++){
@@ -39,7 +42,6 @@ void cubic_spline_interpolation(matrix *xy, matrix *S)
     z[i] = (alpha[i]-h[i-1]*z[i-1])/l[i];
   }
 
-  l[n] = 1.f;
   z[n] = 0.f;
   c[n] = 0.f;
 
@@ -49,24 +51,23 @@ void cubic_spline_interpolation(matrix *xy, matrix *S)
     d[j] = (c[j+1]-c[j])/(3.f*h[j]);
   }
 
-    /* Write SPLINE EQUATIONS
-     * first column is the x range
-     * second is a, then b,c and d.
-     */
-    ResizeMatrix(S, n, 5);
-    for(i = 0; i < n; i++){
-      S->data[i][0] = xy->data[i][0];
-      S->data[i][1] = a[i];
-      S->data[i][2] = b[i];
-      S->data[i][3] = c[i];
-      S->data[i][4] = d[i];
-    }
+  /* Write SPLINE EQUATIONS
+    * first column is the x range
+    * second is a, then b,c and d.
+    */
+  ResizeMatrix(S, n, 5);
+  for(i = 0; i < n; i++){
+    S->data[i][0] = xy->data[i][0];
+    S->data[i][1] = a[i];
+    S->data[i][2] = b[i];
+    S->data[i][3] = c[i];
+    S->data[i][4] = d[i];
+  }
 }
 
 void cubic_spline_predict(dvector *x_, matrix *S, dvector *y_pred)
 {
   size_t i, j, n;
-  double x, xi, y;
   n = S->row-1;
   DVectorResize(y_pred, x_->size);
   /* Now interpolate using the equations:
@@ -74,10 +75,10 @@ void cubic_spline_predict(dvector *x_, matrix *S, dvector *y_pred)
    * for xj ≤ x ≤ xj+1)
    */
   for(i = 0; i < x_->size; i++){
-    x = x_->data[i];
-    y = MISSING;
+    double x = x_->data[i];
+    double y = MISSING;
     for(j = 0; j < n; j++){
-      xi = S->data[j][0];
+      double xi = S->data[j][0];
       if((x > xi || FLOAT_EQ(x, xi, 1e-2)) &&
       (x < S->data[j+1][0] || FLOAT_EQ(x, S->data[j+1][0], 1e-2))){
         //printf("for %f selecting %d\n", x, j);
@@ -95,7 +96,7 @@ void cubic_spline_predict(dvector *x_, matrix *S, dvector *y_pred)
      * with the last row of coefficients in S
      */
     if(FLOAT_EQ(y, MISSING, 1e-2)){
-      xi = S->data[n][0];
+      double xi = S->data[n][0];
       j = S->row-1;
       y = S->data[j][1] + S->data[j][2]*(x-xi) + S->data[j][3]*(x-xi)*(x-xi) + S->data[j][4]*(x-xi)*(x-xi)*(x-xi);
     }

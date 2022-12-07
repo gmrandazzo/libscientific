@@ -57,7 +57,7 @@ void CPCA(tensor *x, int scaling, size_t npc, CPCAMODEL *model);
 /*
  * Project objects in a CPCA model.
  */
-void CPCAScorePredictor(tensor *mx,
+void CPCAScorePredictor(tensor *x,
                         CPCAMODEL *model,
                         size_t npc,
                         matrix *p_super_scores,

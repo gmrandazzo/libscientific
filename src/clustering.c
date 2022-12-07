@@ -44,11 +44,10 @@ typedef struct{
 void *MDCWorker(void *arg_)
 {
   size_t k, j;
-  double dist;
   mdc_th_args *arg = (mdc_th_args*) arg_;
 
   for(k = arg->from; k < arg->to; k++){
-    dist = 0.f;
+    double dist = 0.f;
     // EUCLIDEAN DISTANCE
     if(arg->metric == 0){
       for(j = 0; j < arg->m->col; j++){
@@ -80,7 +79,7 @@ void *MDCWorker(void *arg_)
 }
 
 /*
- *
+ * Most Dscriptive Compound Selection Algorithm
  */
 void MDC(matrix* m,
          size_t n,
@@ -209,7 +208,7 @@ void MDC(matrix* m,
 
   nmdc = 0;
   while(1){
-    if(s != NULL && (*s) == SIGSCIENTIFICSTOP){
+    if(s && (*s) == SIGSCIENTIFICSTOP){
       break;
     }
     else{
@@ -387,7 +386,7 @@ void MaxDis(matrix* m,
             size_t nthreads,
             ssignal *s)
 {
-  size_t i, j, l, nobj, ntotobj;
+  size_t i, j, nobj, ntotobj;
   int far_away;
   double far;
   double dis;
@@ -439,7 +438,7 @@ void MaxDis(matrix* m,
    */
 
   /* 1. Initialise Subset by transferring to it a componund */
-  if(s != NULL && (*s) == SIGSCIENTIFICRUN){
+  if(s && (*s) == SIGSCIENTIFICRUN){
     UIVectorAppend(selections, getUIVectorValue(idselection, 0));
 
     tmp = getMatrixRow(m, getUIVectorValue(idselection, 0));
@@ -457,7 +456,7 @@ void MaxDis(matrix* m,
     }
 
     for(nobj = 1; nobj < ntotobj; nobj++){
-      if(s != NULL && (*s) == SIGSCIENTIFICSTOP){
+      if(s && (*s) == SIGSCIENTIFICSTOP){
         break;
       }
       else{
@@ -516,7 +515,7 @@ void MaxDis(matrix* m,
 
         /*Select the maximum object distant from all minimum distances */
 
-        l = 0;
+        int l = 0;
         for(i = 1; i < mindists->size; i++){
           if(mindists->data[i] > mindists->data[l]){
             l = i;
@@ -636,7 +635,7 @@ void MaxDis_Fast(matrix* m,
 
   /* ntob = 1 because we have already selected the first object, the far away objcet*/
   for(nobj = 1; nobj < n; nobj++){
-    if(s != NULL && (*s) == SIGSCIENTIFICRUN){
+    if(s && (*s) == SIGSCIENTIFICRUN){
       /* Select the minumum distance of all remaining objects
        * from the already selected points
        */
@@ -932,7 +931,7 @@ void KMeansppCenters(matrix *m,
 
   /* Step 2 */
   while(q > 1){
-    if(s != NULL && (*s) == SIGSCIENTIFICSTOP){
+    if(s && (*s) == SIGSCIENTIFICSTOP){
       break;
     }
     else{
@@ -1431,7 +1430,8 @@ void KMeansRandomGroupsCV(matrix* m,
                           ssignal *s)
 {
 
-  size_t i, j, k, g, n, a, iterations_;
+  size_t i, j, k, g, n, iterations_;
+  int a;
   double mindist;
   matrix *gid, *subm, *predm, *centroids, *distances;
   uivector *clusters;
@@ -1444,7 +1444,7 @@ void KMeansRandomGroupsCV(matrix* m,
 
   iterations_ = 0;
   while(iterations_ <  iterations){
-    if(s != NULL && (*s) == SIGSCIENTIFICSTOP){
+    if(s && (*s) == SIGSCIENTIFICSTOP){
       break;
     }
     else{
@@ -1590,7 +1590,7 @@ void KMeansRandomGroupsCV(matrix* m,
     iterations_++;
   }
 
-  if(s != NULL && (*s) == SIGSCIENTIFICSTOP){
+  if(s && (*s) == SIGSCIENTIFICSTOP){
     DVectorResize(ssdist, 0);
     DelMatrix(&gid);
   }
@@ -1684,7 +1684,7 @@ void KMeansJumpMethod(matrix* m,
 void HierarchicalClustering(matrix* _m,
                             size_t nclusters,
                             uivector *_clusters,
-                            matrix *centroids_,
+                            matrix *_centroids,
                             strvector *dendogram,
                             enum LinkageType linktype,
                             size_t nthreads,

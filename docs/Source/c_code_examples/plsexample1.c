@@ -65,9 +65,9 @@ int main(void)
     PrintPLSModel(m); // Print to video the PLS model
 
     /*Validate the model using the internal validation method*/
-    MODELINPUT minpt; // Define the model input for the validation method
-    minpt.mx = &x;
-    minpt.my = &y;
+    MODELINPUT minpt = initModelInput(); // Define the model input for the validation method
+    minpt.mx = x;
+    minpt.my = y;
     minpt.nlv = 3;
     minpt.xautoscaling = 1;
     minpt.yautoscaling = 0;

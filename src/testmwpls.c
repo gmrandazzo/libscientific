@@ -23,7 +23,7 @@
 #include "upls.h"
 #include "upca.h"
 
-void test9()
+void test8()
 {
   tensor *ax;
   tensor *ay;
@@ -35,7 +35,7 @@ void test9()
 
   UPLSMODEL *m;
 
-  puts(">>>>>>> Test 9: Compute Multi Way LOO Cross Validation");
+  puts(">>>>>>> Test 8: Compute Multi Way LOO Cross Validation");
 
   NewTensor(&ax, 2);
 
@@ -146,7 +146,7 @@ void test9()
   DelTensor(&ax);
 }
 
-void test8()
+void test7()
 {
   tensor *ax;
   tensor *ay;
@@ -156,7 +156,7 @@ void test8()
   tensor *sdep;
   tensor *predicted_y;
 
-  puts(">>>>>>> Test 8: Compute Multi Way Random Group Cross Validation");
+  puts(">>>>>>> Test 7: Compute Multi Way Random Group Cross Validation");
 
   NewTensor(&ax, 2);
 
@@ -251,10 +251,8 @@ void test8()
   DelTensor(&ax);
 }
 
-/*
- * Test from Fabio Broccatelli Calculation R(y)^2
- */
-void test7()
+
+void test6()
 {
   tensor *ax;
   tensor *ay;
@@ -263,7 +261,7 @@ void test7()
   tensor *q2y;
   tensor *sdep;
 
-  puts(">>>>>>> Test 7: Compute Multi Way Random Group Cross Validation");
+  puts(">>>>>>> Test 6: Compute Multi Way Random Group Cross Validation");
 
   NewTensor(&ax, 2);
 
@@ -337,128 +335,6 @@ void test7()
   DelTensor(&ax);
 }
 
-
-/*
- * Test from Fabio Broccatelli Calculation R(y)^2
- */
-void test6()
-{
-  tensor *ax;
-  tensor *ay;
-
-  tensor *axp;
-
-  UPLSMODEL *m;
-
-  tensor *py;
-  matrix *pscores;
-
-  dvector *r2x;
-  tensor *r2y;
-  tensor *sdec;
-
-
-  puts(">>>>>>> Test 6: Compute Multi Way PLS and Prediction");
-
-  NewTensor(&ax, 2);
-
-  NewTensorMatrix(ax, 0, 3, 2);
-  NewTensorMatrix(ax, 1, 3, 2);
-
-  setTensorValue(ax, 0, 0, 0, 37);  setTensorValue(ax, 0, 0, 1, 12);
-  setTensorValue(ax, 0, 1, 0, 62);  setTensorValue(ax, 0, 1, 1, 40);
-  setTensorValue(ax, 0, 2, 0, 13);  setTensorValue(ax, 0, 2, 1, 2);
-
-  setTensorValue(ax, 1, 0, 0, 4);  setTensorValue(ax, 1, 0, 1, 3);
-  setTensorValue(ax, 1, 1, 0, 2);  setTensorValue(ax, 1, 1, 1, 2);
-  setTensorValue(ax, 1, 2, 0, 5);  setTensorValue(ax, 1, 2, 1, 2);
-
-
-  NewTensor(&ay, 2);
-
-  NewTensorMatrix(ay, 0, 3, 1);
-  NewTensorMatrix(ay, 1, 3, 1);
-
-  setTensorValue(ay, 0, 0, 0, 50);
-  setTensorValue(ay, 0, 1, 0, 86);
-  setTensorValue(ay, 0, 2, 0, 20);
-
-
-  setTensorValue(ay, 1, 0, 0, 50);
-  setTensorValue(ay, 1, 1, 0, 86);
-  setTensorValue(ay, 1, 2, 0, 20);
-
-
-  NewTensor(&axp, 2);
-  NewTensorMatrix(axp, 0, 1, 2);
-  NewTensorMatrix(axp, 1, 1, 2);
-
-  setTensorValue(axp, 0, 0, 0, 62);  setTensorValue(axp, 0, 0, 1, 62);
-  setTensorValue(axp, 1, 0, 0, 1);  setTensorValue(axp, 1, 0, 1, 1);
-
-
-  NewUPLSModel(&m);
-
-  /* Compute the model */
-  ssignal run = SIGSCIENTIFICRUN;
-  UPLS(ax, ay, 2, 1, 0, m, &run);
-
-
-  initDVector(&r2x);
-  initTensor(&r2y);
-  initTensor(&sdec);
-
-  /* calculating the r^2 for x and y model*/
-  UPLSRSquared(ax, ay, m, 2, r2x, r2y, sdec);
-
-
-  puts("Data\nX:");
-  PrintTensor(ax);
-  puts("Y:");
-  PrintTensor(ay);
-
-  initTensor(&py);
-  initMatrix(&pscores);
-
-
-  /*compute the xscore prediction*/
-  UPLSScorePredictor(axp,m, 2, pscores);
-
-  /*compute the Y prediction*/
-  UPLSYPredictor(pscores, m, 2, py);
-
-
-  PrintUPLSModel(m);
-
-  puts("R^2 for Y");
-  PrintTensor(r2y);
-
-  puts("R^2 for X");
-  PrintDVector(r2x);
-
-  puts("SDEC:");
-  PrintTensor(sdec);
-
-  puts("PREDICTIONS");
-  PrintTensor(py);
-
-  DelTensor(&py);
-  DelMatrix(&pscores);
-  DelTensor(&axp);
-
-  DelTensor(&sdec);
-  DelDVector(&r2x);
-  DelTensor(&r2y);
-
-  DelUPLSModel(&m);
-  DelTensor(&ay);
-  DelTensor(&ax);
-}
-
-
-/*
- * Test from Fabio Broccatelli
- */
 void test5()
 {
   tensor *ax;
@@ -522,7 +398,6 @@ void test5()
 
   initTensor(&py);
   initMatrix(&pscores);
-
 
   UPLSScorePredictor(axp, m, 2, pscores);
 
@@ -832,10 +707,9 @@ int main(void)
   test3();
   test4();
   test5();
-  /*test 6-9 */
+  /* test 6-8 */
   test6();
   test7();
-  /*test8(); CRASH! */
-    test9();
+  test8();
   return 0;
 }

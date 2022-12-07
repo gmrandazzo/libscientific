@@ -151,7 +151,7 @@ void MatrixDeleteColAt(matrix *m, size_t col);
  * matrix - row double vector product: the result is a row double vector
  * i.e.: X(10x5) * d(5x1) = r(10x1)
  */
-void MatrixDVectorDotProduct(matrix *m, dvector *v, dvector *r);
+void MatrixDVectorDotProduct(matrix *m, dvector *v, dvector *p);
 
 /* Multithread version of MatrixDVectorDotProduct */
 void MT_MatrixDVectorDotProduct(matrix *m, dvector *v, dvector *p);
@@ -179,7 +179,7 @@ void DVectorTransposedMatrixDivision(dvector *v, matrix *m, dvector *r);
  * Description:
  * Calculate the matrix matrix product
  */
-void MatrixDotProduct(matrix *m_t, matrix *m, matrix *r);
+void MatrixDotProduct(matrix *a, matrix *b, matrix *r);
 void RowColOuterProduct(dvector *a, dvector *b, matrix *m);
 
 /*
@@ -369,7 +369,7 @@ void SVD(matrix* m, matrix *U, matrix *S, matrix *VT);
  * Description:
  * Singular Value Decomposition lapack implementation
  */
-void SVDlapack(matrix *m, matrix *u, matrix *s, matrix *vt);
+void SVDlapack(matrix *m_, matrix *u, matrix *s, matrix *vt);
 
 /*
  * Description:

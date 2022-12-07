@@ -900,7 +900,7 @@ void DVectorTransposedMatrixDivision(dvector *v, matrix *m, dvector *r)
 }
 */
 
-void MatrixDotProduct(matrix *a, matrix *b, matrix *c)
+void MatrixDotProduct(matrix *a, matrix *b, matrix *r)
 {
   if(a->col == b->row){
     size_t i, j, k;
@@ -915,10 +915,10 @@ void MatrixDotProduct(matrix *a, matrix *b, matrix *c)
           else{
             res = a->data[i][k] * b->data[k][j];
             if(_isnan_(res) || _isinf_(res)){
-              c->data[i][j] +=  +0.f;
+              r->data[i][j] +=  +0.f;
             }
             else{
-              c->data[i][j] +=  res;
+              r->data[i][j] +=  res;
             }
           }
         }
@@ -1001,7 +1001,7 @@ void MatrixLUInversion(matrix *m, matrix *m_inv)
 
   xfree(IPIV);
   xfree(WORK);
-  
+
   ResizeMatrix(m_inv, m->row, m->col);
   k = 0;
   for(i = 0; i < m->row; i++){
@@ -1501,11 +1501,12 @@ void MatrixColDescStat(matrix *m, matrix *ds)
   int i, j, n;
   size_t n_zeros;
   size_t n_missing;
-  double avg = 0.f;
-  double median = 0.f;
-  double armonic = 0.f;
-  double var = 0.f;
-  double min = 0.f, max = 0.f;
+  double avg;
+  double median;
+  double armonic;
+  double var;
+  double min;
+  double max;
   dvector *v;
 
   /* n = m->row if no MISSING value */
@@ -1753,39 +1754,39 @@ double Matrix1norm(matrix *m)
   return norm;
 }
 
-double MatrixDeterminant(matrix *m1)
+double MatrixDeterminant(matrix *m)
 {
-  if(m1->row == m1->col){
+  if(m->row == m->col){
     size_t i, j, k, l;
     double d = 0;
-    matrix *m2;
+    matrix *sub_m;
 
-    if (m1->row < 1){
+    if (m->row < 1){
       return MISSING;
     }
-    else if(m1->row == 1){
-      d = m1->data[0][0];
+    else if(m->row == 1){
+      d = m->data[0][0];
     }
-    else if (m1->row == 2){
-      d = m1->data[0][0] * m1->data[1][1] - m1->data[1][0] * m1->data[0][1];
+    else if (m->row == 2){
+      d = m->data[0][0] * m->data[1][1] - m->data[1][0] * m->data[0][1];
     }
     else{
       d = 0.;
-      for(k = 0; k < m1->row; k++){
-        NewMatrix(&m2, m1->row-1, m1->row-1);
-        for(i = 1; i < m1->row; i++){
+      for(k = 0; k < m->row; k++){
+        NewMatrix(&sub_m, m->row-1, m->row-1);
+        for(i = 1; i < m->row; i++){
           l = 0;
-          for(j = 0; j < m1->row; j++){
+          for(j = 0; j < m->row; j++){
             if(j == k)
               continue;
             else{
-              m2->data[i-1][l] = m1->data[i][j];
+              sub_m->data[i-1][l] = m->data[i][j];
               l++;
             }
           }
         }
-        d += pow(-1.0, 1.0+k+1.0) * m1->data[0][k] * MatrixDeterminant(m2);
-        DelMatrix(&m2);
+        d += pow(-1.0, 1.0+k+1.0) * m->data[0][k] * MatrixDeterminant(sub_m);
+        DelMatrix(&sub_m);
       }
     }
     return d;
@@ -2139,7 +2140,7 @@ void EVectEval(matrix *m, dvector *eval, matrix *evect)
   double *vr = xmalloc(sizeof(double)* N*LDVR);
 
   double *a = xmalloc(sizeof(double)*N*LDA);
-  
+
   k = 0;
   for(i = 0; i < m->row; i++){
     for(j = 0; j < m->col; j++){
@@ -2154,9 +2155,9 @@ void EVectEval(matrix *m, dvector *eval, matrix *evect)
   lwork = (int)wkopt;
   work = (double*)xmalloc( lwork*sizeof(double) );
   /* Solve eigenproblem */
-  
+
   dgeev_("N", "V", &n, a, &lda, wr, wi, vl, &ldvl, vr, &ldvr, work, &lwork, &info);
-  
+
   /* Check for convergence */
   if(info > 0){
     printf( "The algorithm failed to compute eigenvalues.\n" );
@@ -2167,7 +2168,7 @@ void EVectEval(matrix *m, dvector *eval, matrix *evect)
 //  print_eigenvectors( "Left eigenvectors", n, wi, vl, ldvl );
 //    Print right eigenvectors
 //  print_eigenvectors( "Right eigenvectors", n, wi, vr, ldvr );
- 
+
   DVectorResize(eval, N);
   /*Eigenvalues
   * get only the real part
@@ -2297,5 +2298,3 @@ void QRDecomposition(matrix *m, matrix *Q, matrix *R)
   DelDVector(&d);
   DelDVector(&v);
 }
-
-

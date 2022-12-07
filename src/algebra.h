@@ -25,7 +25,7 @@
 #include "vector.h"
 #include "matrix.h"
 
-void SolveLSE(matrix *X, dvector *solution);
+void SolveLSE(matrix *mx, dvector *solution);
 void OrdinaryLeastSquares(matrix *x, dvector *y, dvector *coefficients);
 
 #endif

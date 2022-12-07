@@ -84,7 +84,7 @@ void TestEPLS5()
   /*Allocate the final output*/
   NewEPLSModel(&m);
 
-  ELearningParameters eparm;
+  ELearningParameters eparm = initElearningParameters();
   eparm.algorithm = BaggingRandomSubspaceMethod;
   eparm.n_models = 1000;
   eparm.r_fix = 4;
@@ -94,9 +94,9 @@ void TestEPLS5()
 
   //PrintEPLSModel(m);
 
-  MODELINPUT minpt;
-  minpt.mx = &x;
-  minpt.my = &y;
+  MODELINPUT minpt = initModelInput();
+  minpt.mx = x;
+  minpt.my = y;
   minpt.nlv = 4;
   minpt.xautoscaling = 1;
   minpt.yautoscaling = 0;
@@ -250,7 +250,7 @@ void TestEPLS4()
   /*Allocate the final output*/
   NewEPLSModel(&m);
 
-  ELearningParameters eparm;
+  ELearningParameters eparm = initElearningParameters();
   eparm.algorithm = Bagging;
   eparm.n_models = 100;
   eparm.trainsize = 0.3;
@@ -260,9 +260,9 @@ void TestEPLS4()
 
   //PrintEPLSModel(m);
 
-  MODELINPUT minpt;
-  minpt.mx = &x;
-  minpt.my = &y;
+  MODELINPUT minpt = initModelInput();
+  minpt.mx = x;
+  minpt.my = y;
   minpt.nlv = 4;
   minpt.xautoscaling = 1;
   minpt.yautoscaling = 0;
@@ -362,7 +362,8 @@ void TestEPLS3()
   /*Allocate the final output*/
   NewEPLSModel(&m);
 
-  ELearningParameters eparm;
+  ELearningParameters eparm = initElearningParameters();
+
   eparm.algorithm = BaggingRandomSubspaceMethod;
   eparm.n_models = 10000;
   eparm.r_fix = 4;
@@ -372,9 +373,9 @@ void TestEPLS3()
 
   //PrintEPLSModel(m);
 
-  MODELINPUT minpt;
-  minpt.mx = &x;
-  minpt.my = &y;
+  MODELINPUT minpt = initModelInput();
+  minpt.mx = x;
+  minpt.my = y;
   minpt.nlv = 4;
   minpt.xautoscaling = 1;
   minpt.yautoscaling = 0;
@@ -452,7 +453,7 @@ void TestEPLS2()
   /*Allocate the final output*/
   NewEPLSModel(&m);
 
-  ELearningParameters eparm;
+  ELearningParameters eparm = initElearningParameters();
   eparm.algorithm = FixedRandomSubspaceMethod;
   eparm.n_models = 1000;
   eparm.r_fix = 3;
@@ -461,9 +462,9 @@ void TestEPLS2()
 
   //PrintEPLSModel(m);
 
-  MODELINPUT minpt;
-  minpt.mx = &x;
-  minpt.my = &y;
+  MODELINPUT minpt = initModelInput();
+  minpt.mx = x;
+  minpt.my = y;
   minpt.nlv = nlv;
   minpt.xautoscaling = 1;
   minpt.yautoscaling = 0;
@@ -541,7 +542,7 @@ void TestEPLS1()
   /*Allocate the final output*/
   NewEPLSModel(&m);
 
-  ELearningParameters eparm;
+  ELearningParameters eparm = initElearningParameters();
   eparm.algorithm = Bagging;
   eparm.n_models = 2;
   eparm.trainsize = 0.7;
@@ -550,9 +551,9 @@ void TestEPLS1()
 
   //PrintEPLSModel(m);
 
-  MODELINPUT minpt;
-  minpt.mx = &x;
-  minpt.my = &y;
+  MODELINPUT minpt = initModelInput();
+  minpt.mx = x;
+  minpt.my = y;
   minpt.nlv = nlv;
   minpt.xautoscaling = 1;
   minpt.yautoscaling = 0;

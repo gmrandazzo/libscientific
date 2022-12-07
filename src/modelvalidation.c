@@ -12,6 +12,23 @@
 #include <pthread.h>
 #include <stdarg.h>
 
+
+ValidationArg initValidationArg()
+{
+  return (ValidationArg) {.vtype = BootstrapRGCV,
+                          .rgcv_group = 5,
+                          .rgcv_iterations = 5};
+}
+
+MODELINPUT initModelInput()
+{
+  return (MODELINPUT) {.mx = NULL,
+                       .my = NULL,
+                       .nlv = 0,
+                       .xautoscaling = 0,
+                       .yautoscaling = 0
+                      };
+}
 void random_kfold_group_generator(matrix *gid,
                                   size_t ngroups,
                                   size_t nobj,
@@ -517,15 +534,15 @@ void BootstrapRandomGroupsCV(MODELINPUT *input,
                              matrix *pred_residuals,
                              size_t nthreads,
                              ssignal *s,
-                             int arg,
+                             int num_arg,
                              ...)
 {
-  matrix *mx = (*input->mx);
-  matrix *my = (*input->my);
+  matrix *mx = input->mx;
+  matrix *my = input->my;
   size_t i, j;
   size_t nlv;
-  size_t xautoscaling = input->xautoscaling;
-  size_t yautoscaling = input->yautoscaling;
+  size_t xautoscaling;
+  size_t yautoscaling;
   ELearningParameters eparm;
   CombinationRule crule = Averaging;
 
@@ -536,15 +553,20 @@ void BootstrapRandomGroupsCV(MODELINPUT *input,
     else{
       nlv = input->nlv;
     }
+
+    xautoscaling = input->xautoscaling;
+    yautoscaling = input->yautoscaling;
   }
   else{
     nlv = 0;
+    xautoscaling = 0;
+    yautoscaling = 0;
   }
 
-  if(arg > 0){
+  if(num_arg > 0){
     va_list valist;
-    va_start(valist, arg);
-    for (i = 0; i < arg; i++){
+    va_start(valist, num_arg);
+    for (i = 0; i < num_arg; i++){
       if(i == 0)
         eparm = va_arg(valist, ELearningParameters);
       else if(i == 1)
@@ -773,7 +795,7 @@ void LeaveOneOut(MODELINPUT *input,
                  matrix *pred_residuals,
                  size_t nthreads,
                  ssignal *s,
-                 int arg_,
+                 int num_arg,
                  ...)
 {
   size_t i, j, k, l, th, model;
@@ -782,11 +804,11 @@ void LeaveOneOut(MODELINPUT *input,
   loocv_th_arg *loo_arg;
   size_t scol;
   matrix *loopredictedy;
-  matrix *mx = (*input->mx);
-  matrix *my = (*input->my);
-  size_t nlv = input->nlv;
-  size_t xautoscaling = input->xautoscaling;
-  size_t yautoscaling = input->yautoscaling;
+  matrix *mx = input->mx;
+  matrix *my = input->my;
+  size_t nlv;
+  size_t xautoscaling;
+  size_t yautoscaling;
   ELearningParameters eparm;
   CombinationRule crule = Averaging;
 
@@ -797,14 +819,19 @@ void LeaveOneOut(MODELINPUT *input,
     else{
       nlv = input->nlv;
     }
+
+    xautoscaling = input->xautoscaling;
+    yautoscaling = input->yautoscaling;
   }
   else{
     nlv = 0;
+    xautoscaling = 0;
+    yautoscaling = 0;
   }
 
-  if(arg_ > 0){
-    va_start(valist, arg_);
-    for(i = 0; i < arg_; i++){
+  if(num_arg > 0){
+    va_start(valist, num_arg);
+    for(i = 0; i < num_arg; i++){
       if(i == 0)
         eparm = va_arg(valist, ELearningParameters);
       else if(i == 1)
@@ -966,22 +993,32 @@ void KFoldCV(MODELINPUT *input,
              int arg,
              ...)
 {
-  matrix *mx = (*input->mx);
-  matrix *my = (*input->my);
+  matrix *mx = input->mx;
+  matrix *my = input->my;
   size_t i, j;
   size_t nlv;
-  size_t xautoscaling = input->xautoscaling;
-  size_t yautoscaling = input->yautoscaling;
+  size_t xautoscaling;
+  size_t yautoscaling;
   ELearningParameters eparm;
   CombinationRule crule = Averaging;
   matrix *y_predicted;
 
 
-  if(input->nlv > mx->col){
-    nlv = mx->col;
+  if(algo == _PLS_ || algo == _PLS_DA_ || algo == _EPLS_ || algo == _EPLS_DA_){
+    if(input->nlv > mx->col){
+      nlv = mx->col;
+    }
+    else{
+      nlv = input->nlv;
+    }
+
+    xautoscaling = input->xautoscaling;
+    yautoscaling = input->yautoscaling;
   }
   else{
-    nlv = input->nlv;
+    nlv = 0;
+    xautoscaling = 0;
+    yautoscaling = 0;
   }
 
   if(arg > 0){
@@ -1201,8 +1238,8 @@ void PLSRegressionYScramblingPipeline(matrix *mx,
   matrix *tmpq2;
 
   MODELINPUT minpt;
-  minpt.mx = &mx;
-  minpt.my = &my;
+  minpt.mx = mx;
+  minpt.my = my;
   minpt.nlv = nlv;
   minpt.xautoscaling = xautoscaling;
   minpt.yautoscaling = yautoscaling;
@@ -1264,8 +1301,8 @@ void PLSDiscriminantAnalysisYScramblingPipeline(matrix *mx,
 
 
   MODELINPUT minpt;
-  minpt.mx = &mx;
-  minpt.my = &my;
+  minpt.mx = mx;
+  minpt.my = my;
   minpt.nlv = nlv;
   minpt.xautoscaling = xautoscaling;
   minpt.yautoscaling = yautoscaling;
@@ -1325,8 +1362,8 @@ void MLRYScramblingPipeline(matrix *mx,
   dvector *tmpq2;
 
   MODELINPUT minpt;
-  minpt.mx = &mx;
-  minpt.my = &my;
+  minpt.mx = mx;
+  minpt.my = my;
 
   /*compude q2y*/
   initMatrix(&py);
@@ -1379,8 +1416,8 @@ void LDAYScramblingPipeline(matrix *mx,
   dvector *pr_auc;
 
   MODELINPUT minpt;
-  minpt.mx = &mx;
-  minpt.my = &my;
+  minpt.mx = mx;
+  minpt.my = my;
 
   /*compude q2y*/
   initMatrix(&py);
@@ -1490,8 +1527,8 @@ void YScrambling(MODELINPUT *input,
   matrix *mx, *my;
   matrix *randomY;
   dvector *corrpermobs, *coeff_int, *coeff_valid;
-  mx = (*input->mx);
-  my = (*input->my);
+  mx = input->mx;
+  my = input->my;
   unsigned int srand_init = 1;
 
   srand(mx->row+mx->col+my->col+iterations);
@@ -1515,7 +1552,7 @@ void YScrambling(MODELINPUT *input,
     outcols = my->col;
   }
   else{
-    int n_classes = getNClasses((*input->my));
+    int n_classes = getNClasses(input->my);
     if(n_classes == 2){
       n_classes = 1;
     }

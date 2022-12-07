@@ -53,9 +53,9 @@ void Test6()
   LDA(x, y, lda);
 
   /*VALIDATE THE MODEL */
-  MODELINPUT minpt;
-  minpt.mx = &x;
-  minpt.my = &y;
+  MODELINPUT minpt = initModelInput();
+  minpt.mx = x;
+  minpt.my = y;
 
   BootstrapRandomGroupsCV(&minpt, 5, 20, _LDA_, lda->predicted_y, lda->predicted_residuals, 8, NULL, 0);
 
@@ -72,7 +72,7 @@ void Test6()
   PrintDVector(lda->pr_aucs);
 
 
-  ValidationArg varg;
+  ValidationArg varg = initValidationArg();
   varg.vtype = BootstrapRGCV;
   YScrambling(&minpt, _LDA_, varg, 100, lda->yscrambling, 4, NULL);
   puts("YScrambling");
@@ -124,9 +124,9 @@ void Test5()
   LDA(x, y, lda);
 
   /*VALIDATE THE MODEL */
-  MODELINPUT minpt;
-  minpt.mx = &x;
-  minpt.my = &y;
+  MODELINPUT minpt = initModelInput();
+  minpt.mx = x;
+  minpt.my = y;
 
   BootstrapRandomGroupsCV(&minpt, 5, 20, _LDA_, lda->predicted_y, lda->predicted_residuals, 8, NULL, 0);
 
@@ -166,9 +166,9 @@ void Test4()
   LDA(x, y, lda);
 
   /*VALIDATE THE MODEL */
-  MODELINPUT minpt;
-  minpt.mx = &x;
-  minpt.my = &y;
+  MODELINPUT minpt = initModelInput();
+  minpt.mx = x;
+  minpt.my = y;
 
 
   //BootstrapRandomGroupsCV(&minpt, 3, 100, _LDA_, &lda->predicted_y, &lda->predicted_residuals, 1, NULL, 0);

@@ -53,10 +53,12 @@ typedef enum{
 
 typedef struct{
   ELearningMethod algorithm;
-  size_t n_models;
+  size_t n_models ;
   double trainsize;
   size_t r_fix;
 } ELearningParameters;
+
+ELearningParameters initElearningParameters();
 
 void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautoscaling, EPLSMODEL *m, ELearningParameters eparm, ssignal *s);
 

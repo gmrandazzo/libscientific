@@ -406,10 +406,6 @@ void LVCalc(matrix *X,
 void PLS(matrix *mx, matrix *my, size_t nlv, int xautoscaling, int yautoscaling, PLSMODEL* model, ssignal *s)
 {
   if(nlv > 0){
-    #ifdef DEBUG
-    size_t step;
-    #endif
-
     size_t i, j, pc; /* pc = principal component */
 
     matrix *X; /* data matrix of mean centred object  for mx */
@@ -761,7 +757,7 @@ void PLSYPredictor(matrix *tscore, PLSMODEL *model, size_t nlv, matrix *y)
 
   if(model->ycolaverage->size > 0){
     for(j = 0; j < model->ycolaverage->size; j++){
-      if(model->ycolscaling->size > 0 && model->ycolscaling != NULL && model->ycolscaling->data != NULL){
+      if(model->ycolscaling->size > 0){
         for(i = 0; i < y->row; i++){
           y->data[i][j] *= model->ycolscaling->data[j];
         }

@@ -425,8 +425,6 @@ void PCAScorePredictor(matrix *mx, PCAMODEL *model, size_t npc, matrix *pscores)
     for(j = 0; j < model->loadings->row; j++)
       p->data[j] = model->loadings->data[j][i];
 
-    mod_p = DVectorDVectorDotProd(p, p);
-
     MT_MatrixDVectorDotProduct(E, p, t);
 
     /* p'*p = Sum(p[i]^2) */
@@ -654,7 +652,7 @@ void PCARankValidation(matrix *mx,
         for(i = 0, k = 0; i < gid->row; i++){
           if(i != g){
             for(j = 0; j < gid->col; j++){
-              size_t a =  (size_t)gid->data[i][j]; /* get the row index */
+              int a =  (int)gid->data[i][j]; /* get the row index */
               if(a != -1){
                 for(n = 0; n < mx->col; n++){
                   subX->data[k][n] = mx->data[a][n];
@@ -672,7 +670,7 @@ void PCARankValidation(matrix *mx,
 
         /* copy the objects to predict into predictmx*/
         for(j = 0, k = 0; j < gid->col; j++){
-          size_t a = (size_t)gid->data[g][j];
+          int a = (int)gid->data[g][j];
           if(a != -1){
             for(n = 0; n < mx->col; n++){
               predictX->data[k][n] = mx->data[a][n];

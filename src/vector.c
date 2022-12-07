@@ -47,12 +47,12 @@ void initStrVector(strvector** s){
     (*s)->size = 0;
 }
 
-void NewStrVector(strvector **s, size_t size_)
+void NewStrVector(strvector **s, size_t size)
 {
     size_t i;
     (*s) = xmalloc(sizeof(strvector));
-    (*s)->size = size_;
-    (*s)->data = xmalloc(sizeof(char*)*size_);
+    (*s)->size = size;
+    (*s)->data = xmalloc(sizeof(char*)*size);
     for(i = 0; i < (*s)->size; i++){
       (*s)->data[i] = xmalloc(sizeof(char)/**MAXCHARSIZE*/);
 //       memset((*s)->data[i], 0, MAXCHARSIZE);
@@ -206,12 +206,12 @@ void initDVector(dvector **d) {
     (*d)->size = 0;
 }
 
-void NewDVector(dvector **d, size_t size_)
+void NewDVector(dvector **d, size_t size)
 {
     size_t i;
     (*d) = xmalloc(sizeof(dvector));
-    (*d)->size = size_;
-    (*d)->data = xmalloc(sizeof(double)*size_);
+    (*d)->size = size;
+    (*d)->data = xmalloc(sizeof(double)*size);
     for(i = 0; i < (*d)->size; i++)
         (*d)->data[i] = +0.f;
 }
@@ -526,12 +526,12 @@ void initIVector(ivector **d){
   (*d)->size = 0;
 }
 
-void NewIVector(ivector **d, size_t size_)
+void NewIVector(ivector **d, size_t size)
 {
   long int i;
   (*d) = xmalloc(sizeof(ivector));
-  (*d)->size = size_;
-  (*d)->data = xmalloc(sizeof(int)*size_);
+  (*d)->size = size;
+  (*d)->data = xmalloc(sizeof(int)*size);
   for(i = 0; i < (*d)->size; i++)
     (*d)->data[i] = 0;
 }
@@ -632,12 +632,12 @@ void initUIVector(uivector **d){
   (*d)->size = 0;
 }
 
-void NewUIVector(uivector **d, size_t size_)
+void NewUIVector(uivector **d, size_t size)
 {
   size_t i;
   (*d) = xmalloc(sizeof(uivector));
-  (*d)->size = size_;
-  (*d)->data = xmalloc(sizeof(size_t)*size_);
+  (*d)->size = size;
+  (*d)->data = xmalloc(sizeof(size_t)*size);
   for(i = 0; i < (*d)->size; i++)
     (*d)->data[i] = 0;
 }

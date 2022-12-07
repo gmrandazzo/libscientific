@@ -42,13 +42,17 @@ typedef struct{
   size_t rgcv_iterations;
 } ValidationArg;
 
+ValidationArg initValidationArg();
+
 typedef struct{
-  matrix **mx;
-  matrix **my;
+  matrix *mx;
+  matrix *my;
   size_t nlv;
   size_t xautoscaling;
   size_t yautoscaling;
 } MODELINPUT;
+
+MODELINPUT initModelInput();
 
 /*
 void YScrambling(matrix *mx, matrix *my,
@@ -116,7 +120,7 @@ void BootstrapRandomGroupsCV(MODELINPUT *input,
                              matrix *pred_residuals,
                              size_t nthreads,
                              ssignal *s,
-                             int arg,
+                             int num_arg,
                              ...);
 
 /*
@@ -129,7 +133,7 @@ void LeaveOneOut(MODELINPUT *input,
                  matrix *pred_residuals,
                  size_t nthreads,
                  ssignal *s,
-                 int arg,
+                 int num_arg,
                  ...);
 
 /*
