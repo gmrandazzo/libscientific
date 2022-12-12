@@ -27,7 +27,7 @@ extern "C" {
 #include <scientific/tensor.h>
 #include <scientific/matrix.h>
 #include <scientific/vector.h>
-
+#include <scientific/list.h>
 
 #include <scientific/numeric.h>
 #include <scientific/algebra.h>
