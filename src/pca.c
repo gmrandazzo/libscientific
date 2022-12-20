@@ -388,8 +388,7 @@ void PCAScorePredictor(matrix *mx, PCAMODEL *model, size_t npc, matrix *pscores)
   if(model->colaverage->size > 0){
     for(j = 0; j < E->col; j++){
       for(i = 0; i < E->row; i++){
-        //E->data[i][j] = mx->data[i][j] - model->colaverage->data[j];
-        E->data[i][j] = mx->data[i][j];
+        E->data[i][j] = mx->data[i][j] - model->colaverage->data[j];
       }
     }
   }

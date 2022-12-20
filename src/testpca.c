@@ -24,6 +24,41 @@
 #include "datasets.h"
 #include "scientificinfo.h"
 
+void test8()
+{
+  puts("Test PCA 8: Score prediction test");
+  size_t i, j;
+  matrix *m, *_, *p;
+  PCAMODEL *model;
+
+  initMatrix(&m);
+  initMatrix(&_);
+  iris(m, _);
+
+  NewPCAModel(&model);
+
+  PCA(m, 1, 2, model, NULL);
+  initMatrix(&p);
+  PCAScorePredictor(m, model, 2, p);
+  
+  
+  for(i = 0; i < model->scores->row; i++){
+    for(j = 0; j < model->scores->col; j++){
+      if(FLOAT_EQ(model->scores->data[i][j], p->data[i][j], 1E-6)){
+        continue;
+      }
+      else{
+        abort();
+      }
+    }
+  }
+  
+  DelPCAModel(&model);
+  DelMatrix(&p);
+  DelMatrix(&m);
+  DelMatrix(&_);
+}
+
 void test7()
 {
   puts("Test PCA 7: PCA on iris dataset");
@@ -230,5 +265,6 @@ int main(void)
   test5();
   test6();
   test7();
+  test8();
   return 0;
 }
