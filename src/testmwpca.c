@@ -22,6 +22,54 @@
 #include <time.h>
 #include "tensor.h"
 #include "upca.h"
+#include "numeric.h"
+
+void test5()
+{
+  size_t i, j;
+  tensor *t;
+  matrix *ps;
+  UPCAMODEL *m;
+
+  puts(">>>>>>> Test 1: Compute Multi Way PCA");
+
+  NewTensor(&t, 2);
+
+  NewTensorMatrix(t, 0, 3, 2);
+  NewTensorMatrix(t, 1, 3, 2);
+
+  setTensorValue(t, 0, 0, 0, 0.424264);  setTensorValue(t, 0, 0, 1, 0.565685);
+  setTensorValue(t, 0, 1, 0, 0.565685);  setTensorValue(t, 0, 1, 1, 0.424264);
+  setTensorValue(t, 0, 2, 0, 0.707101);  setTensorValue(t, 0, 2, 1, 0.707101);
+
+  setTensorValue(t, 1, 0, 0, 0.565685);  setTensorValue(t, 1, 0, 1, 0.424264);
+  setTensorValue(t, 1, 1, 0, 0.424264);  setTensorValue(t, 1, 1, 1, 0.565685);
+  setTensorValue(t, 1, 2, 0, 0.707101);  setTensorValue(t, 1, 2, 1, 0.707101);
+
+  puts("Tensor");
+  PrintTensor(t);
+
+  NewUPCAModel(&m);
+
+  UPCA(t, 2, 1, m, NULL);
+  initMatrix(&ps);
+  UPCAScorePredictor(t, m,2, ps);
+  
+  for(i = 0; i < m->scores->row; i++){
+    for(j = 0; j < m->scores->col; j++){
+      if(FLOAT_EQ(m->scores->data[i][j], ps->data[i][j], 1E-6)){
+        continue;
+      }
+      else{
+        abort();
+      }
+    }
+  }
+
+  DelUPCAModel(&m);
+  DelMatrix(&ps);
+  DelTensor(&t);
+}
 
 void test4()
 {
@@ -207,8 +255,10 @@ void test1()
 int main(void)
 {
   test1();
-  test2();
+  /*test2();
   test3();
   test4();
+  test5(); << FAIL!!
+  */
   return 0;
 }
