@@ -1,6 +1,7 @@
 libscientific
 =============
 
+![Page views](https://visitor-badge.glitch.me/badge?page_id=gmrandazzo.libscientific)
 [![Licence: GPL v3](https://img.shields.io/github/license/gmrandazzo/libscientific)](https://github.com/gmrandazzo/libscientific/blob/master/LICENSE)
 
 Documentation available at http://gmrandazzo.github.io/libscientific/
