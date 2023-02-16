@@ -118,7 +118,6 @@ def pls_algorithm(x_input, y_input, nlv, x_scaling, y_scaling, mpls):
         PLSMODEL* model,
         ssignal *s)
     """
-    print(nlv)
     ssignal = ctypes.c_int(0)
     lsci.PLS(x_input,
              y_input,
