@@ -1,6 +1,7 @@
 # Directory
 build/
 build/*
+.kdev4
 
 # Object files
 *.o

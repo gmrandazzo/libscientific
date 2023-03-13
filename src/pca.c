@@ -101,7 +101,8 @@ double calcObjectDistance(matrix *m)
  * Indeed when a missing value on X input matrix is found,
  * will be skipped on the calculation of p and t.
  * See page 1 of the following document:
- * https://cran.r-project.org/web/packages/nipals/vignettes/nipals_algorithm.pdf
+ * Martens, Harald, and Magni Martens. 2001. Multivariate Analysis of Quality: An Introduction. J.Wiley & Son
+ * https://www.wiley.com/en-us/Multivariate+Analysis+of+Quality%3A+An+Introduction-p-9780471974284
  *
  */
 void PCA(matrix *mx, int scaling, size_t npc, PCAMODEL* model, ssignal *s)
