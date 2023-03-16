@@ -55,10 +55,14 @@ with parallel computing to be faster:
 - Leave-One-Out
 - Y-Scrambling [6]
 
+Usage examples
+---------------
+
+* PLS example on the Solubility Dataset [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/https://colab.research.google.com/drive/1eQxLoZOrDMnTkxSkjuyTS_SuAyV3BcSF)
+
+
 TODO
 ----
-
-- Implement Consensus PCA
 - Implement Independent Component Analysis ICA
 - Exstensive test of some numerical analyisis methods: CholeskyReduction, QR Decomposition, LU Decomposition, HouseholderReduction and so on.
 
