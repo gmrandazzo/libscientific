@@ -53,9 +53,7 @@ void DelPCAModel(PCAMODEL** m)
 void calcVarExpressed(double ss, dvector *eval, dvector *varexp)
 /* ss is the sum of squares, eval = eigenvalue  varexp is an object that is resized for each component */
 {
-  size_t i;
-  /*double a;*/
-  for(i = 0; i < eval->size; i++){
+  for(size_t i = 0; i < eval->size; i++){
     DVectorAppend(varexp, (eval->data[i]/ss) * 100);
     #ifdef DEBUG
     printf("Variance expressed for PC %u\t %f\n", (unsigned int)i, (getDVectorValue(eval, i)/ss) * 100);
@@ -108,7 +106,6 @@ double calcObjectDistance(matrix *m)
 void PCA(matrix *mx, int scaling, size_t npc, PCAMODEL* model, ssignal *s)
 {
   size_t i, j, pc;
-  double degree_of_freedom;
   dvector *t;
   dvector *p;
   dvector *colvar;
@@ -306,7 +303,7 @@ void PCA(matrix *mx, int scaling, size_t npc, PCAMODEL* model, ssignal *s)
               E->data[i][j] -= t->data[i]*p->data[j];
               /* Calculate the dmodx
                * with the following function:
-               * DmodX = SQRT(∑k (E_i_k)^2/ degree of fredom)
+               * DmodX = SQRT(∑k (E_i_k)^2)
                * where
                * i is the index for the object
                * k is the index for the variable
@@ -318,15 +315,7 @@ void PCA(matrix *mx, int scaling, size_t npc, PCAMODEL* model, ssignal *s)
                */
                model->dmodx->data[i][pc] += square(E->data[i][j]);
            }
-           /*
-            *  the degree of freedom are calculated according to the formula
-            *  (n_variables-npc)  * (nobjects/(nobject-1)
-            */
-            degree_of_freedom = (double)(E->col-(pc+1)) * (double)(E->row/(double)(E->row-1));
-            /*
-             *  Degree of freedom = n*d 
-             */
-            model->dmodx->data[i][pc] = sqrt(model->dmodx->data[i][pc]/degree_of_freedom);
+            model->dmodx->data[i][pc] = sqrt(model->dmodx->data[i][pc]);
           }
           /* End Step 6 */
 

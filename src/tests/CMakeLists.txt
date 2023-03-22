@@ -1,6 +1,7 @@
 
 include_directories (${PROJECT_SOURCE_DIR}/src)
 
+set(TestScientificInfo_SRC testscientificinfo.c)
 set(NumericTest_SRC testnumeric.c)
 set(StrVectorTest_SRC teststrvector.c)
 set(DVectorTest_SRC testdvector.c)
@@ -25,6 +26,10 @@ set(METRICSPACETest_SRC testmetrics.c)
 set(INTERPOLATETest_SRC testinterpolate.c)
 set(GRAPHSTest_SRC testgraphs.c)
 set(OptimizationTest_SRC testoptimization.c)
+
+add_executable(testscientificinfo ${TestScientificInfo_SRC})
+target_link_libraries(testscientificinfo libscientific)
+add_test(NAME testscientificinfo COMMAND testscientificinfo)
 
 add_executable(testnumeric ${NumericTest_SRC})
 target_link_libraries(testnumeric libscientific)

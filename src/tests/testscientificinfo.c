@@ -1,4 +1,4 @@
-/* scientificinfo.c
+/* testalgebra.c
 *
 * Copyright (C) <2016>  Giuseppe Marco Randazzo
 *
@@ -16,18 +16,21 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <stdio.h>
 #include "scientificinfo.h"
-#include <scientificconfig.h>
-
-
-void ScientificVersion()
+void test2()
 {
-  printf("Scientific Library was written by Giuseppe Marco Randazzo <gmrandazzo@gmail.com>\nVersion: %d.%d.%d\n", major_, minor_, patch_);
+    printf("Version: %s\n", GetScientificVersion());
 }
 
-const char *GetScientificVersion()
+void test1()
 {
-  static char c[10];
-  snprintf(c, 10, "%d.%d.%d",  major_, minor_, patch_);
-  return c;
+  ScientificVersion();
+}
+
+int main(void)
+{
+  test1();
+  test2();
+  return 0;
 }
