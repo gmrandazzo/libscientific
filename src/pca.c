@@ -108,7 +108,7 @@ double calcObjectDistance(matrix *m)
 void PCA(matrix *mx, int scaling, size_t npc, PCAMODEL* model, ssignal *s)
 {
   size_t i, j, pc;
-  double n, d;
+  double degree_of_freedom;
   dvector *t;
   dvector *p;
   dvector *colvar;
@@ -319,24 +319,14 @@ void PCA(matrix *mx, int scaling, size_t npc, PCAMODEL* model, ssignal *s)
                model->dmodx->data[i][pc] += square(E->data[i][j]);
            }
            /*
-            * the degree of freedom are calculated according to the formula
+            *  the degree of freedom are calculated according to the formula
             *  (n_variables-npc)  * (nobjects/(nobject-1)
             */
-            n = 0.f;
-            d = 0.f;
-            if(E->col < pc+1 && E->row > pc+1){
-                n = (double)(E->col-(pc+1));
-                d = (float)(E->row/((E->row-(pc+1))-1));
-            }
-            else{
-                n = (pc+1);
-                d = 1;
-            }
+            degree_of_freedom = (double)(E->col-(pc+1)) * (double)(E->row/(double)(E->row-1));
             /*
-             *  Degree of freedom = n/d 
+             *  Degree of freedom = n*d 
              */
-            model->dmodx->data[i][pc] = sqrt(model->dmodx->data[i][pc]/(n/d));
-
+            model->dmodx->data[i][pc] = sqrt(model->dmodx->data[i][pc]/degree_of_freedom);
           }
           /* End Step 6 */
 
