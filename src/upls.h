@@ -220,43 +220,7 @@ void UPLSLOOCV(tensor *X_, tensor *Y_,
  * N.B.: 0 means the first principal component, 1 is the second principal component. etc...
  */
 size_t UPLSGetPCModelCutOff(tensor *rq2);
-/* Variable Selection using the Particle Swarm Optimization algorithm
- *
- * Input:
- *   mx and my matrix for make model; optionally px and py for testset validation.
- *   randomness = a number betwee 0 and 1 that represent the randomness to add on the first model generation.
- *   nrandomnessiter = for compute random models and evaluate also the model consistency...
- *
- * Output:
- * - varselected vector: vector of varialble selected
- * - map = a matrix of 4 column with the best r2, q2, f-test and number of variables.
- * - vardistribution = a vector of variables distribution accumulated in all model. Each row is a variable and the value of this row is the number of time that this variable was used.
- */
-void UPSLPSOVariableSelection(tensor *ax, tensor *ay, tensor *px, tensor *py,
-                       size_t xautoscaling, size_t yautoscaling, size_t npc, int validation_type, size_t ngroup, size_t niter, size_t population_size, double randomness,
-                       uivector **varselected, matrix **map, uivector **vardistribution, ssignal *s);
 
-/*
- * Variable selection using the Genetic Algorithm
- *
- * Input
- *   mx and my matrix for make model; optionally px and py for testset validation.
- *
- * population_size = population of models to calculate; is a number > 2
- * fraction_of_population = fraction of population; is a number between 0 and 1
- * mutation_rate = rate of mutation; is a number between 0 and 1
- * crossovertype = 0 for single point crossover, 1 for two point crossover and 2 for uniform crossover
- * nswapping = used by the uniform crossover (crossovertype = 2) and is a number between 0 and 1. It means the % of variable to swapping
- *
- * Output
- *   varselected vector: vector of varialble selected
- *   rq2 = coefficient of validation q2  or r2
- *  f_distribution = coefficient of distribution
- *  map = a matrix of 4 column with the best r2, q2, f-test and number of variables.
- */
-void UPLSGAVariableSelection(tensor *ax, tensor *ay, tensor *px, tensor *py,
-                       size_t xautoscaling, size_t yautoscaling, size_t npc, int validation_type, size_t ngroup, size_t niter, size_t population_size, double fraction_of_population, double mutation_rate, size_t crossovertype, double nswapping, double populationconvergence,
-                      uivector **varselected, matrix **map, uivector **vardistribution, ssignal *s);
 
 void PrintUPLSModel(UPLSMODEL *m);
 

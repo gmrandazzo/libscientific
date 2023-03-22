@@ -405,7 +405,7 @@ void LVCalc(matrix *X,
 
 void PLS(matrix *mx, matrix *my, size_t nlv, int xautoscaling, int yautoscaling, PLSMODEL* model, ssignal *s)
 {
-  if(nlv > 0){
+  if(nlv >= 1){
     size_t i, j, pc; /* pc = principal component */
 
     matrix *X; /* data matrix of mean centred object  for mx */
@@ -941,7 +941,7 @@ void PLSDiscriminantAnalysisStatistics(matrix *my_true,
 /*
  * VIP: VARIABLE IMPORTANCE
  * VIP are calculated according to the formula:
- * VIP[j][pc] = sqrt(n_predvars * Sum((b[pc]^2*t[pc]*t^[pc]) * (w[j][pc]/||w[pc]||)^2) / Sum((b[pc]^2*t[pc]*t^[pc])))
+ * VIP[j][pc] = sqrt(n_predvars * Sum( (b[pc]^2*t[pc]*t^[pc]) * (w[j][pc]/||w[pc]||) ^2 ) / Sum((b[pc]^2*t[pc]*t^[pc])))
  */
 void PLSVIP(PLSMODEL *model, matrix *vip)
 {
@@ -953,16 +953,21 @@ void PLSVIP(PLSMODEL *model, matrix *vip)
     for(j = 0; j < i; j++){
       double n = 0.f;
       double d = 0.f;
+      double b = model->b->data[j];
+      dvector *t = getMatrixColumn(model->xscores, i);
+      double dot_t = DVectorDVectorDotProd(t, t);
+      dvector *w = getMatrixColumn(model->xweights, i);
+      double w_mod = DvectorModule(w);
       for(k = 0; k < npred; k++){
-        /*double tmp = model->b[j]^2*t[pc]*t^[pc];
-        n += */
-        d = k;
-        n += d;
+        /*HIGHLY EXPERIMENTAL! NOT TESTED! MAY NOT WORK!! */
+        n += (b*b*dot_t) * square(w->data[k]/w_mod);
+        d += (b*b*dot_t);
       }
+      DelDVector(&t);
+      DelDVector(&w);
+      vip->data[j][i] = sqrt(npred*(n/d));
     }
   }
-
-  /*WARNING: METHOD NOT READY!*/
 }
 
 int GetLVCCutoff_(matrix *rq2y){
