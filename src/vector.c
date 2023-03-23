@@ -112,25 +112,21 @@ void StrVectorAppend(strvector *s, char *str)
 void StrVectorAppendInt(strvector *s, int val)
 {
   size_t size = s->size+1;
-  char str[MAXCHARSIZE];
   s->data = xrealloc(s->data, sizeof(char*)*size);
   s->size += 1;
-  /*s->data[s->size-1] = xmalloc(sizeof(char)*MAXCHARSIZE);
-  sprintf(s->data[s->size-1], "%d", val);*/
-  sprintf(str, "%d", val);
-  s->data[s->size-1] = strdup(str);
+  size_t length = snprintf(NULL, 0, "%d", val);
+  s->data[s->size-1] = xmalloc(sizeof(char)*length+1);
+  snprintf(s->data[s->size-1], length + 1, "%d", val);
 }
 
 void StrVectorAppendDouble(strvector *s, double val)
 {
   size_t size = s->size+1;
-  char str[MAXCHARSIZE];
   s->data = xrealloc(s->data, sizeof(char*)*size);
   s->size += 1;
-  /*s->data[s->size-1] = xmalloc(sizeof(char)*MAXCHARSIZE);
-  sprintf(s->data[s->size-1], "%f", val);*/
-  sprintf(str, "%f", val);
-  s->data[s->size-1] = strdup(str);
+  size_t length = snprintf(NULL, 0, "%f", val);
+  s->data[s->size-1] = xmalloc(sizeof(char)*length+1);
+  snprintf(s->data[s->size-1], length + 1, "%f", val);
 }
 
 strvector *StrVectorExtend(strvector *s1, strvector *s2)

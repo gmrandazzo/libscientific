@@ -1680,6 +1680,31 @@ void KMeansJumpMethod(matrix* m,
   DelMatrix(&xcenter);
 }
 
+/*
+ * Here we generate point;point; string from two names
+ */
+char *generatePointPointNameV1(char *pname1, char *pname2)
+{
+    char *result;
+    size_t length = snprintf(NULL, 0, "%s", pname1);
+    length += 2*snprintf(NULL, 0, "%s", ";");
+    length += snprintf(NULL, 0, "%s", pname2);
+    result = xmalloc(sizeof(char)*length+1);
+    snprintf(result, length + 1, "%s;%s;", pname1, pname2);
+    return result;
+}
+
+char *generatePointPointNameV2(char *pname1, char *pname2)
+{
+    char *result;
+    size_t length = snprintf(NULL, 0, "%s", pname1);
+    length += snprintf(NULL, 0, "%s", ";");
+    length += snprintf(NULL, 0, "%s", pname2);
+    result = xmalloc(sizeof(char)*length+1);
+    snprintf(result, length + 1, "%s;%s", pname1, pname2);
+    return result;
+}
+
 /*hierarchical clustering with different linkage criterion*/
 void HierarchicalClustering(matrix* _m,
                             size_t nclusters,
@@ -1691,8 +1716,7 @@ void HierarchicalClustering(matrix* _m,
                             ssignal *s)
 {
   size_t i, j, k, l, m, min_i, min_j;
-  char buffer[MAXCHARSIZE];
-  char fl2str[50];
+  char *res;
   /* calc the matrix distance */
   matrix *distmx, *distmx_new;
   strvector *pointname, *pointname_new, *clusters, *tokens;
@@ -1730,31 +1754,25 @@ void HierarchicalClustering(matrix* _m,
         }
         else{
           continue;
+  
         }
       }
     }
 
     /* Step 3 merge the cluster and increase m. */
     DVectorAppend(clusterdist, getMatrixValue(distmx, min_i, min_j));
-    strcpy(buffer, "");
-    strcpy(buffer, getStr(pointname, min_i));
-    strcat(buffer, ";");
-    strcat(buffer, getStr(pointname, min_j));
-    strcat(buffer, ";");
-    StrVectorAppend(clusters, buffer);
+    res = generatePointPointNameV1(getStr(pointname, min_i), getStr(pointname, min_j));
+    StrVectorAppend(clusters, res);
+    xfree(res);
 //     printf("clusters: %s == %s?\n", getStr(clusters, clusters->size-1), buffer);
 
-    strcpy(buffer, "");
-    strcpy(buffer, getStr(pointname, min_i));
-    strcat(buffer, ";");
-    strcat(buffer, getStr(pointname, min_j));
-    setStr(pointname, min_i, buffer);
+    res = generatePointPointNameV2(getStr(pointname, min_i), getStr(pointname, min_j));
+    setStr(pointname, min_i, res);
+    xfree(res);
 
-    strcpy(buffer, "");
-    strcpy(buffer, getStr(pointname, min_j));
-    strcat(buffer, ";");
-    strcat(buffer, getStr(pointname, min_i));
-    setStr(pointname, min_j, buffer);
+    res = generatePointPointNameV2(getStr(pointname, min_j), getStr(pointname, min_i));
+    setStr(pointname, min_j, res);
+    xfree(res);
     m++;
 
     /*Step 4 Remove the min_i and min_j from the matrix and update the distance matrix
@@ -1902,11 +1920,13 @@ void HierarchicalClustering(matrix* _m,
 
   if(dendogram != NULL){
     for(i = 0; i < clusters->size; i++){
-      strcpy(buffer, "");
-      strcpy(buffer, getStr(clusters, i));
-      snprintf (fl2str, sizeof(fl2str), "%f", clusterdist->data[i]);
-      strcat(buffer, fl2str);
-      StrVectorAppend(dendogram, buffer);
+  
+      size_t length = snprintf(NULL, 0, "%s", getStr(clusters, i));
+      length += snprintf(NULL, 0, "%f", clusterdist->data[i]);
+      res = xmalloc(sizeof(char)*length+1);
+      snprintf(res, length + 1, "%s%f", getStr(clusters, i), clusterdist->data[i]);
+      StrVectorAppend(dendogram, res);
+      xfree(res);
     }
   }
 
