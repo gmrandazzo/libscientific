@@ -22,9 +22,21 @@
 #include <time.h>
 #include "vector.h"
 
-int main(void)
+void test2()
 {
-  size_t i, j;
+  int i;
+  char *string = "This;is;a;string";
+  strvector *sv;
+  initStrVector(&sv);
+  SplitString(string, ";", sv);
+  for(i = 0; i < sv->size; i++)
+    printf("%s\n", sv->data[i]);
+  DelStrVector(&sv);
+}
+
+void test1()
+{
+ size_t i, j;
   strvector *s;
   char *letters = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm123456789";
   int num_of_letters = strlen(letters);
@@ -51,6 +63,11 @@ int main(void)
 
   free(buffer);
   DelStrVector(&s);
-  return 0;
+}
 
+
+int main(void)
+{
+ //test1();
+ test2();
 }

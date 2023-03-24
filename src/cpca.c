@@ -85,9 +85,7 @@ void CPCA(tensor *x, int scaling, size_t npc, CPCAMODEL *model)
   dvector *w_T;
   dvector *colvar;
   dvector *tr_orig;
-  //dvector *block_sum_of_squares;
   dvector *local_blockvexp;
-  //dvector *bt;
   double ss, mod_t, mod_t_old, mod_t_new;
   tensor *Eb; /* copy of the original data matrix to do autoscing and mean centring */
   size_t row = 0, col = 0;
@@ -143,12 +141,9 @@ void CPCA(tensor *x, int scaling, size_t npc, CPCAMODEL *model)
   * Calculate the sum of squares of each block
   */
   ss = 0.f;
-  //NewDVector(&block_sum_of_squares, x->order);
   for(k = 0; k < x->order; k++){
-    //double block_ss = 0.f;
     for(i = 0; i < Eb->m[k]->row; i++){
       for(j = 0; j < Eb->m[k]->col; j++){
-        //block_ss += square(Eb->m[k]->data[i][j]);
         /* We apply the same scaling factor to mantain the same scaling of CPCA */
         ss += square(Eb->m[k]->data[i][j]/model->scaling_factor->data[k]);
       }
@@ -372,7 +367,6 @@ void CPCA(tensor *x, int scaling, size_t npc, CPCAMODEL *model)
   #endif
 
   DelDVector(&tr_orig);
-  //DelDVector(&block_sum_of_squares);
   DelDVector(&t_new);
   DelMatrix(&T);
   DelMatrix(&T_T);

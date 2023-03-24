@@ -108,10 +108,14 @@ void NewHyperGridMap(HyperGridModel **hgm);
 void DelHyperGridMap(HyperGridModel **hgm);
 
 /*Create the HyperGridMap */
-void HyperGridMap(matrix* m, size_t grid_size, hgmbins** bins_id, HyperGridModel **hgm);
+void HyperGridMap(matrix* m,
+                  size_t grid_size,
+                  hgmbins** bins_id,
+                  HyperGridModel **hgm);
 
 /*Extract an object from hypergridmap*/
-void HyperGridMapObjects(matrix *m, HyperGridModel *hgm, hgmbins **bins_id);
+void HyperGridMapObjects(matrix *m,
+                         HyperGridModel *hgm,hgmbins **bins_id);
 
 void PrintHGMBins(hgmbins *bins_id);
 
@@ -182,10 +186,8 @@ enum LinkageType {
 void HierarchicalClustering(matrix* _m,
                             size_t nclusters,
                             uivector *_clusters,
-                            matrix *_centroids,
                             strvector *dendogram,
                             enum LinkageType linktype,
-                            size_t nthreads,
-                            ssignal *s);
+                            size_t nthreads);
 
 #endif

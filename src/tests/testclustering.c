@@ -85,8 +85,7 @@ void test18()
 void test17()
 {
   puts("Test Clustering 17: Hierarchical clustering");
-  matrix *m, *centroids;
-  int run = SIGSCIENTIFICRUN;
+  matrix *m;
   uivector *clusters;
 
   size_t i, j, maxrow, maxcol;
@@ -103,15 +102,13 @@ void test17()
   }
 
   initUIVector(&clusters);
-  initMatrix(&centroids);
 
-  HierarchicalClustering(m, 3, clusters, centroids, NULL, 0, 4, &run);
+  HierarchicalClustering(m, 3, clusters, NULL, 0, 4);
 
   puts("clusters");
   PrintUIVector(clusters);
 
   DelUIVector(&clusters);
-  DelMatrix(&centroids);
   DelMatrix(&m);
 }
 
@@ -150,8 +147,7 @@ void test16()
 void test15()
 {
   puts("Test Clustering 15: Hierarchical clustering test");
-  matrix *m, *centroids;
-  int run = SIGSCIENTIFICRUN;
+  matrix *m;
   uivector *clusters;
   strvector *dendogram;
   NewMatrix(&m, 10, 2);
@@ -169,9 +165,8 @@ void test15()
 
 
   initUIVector(&clusters);
-  initMatrix(&centroids);
   initStrVector(&dendogram);
-  HierarchicalClustering(m, 3, clusters, centroids, dendogram, average_linkage, 4, &run);
+  HierarchicalClustering(m, 3, clusters, dendogram, average_linkage, 4);
 
   puts("clusters");
   PrintUIVector(clusters);
@@ -180,7 +175,6 @@ void test15()
 
   DelStrVector(&dendogram);
   DelUIVector(&clusters);
-  DelMatrix(&centroids);
   DelMatrix(&m);
 }
 

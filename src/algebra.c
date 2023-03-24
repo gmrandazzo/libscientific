@@ -120,9 +120,7 @@ void SolveLSE(matrix *mx, dvector *solution)
   /* (*X).row is the number of X, so is equal to the number of unknowns variables */
   for(k = 0; k < X->row; k++){
     for(i = k+1; i < X->row; i++){
-      /*if(getMatrixValue(X, i, k) != 0){  if the value is not 0 */
       if(FLOAT_EQ(X->data[i][k], 0, 1e-4) == 0){ /* if the value is not 0 */
-        /*tmp = getMatrixValue(X, i, k) / getMatrixValue(X, k, k);*/
         if(FLOAT_EQ(X->data[k][k], 0, 1e-4) == 1){
           tmp = 0.f;
         }
@@ -258,10 +256,6 @@ void OrdinaryLeastSquares(matrix *x, dvector *y, dvector *coefficients)
   DVectorResize(coefficients, x->col);
   MatrixDVectorDotProduct(x_x_t_i, x_t_y, coefficients);
 
-  /*
-  for(i = 0; i < 10; i++)
-    printf("%f\n", coefficients->data[i]);
-  */
   DelDVector(&x_t_y);
   DelMatrix(&x_x_t_i);
   DelMatrix(&x_x_t);

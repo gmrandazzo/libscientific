@@ -172,23 +172,31 @@ void PrintStrVector(strvector* s)
 
 char *Trim(char *s)
 {
-  char *ptr;
   if(!s)
     return NULL;   /* handle NULL string */
   if(!*s)
     return s;      /* handle empty string */
-  for(ptr = s + strlen(s) - 1; (ptr >= s) && isspace(*ptr); --ptr);
-  ptr[1] = '\0';
+  char *cp1; /* for parsing the whole s */
+  char *cp2; /* for shifting & padding */
+  /* skip leading spaces, shift remaining chars */
+  for (cp1=s; isspace(*cp1); cp1++ ); /* skip leading spaces, via cp1 */
+  for (cp2=s; *cp1; cp1++, cp2++) /*shift left remaining chars, via cp2 */
+    *cp2 = *cp1;
+  *cp2-- = 0; /* mark new end of string for s */
+
+  /* replace trailing spaces with '\0' */
+  while ( cp2 > s && isspace(*cp2) )
+    *cp2-- = 0; /* pad with '\0's*/
   return s;
 }
 
 void SplitString(char *str, char *sep, strvector *tokens)
 {
-  char *tl=NULL;
+  char *tl=NULL, *saveptr;
   /* Create a buffer of the correct length and copy the string into the buffer */
-  char   *buffer = strdup(str);
+  char  *buffer = Trim(strdup(str));
   /* Tokenize */
-  for (tl = strtok(Trim(buffer), sep); tl; tl = strtok (NULL, sep)){
+  for (tl = strtok_r(buffer, sep, &saveptr); tl; tl = strtok_r(NULL, sep, &saveptr)){
     StrVectorAppend(tokens, tl);
   }
   xfree(buffer);

@@ -23,10 +23,6 @@
 #include <ctype.h>
 #include <pthread.h>
 
-//#ifdef DEBUG
-#include <time.h>
-//#endif
-
 #include "scientificinfo.h"
 #include "clustering.h"
 #include "metricspace.h"
@@ -73,7 +69,7 @@ void *MDCWorker(void *arg_)
       dist = dist/(sqrt(d_a)*sqrt(d_b));
     }
     arg->tmprank->data[k][0] = dist;
-    arg->tmprank->data[k][1] = k;
+    arg->tmprank->data[k][1] = (double)k;
   }
   return 0;
 }
@@ -127,7 +123,7 @@ void MDC(matrix* m,
   for(i = 0; i < m->row; i++){
     for(k = 0; k < m->row; k++){
       tmprank->data[k][0] = dm->data[k][i];
-      tmprank->data[k][1] = k;
+      tmprank->data[k][1] = (double)k;
     }
 
     MatrixSort(tmprank, 0);
@@ -139,72 +135,13 @@ void MDC(matrix* m,
         vectinfo->data[k] += 1;
       }
       else{
-        j = tmprank->data[k][1];
+        j = (size_t)tmprank->data[k][1];
         vectinfo->data[j] += 1/d;
         d += 1;
       }
     }
   }
   DelMatrix(&dm);
-
-  /* SINGLE THREAD IMPLEMENTATION
-
-  for(i = 0; i < m->row; i++){
-    for(k = 0; k < m->row; k++){
-      dist = 0.f;
-      // EUCLIDEAN DISTANCE
-      if(metric == 0){
-        for(j = 0; j < m->col; j++){
-          dist += square(m->data[i][j] - m->data[k][j]);
-        }
-        tmprank->data[k][0] = sqrt(dist); tmprank->data[k][1] = k;
-      }
-      //Manhattan DISTANCE
-      else if(metric == 1){
-        for(j = 0; j < m->col; j++){
-          dist += fabs(m->data[i][j] - m->data[k][j]);
-        }
-        tmprank->data[k][0] = sqrt(dist); tmprank->data[k][1] = k;
-      }
-      //  COSINE DISTANCE
-      else{
-        double d_a, d_b;
-        d_a = d_b = 0.f;
-        for(j = 0; j < m->col; j++){
-          dist += (m->data[i][j] * m->data[k][j]);
-          d_a += square(m->data[i][j]);
-          d_b += square(m->data[k][j]);
-        }
-        tmprank->data[k][0] = dist/(sqrt(d_a)*sqrt(d_b)); tmprank->data[k][1] = k;
-      }
-    }
-
-    MatrixSort(tmprank, 0);
-
-    // PrintMatrix(tmprank);
-
-
-    // Calculate the reciprocal of the rank
-    d = 2;
-    for(k = 0; k < tmprank->row; k++){
-      if(k == i){
-        vectinfo->data[k] += 1;
-      }
-      else{
-        j = tmprank->data[k][1];
-        vectinfo->data[j] += 1/d;
-        d += 1;
-      }
-    }
-  }
-  */
-
-
-  /*
-  puts("vectinifo");
-  PrintDVector(vectinfo);
-  sleep(2);
-  */
 
   nmdc = 0;
   while(1){
@@ -231,10 +168,6 @@ void MDC(matrix* m,
           continue;
         }
       }
-
-      /*
-      printf("max dist[%lu] %f\n", (size_t)mdc, dist);
-      */
 
       nmdc++;
 
@@ -264,47 +197,12 @@ void MDC(matrix* m,
         pthread_join(threads[th], NULL);
       }
 
-      /* SINGLE TRHEAD IMPLEMENTATION
-      for(k = 0; k < m->row; k++){
-        dist = 0.f;
-        // EUCLIDEAN DISTANCE
-        if(metric == 0){
-          for(j = 0; j < m->col; j++){
-            dist += square(m->data[mdc][j] - m->data[k][j]);
-          }
-          dist = sqrt(dist);
-        }
-        // MANHATAN DISTANCE
-        else if(metric == 1){
-          for(j = 0; j < m->col; j++){
-            dist += fabs(m->data[mdc][j] - m->data[k][j]);
-          }
-        }
-        // COSINE DISTANCE
-        else{
-          double d_a, d_b;
-          d_a = d_b = 0.f;
-          for(j = 0; j < m->col; j++){
-            dist += m->data[mdc][j] * m->data[k][j];
-            d_a += square(m->data[mdc][j]);
-            d_b += square(m->data[k][j]);
-          }
-          dist = dist/(sqrt(d_a)*sqrt(d_b)); tmprank->data[k][1] = k;
-        }
-        tmprank->data[k][0] = dist; tmprank->data[k][1] = k;
-      }
-      */
-
-      /*
-      puts("tmpvector wich is rankvector");
-      PrintDVector(tmp);
-      */
       MatrixSort(tmprank, 0);
 
 
       d = 2.;
       for(i = 0; i < tmprank->row; i++){
-        j = tmprank->data[i][1];
+        j = (size_t)tmprank->data[i][1];
         if(j == mdc){
           rankvector->data[j] = 0.f;/* set to 0 the mdc in order to unselect this..*/
         }
@@ -314,11 +212,6 @@ void MDC(matrix* m,
         }
       }
 
-      /*
-      puts("rankvector");
-      PrintDVector(rankvector);
-      */
-
       /* Multiply values in I by the corresponding values in  R. Store the result in I.*/
       for(i = 0 ; i < vectinfo->size; i++){
         vectinfo->data[i] *= rankvector->data[i];
@@ -326,12 +219,6 @@ void MDC(matrix* m,
 
       /*check that all number in the I Exceded 1 if they do then go to "Find the compound with largest value in vectinfo"
       * else stop....
-      */
-
-      /*
-      puts("vectinfo * rankvector");
-      PrintDVector(vectinfo);
-      sleep(1);
       */
       if(n > 0){
         if(nmdc < n){
@@ -342,8 +229,8 @@ void MDC(matrix* m,
         }
       }
       else{
-        k = 0; // objects > 1
-        l = 0; // extracted objects
+        k = 0; /* objects > 1 */
+        l = 0; /* extracted objects */
         for(i = 0; i < vectinfo->size; i++){
           double val = getDVectorValue(vectinfo, i);
           if(val > 1){
@@ -484,7 +371,6 @@ void MaxDis(matrix* m,
           ManhattanDistance(m1, m2, distances, nthreads);
         }
         else{
-          printf("Ciao\n");
           CosineDistance(m1, m2, distances, nthreads);
           PrintMatrix(distances);
         }
@@ -515,7 +401,7 @@ void MaxDis(matrix* m,
 
         /*Select the maximum object distant from all minimum distances */
 
-        int l = 0;
+        size_t l = 0;
         for(i = 1; i < mindists->size; i++){
           if(mindists->data[i] > mindists->data[l]){
             l = i;
@@ -596,27 +482,23 @@ void MaxDis_Fast(matrix* m,
     c->data[j] /= (double)m->row;
   }
 
-  int far_away = -1;
+  size_t far_away = 0;
   double far = 0.f;
-  for(i = 0; i < m->row; i++){
+  for(j = 0; j < m->col; j++){
+    far += square(c->data[j] - m->data[0][j]);
+  }
+  for(i = 1; i < m->row; i++){
     double dst = 0.f;
     for(j = 0; j < m->col; j++){
       dst += square(c->data[j] - m->data[i][j]);
     }
-
     dst = sqrt(dst);
-
-    if(far_away > -1){
+    if(dst > far){
       far = dst;
+      far_away = i;
     }
     else{
-      if(dst > far){
-        far = dst;
-        far_away = i;
-      }
-      else{
-        continue;
-      }
+      continue;
     }
   }
   DelDVector(&c);
@@ -736,25 +618,6 @@ void HyperGridMap(matrix* m, size_t grid_size, hgmbins** bins_id, HyperGridModel
     gmap->data[j][2] = (gmap->data[j][1]-gmap->data[j][0])/(double)grid_size;
     (*hgm)->bsize *= (double)grid_size;
   }
-
-  /*Create two vectors: one for the multiplier, the other for the index id.
-   * The formula to get the bin id of each point is the following:
-   *  id1*mult1 + id2*mult2 + ... + idN*multN = bin ID
-   * if grid_size is 4 mult1 = 4, mult2 = 16, mult3 = 64 ...
-   * This approach is ok for small dataset. However for large dataset
-   * is better to have an hash long as the number of features for each bin like:
-   * 135712736.
-   */
-
-  /*DVectorResize(mult, m->col);
-
-  double mult_ = (double)grid_size;
-
-  mult->data[0] = 1.f;
-  for(j = 1; j < m->col; j++){
-    mult->data[j] = mult_;
-    mult_ *= (double)grid_size;
-  }*/
 
   if(bins_id != NULL){
     /* for each object check what is the bin membership and store in the id bins_id */
@@ -935,35 +798,6 @@ void KMeansppCenters(matrix *m,
       break;
     }
     else{
-      /*
-      SINGLE THREAD
-      for(i = 0; i < m->row; i++){
-        initDVector(&D_min);
-        for(k = 0; k < (*selections)->size; k++){
-          dist = 0.f;
-          for(j = 0; j < m->col; j++ ){
-            dist += (m->data[i][j] - m->data[(*selections)->data[k]][j])*(m->data[i][j] - m->data[(*selections)->data[k]][j]);
-          }
-          DVectorAppend(D_min, sqrt(dist));
-        }
-
-
-        //get the min value distance of the point x_i from C
-        dist = D_min->data[0];
-        for(k = 1; k < D_min->size; k++){
-          if(D_min->data[k] < dist){
-            dist = D_min->data[k];
-          }
-          else{
-            continue;
-          }
-        }
-
-        D->data[i] = dist;
-        //DVectorAppend(D, dist);
-        DelDVector(&D_min);
-      }
-      */
       size_t nobj = ceil(m->row/(double)nthreads);
       size_t from = 0;
       for(i = 0; i < nthreads; i++){
@@ -1644,7 +1478,6 @@ void KMeansJumpMethod(matrix* m,
   y = (double)m->col/2.f;
 
   for(k = 2; k <= maxnclusters; k++){
-    dist = 0.f;
     initUIVector(&clusters);
     initMatrix(&centroids);
 
@@ -1709,11 +1542,9 @@ char *generatePointPointNameV2(char *pname1, char *pname2)
 void HierarchicalClustering(matrix* _m,
                             size_t nclusters,
                             uivector *_clusters,
-                            matrix *_centroids,
                             strvector *dendogram,
                             enum LinkageType linktype,
-                            size_t nthreads,
-                            ssignal *s)
+                            size_t nthreads)
 {
   size_t i, j, k, l, m, min_i, min_j;
   char *res;
@@ -1790,7 +1621,6 @@ void HierarchicalClustering(matrix* _m,
       else{
         if(linktype == 0){
           /* Single-Linkage Criterion */
-        /* printf("ok: %f\t%f\n", getMatrixValue(distmx, min_i, i), getMatrixValue(distmx, min_j, i)); */
           if( getMatrixValue(distmx, min_i, i) < getMatrixValue(distmx, min_j, i)){
             DVectorAppend(tmp, getMatrixValue(distmx, min_i, i));
           }
@@ -1843,13 +1673,6 @@ void HierarchicalClustering(matrix* _m,
         }
       }
 
-      /*
-      puts("OLD MX");
-      PrintMatrix(distmx);
-      printf("NEW MX without row and column %u\n", (unsigned int)min_j);
-      PrintMatrix( distmx_new);
-      */
-
       /* Fill the column min_i with the row[i] */
       for(i = 0; i < tmp->size; i++){
         setMatrixValue(distmx, i, min_i, getDVectorValue(tmp, i));
@@ -1881,13 +1704,6 @@ void HierarchicalClustering(matrix* _m,
           continue;
         }
       }
-
-      /*
-      puts("OLD MX");
-      PrintMatrix(distmx);
-      printf("NEW MX without row and column %u\n", (unsigned int)min_j);
-      PrintMatrix( distmx_new);
-      */
 
       /* Fill the column min_j with the row[i] */
       for(i = 0; i < tmp->size; i++){
