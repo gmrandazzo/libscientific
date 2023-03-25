@@ -37,11 +37,15 @@ void random_kfold_group_generator(matrix *gid,
   /*equal distribution of objects*/
   ResizeMatrix(gid, ngroups, (size_t)ceil(nobj/(double)ngroups));
   MatrixSet(gid, -1); /*default is -1*/
-  size_t i, j, k = 0, n;
+  size_t i;
+  size_t j;
+  size_t k = 0;
+  size_t n;
+  srand_((uint32_t)(*srand_init));
   for(i = 0; i <  gid->row; i++){
     for(j = 0; j <  gid->col; j++){
       do{
-        n = (size_t)myrand_r(srand_init) % nobj;
+        n = randInt(0, nobj);
       } while(ValInMatrix(gid, n) == 1 && k < nobj);
       if(k < nobj){
         gid->data[i][j] = n;
@@ -156,9 +160,10 @@ void train_test_split(matrix *x,
   ResizeMatrix(y_test, testsize_, y->col);
 
   /*Fill test set*/
+  srand_((uint32_t)(*srand_init));
   for(i = 0; i < testsize_; i++){
     do{
-      n = (size_t)myrand_r(srand_init) % x->row;
+      n = randInt(0, x->row);
     } while(UIVectorHasValue(testids, n) == 0);
     UIVectorAppend(testids, n);
 
@@ -1529,9 +1534,8 @@ void YScrambling(MODELINPUT *input,
   dvector *corrpermobs, *coeff_int, *coeff_valid;
   mx = input->mx;
   my = input->my;
-  unsigned int srand_init = 1;
 
-  srand(mx->row+mx->col+my->col+iterations);
+  srand_(mx->row+mx->col+my->col+iterations);
 
   initMatrix(&randomY);
   MatrixCopy(my, &randomY);
@@ -1620,8 +1624,7 @@ void YScrambling(MODELINPUT *input,
     i = randomY->row;
     while(i > 1){
       i = i - 1;
-      //j = randInt(0, i);
-      j = myrand_r(&srand_init) % i;
+      j = randInt(0, i);
       for(k = 0; k < randomY->col; k++){
         ytmp = randomY->data[j][k];
         randomY->data[j][k] = randomY->data[i][k];

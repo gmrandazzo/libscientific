@@ -565,7 +565,7 @@ void PCARankValidation(matrix *mx,
 
   NewMatrix(&gid, group, (size_t)ceil(mx->row/(double)group));
 
-  srand(group*mx->row*iterations);
+  srand_(group*mx->row*iterations);
 
   iterations_ = 0;
   while(iterations_ <  iterations){
@@ -581,7 +581,7 @@ void PCARankValidation(matrix *mx,
       for(i = 0; i <  gid->row; i++){
         for(j = 0; j <  gid->col; j++){
           do{
-            n = (size_t)rand() % (mx->row);
+            n = (size_t)rand_() % (mx->row);
           } while(ValInMatrix(gid, n) == 1 && k < (mx->row));
           if(k < mx->row){
             gid->data[i][j] = n;

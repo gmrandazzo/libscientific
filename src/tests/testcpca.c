@@ -128,8 +128,7 @@ void test2()
   double d1 = -0.44;
   double d2 = +0.44;
 
-  unsigned int seed = rowsize+colsize+nblocks;
-  myrand_r(&seed);
+  srand_(rowsize+colsize+nblocks);
   NewTensor(&t, nblocks);
   for(k = 0; k < nblocks; k++){
     NewTensorMatrix(t, k, rowsize, colsize);

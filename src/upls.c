@@ -950,7 +950,7 @@ void UPLSYScrambling(tensor *X_, tensor *Y_,
   tensor *randomY, *sorted_y_id;
   tensor *tmpq2, *tmpsdep;
 
-  srand(X_->order*X_->m[0]->row*X_->m[0]->col*block);
+  srand_(X_->order*X_->m[0]->row*X_->m[0]->col*block);
   NewTensor(&randomY, Y_->order);
   NewTensor(&sorted_y_id, Y_->order);
   for(i = 0; i < Y_->order; i++){
@@ -1193,7 +1193,7 @@ void UPLSRandomGroupsCV(tensor *X_, tensor *Y_, size_t xautoscaling, size_t yaut
     }
 
     /*srand(time(NULL));*/
-    srand(group*X_->m[0]->row*iterations);
+    srand_(group*X_->m[0]->row*iterations);
     iterations_ = 0;
     while(iterations_ <  iterations){
       if(s != NULL && (*s) == SIGSCIENTIFICSTOP){
@@ -1209,7 +1209,7 @@ void UPLSRandomGroupsCV(tensor *X_, tensor *Y_, size_t xautoscaling, size_t yaut
         for(i = 0; i <  gid->row; i++){
           for(j = 0; j <  gid->col; j++){
             do{
-              n = (size_t)rand() % (X_->m[0]->row);
+              n = randInt(0, X_->m[0]->row);
             } while(ValInMatrix(gid, n) == 1 && k < (X_->m[0]->row));
             if(k < X_->m[0]->row){
               setMatrixValue(gid, i, j, n);

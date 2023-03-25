@@ -113,7 +113,7 @@ void TestPLS13()
   NewMatrix(&y, nobj, ntarg);
   NewUIVector(&groups, nobj);
 
-  srand(nobj+nfeats+ntarg);
+  srand_(nobj+nfeats+ntarg);
   for(size_t i = 0; i < nobj; i++){
     for(size_t j = 0; j < nfeats; j++){
       setMatrixValue(x, i, j, randDouble(-100,100));
@@ -221,7 +221,7 @@ void TestPLS12()
   NewMatrix(&xpred, nobj_to_pred, nfeats);
   NewMatrix(&y, nobj, ntarg);
 
-  srand(nobj+nfeats+ntarg);
+  srand_(nobj+nfeats+ntarg);
   for(size_t i = 0; i < nobj; i++){
     for(size_t j = 0; j < nfeats; j++){
       setMatrixValue(x, i, j, randDouble(-100,100));
@@ -238,6 +238,7 @@ void TestPLS12()
     }
   }
 
+  PrintMatrix(x);
 
   /*NewMatrix(&x, 4, 2);
   NewMatrix(&y, 4, 1);
@@ -340,7 +341,7 @@ void TestPLS11()
   NewMatrix(&mx, nobj, 128);
   NewMatrix(&my, nobj, 1);
 
-  srand(nobj);
+  srand_(nobj);
   for(size_t i = 0; i < nobj; i++){
     for(size_t j = 0; j < 128; j++){
       setMatrixValue(mx, i, j, randDouble(0,20));
@@ -408,7 +409,7 @@ void TestPLS10()
 
   ValidationArg varg = initValidationArg();
   varg.vtype = BootstrapRGCV;
-  YScrambling(&minpt, _PLS_, varg, 20, m->yscrambling, 4, NULL);
+  YScrambling(&minpt, _PLS_, varg, 6, m->yscrambling, 4, NULL);
 
   /*PrintPLSModel(m);*/
   puts("Q^2");

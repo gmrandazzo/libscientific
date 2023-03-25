@@ -30,46 +30,77 @@
 
 double missing_value(){ return MISSING; }
 
-/* Random Generator
- * No thread safe....
- */
-//#ifdef WIN32
-int myrand_r (unsigned int *seed)
-{
-  unsigned int next = *seed;
-  int result;
-
-  next *= 1103515245;
-  next += 12345;
-  result = (unsigned int) (next / 65536) % 2048;
-
-  next *= 1103515245;
-  next += 12345;
-  result <<= 10;
-  result ^= (unsigned int) (next / 65536) % 1024;
-
-  next *= 1103515245;
-  next += 12345;
-  result <<= 10;
-  result ^= (unsigned int) (next / 65536) % 1024;
-
-  *seed = next;
-
-  return result;
+uint32_t generate_seed(uint32_t seed) {
+    uint32_t a = 0x7AFB2C23ULL;
+    uint32_t c = 0x894C3ULL;
+    uint32_t new_seed = (a * seed + c);
+    return new_seed;
 }
-//#endif
 
-/* Xorshift 128 is thread safe */
-uint32_t xor128(void) {
-  static uint32_t x = 123456789;
-  static uint32_t y = 362436069;
-  static uint32_t z = 521288629;
-  static uint32_t w = 88675123;
-  uint32_t t;
+/* The state must be initialized to non-zero */
+uint32_t xorshift128(struct xorshift128_state *state)
+{
+	/* Algorithm "xor128" from p. 5 of Marsaglia, "Xorshift RNGs" */
+	uint32_t t  = state->x[3];
+  uint32_t s  = state->x[0];  /* Perform a contrived 32-bit shift. */
+	state->x[3] = state->x[2];
+	state->x[2] = state->x[1];
+	state->x[1] = s;
 
-  t = x ^ (x << 11);
-  x = y; y = z; z = w;
-  return w = w ^ (w >> 19) ^ (t ^ (t >> 8));
+	t ^= t << 11;
+	t ^= t >> 8;
+	return state->x[0] = t ^ s ^ (s >> 19);
+}
+
+uint32_t XOR128_SEED = 0;
+
+void srand_(uint32_t seed)
+{
+  XOR128_SEED = generate_seed(seed);
+}
+
+double rand_()
+{
+  struct xorshift128_state state;
+  if(XOR128_SEED  == 0)
+    XOR128_SEED = time(NULL);
+  state.x[0] = XOR128_SEED;
+  state.x[1] = XOR128_SEED ^ 0x5a7b96158bd42e27ULL;
+  state.x[2] = XOR128_SEED ^ 0x3a8e9f2baf7e592bULL;
+  state.x[3] = XOR128_SEED ^ 0x0b243e4b4b2aa8d3ULL;
+  XOR128_SEED = generate_seed(XOR128_SEED);
+  return xorshift128(&state);
+}
+
+int randInt(int low, int high)
+{
+  struct xorshift128_state state;
+  if(XOR128_SEED  == 0)
+    XOR128_SEED = time(NULL);
+  state.x[0] = XOR128_SEED;
+  state.x[1] = XOR128_SEED ^ 0x5a7b96158bd42e27ULL;
+  state.x[2] = XOR128_SEED ^ 0x3a8e9f2baf7e592bULL;
+  state.x[3] = XOR128_SEED ^ 0x0b243e4b4b2aa8d3ULL;
+  XOR128_SEED = generate_seed(XOR128_SEED);
+  return (int) (xorshift128(&state) % ((high) - low) + low);
+}
+
+double randDouble(double low, double high)
+{
+  /*
+   * xor128() cannot return 4294967296
+   */
+  struct xorshift128_state state;
+  if(XOR128_SEED  == 0)
+    XOR128_SEED = time(NULL);
+  state.x[0] = XOR128_SEED;
+  state.x[1] = XOR128_SEED ^ 0x5a7b96158bd42e27ULL;
+  state.x[2] = XOR128_SEED ^ 0x3a8e9f2baf7e592bULL;
+  state.x[3] = XOR128_SEED ^ 0x0b243e4b4b2aa8d3ULL;
+  XOR128_SEED = generate_seed(XOR128_SEED);
+  double range = (high - low);
+  double div = 4294967296.0 / range;
+  return low + (xorshift128(&state) / div);
 }
 
 size_t Factorial(size_t x)
@@ -84,21 +115,6 @@ size_t Factorial(size_t x)
     i--;
   }
   return f;
-}
-
-int randInt(int low, int high)
-{
-  return (int) (xor128() % ((high) - low) + low);
-}
-
-double randDouble(double low, double high)
-{
-  /*
-   * xor128() cannot return 4294967296
-   */
-  double range = (high - low);
-  double div = 4294967296.0 / range;
-  return low + (xor128() / div);
 }
 
 double square(double x){ return x*x; }
@@ -129,8 +145,8 @@ void StochasticUniversalSample(dvector *fitness, size_t nselect, size_t init, ui
   }
   else{*/
     sum = 0.f;
-    srand(init);
-    ptr = (double)rand()/(double)RAND_MAX;
+    srand_(init);
+    ptr = (double)rand_()/(double)RAND_MAX;
     for(i = 0; i < fitness->size; i++){
       if(k < nselect){
         sum += getDVectorValue(fitness, i);
@@ -154,10 +170,10 @@ void RouletteWheelselection(dvector *fitness, size_t nselect, size_t init, uivec
   double sum, ptr;
   k = 0;
   sum = 0.f;
-  srand(init);
+  srand_(init);
 
   for(k = 0; k < nselect; k++){
-    ptr = (double)rand()/(double)RAND_MAX;
+    ptr = (double)rand_()/(double)RAND_MAX;
     for(i = 0; i < fitness->size; i++){
       sum += getDVectorValue(fitness, i);
       if(sum > ptr){

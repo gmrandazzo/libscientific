@@ -149,15 +149,10 @@ void MDC(matrix* m,
       break;
     }
     else{
-      /*puts("---------------------- Start Selection --------------------"); */
       /* Find the compound with largest value in vectinfo */
 
       dist = vectinfo->data[0];
       mdc = 0;
-
-      /*
-      printf("init dist[0] %f\n", dist);
-      */
 
       for(i = 0; i < vectinfo->size; i++){
         if(vectinfo->data[i] > dist){
@@ -174,7 +169,10 @@ void MDC(matrix* m,
       /*now mdc is the MDC */
 
       UIVectorAppend(selections, mdc);
-      /*Recalculate the disances of the MDC to all the other compounds and the reciprocal ranks as aboce subtract these reciprocal ranks from 1 and store in the rank vector R*/
+      /*Recalculate the disances of the MDC to all the other compounds 
+       * and the reciprocal ranks as aboce subtract these reciprocal 
+       * ranks from 1 and store in the rank vector R
+       */
       /* MULTITHREAD IMPLEMENTATION */
       size_t step = (size_t)ceil((double)m->row/(double)nthreads);
       size_t from = 0, to = step;
@@ -374,11 +372,6 @@ void MaxDis(matrix* m,
           CosineDistance(m1, m2, distances, nthreads);
           PrintMatrix(distances);
         }
-
-        /*
-        puts("--------------------------------------------");
-        PrintMatrix(distances);
-        */
 
         /* 3. The next object to be selected is always as distant as possible from already selected molecules */
 
@@ -786,11 +779,8 @@ void KMeansppCenters(matrix *m,
 
   NewDVector(&D, m->row); /* vettore distanza di tutti i punti. Per ogni punto c'è un valore di distanza */
   NewDVector(&D_square, m->row); /* vettore distanza di tutti i punti al quadrato.*/
-  /* Step 1 Set Random Function
-  srand(time(0));*/
-  srand(m->col+m->row+n);
-  UIVectorAppend(selections, rand() % m->row); /* random point from 0 to the max data points */
-
+  /* Step 1 Set Random Function */
+  UIVectorAppend(selections, randInt(0, m->row)); /* random point from 0 to the max data points */
 
   /* Step 2 */
   while(q > 1){
@@ -822,17 +812,12 @@ void KMeansppCenters(matrix *m,
       /* Step 3 Calculate the square of distances and store in
       * a vector and in a sum (dist)
       */
-
-
       dist = 0.f;
       for(i = 0; i < D->size; i++){
         tmp = square(D->data[i]);
         D_square->data[i] = tmp;
         dist += tmp;
       }
-
-      y = (rand() * dist) / RAND_MAX;
-
       /* Step 4 */
       A = 0.f;
       B = 0.f;
@@ -850,7 +835,8 @@ void KMeansppCenters(matrix *m,
             continue;
           }
         }
-
+        y = randDouble(B, A);
+        //y = (rand_() * dist) / RAND_MAX;
         if(A >= y && y > B ){
           if(UIVectorHasValue(selections, i) == 1){
             UIVectorAppend(selections, i);
@@ -1146,7 +1132,7 @@ void getCentroids(matrix *m, uivector *cluster_labels, matrix **centroids)
       }
     }
     else{
-      c_indx = rand() % m->row;
+      c_indx = randInt(0, m->row);
       for(j = 0; j < m->col; j++){
         new_centroids->data[i][j] = m->data[c_indx][j];
       }
@@ -1181,13 +1167,11 @@ void KMeans(matrix* m,
   NewMatrix(&oldcentroids, centroids->row, centroids->col);
 
   initUIVector(&pre_centroids);
-
   /* Step 1. Select start centroids */
   if(initializer == 0){ /* Random */
     for(i = 0; i < nclusters; i++){
-      //srand(m->col+m->row+nclusters+i);
-      srand(time(NULL));
-      UIVectorAppend(pre_centroids, rand() % m->row);
+      //srand_(m->col+m->row+nclusters+i);
+      UIVectorAppend(pre_centroids, randInt(0, m->row));
     }
   }
   else if(initializer == 1){ /* KMeansppCenters */
@@ -1199,7 +1183,7 @@ void KMeans(matrix* m,
   else{ /*if(initializer == 3){  MaxDis */
     MaxDis(m, nclusters, 0, pre_centroids, nthreads, s);
   }
-
+  
   /* else personal centroid configuration */
 
   for(i = 0; i < pre_centroids->size; i++){
@@ -1211,7 +1195,7 @@ void KMeans(matrix* m,
   DelUIVector(&pre_centroids);
 
   UIVectorResize(cluster_labels, m->row);
-
+  
   it = 0;
   while(shouldStop(centroids, oldcentroids, it, 100) == 0)
   {
@@ -1226,10 +1210,9 @@ void KMeans(matrix* m,
     printf("Matrix copy: %f\n", ((double)t)/CLOCKS_PER_SEC);
     t = clock();
     #endif
-
-    //getLabels(m, centroids, (*cluster_labels));
+    
+    //getLabels(m, centroids, cluster_labels);
     getLabels_(m, centroids, cluster_labels, nthreads);
-
     #ifdef DEBUG
     t = clock() - t;
     #endif
@@ -1238,16 +1221,13 @@ void KMeans(matrix* m,
     printf("getLabels_: %f\n", ((double)t)/CLOCKS_PER_SEC);
     t = clock();
     #endif
-
     getCentroids(m, cluster_labels, &centroids);
-
     #ifdef DEBUG
     t = clock() - t;
     printf("getCentroids: %f\n", ((double)t)/CLOCKS_PER_SEC);
     #endif
     it++;
   }
-
   if(_centroids_ == NULL){
     DelMatrix(&centroids);
   }
@@ -1272,7 +1252,7 @@ void KMeansRandomGroupsCV(matrix* m,
 
   NewMatrix(&gid, groups, (size_t)ceil(m->row/(double)groups));
 
-  srand(groups*m->row*iterations);
+  srand_(groups*m->row*iterations);
 
   DVectorResize(ssdist, maxnclusters);
 
@@ -1290,7 +1270,7 @@ void KMeansRandomGroupsCV(matrix* m,
       for(i = 0; i <  gid->row; i++){
         for(j = 0; j <  gid->col; j++){
           do{
-            n = (size_t)rand() % (m->row);
+            n = (size_t)randInt(0, m->row);
           } while(ValInMatrix(gid, n) == 1 && k < (m->row));
           if(k < m->row){
             setMatrixValue(gid, i, j, n);
@@ -1482,7 +1462,6 @@ void KMeansJumpMethod(matrix* m,
     initMatrix(&centroids);
 
     KMeans(m, k, initializer, clusters, centroids, nthreads, s);
-
     dist = MatrixMahalanobisDistance(m, centroids);
 
     printf("dist %f  %f\n", dist, pow(dist, -y));

@@ -166,8 +166,7 @@ void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautos
        i = featureids->size;
        while(i > 1){
          i = i - 1;
-         //j = randInt(0, i);
-         j = myrand_r(&srand_init) % i;
+         j = randInt(0, i);
          double tmp = featureids->data[j];
          featureids->data[j] = featureids->data[i];
          featureids->data[i] = tmp;

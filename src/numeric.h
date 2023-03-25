@@ -20,6 +20,7 @@
 #define NUMERIC_H
 
 #include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <time.h>
 #include "vector.h"
@@ -42,12 +43,17 @@
 
 double missing_value();
 
-// #ifdef WIN32
-int myrand_r(unsigned int *seed);
-// #endif
-size_t Factorial(size_t x);
+/* Xorshift 128 is thread safe */
+struct xorshift128_state {
+    uint32_t x[4];
+};
+
+void srand_(uint32_t seed);
+double rand_();
 int randInt(int low, int high);
 double randDouble(double low, double high);
+
+size_t Factorial(size_t x);
 double square(double x);
 /*
  *Stocastic Universal Sample

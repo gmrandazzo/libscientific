@@ -48,6 +48,7 @@ void test19()
 
   MDC(m, 0, 0, selections, 8, &run);
   printf("Selected instances %zu\n", selections->size);
+  PrintUIVector(selections);
   DelUIVector(&selections);
   DelMatrix(&m);
 }
