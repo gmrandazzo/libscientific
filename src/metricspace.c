@@ -53,7 +53,7 @@ void EuclideanDistance(matrix* m1, matrix* m2, matrix *distances, size_t nthread
     pthread_t *threads;
     dst_th_arg *args;
     size_t th;
-    // each column is a distance that correspond to m1->row
+    /* each column is a distance that correspond to m1->row */
     ResizeMatrix(distances, m2->row, m1->row);
     threads = xmalloc(sizeof(pthread_t)*nthreads);
     args = xmalloc(sizeof(dst_th_arg)*nthreads);

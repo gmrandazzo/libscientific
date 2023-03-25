@@ -22,8 +22,9 @@ jobs:
           sudo apt-get -y install liblapack-dev cmake
           mkdir build
           cd build
-          cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=TRUE
+          cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=TRUE -DCMAKE_BUILD_TYPE=Debug
           make
+          ctest -T Test -T Coverage
 
       - name: Download and install the SonarScanner
         env:

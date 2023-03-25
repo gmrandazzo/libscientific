@@ -404,12 +404,12 @@ void TestPLS10()
   minpt.xautoscaling = 1;
   minpt.yautoscaling = 1;
 
-  LeaveOneOut(&minpt, _PLS_, m->predicted_y, m->pred_residuals, 4, NULL, 0);
+  LeaveOneOut(&minpt, _PLS_, m->predicted_y, m->pred_residuals, 1, NULL, 0);
   PLSRegressionStatistics(y, m->predicted_y, m->q2y, m->sdep, m->bias);
 
   ValidationArg varg = initValidationArg();
   varg.vtype = BootstrapRGCV;
-  YScrambling(&minpt, _PLS_, varg, 6, m->yscrambling, 4, NULL);
+  YScrambling(&minpt, _PLS_, varg, 2, m->yscrambling, 1, NULL);
 
   /*PrintPLSModel(m);*/
   puts("Q^2");

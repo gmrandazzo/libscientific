@@ -35,7 +35,7 @@ if(WIN32)
 elseif(APPLE)
   if(cmake_build_type_tolower STREQUAL "debug")
     message(STATUS "Build Debug: APPLE")
-    set(CMAKE_C_FLAGS "-std=c99 -D_GNU_SOURCE -O0 -pedantic -Wall -g")
+    set(CMAKE_C_FLAGS "-std=c99 -D_GNU_SOURCE -O0 -pedantic -Wall -g -fprofile-arcs -ftest-coverage")
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -static -pthread")
   else()
     message(STATUS "Build Release: APPLE")
@@ -46,7 +46,7 @@ else(NOT WIN32)
   if(cmake_build_type_tolower STREQUAL "debug")
     set(CMAKE_BUILD_TYPE "Debug")
     message(STATUS "Build Debug: Linux")
-    set(CMAKE_C_FLAGS "-std=c99 -D_GNU_SOURCE -O0 -pedantic -Wall -g -pthread")
+    set(CMAKE_C_FLAGS "-std=c99 -D_GNU_SOURCE -O0 -pedantic -Wall -g -pthread -fprofile-arcs -ftest-coverage")
     set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
   else()
     message(STATUS "Build Release: Linux")
@@ -60,8 +60,9 @@ endif(WIN32)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
 
-
 message(STATUS "Build Type: ${CMAKE_BUILD_TYPE}")
+
+INCLUDE(Dart)
 
 enable_testing()
 

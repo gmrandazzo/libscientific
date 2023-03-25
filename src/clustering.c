@@ -769,9 +769,13 @@ void KMeansppCenters(matrix *m,
                      int nthreads,
                      ssignal *s)
 {
-  size_t i, j;
-  double dist, tmp, y, A, B;
-  dvector *D, *D_square;
+  size_t i;
+  size_t j;
+  double y;
+  double A;
+  double B;
+  dvector *D;
+  dvector *D_square;
   size_t q = n; /*get the number of clusters*/
 
   pthread_t *threads = xmalloc(sizeof(pthread_t)*nthreads);
@@ -812,11 +816,8 @@ void KMeansppCenters(matrix *m,
       /* Step 3 Calculate the square of distances and store in
       * a vector and in a sum (dist)
       */
-      dist = 0.f;
       for(i = 0; i < D->size; i++){
-        tmp = square(D->data[i]);
-        D_square->data[i] = tmp;
-        dist += tmp;
+        D_square->data[i] = square(D->data[i]);
       }
       /* Step 4 */
       A = 0.f;
