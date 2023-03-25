@@ -40,7 +40,8 @@ void initMatrix(matrix **m)
 
 void NewMatrix(matrix **m, size_t row_ , size_t col_)
 {
-  size_t i, j;
+  size_t i;
+  size_t j;
   (*m) = xmalloc(sizeof(matrix));
   (*m)->row = row_;
   (*m)->col = col_;
@@ -54,7 +55,8 @@ void NewMatrix(matrix **m, size_t row_ , size_t col_)
 
 void ResizeMatrix(matrix *m, size_t row_, size_t col_)
 {
-  size_t i, j;
+  size_t i;
+  size_t j;
   if(m != NULL){
     if(m->row == row_ && m->col == col_){
       MatrixSet(m, +0.f);
@@ -96,7 +98,8 @@ void DelMatrix(matrix **m)
 
 void MatrixCheck(matrix *m)
 {
-  size_t i, j;
+  size_t i;
+  size_t j;
   for(i = 0; i < m->row; i++){
     for(j = 0; j < m->col; j++){
       if(_isnan_(m->data[i][j]) || !isfinite(m->data[i][j])){
@@ -108,7 +111,8 @@ void MatrixCheck(matrix *m)
 
 void FindNan(matrix *m)
 {
-  size_t i, j;
+  size_t i;
+  size_t j;
   for(i = 0; i < m->row; i++){
     for(j = 0; j < m->col; j++){
       if(_isnan_(m->data[i][j])){
@@ -120,7 +124,8 @@ void FindNan(matrix *m)
 
 void PrintMatrix(matrix *m)
 {
-  size_t i, j;
+  size_t i;
+  size_t j;
   printf("Matrix of row: %u; col: %u\n", (unsigned int)m->row, (unsigned int)m->col);
   for(i = 0; i < m->row; i++){
     for(j = 0; j < m->col; j++)
@@ -132,10 +137,10 @@ void PrintMatrix(matrix *m)
 /*if a value is in matrix return 1 else 0*/
 int ValInMatrix(matrix* m, double val)
 {
-  size_t i, j;
+  size_t i;
+  size_t j;
   for(i = 0; i < m->row; i++){
     for(j = 0; j < m->col; j++){
-      /*if((size_t)getMatrixValue(m, i, j) == (size_t)id) */
       if(FLOAT_EQ(m->data[i][j], val, 1*10e-8))
         return 1;
       else
@@ -147,7 +152,8 @@ int ValInMatrix(matrix* m, double val)
 
 void MatrixSet(matrix *m, double val)
 {
-  size_t i, j;
+  size_t i;
+  size_t j;
   if(m->row == m->col){
     for(i = 0; i < m->row; i++){
       m->data[i][i] = val;
@@ -167,7 +173,8 @@ void MatrixSet(matrix *m, double val)
 
 void MatrixInitRandomInt(matrix *m, int low, int high)
 {
-  size_t i, j;
+  size_t i;
+  size_t j;
   for(i = 0; i < m->row; i++){
     for(j = 0; j < m->col; j++){
       m->data[i][j] = (double)randInt(low, high);
@@ -177,7 +184,8 @@ void MatrixInitRandomInt(matrix *m, int low, int high)
 
 void MatrixInitRandomFloat(matrix *m, double low, double high)
 {
-  size_t i, j;
+  size_t i;
+  size_t j;
   for(i = 0; i < m->row; i++){
     for(j = 0; j < m->col; j++){
       m->data[i][j] = randDouble(low, high);
@@ -187,7 +195,8 @@ void MatrixInitRandomFloat(matrix *m, double low, double high)
 
 void MatrixCopy(matrix *msrc, matrix **mdst)
 {
-  size_t i, j;
+  size_t i;
+  size_t j;
   if((*mdst)->data == NULL){
     (*mdst)->row = msrc->row;
     (*mdst)->col = msrc->col;
@@ -261,12 +270,6 @@ dvector *getMatrixRow(matrix *m, size_t row)
     for(j = 0; j < m->col; j++){
       v->data[j] = m->data[row][j];
     }
-
-    /*
-    initDVector(&v);
-    memcpy(v->data, (*m).data[row], (*m).col);
-    v->size = (*m).col;
-    */
     return v;
   }
   else{
@@ -296,11 +299,10 @@ dvector *getMatrixColumn(matrix *m, size_t col)
 
 void MatrixAppendRow(matrix* m, dvector *row)
 {
-  size_t i, j;
+  size_t i;
+  size_t j;
   size_t rowsize =  m->row + 1;
   size_t colsize;
-
-
   if(m->col != 0){
     if(row->size > m->col)
       colsize = row->size;
@@ -353,7 +355,8 @@ void MatrixAppendRow(matrix* m, dvector *row)
 
 void MatrixAppendCol(matrix* m, dvector *col)
 {
-  size_t i, j;
+  size_t i;
+  size_t j;
   size_t lastcol;
   size_t colsize;
   size_t rowsize;
@@ -424,7 +427,8 @@ void MatrixAppendCol(matrix* m, dvector *col)
 
 void MatrixAppendUIRow(matrix* m, uivector *row)
 {
-  size_t i, j;
+  size_t i;
+  size_t j;
   size_t rowsize =  m->row + 1;
   size_t colsize;
 
@@ -481,7 +485,8 @@ void MatrixAppendUIRow(matrix* m, uivector *row)
 
 void MatrixAppendUICol(matrix* m, uivector *col)
 {
-  size_t i, j;
+  size_t i;
+  size_t j;
   size_t lastcol;
   size_t colsize;
   size_t rowsize;
@@ -607,7 +612,8 @@ void MatrixDVectorDotProduct(matrix *m, dvector *v, dvector *p)
 {
   /* (m*vect) where t is a column vector not transposed
      the size of the "vect" vector must be equal to the number of matrix row*/
-  size_t i, j;
+  size_t i;
+  size_t j;
   double res;
   if(m->col == v->size){
     for(i = 0; i < m->row; i++){
@@ -647,7 +653,8 @@ void *MatrixDVectorDotProductWorker(void *arg_){
   tharg *arg;
   double res;
   arg = (tharg*) arg_;
-  size_t i, j;
+  size_t i;
+  size_t j;
 
   for(i = arg->from; i < arg->to; i++){
     arg->res->data[i] = 0.f;
@@ -724,7 +731,8 @@ void MT_MatrixDVectorDotProduct(matrix *m, dvector *v, dvector *p)
  */
 void DVectorMatrixDotProduct(matrix *m, dvector *v, dvector *p)
 {
-  size_t i, j;
+  size_t i;
+  size_t j;
   double res;
   /* (vect'*m) where vect is colunm vector transposed
      the size of the "vect" vector must be equal to the number of matrix column */
@@ -760,7 +768,8 @@ void *DVectorMatrixDotProductWorker(void *arg_)
   tharg *arg;
   double res;
   arg = (tharg*) arg_;
-  size_t i, j;
+  size_t i;
+  size_t j;
 
   for(j = arg->from; j < arg->to; j++){
     for(i = 0; i < arg->m->row; i++){
@@ -836,8 +845,8 @@ void MT_DVectorMatrixDotProduct(matrix *m, dvector *v, dvector *p)
 
 void DVectorTrasposedDVectorDotProduct(dvector *v1, dvector *v2, matrix *m)
 {
-  size_t i, j;
-
+  size_t i;
+  size_t j;
   if(m->row != v1->size && m->col != v2->size)
     ResizeMatrix(m, v1->size, v2->size);
 
@@ -932,7 +941,6 @@ void MatrixDotProduct(matrix *a, matrix *b, matrix *r)
   }
 }
 
-
 /*
  * Array product between two vector
  * X = t ⊗ p'
@@ -942,7 +950,8 @@ void MatrixDotProduct(matrix *a, matrix *b, matrix *r)
  */
 void RowColOuterProduct(dvector *a, dvector *b, matrix *m)
 {
-  size_t i, j;
+  size_t i;
+  size_t j;
   double res;
   for(i = 0; i < a->size; i++){
     for(j = 0; j < b->size; j++){
@@ -964,7 +973,8 @@ void RowColOuterProduct(dvector *a, dvector *b, matrix *m)
 }
 
 void MatrixTranspose(matrix *m, matrix *r){
-  size_t i, j;
+  size_t i;
+  size_t j;
   for(i = 0; i < m->row; i++){
     for(j = 0; j < m->col; j++){
       r->data[j][i] = m->data[i][j];
@@ -988,8 +998,9 @@ void MatrixLUInversion(matrix *m, matrix *m_inv)
   int LWORK = N*N;
   double *WORK = xmalloc(sizeof(double)*LWORK);
   int INFO;
-  int i, j, k;
-  k = 0;
+  int i;
+  int j;
+  int k = 0;
   for(i = 0; i < m->col; i++){
     for(j = 0; j < m->row; j++){
       M[k] = m->data[i][j];
@@ -1028,12 +1039,13 @@ void MatrixLUInversion(matrix *m, matrix *m_inv)
 void MatrixInversion(matrix *m, matrix *m_inv)
 {
   if(m->row == m->col){
-    size_t i, j, k;
-    double ratio, a;
-
+    size_t i;
+    size_t j;
+    size_t k;
+    double ratio;
+    double a;
     matrix *AI;
     NewMatrix(&AI, m->row, m->col*2);
-
     /*copy the m1 value to AI*/
     for(i = 0; i < m->row; i++){
       for(j = 0; j < m->col; j++){
@@ -1052,7 +1064,6 @@ void MatrixInversion(matrix *m, matrix *m_inv)
         }
       }
     }
-
 
     for(i = 0; i < m->row; i++){
       for(j = 0; j < m->col; j++){
@@ -1106,7 +1117,9 @@ void MatrixInversion(matrix *m, matrix *m_inv)
  */
 void MatrixPseudoinversion(matrix *m, matrix *m_inv)
 {
-  matrix *U, *S, *V_T;
+  matrix *U;
+  matrix *S;
+  matrix *V_T;
   initMatrix(&U);
   initMatrix(&S);
   initMatrix(&V_T);
@@ -1141,7 +1154,9 @@ void MatrixPseudoinversion(matrix *m, matrix *m_inv)
 void MatrixMoorePenrosePseudoinverse(matrix *m, matrix *inv)
 {
   /*A+ = (A'A)-1 A'*/
-  matrix *m_T, *m_t_m, *i_m_t_m;
+  matrix *m_T;
+  matrix *m_t_m;
+  matrix *i_m_t_m;
 
   /*A'*/
   NewMatrix(&m_T, m->col, m->row);
@@ -1190,8 +1205,11 @@ double MatrixTrace(matrix *m)
 
 void MeanCenteredMatrix(matrix *m, matrix *mc)
 {
-  size_t i, j, n;
-  double average, res;
+  size_t i;
+  size_t j;
+  size_t n;
+  double average;
+  double res;
   for(j = 0; j < m->col; j++){
     if(m->row > 1){
       /*Calculate the average */
@@ -1239,8 +1257,14 @@ void MeanCenteredMatrix(matrix *m, matrix *mc)
 
 void PearsonCorrelMatrix(matrix* msrc, matrix* mdst)
 {
-  size_t i, j, k;
-  double n, a, b, xres, yres;
+  size_t i;
+  size_t j;
+  size_t k;
+  double n;
+  double a;
+  double b;
+  double xres;
+  double yres;
   dvector *mean;
   ResizeMatrix(mdst, msrc->col, msrc->col);
   initDVector(&mean);
@@ -1276,7 +1300,10 @@ void PearsonCorrelMatrix(matrix* msrc, matrix* mdst)
 
 void SpearmanCorrelMatrix(matrix* msrc, matrix* mdst)
 {
-  size_t i, j, k, l;
+  size_t i;
+  size_t j;
+  size_t k;
+  size_t l;
   matrix *rankm;
   dvector *vtosort;
   double n;
@@ -1336,8 +1363,9 @@ void SpearmanCorrelMatrix(matrix* msrc, matrix* mdst)
 
 void MatrixColAverage(matrix *m, dvector *colaverage)
 {
-  size_t i, j, n;
-
+  size_t i;
+  size_t j;
+  size_t n;
   double average;
   for(j = 0; j < m->col; j++){
     /*Calculate the average */
@@ -1362,8 +1390,9 @@ void MatrixColAverage(matrix *m, dvector *colaverage)
 
 void MatrixRowAverage(matrix *m, dvector *rowaverage)
 {
-  size_t i, j, n;
-
+  size_t i;
+  size_t j;
+  size_t n;
   double average;
   for(i = 0; i < m->row; i++){
     /*Calculate the average */
@@ -1384,8 +1413,11 @@ void MatrixRowAverage(matrix *m, dvector *rowaverage)
 
 void MatrixColSDEV(matrix* m, dvector *colsdev)
 {
-  size_t i, j, n;
-  double var, average;
+  size_t i;
+  size_t j;
+  size_t n;
+  double var;
+  double average;
   for(j = 0; j < m->col; j++){
     average=+0.f;
     n = 0;
@@ -1421,9 +1453,10 @@ void MatrixColSDEV(matrix* m, dvector *colsdev)
 
 void MatrixColRMS(matrix* m, dvector *colrms)
 {
-  size_t i, j, n;
+  size_t i;
+  size_t j;
+  size_t n;
   double a;
-
   for(j = 0; j < m->col; j++){
     a = +0.f;
     n = 0;
@@ -1445,8 +1478,11 @@ void MatrixColRMS(matrix* m, dvector *colrms)
 
 void MatrixColVar(matrix* m, dvector *colvar)
 {
-  size_t i, j, n;
-  double var, average;
+  size_t i;
+  size_t j;
+  size_t n;
+  double var;
+  double average;
   for(j = 0; j < m->col; j++){
     average = +0.f;
     n = 0;
@@ -1498,7 +1534,9 @@ void MatrixColVar(matrix* m, dvector *colvar)
  */
 void MatrixColDescStat(matrix *m, matrix *ds)
 {
-  int i, j, n;
+  int i;
+  size_t j;
+  size_t n;
   size_t n_zeros;
   size_t n_missing;
   double avg;
@@ -1577,15 +1615,15 @@ void MatrixColDescStat(matrix *m, matrix *ds)
 /* calculation of the covariance matrix */
 void MatrixCovariance(matrix *m, matrix *cm)
 {
-  size_t i, j, k;
+  size_t i;
+  size_t j;
+  size_t k;
   double sum;
   dvector *colaverage;
-
   ResizeMatrix(cm, m->col, m->col);
 
   initDVector(&colaverage);
   MatrixColAverage(m, colaverage);
-
 
   for(i = 0; i < m->col; i++){
     for(j = 0; j < m->col; j++){
@@ -1603,7 +1641,8 @@ void MatrixCovariance(matrix *m, matrix *cm)
 /* Transform a matrix into a logaritmic matrix */
 void Matrix2LogMatrix(matrix *m_in, matrix *m_out)
 {
-  size_t i, j;
+  size_t i;
+  size_t j;
   ResizeMatrix(m_out, m_in->row, m_in->col);
   for(i = 0; i < m_in->row; i++){
     for(j = 0; j < m_in->col; j++){
@@ -1615,7 +1654,8 @@ void Matrix2LogMatrix(matrix *m_in, matrix *m_out)
 /* Transform a matrix into a SQUARE matrix */
 void Matrix2SquareMatrix(matrix *m_in, matrix *m_out)
 {
-  size_t i, j;
+  size_t i;
+  size_t j;
   ResizeMatrix(m_out, m_in->row, m_in->col);
   for(i = 0; i < m_in->row; i++)
     for(j = 0; j < m_in->col; j++)
@@ -1625,7 +1665,8 @@ void Matrix2SquareMatrix(matrix *m_in, matrix *m_out)
 /* Transform a matrix into a SQRT matrix */
 void Matrix2SQRTMatrix(matrix *m_in, matrix *m_out)
 {
-  size_t i, j;
+  size_t i;
+  size_t j;
   ResizeMatrix(m_out, m_in->row, m_in->col);
   for(i = 0; i < m_in->row; i++)
     for(j = 0; j < m_in->col; j++)
@@ -1635,7 +1676,8 @@ void Matrix2SQRTMatrix(matrix *m_in, matrix *m_out)
 /* Transform a matrix into ABS matrix */
 void Matrix2ABSMatrix(matrix *m_in, matrix *m_out)
 {
-  size_t i, j;
+  size_t i;
+  size_t j;
   ResizeMatrix(m_out, m_in->row, m_in->col);
   for(i = 0; i < m_in->row; i++)
     for(j = 0; j < m_in->col; j++)
@@ -1649,7 +1691,11 @@ void Matrix2ABSMatrix(matrix *m_in, matrix *m_out)
  */
 void Matrix2IntFactorsMatrix(matrix *m_in, size_t factors, matrix *m_out)
 {
-  size_t i, j, k, l, c;
+  size_t i;
+  size_t j;
+  size_t k;
+  size_t l;
+  size_t c;
   size_t nifc = 0;
   for(i = 1; i < m_in->col; i++)
     nifc += i;
@@ -1676,7 +1722,8 @@ void Matrix2IntFactorsMatrix(matrix *m_in, size_t factors, matrix *m_out)
  */
 void MatrixRowCenterScaling(matrix *m_in, matrix *m_out)
 {
-  size_t i, j;
+  size_t i;
+  size_t j;
   double rowsum;
   ResizeMatrix(m_out, m_in->row, m_in->col);
   for(i = 0; i < m_in->row; i++){
@@ -1696,7 +1743,8 @@ void MatrixRowCenterScaling(matrix *m_in, matrix *m_out)
  */
 void MatrixSVNScaling(matrix *m_in, matrix *m_out)
 {
-  size_t i, j;
+  size_t i;
+  size_t j;
   double rowaverage, rowstdev;
   ResizeMatrix(m_out, m_in->row, m_in->col);
   for(i = 0; i < m_in->row; i++){
@@ -1726,7 +1774,8 @@ void MatrixSVNScaling(matrix *m_in, matrix *m_out)
  */
 double Matrixnorm(matrix *m)
 {
-  size_t i, j;
+  size_t i;
+  size_t j;
   double norm = +0.f, v;
   for(j = 0; j < m->col; j++){
     for(i = 0; i < m->row; i++){
@@ -1744,7 +1793,8 @@ double Matrixnorm(matrix *m)
 
 double Matrix1norm(matrix *m)
 {
-  size_t i, j;
+  size_t i;
+  size_t j;
   double norm = +0.f;
   for(j = 0; j < m->col; j++){
     for(i = 0; i < m->row; i++){
@@ -1757,10 +1807,12 @@ double Matrix1norm(matrix *m)
 double MatrixDeterminant(matrix *m)
 {
   if(m->row == m->col){
-    size_t i, j, k, l;
+    size_t i;
+    size_t j;
+    size_t k;
+    size_t l;
     double d = 0;
     matrix *sub_m;
-
     if (m->row < 1){
       return MISSING;
     }
@@ -1812,11 +1864,11 @@ double MatrixDeterminant(matrix *m)
 void MatrixNorm(matrix *m, matrix *nm)
 {
   if((*nm).row == m->row && m->col == (*nm).col){
-    size_t i, j;
-    double mod, res;
-
+    size_t i;
+    size_t j;
+    double mod;
+    double res;
     mod = Matrixnorm(m);
-
     for(i = 0; i < m->row; i++){
       for(j = 0; j < m->col; j++){
         res = m->data[i][j]/mod;
@@ -1867,7 +1919,9 @@ void MatrixColumnMinMax(matrix* m, size_t col, double* min, double* max)
 
 void MatrixSort(matrix* m, size_t col_n)
 {
-  size_t i, j, k;
+  size_t i;
+  size_t j;
+  size_t k;
   double temp;
   for(i = 0; i < m->row; i++){
     for(j = i+1; j < m->row; j++){
@@ -1887,7 +1941,9 @@ void MatrixSort(matrix* m, size_t col_n)
 
 void MatrixReverseSort(matrix* m, size_t col_n)
 {
-  size_t i, j, k;
+  size_t i;
+  size_t j;
+  size_t k;
   double temp;
   for(i = 0; i < m->row; i++){
     for(j = i+1; j < m->row; j++){
@@ -1907,9 +1963,10 @@ void MatrixReverseSort(matrix* m, size_t col_n)
 
 void MatrixGetMaxValueIndex(matrix* m, size_t* row, size_t* col)
 {
-  size_t i, j;
-  double tmp_value, best_value;
-
+  size_t i;
+  size_t j;
+  double tmp_value;
+  double best_value;
   if(col != NULL)
     (*col) = 0;
 
@@ -1936,8 +1993,10 @@ void MatrixGetMaxValueIndex(matrix* m, size_t* row, size_t* col)
 
 void MatrixGetMinValueIndex(matrix* m, size_t* row, size_t* col)
 {
-  size_t i, j;
-  double tmp_value, best_value;
+  size_t i;
+  size_t j;
+  double tmp_value;
+  double best_value;
 
   if(col != NULL)
     (*col) = 0;
@@ -1973,8 +2032,12 @@ int cmpfunc(const void *a, const void *b )
 void SVD(matrix* m, matrix *U, matrix *S, matrix *VT)
 {
   size_t i;
-  matrix *w1, *w2, *m_t, *v/*, *to_sort*/;
-  dvector *eval1, *eval2;
+  matrix *w1;
+  matrix *w2;
+  matrix *m_t;
+  matrix *v;
+  dvector *eval1;
+  dvector *eval2;
   NewMatrix(&w1, m->row, m->row); // A A^T
   NewMatrix(&w2, m->col, m->col); // A^T A
   NewMatrix(&m_t, m->col, m->row);
@@ -2020,7 +2083,8 @@ extern void dgesdd_( char* jobz, int* m, int* n, double* a,
 
 void conv2matrix(int m, int n, double* a, int lda, matrix *m_)
 {
-  size_t i, j;
+  size_t i;
+  size_t j;
   ResizeMatrix(m_, m, n);
   for(i = 0; i < m; i++) {
     for(j = 0; j < n; j++)
@@ -2030,9 +2094,16 @@ void conv2matrix(int m, int n, double* a, int lda, matrix *m_)
 
 void SVDlapack(matrix *m_, matrix *u, matrix *s, matrix *vt)
 {
-  int i, j, k;
-  int m = m_->row, n = m_->col, lda = m_->row, ldu = m_->row, ldvt = m_->col, info, lwork;
-
+  int i;
+  int j;
+  int k;
+  int m = m_->row;
+  int n = m_->col;
+  int lda = m_->row;
+  int ldu = m_->row;
+  int ldvt = m_->col;
+  int info;
+  int lwork;
   double wkopt;
   double* work = NULL;
   /* Local arrays */
@@ -2122,14 +2193,20 @@ extern void dgeev_(char* jobvl, char* jobvr, int* n, double* a,
 void EVectEval(matrix *m, dvector *eval, matrix *evect)
 {
   /* Locals */
-  size_t i, j, k, N;
-
+  size_t i;
+  size_t j;
+  size_t k;
+  size_t N;
   N = m->row;
   int LDA = N;
   int LDVL = N;
   int LDVR = N;
-
-  int n = N, lda = LDA, ldvl = LDVL, ldvr = LDVR, info, lwork;
+  int n = N;
+  int lda = LDA;
+  int ldvl = LDVL;
+  int ldvr = LDVR;
+  int info;
+  int lwork;
   double wkopt;
   double* work;
 
@@ -2200,7 +2277,6 @@ void QRMatrixVectNorm(matrix *m, size_t col, dvector *nv)
 {
   size_t i;
   double s = +0.f;
-
   if(nv->size != m->row)
     DVectorResize(nv, m->row);
 
@@ -2216,10 +2292,17 @@ void QRMatrixVectNorm(matrix *m, size_t col, dvector *nv)
 
 void QRDecomposition(matrix *m, matrix *Q, matrix *R)
 {
-  size_t i, j, k;
-  double D, p;
-  dvector *d, *v;
-  matrix *a, *a1, *P, *PQ;
+  size_t i;
+  size_t j;
+  size_t k;
+  double D;
+  double p;
+  dvector *d;
+  dvector *v;
+  matrix *a;
+  matrix *a1;
+  matrix *P;
+  matrix *PQ;
   initMatrix(&a);
   MatrixCopy(m, &a);
   NewMatrix(&a1, a->row, a->col);
