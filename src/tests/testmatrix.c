@@ -26,18 +26,9 @@
 #include "numeric.h"
 #include "algebra.h"
 /*
-MT_DVectorMatrixDotProduct
-Matrix2ABSMatrix
 Matrix2IntFactorsMatrix
-Matrix2LogMatrix
-Matrix2SQRTMatrix
-Matrix2SquareMatrix
 MatrixAppendUIRow
 MatrixCheck
-MatrixColRMS
-MatrixColSDEV
-MatrixColVar
-MatrixColumnMinMax
 MatrixDeleteColAt
 MatrixDeleteRowAt
 MatrixInitRandomFloat
@@ -47,11 +38,226 @@ MatrixNorm
 MatrixReverseSort
 MatrixRowAverage
 MatrixRowCenterScaling
-MatrixSet
+
 MatrixSort
 RowColOuterProduct
 */
 
+void Test47()
+{
+  puts("Test 47: MatrixSet");
+  matrix *m;
+  size_t i;
+  size_t j;
+  NewMatrix(&m, 3, 3);
+  MatrixSet(m, -1);
+  for(i = 0; i < m->row; i++){
+    for(j = 0; j < m->col; j++){
+      if(!FLOAT_EQ(m->data[i][j], -1.f, 1e-3))
+        abort();
+      else
+        continue;
+    }
+  }
+  puts("MatrixSet: OK");
+  DelMatrix(&m);
+}
+
+void Test46()
+{
+  puts("Test 46: MatrixColumnMinMax");
+  matrix *m;
+  double min;
+  double max;
+  NewMatrix(&m, 3, 3);
+  m->data[0][0] = 1; m->data[0][1] = 0; m->data[0][2] = 3;
+  m->data[1][0] = 11.; m->data[1][1] = 5; m->data[1][2] = 2;
+  m->data[2][0] = 6; m->data[2][1] = 12; m->data[2][2] = 5;
+  
+  MatrixColumnMinMax(m, 0, &min, &max);
+  if(!FLOAT_EQ(min, 1.f, 1e-4) ||
+     !FLOAT_EQ(max, 11.f, 1e-4))
+    abort();
+  MatrixColumnMinMax(m, 1, &min, &max);
+  if(!FLOAT_EQ(min, 0.f, 1e-4) ||
+     !FLOAT_EQ(max, 12.f, 1e-4))
+    abort();
+  MatrixColumnMinMax(m, 1, &min, &max);
+  if(!FLOAT_EQ(min, 0.f, 1e-4) ||
+     !FLOAT_EQ(max, 12.f, 1e-4))
+    abort();
+  
+  puts("MatrixColumnMinMax: OK");
+  DelMatrix(&m);
+}
+
+void Test45()
+{
+  puts("Test 45: MatrixColVar");
+  matrix *m;
+  dvector *v;
+  NewMatrix(&m, 3, 3);
+  m->data[0][0] = 1; m->data[0][1] = 0; m->data[0][2] = 3;
+  m->data[1][0] = 11.; m->data[1][1] = 5; m->data[1][2] = 2;
+  m->data[2][0] = 6; m->data[2][1] = 12; m->data[2][2] = 5;
+  initDVector(&v);
+  MatrixColVar(m, v);
+  if(!FLOAT_EQ(v->data[0], 25.0000, 1e-4) ||
+     !FLOAT_EQ(v->data[1], 36.3333, 1e-4) ||
+     !FLOAT_EQ(v->data[2], 2.3333, 1e-4))
+     abort();
+  puts("MatrixColVar: OK");
+  DelMatrix(&m);
+  DelDVector(&v);
+}
+
+void Test44()
+{
+  puts("Test 44: MatrixColSDEV");
+  matrix *m;
+  dvector *v;
+  NewMatrix(&m, 3, 3);
+  m->data[0][0] = 1; m->data[0][1] = 0; m->data[0][2] = 3;
+  m->data[1][0] = 11.; m->data[1][1] = 5; m->data[1][2] = 2;
+  m->data[2][0] = 6; m->data[2][1] = 12; m->data[2][2] = 5;
+  initDVector(&v);
+  MatrixColSDEV(m, v);
+  if(!FLOAT_EQ(v->data[0], 5.0000, 1e-4) ||
+     !FLOAT_EQ(v->data[1], 6.0277, 1e-4) ||
+     !FLOAT_EQ(v->data[2], 1.5275, 1e-4))
+     abort();
+  puts("MatrixColSDEV: OK");
+  DelMatrix(&m);
+  DelDVector(&v);
+}
+
+void Test43()
+{
+  puts("Test 43: MatrixColRMS");
+  matrix *m;
+  dvector *v;
+  NewMatrix(&m, 3, 3);
+  m->data[0][0] = 1; m->data[0][1] = 0; m->data[0][2] = 3;
+  m->data[1][0] = 11.; m->data[1][1] = 5; m->data[1][2] = 2;
+  m->data[2][0] = 6; m->data[2][1] = 12; m->data[2][2] = 5;
+  initDVector(&v);
+  MatrixColRMS(m, v);
+  if(!FLOAT_EQ(v->data[0], 7.2572, 1e-3) ||
+     !FLOAT_EQ(v->data[1], 7.5056, 1e-3) ||
+     !FLOAT_EQ(v->data[2], 3.5590, 1e-3))
+     abort();
+  puts("MatrixColRMS: OK");
+  DelMatrix(&m);
+  DelDVector(&v);
+}
+
+void Test42()
+{
+  puts("Test 42: Matrix2SquareMatrix");
+  matrix *m;
+  matrix *o;
+  size_t i;
+  size_t j;
+  NewMatrix(&m, 3, 3);
+  m->data[0][0] = 1; m->data[0][1] = 0; m->data[0][2] = 3;
+  m->data[1][0] = 11.; m->data[1][1] = 5; m->data[1][2] = 2;
+  m->data[2][0] = 6; m->data[2][1] = 12; m->data[2][2] = 5;
+  NewMatrix(&o, 3, 3);
+  Matrix2SquareMatrix(m, o);
+  for(i = 0; i < m->row; i++){
+    for( j = 0; j < m->col; j++){
+      if(FLOAT_EQ(o->data[i][j], square(m->data[i][j]), 1e-1))
+        continue;
+      else{
+        abort();
+      }
+    }
+  }
+  puts("Matrix2SquareMatrix: OK");
+  DelMatrix(&m);
+  DelMatrix(&o);
+}
+
+void Test41()
+{
+  puts("Test 40: Matrix2SQRTMatrix");
+  matrix *m;
+  matrix *o;
+  size_t i;
+  size_t j;
+  NewMatrix(&m, 3, 3);
+  m->data[0][0] = 1; m->data[0][1] = 0; m->data[0][2] = 3;
+  m->data[1][0] = 11.; m->data[1][1] = 5; m->data[1][2] = 2;
+  m->data[2][0] = 6; m->data[2][1] = 12; m->data[2][2] = 5;
+  NewMatrix(&o, 3, 3);
+  Matrix2SQRTMatrix(m, o);
+  for(i = 0; i < m->row; i++){
+    for( j = 0; j < m->col; j++){
+      if(FLOAT_EQ(o->data[i][j], sqrt(m->data[i][j]), 1e-1))
+        continue;
+      else{
+        abort();
+      }
+    }
+  }
+  puts("Matrix2SQRTMatrix: OK");
+  DelMatrix(&m);
+  DelMatrix(&o);
+}
+
+void Test40()
+{
+  puts("Test 40: Matrix2LogMatrix");
+  matrix *m;
+  matrix *o;
+  size_t i;
+  size_t j;
+  NewMatrix(&m, 3, 3);
+  m->data[0][0] = 1; m->data[0][1] = 0; m->data[0][2] = 3;
+  m->data[1][0] = 11.; m->data[1][1] = 5; m->data[1][2] = 2;
+  m->data[2][0] = 6; m->data[2][1] = 12; m->data[2][2] = 5;
+  NewMatrix(&o, 3, 3);
+  Matrix2LogMatrix(m, o);
+  for(i = 0; i < m->row; i++){
+    for( j = 0; j < m->col; j++){
+      if(FLOAT_EQ(o->data[i][j], log10(m->data[i][j]+1), 1e-1))
+        continue;
+      else{
+        abort();
+      }
+    }
+  }
+  puts("Matrix2LogMatrix: OK");
+  DelMatrix(&m);
+  DelMatrix(&o);
+}
+
+void Test39()
+{
+  puts("Test 39: Matrix2ABSMatrix");
+  matrix *m;
+  matrix *o;
+  size_t i;
+  size_t j;
+  NewMatrix(&m, 3, 3);
+  m->data[0][0] = -1; m->data[0][1] = 0; m->data[0][2] = -3;
+  m->data[1][0] = -11.; m->data[1][1] = -5; m->data[1][2] = -2;
+  m->data[2][0] = -6; m->data[2][1] = -12; m->data[2][2] = -5;
+  NewMatrix(&o, 3, 3);
+  Matrix2ABSMatrix(m, o);
+  for(i = 0; i < m->row; i++){
+    for( j = 0; j < m->col; j++){
+      if(FLOAT_EQ(o->data[i][j], fabs(m->data[i][j]), 1e-1))
+        continue;
+      else{
+        abort();
+      }
+    }
+  }
+  puts("Matrix2ABSMatrix: OK");
+  DelMatrix(&m);
+  DelMatrix(&o);
+}
 void Test38()
 {
   puts("Test38: GenIdentityMatrix");
@@ -178,7 +384,10 @@ void Test32()
 {
   puts("Test 32: Calculate DVectorMatrixDotProduct");
   matrix *x;
-  dvector *v, *r;
+  dvector *v;
+  dvector *r1;
+  dvector *r2;
+  size_t i;
 
   NewMatrix(&x, 7, 4);
   NewDVector(&v, 7);
@@ -199,10 +408,22 @@ void Test32()
   v->data[5] = -22.1152;
   v->data[6] = -40.9425;
 
-  NewDVector(&r, 4);
-  DVectorMatrixDotProduct(x, v, r);
-  PrintDVector(r);
-  DelDVector(&r);
+  NewDVector(&r1, 4);
+  DVectorMatrixDotProduct(x, v, r1);
+
+  NewDVector(&r2, 4);
+  MT_DVectorMatrixDotProduct(x, v, r2);
+
+  for(i = 0; i < r1->size; i++){
+    if(FLOAT_EQ(r1->data[i], r2->data[i], 1e-8)){
+      continue;
+    }
+    else{
+      abort();
+    }
+  }
+  DelDVector(&r1);
+  DelDVector(&r2);
   DelMatrix(&x);
   DelDVector(&v);
 }
@@ -1370,5 +1591,14 @@ int main(void)
   Test36();
   Test37();
   Test38();
+  Test39();
+  Test40();
+  Test41();
+  Test42();
+  Test43();
+  Test44();
+  Test45();
+  Test46();
+  Test47();
   return 0;
 }
