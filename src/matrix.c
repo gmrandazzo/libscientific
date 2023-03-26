@@ -1791,19 +1791,6 @@ double Matrixnorm(matrix *m)
   return sqrt(norm);
 }
 
-double Matrix1norm(matrix *m)
-{
-  size_t i;
-  size_t j;
-  double norm = +0.f;
-  for(j = 0; j < m->col; j++){
-    for(i = 0; i < m->row; i++){
-      norm += fabs(m->data[i][j]);
-    }
-  }
-  return norm;
-}
-
 double MatrixDeterminant(matrix *m)
 {
   if(m->row == m->col){

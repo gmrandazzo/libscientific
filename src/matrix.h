@@ -314,7 +314,6 @@ void MatrixSVNScaling(matrix *m_in, matrix *m_out);
  * ||X|| = double
  */
 double Matrixnorm(matrix *m);
-double Matrix1norm(matrix *m);
 
 /*
  * Description:

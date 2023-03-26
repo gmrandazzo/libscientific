@@ -29,8 +29,8 @@ void test2()
   strvector *sv;
   initStrVector(&sv);
   SplitString(string, ";", sv);
-  for(i = 0; i < sv->size; i++)
-    printf("%s\n", sv->data[i]);
+  StrVectorAppendDouble(sv, 1.23456);
+  PrintStrVector(sv);
   DelStrVector(&sv);
 }
 

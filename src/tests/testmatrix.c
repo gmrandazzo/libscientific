@@ -25,6 +25,154 @@
 #include "vector.h"
 #include "numeric.h"
 #include "algebra.h"
+/*
+MT_DVectorMatrixDotProduct
+Matrix2ABSMatrix
+Matrix2IntFactorsMatrix
+Matrix2LogMatrix
+Matrix2SQRTMatrix
+Matrix2SquareMatrix
+MatrixAppendUIRow
+MatrixCheck
+MatrixColRMS
+MatrixColSDEV
+MatrixColVar
+MatrixColumnMinMax
+MatrixDeleteColAt
+MatrixDeleteRowAt
+MatrixInitRandomFloat
+MatrixInitRandomInt
+MatrixMoorePenrosePseudoinverse
+MatrixNorm
+MatrixReverseSort
+MatrixRowAverage
+MatrixRowCenterScaling
+MatrixSet
+MatrixSort
+RowColOuterProduct
+*/
+
+void Test38()
+{
+  puts("Test38: GenIdentityMatrix");
+  matrix *m;
+  size_t i;
+  size_t j;
+  NewMatrix(&m, 10, 10);
+  GenIdentityMatrix(m);
+  for(i = 0; i < m->row; i++){
+    for(j = 0; j < m->col; j++){
+      if(i != j){
+        if(FLOAT_EQ(m->data[i][j], 0.f, 1e-2)){
+          continue;
+        }
+        else{
+          abort();
+        }
+      }
+      else{
+        if(FLOAT_EQ(m->data[i][j], 1.f, 1e-2)){
+          continue;
+        }
+        else{
+          abort();
+        }
+      }
+    }
+  }
+  puts("GenIdentityMatrix: OK");
+  DelMatrix(&m);
+}
+
+void Test37()
+{
+  puts("Test37: FindNan");
+  matrix *m;
+  NewMatrix(&m, 3, 3);
+  m->data[1][1] = NAN;
+  m->data[0][2] = NAN;
+  m->data[2][1] = NAN;
+  FindNan(m);
+  DelMatrix(&m);
+}
+
+void Test36()
+{
+  puts("Test36: DVectorTrasposedDVectorDotProduct");
+  dvector *v1;
+  dvector *v2;
+  matrix *m;
+  size_t i;
+  size_t j;
+  NewDVector(&v1, 5);
+  NewDVector(&v2, 10);
+  DVectorSet(v1, 2);
+  DVectorSet(v2, 3);
+  initMatrix(&m);
+  DVectorTrasposedDVectorDotProduct(v1, v2, m);
+  for(i = 0; i < m->row; i++){
+    for(j = 0; j < m->col; j++){
+      if(FLOAT_EQ(m->data[i][j], 6.f, 1e-2)){
+        continue;
+      }
+      else{
+        abort();
+      }
+    }
+  }
+  puts("DVectorTrasposedDVectorDotProduct: OK");
+  DelDVector(&v1);
+  DelDVector(&v2);
+  DelMatrix(&m);
+}
+void Test35()
+{
+  puts("Test 35: ValInMatrix");
+  matrix *m;
+  NewMatrix(&m, 3, 3);
+  m->data[0][0] = 1.23; m->data[0][1] = 0.412; m->data[0][2] = 3.123;
+  m->data[1][0] = 11.95; m->data[1][1] = 5.14; m->data[1][2] = 2.3112313234234123;
+  m->data[2][0] = 6.32; m->data[2][1] = 12.42; m->data[2][2] = -5.423;
+  
+  if(ValInMatrix(m, 2.3112313234234123) == 1 &&
+     ValInMatrix(m, 2.3212313234234123) == 0){
+    puts("ValInMatrix: OK");
+  }
+  else{
+    abort();
+  }
+  DelMatrix(&m);
+}
+
+void Test34()
+{
+  puts("Test 34: Calculate MatrixTrace");
+  matrix *m;
+  NewMatrix(&m, 3, 3);
+  m->data[0][0] = 1; m->data[0][1] = 0; m->data[0][2] = 3;
+  m->data[1][0] = 11; m->data[1][1] = 5; m->data[1][2] = 2;
+  m->data[2][0] = 6; m->data[2][1] = 12; m->data[2][2] = -5;
+  if(!FLOAT_EQ(1., MatrixTrace(m), 1e-3))
+    abort();
+  else
+    printf("OK.\n");
+  DelMatrix(&m);
+}
+
+void Test33()
+{
+  puts("Test 33: Calculate Matrixnorm");
+  matrix *m;
+  NewMatrix(&m, 3, 3);
+  m->data[0][0] = -4; m->data[0][1] = -3; m->data[0][2] = -2;
+  m->data[1][0] = -1; m->data[1][1] = 0; m->data[1][2] = 1;
+  m->data[2][0] = 2; m->data[2][1] = 3; m->data[2][2] = 4;
+  if(!FLOAT_EQ(7.745966692414834, Matrixnorm(m), 1e-13))
+    abort();
+  else
+    printf("OK.\n");
+  DelMatrix(&m);
+}
 
 void Test32()
 {
@@ -1216,5 +1364,11 @@ int main(void)
   Test30();
   Test31();
   Test32();
+  Test33();
+  Test34();
+  Test35();
+  Test36();
+  Test37();
+  Test38();
   return 0;
 }
