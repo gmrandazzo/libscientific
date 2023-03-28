@@ -23,8 +23,12 @@
 #include "vector.h"
 #include "list.h"
 
-
-/* Allocate the vector by using the NewDVector function */
+/* List tests using:
+ * void initDVectorList(dvectorlist **lst);
+ * void NewDVectorList(dvectorlist **lst, size_t size_);
+ * void DelDVectorList(dvectorlist **lst);
+ * void DVectorListAppend(dvectorlist *lst, dvector *d);
+ */
 void test1()
 {
   int i, j;

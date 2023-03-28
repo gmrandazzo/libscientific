@@ -175,6 +175,7 @@ void MatrixInitRandomInt(matrix *m, int low, int high)
 {
   size_t i;
   size_t j;
+  srand_(time(NULL));
   for(i = 0; i < m->row; i++){
     for(j = 0; j < m->col; j++){
       m->data[i][j] = (double)randInt(low, high);
@@ -186,6 +187,7 @@ void MatrixInitRandomFloat(matrix *m, double low, double high)
 {
   size_t i;
   size_t j;
+  srand_(time(NULL));
   for(i = 0; i < m->row; i++){
     for(j = 0; j < m->col; j++){
       m->data[i][j] = randDouble(low, high);
@@ -1170,6 +1172,7 @@ void MatrixMoorePenrosePseudoinverse(matrix *m, matrix *inv)
   NewMatrix(&i_m_t_m, m_t_m->row, m_t_m->col);
   //MatrixLUInversion(m_t_m, i_m_t_m);
   MatrixPseudoinversion(m_t_m, i_m_t_m);
+  
   DelMatrix(&m_t_m);
 
   /*(A'A)-1 A*/
@@ -1835,18 +1838,6 @@ double MatrixDeterminant(matrix *m)
     return MISSING;
   }
 }
-
-/*
-double MatrixDeterminant(matrix *m)
-{
-  if(m->row == m->col){
-    return Determinant(m->data, m->row);
-  }
-  else{
-    return MISSING;
-  }
-}
-*/
 
 void MatrixNorm(matrix *m, matrix *nm)
 {

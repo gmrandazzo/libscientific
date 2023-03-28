@@ -24,7 +24,6 @@
 
 void test2()
 {
-  int i;
   char *string = "This;is;a;string";
   strvector *sv;
   initStrVector(&sv);

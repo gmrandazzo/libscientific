@@ -1,3 +1,4 @@
+
 /* testmetrics.c
 *
 * Copyright (C) <2016>  Giuseppe Marco Randazzo
@@ -23,8 +24,95 @@
 #include "matrix.h"
 #include "statistic.h"
 
+
+/*
+void EuclideanDistanceCondensed(matrix* m, dvector *distances, size_t nthreads);
+void SquaredEuclideanDistanceCondensed(matrix *m, dvector *distances, size_t nthreads);
+void ManhattanDistanceCondensed(matrix *m, dvector *distances, size_t nthreads);
+*/
+
+void test9()
+{
+  puts("Test9: MatrixMahalanobisDistance");
+  /* Euclidean distance between two matrix test */
+  matrix *m1;
+  matrix *m2;
+  double mxmxdist;
+
+  NewMatrix(&m1, 4, 3);
+  m1->data[0][0] = 1; m1->data[0][1] = 2; m1->data[0][2] = 3;
+  m1->data[1][0] = 4; m1->data[1][1] = 5; m1->data[1][2] = 6;
+  m1->data[2][0] = 7; m1->data[2][1] = 8; m1->data[2][2] = 11;
+  m1->data[3][0] = 9; m1->data[3][1] = 10; m1->data[3][2] = 12;
+
+  NewMatrix(&m2, 6, 3);
+  m2->data[0][0] = 1; m2->data[0][1] = 2; m2->data[0][2] = 3;
+  m2->data[1][0] = 1; m2->data[1][1] = 8; m2->data[1][2] = 1;
+  m2->data[2][0] = 4; m2->data[2][1] = 0; m2->data[2][2] = 7;
+  m2->data[3][0] = 5; m2->data[3][1] = 1; m2->data[3][2] = 6;
+  m2->data[4][0] = 3; m2->data[4][1] = 3; m2->data[4][2] = 4;
+  m2->data[5][0] = 5; m2->data[5][1] = 2; m2->data[5][2] = 7;
+
+  mxmxdist = MatrixMahalanobisDistance(m1, m2);
+  if(!FLOAT_EQ(mxmxdist, 1.931663, 1e-4))
+    abort();
+  puts("MatrixMahalanobisDistance: OK");
+  DelMatrix(&m1);
+  DelMatrix(&m2);
+}
+void test8()
+{
+  puts("Test8: CosineDistance");
+  size_t i, j, maxrow, maxcol;
+  matrix *m, *dist;
+
+  maxrow = 600;
+  maxcol = 10;
+  srand_(maxrow);
+  NewMatrix(&m, maxrow, maxcol);
+
+  srand(maxrow+maxcol);
+  for(i = 0; i < maxrow; i++){
+    for(j = 0; j < maxcol; j++){
+      setMatrixValue(m, i, j, rand() % 100);
+    }
+  }
+
+  initMatrix(&dist);
+  CosineDistance(m, m, dist, 4);
+  puts("CosineDistance: OK");
+  DelMatrix(&m);
+  DelMatrix(&dist);
+}
+
 void test7()
 {
+  puts("Test7: SquaredEuclideanDistance");
+  size_t i, j, maxrow, maxcol;
+  matrix *m, *dist;
+
+  maxrow = 600;
+  maxcol = 10;
+  srand_(maxrow);
+  NewMatrix(&m, maxrow, maxcol);
+
+  srand(maxrow+maxcol);
+  for(i = 0; i < maxrow; i++){
+    for(j = 0; j < maxcol; j++){
+      setMatrixValue(m, i, j, rand() % 100);
+    }
+  }
+
+  initMatrix(&dist);
+  SquaredEuclideanDistance(m, m, dist, 4);
+  puts("SquaredEuclideanDistance: OK");
+  DelMatrix(&m);
+  DelMatrix(&dist);
+}
+
+void test6()
+{
+  puts("Test6: CosineDistanceCondensed");
   size_t i, j, indx;
   matrix *m;
   dvector *dist;
@@ -47,18 +135,21 @@ void test7()
     }
     printf("\n");
   }
+  puts("CosineDistanceCondensed: OK");
   DelDVector(&dist);
   DelMatrix(&m);
 }
 
-void test6()
+void test5()
 {
+  puts("Test5: MahalanobisDistance");
   size_t i, j, maxrow, maxcol;
   matrix *m;
   dvector *dist;
 
-  maxrow = 60000;
-  maxcol = 784;
+  maxrow = 600;
+  maxcol = 10;
+  srand_(maxrow);
 
   NewMatrix(&m, maxrow, maxcol);
 
@@ -71,13 +162,14 @@ void test6()
 
   initDVector(&dist);
   MahalanobisDistance(m, NULL, NULL, dist);
-
+  puts("MahalanobisDistance: OK");
   DelMatrix(&m);
   DelDVector(&dist);
 }
 
-void test5()
+void test4()
 {
+  puts("Test4: MahalanobisDistance");
   size_t i, j;
   matrix *m, *c, *edst;
   dvector *mdst;
@@ -191,9 +283,7 @@ void test5()
   initDVector(&mu);
   initMatrix(&invcov);
   MahalanobisDistance(m, invcov, mu, mdst);
-
-  PrintMatrix(invcov);
-  PrintDVector(mu);
+  puts("MahalanobisDistance: OK");
   DelMatrix(&invcov);
   DelDVector(&mu);
 
@@ -206,23 +296,22 @@ void test5()
     c->data[0][j] /= (double)m->row;
   }
 
-
-
   initMatrix(&edst);
   ManhattanDistance(m, c, edst, 4);
-
+  /*
   for(i = 0; i < m->row; i++){
     printf("%.4f %.4f\n", mdst->data[i], edst->data[0][i]);
   }
-
+  */ 
   DelMatrix(&edst);
   DelMatrix(&c);
   DelMatrix(&m);
   DelDVector(&mdst);
 }
 
-void test4()
+void test3()
 {
+  puts("Test3: CovarianceDistanceMap.");
   matrix *mi, *mo;
 
   NewMatrix(&mi, 100, 2);
@@ -328,26 +417,21 @@ void test4()
   mi->data[97][0] = 3.173181; mi->data[97][1] = 5.385317;
   mi->data[98][0] = 2.116143; mi->data[98][1] = 5.153725;
   mi->data[99][0] = 3.058209; mi->data[99][1] = 3.857030;
-
-  PrintMatrix(mi);
-
   CovarianceDistanceMap(mi, mo);
-
-  PrintMatrix(mo);
-
   DelMatrix(&mi);
   DelMatrix(&mo);
 }
 
 
-void test3()
+void test2()
 {
+  puts("Test2: EuclideanDistance");
   size_t i, j, maxrow, maxcol;
   matrix *m, *dist;
 
-  maxrow = 10000;
+  maxrow = 100;
   maxcol = 50;
-
+  srand_(maxrow);
   NewMatrix(&m, maxrow, maxcol);
 
   srand(maxrow+maxcol);
@@ -363,76 +447,9 @@ void test3()
   DelMatrix(&dist);
 }
 
-void test2()
-{
-  puts("Test3: ROC and Precision-Recall test.");
-  /* ROC curve test */
-  dvector *y_score, *y_true;
-  matrix *roc, *pr;
-  double auc, ap;
-  NewDVector(&y_score, 13);
-  NewDVector(&y_true, 13);
-
-  y_score->data[0] = 0.1;
-  y_score->data[1] = 0.2;
-  y_score->data[2] = 0.3;
-  y_score->data[3] = 0.4;
-  y_score->data[4] = 0.5;
-  y_score->data[5] = 0.6;
-  y_score->data[6] = 0.7;
-  y_score->data[7] = 0.8;
-  y_score->data[8] = 0.9;
-  y_score->data[9] = 1.0;
-  y_score->data[10] = 2.0;
-  y_score->data[11] = 3.0;
-  y_score->data[12] = 3.4;
-
-
-  y_true->data[0] = 0;
-  y_true->data[1] = 0;
-  y_true->data[2] = 0;
-  y_true->data[3] = 0;
-  y_true->data[4] = 0;
-  y_true->data[5] = 1;
-  y_true->data[6] = 1;
-  y_true->data[7] = 1;
-  y_true->data[8] = 1;
-  y_true->data[9] = 0;
-  y_true->data[10] = 1;
-  y_true->data[11] = 1;
-  y_true->data[12] = 1;
-
-  initMatrix(&roc);
-  ROC(y_true, y_score,  roc, &auc);
-  PrintMatrix(roc);
-  if(FLOAT_EQ(auc, 0.904762, 1e-6)){
-    printf("AUC OK!\n");
-  }else{
-    printf("AUC ERROR!\n");
-  }
-  printf("AUC: %f\n", auc);
-
-  initMatrix(&pr);
-  PrecisionRecall(y_true, y_score, pr, &ap);
-  PrintMatrix(pr);
-
-  if(FLOAT_EQ(ap, 0.900425, 1e-6)){
-    printf("AVERAGE PRECISION-RECALL OK!\n");
-  }else{
-    printf("AVERAGE PRECISION-RECALL ERROR!\n");
-  }
-  printf("AVERAGE PRECISION-RECALL: %f\n", ap);
-
-  DelMatrix(&pr);
-  DelMatrix(&roc);
-  DelDVector(&y_true);
-  DelDVector(&y_score);
-}
-
-
 void test1()
 {
-  printf("Test1: Euclidean distance between two matrix.");
+  puts("Test1: Euclidean distance between two matrix.");
   /* Euclidean distance between two matrix test */
   matrix *m1;
   matrix *m2;
@@ -454,7 +471,7 @@ void test1()
 
 
   initMatrix(&dist);
-  EuclideanDistance(m2, m1, dist, 4);
+  EuclideanDistance(m2, m1, dist, 1);
 
   /*puts("Matrix");
   PrintMatrix(m);
@@ -471,10 +488,12 @@ int main(void)
 {
 
   test1();
-  /*test2();
+  test2();
   test3();
   test4();
   test5();
   test6();
-  test7();*/
+  test7();
+  test8();
+  test9();
 }

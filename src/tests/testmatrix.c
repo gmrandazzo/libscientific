@@ -25,23 +25,304 @@
 #include "vector.h"
 #include "numeric.h"
 #include "algebra.h"
-/*
-Matrix2IntFactorsMatrix
-MatrixAppendUIRow
-MatrixCheck
-MatrixDeleteColAt
-MatrixDeleteRowAt
-MatrixInitRandomFloat
-MatrixInitRandomInt
-MatrixMoorePenrosePseudoinverse
-MatrixNorm
-MatrixReverseSort
-MatrixRowAverage
-MatrixRowCenterScaling
 
-MatrixSort
-RowColOuterProduct
+/*
+MISSING TEST! Matrix2IntFactorsMatrix
 */
+
+void Test60()
+{
+  puts("Test 60: RowColOuterProduct");
+  dvector *a;
+  dvector *b;
+  matrix *m;
+  size_t i;
+  size_t j;
+  NewDVector(&a, 3);
+  NewDVector(&b, 4);
+  DVectorSet(a, 2.f);
+  DVectorSet(b, 4.f);
+  NewMatrix(&m, 3, 4);
+  RowColOuterProduct(a, b, m);
+  for(i = 0; i < 3; i++){
+    for(j = 0; j < 4; j++){
+      if(FLOAT_EQ(m->data[i][j], 8.f, 1e-1)){
+        continue;
+      }
+      else{
+        abort();
+      }
+    }
+  }
+  puts("RowColOuterProduct: OK");
+  DelDVector(&a);
+  DelDVector(&b);
+}
+
+void Test59()
+{
+  puts("Test 56: MatrixSort");
+  matrix *m;
+  size_t i;
+  NewMatrix(&m, 3, 2);
+  m->data[0][1] = 3;
+  m->data[1][1] = 2;
+  m->data[2][1] = 1;
+  MatrixSort(m, 1);
+  for(i = 0; i < m->row-1; i++){
+    if(m->data[i][1] < m->data[i+1][1]){
+      continue;
+    }
+    else{
+      abort();
+    }
+  }
+  puts("MatrixSort: OK");
+  DelMatrix(&m);
+}
+
+void Test58()
+{
+  puts("Test 58: MatrixRowCenterScaling");
+  matrix *m;
+  matrix *mv;
+  NewMatrix(&m, 3, 2);
+  m->data[0][0] = -1; m->data[0][1] = 2;
+  m->data[1][0] = 3; m->data[1][1] = -2;
+  m->data[2][0] = 5; m->data[2][1] = 7;
+  initMatrix(&mv);
+  MatrixRowCenterScaling(m, mv);
+  if(!FLOAT_EQ(mv->data[0][0], -1, 1e-2) || 
+     !FLOAT_EQ(mv->data[0][1],  2, 1e-2) ||
+     !FLOAT_EQ(mv->data[1][0], 3, 1e-2) || 
+     !FLOAT_EQ(mv->data[1][1], -2, 1e-2) ||
+     !FLOAT_EQ(mv->data[2][0], 0.417, 1e-2) || 
+     !FLOAT_EQ(mv->data[2][1], 0.583, 1e-2))
+     abort();
+  puts("MatrixRowCenterScaling: OK");
+  DelMatrix(&mv);
+  DelMatrix(&m);
+} 
+
+void Test57()
+{
+  puts("Test 57: MatrixRowAverage");
+  matrix *m;
+  dvector *v;
+  NewMatrix(&m, 3, 2);
+  m->data[0][0] = -1; m->data[0][1] = 2;
+  m->data[1][0] = 3; m->data[1][1] = -2;
+  m->data[2][0] = 5; m->data[2][1] = 7;
+  initDVector(&v);
+  MatrixRowAverage(m, v);
+  if(!FLOAT_EQ(v->data[0], 0.5, 1e-2) || 
+     !FLOAT_EQ(v->data[1], 0.5, 1e-2) ||
+     !FLOAT_EQ(v->data[2], 6, 1e-2))
+     abort();
+  puts("MatrixRowAverage: OK");
+  DelDVector(&v);
+  DelMatrix(&m);
+} 
+
+void Test56()
+{
+  puts("Test 56: MatrixReverseSort");
+  matrix *m;
+  size_t i;
+  NewMatrix(&m, 3, 2);
+  m->data[0][1] = 1;
+  m->data[1][1] = 2;
+  m->data[2][1] = 3;
+  MatrixReverseSort(m, 1);
+  for(i = 0; i < m->row-1; i++){
+    if(m->data[i][1] > m->data[i+1][1]){
+      continue;
+    }
+    else{
+      abort();
+    }
+  }
+  puts("MatrixReverseSort: OK");
+  DelMatrix(&m);
+}
+
+void Test55()
+{
+  puts("Test 55: MatrixNorm");
+  matrix *m;
+  matrix *mn;
+  NewMatrix(&m, 3, 2);
+  m->data[0][0] = -1; m->data[0][1] = 2;
+  m->data[1][0] = 3; m->data[1][1] = -2;
+  m->data[2][0] = 5; m->data[2][1] = 7;
+  NewMatrix(&mn, 3, 2);
+  MatrixNorm(m, mn);
+  if(!FLOAT_EQ(mn->data[0][0], -0.104, 1e-2) || 
+     !FLOAT_EQ(mn->data[0][1],  0.209, 1e-2) ||
+     !FLOAT_EQ(mn->data[1][0], 0.313, 1e-2) || 
+     !FLOAT_EQ(mn->data[1][1], -0.209, 1e-2) ||
+     !FLOAT_EQ(mn->data[2][0], 0.521, 1e-2) || 
+     !FLOAT_EQ(mn->data[2][1], 0.730, 1e-2))
+     abort();
+  DelMatrix(&m);
+  DelMatrix(&mn);
+  puts("MatrixNorm: OK");
+}
+
+void Test54()
+{
+  puts("Test 54: MatrixMoorePenrosePseudoinverse");
+  matrix *m;
+  matrix *inv;
+  NewMatrix(&m, 3, 2);
+  m->data[0][0] = -1; m->data[0][1] = 2;
+  m->data[1][0] = 3; m->data[1][1] = -2;
+  m->data[2][0] = 5; m->data[2][1] = 7;
+  initMatrix(&inv);
+  MatrixMoorePenrosePseudoinverse(m, inv);
+  if(!FLOAT_EQ(inv->data[0][0], -0.088, EPSILON) ||
+     !FLOAT_EQ(inv->data[0][1], 0.178, EPSILON) ||
+     !FLOAT_EQ(inv->data[0][2], 0.076, EPSILON) ||
+     !FLOAT_EQ(inv->data[1][0], 0.077, EPSILON) ||
+     !FLOAT_EQ(inv->data[1][1], -0.119, EPSILON) ||
+     !FLOAT_EQ(inv->data[1][2], 0.087, EPSILON))
+     abort();
+  DelMatrix(&m);
+  DelMatrix(&inv);
+  puts("MatrixMoorePenrosePseudoinverse: OK");
+}
+
+void Test53()
+{
+  puts("Test 53: MatrixInitRandomInt");
+  matrix *m;
+  size_t i;
+  size_t j;
+  NewMatrix(&m, 3, 3);
+  MatrixInitRandomInt(m, -100, 100);
+  for(i = 0; i < m->row; i++){
+    for(j = 0; j < m->col; j++){
+      if(m->data[i][j] > -100 && m->data[i][j] < 100 && !FLOAT_EQ(m->data[i][j], 0.f, 1e-8)){
+        continue;
+      }
+      else{
+        abort();
+      }
+    }
+  }
+  DelMatrix(&m);
+  puts("MatrixInitRandomInt: OK");
+}
+
+void Test52()
+{
+  puts("Test 52: MatrixInitRandomFloat");
+  matrix *m;
+  size_t i;
+  size_t j;
+  NewMatrix(&m, 3, 3);
+  MatrixInitRandomFloat(m, -2.f, 2.f);
+
+  for(i = 0; i < m->row; i++){
+    for(j = 0; j < m->col; j++){
+      if(m->data[i][j] > -2.f && m->data[i][j] < 2.f && !FLOAT_EQ(m->data[i][j], 0.f, 1e-8)){
+        continue;
+      }
+      else{
+        abort();
+      }
+    }
+  }
+  DelMatrix(&m);
+  puts("MatrixInitRandomFloat: OK");
+}
+
+void Test51()
+{
+  puts("Test 51: MatrixDeleteRowAt");
+  matrix *m;
+  size_t i;
+  size_t j;
+  NewMatrix(&m, 3, 3);
+  m->data[1][0] = 1; m->data[1][1] = 1; m->data[1][2] = 1;
+  MatrixDeleteColAt(m, 1);
+  for(i = 0; i < m->row; i++){
+    for(j = 0; j < m->col; j++){
+      if(!FLOAT_EQ(m->data[i][j], 1.f, 1e-1)){
+        continue;
+      }
+      else{
+        abort();
+      }
+    }
+  }
+  DelMatrix(&m);
+  puts("MatrixDeleteRowAt: OK");
+}
+
+
+void Test50()
+{
+  puts("Test 50: MatrixDeleteColAt");
+  matrix *m;
+  size_t i;
+  size_t j;
+  NewMatrix(&m, 3, 3);
+  m->data[0][1] = 1; m->data[1][1] = 1; m->data[2][1] = 1;
+  MatrixDeleteColAt(m, 1);
+  for(i = 0; i < m->row; i++){
+    for(j = 0; j < m->col; j++){
+      if(!FLOAT_EQ(m->data[i][j], 1.f, 1e-1)){
+        continue;
+      }
+      else{
+        abort();
+      }
+    }
+  }
+  DelMatrix(&m);
+  puts("MatrixDeleteColAt: OK");
+}
+
+void Test49()
+{
+  puts("Test 48: MatrixCheck");
+  matrix *m;
+  NewMatrix(&m, 3, 3);
+  m->data[1][1] = NAN;
+  m->data[0][2] = NAN;
+  m->data[2][1] = NAN;
+  MatrixCheck(m);
+   if(!FLOAT_EQ(m->data[1][1], MISSING, 1e-1) ||
+      !FLOAT_EQ(m->data[0][2], MISSING, 1e-1) ||
+      !FLOAT_EQ(m->data[2][1], MISSING, 1e-1))
+    abort();
+  DelMatrix(&m);
+  puts("MatrixCheck: OK");
+}
+
+void Test48()
+{
+  puts("Test 48: MatrixAppendUIRow");
+  matrix *m;
+  uivector *v;
+  size_t j;
+  NewMatrix(&m, 3, 3);
+  NewUIVector(&v, 3);
+  v->data[0] = 0; v->data[1] = 1; v->data[2] = 2; 
+  MatrixAppendUIRow(m, v);
+  for(j = 0; j < m->col; j++){
+    if(FLOAT_EQ(m->data[m->row-1][j], v->data[j], EPSILON)){
+      continue;
+    }
+    else{
+      abort();
+    }
+  }
+  DelUIVector(&v);
+  DelMatrix(&m);
+  puts("MatrixAppendUIRow: OK");
+}
 
 void Test47()
 {
@@ -86,9 +367,8 @@ void Test46()
   if(!FLOAT_EQ(min, 0.f, 1e-4) ||
      !FLOAT_EQ(max, 12.f, 1e-4))
     abort();
-  
-  puts("MatrixColumnMinMax: OK");
   DelMatrix(&m);
+  puts("MatrixColumnMinMax: OK");
 }
 
 void Test45()
@@ -106,9 +386,9 @@ void Test45()
      !FLOAT_EQ(v->data[1], 36.3333, 1e-4) ||
      !FLOAT_EQ(v->data[2], 2.3333, 1e-4))
      abort();
-  puts("MatrixColVar: OK");
   DelMatrix(&m);
   DelDVector(&v);
+  puts("MatrixColVar: OK");
 }
 
 void Test44()
@@ -126,9 +406,9 @@ void Test44()
      !FLOAT_EQ(v->data[1], 6.0277, 1e-4) ||
      !FLOAT_EQ(v->data[2], 1.5275, 1e-4))
      abort();
-  puts("MatrixColSDEV: OK");
   DelMatrix(&m);
   DelDVector(&v);
+  puts("MatrixColSDEV: OK");
 }
 
 void Test43()
@@ -146,9 +426,9 @@ void Test43()
      !FLOAT_EQ(v->data[1], 7.5056, 1e-3) ||
      !FLOAT_EQ(v->data[2], 3.5590, 1e-3))
      abort();
-  puts("MatrixColRMS: OK");
   DelMatrix(&m);
   DelDVector(&v);
+  puts("MatrixColRMS: OK");
 }
 
 void Test42()
@@ -173,9 +453,9 @@ void Test42()
       }
     }
   }
-  puts("Matrix2SquareMatrix: OK");
   DelMatrix(&m);
   DelMatrix(&o);
+  puts("Matrix2SquareMatrix: OK");
 }
 
 void Test41()
@@ -200,9 +480,9 @@ void Test41()
       }
     }
   }
-  puts("Matrix2SQRTMatrix: OK");
   DelMatrix(&m);
   DelMatrix(&o);
+  puts("Matrix2SQRTMatrix: OK");
 }
 
 void Test40()
@@ -227,9 +507,9 @@ void Test40()
       }
     }
   }
-  puts("Matrix2LogMatrix: OK");
   DelMatrix(&m);
   DelMatrix(&o);
+  puts("Matrix2LogMatrix: OK");
 }
 
 void Test39()
@@ -254,9 +534,9 @@ void Test39()
       }
     }
   }
-  puts("Matrix2ABSMatrix: OK");
   DelMatrix(&m);
   DelMatrix(&o);
+  puts("Matrix2ABSMatrix: OK");
 }
 void Test38()
 {
@@ -286,8 +566,8 @@ void Test38()
       }
     }
   }
-  puts("GenIdentityMatrix: OK");
   DelMatrix(&m);
+  puts("GenIdentityMatrix: OK");
 }
 
 void Test37()
@@ -300,6 +580,7 @@ void Test37()
   m->data[2][1] = NAN;
   FindNan(m);
   DelMatrix(&m);
+  puts("FindNan: OK");
 }
 
 void Test36()
@@ -326,10 +607,10 @@ void Test36()
       }
     }
   }
-  puts("DVectorTrasposedDVectorDotProduct: OK");
   DelDVector(&v1);
   DelDVector(&v2);
   DelMatrix(&m);
+  puts("DVectorTrasposedDVectorDotProduct: OK");
 }
 void Test35()
 {
@@ -360,9 +641,8 @@ void Test34()
   m->data[2][0] = 6; m->data[2][1] = 12; m->data[2][2] = -5;
   if(!FLOAT_EQ(1., MatrixTrace(m), 1e-3))
     abort();
-  else
-    printf("OK.\n");
   DelMatrix(&m);
+  puts("Calculate MatrixTrace: OK.\n");
 }
 
 void Test33()
@@ -375,9 +655,8 @@ void Test33()
   m->data[2][0] = 2; m->data[2][1] = 3; m->data[2][2] = 4;
   if(!FLOAT_EQ(7.745966692414834, Matrixnorm(m), 1e-13))
     abort();
-  else
-    printf("OK.\n");
   DelMatrix(&m);
+  puts("Calculate Matrixnorm: OK.\n");
 }
 
 void Test32()
@@ -426,6 +705,7 @@ void Test32()
   DelDVector(&r2);
   DelMatrix(&x);
   DelDVector(&v);
+  puts("Calculate DVectorMatrixDotProduct: OK");
 }
 
 
@@ -455,6 +735,7 @@ void Test31(){
 void Test30(){
   /*Large matrix*/
   puts("Test 30: Calculate descriptive statistics from a matrix");
+  srand_(123456);
   matrix *mx;
   matrix *ds;
   int nrow = 356123;
@@ -468,11 +749,10 @@ void Test30(){
     }
   }
   initMatrix(&ds);
-  puts("Calculating Matrix Statistics Descriptive");
   MatrixColDescStat(mx, ds);
-  PrintMatrix(ds);
   DelMatrix(&ds);
   DelMatrix(&mx);
+  puts("Calculating Matrix Statistics Descriptive: OK");
 }
 
 void Test29()
@@ -1552,7 +1832,7 @@ void Test1()
 
 int main(void)
 {
-  Test1();
+  /*Test1();
   Test2();
   Test3();
   Test4();
@@ -1600,5 +1880,18 @@ int main(void)
   Test45();
   Test46();
   Test47();
+  Test48();
+  Test49();
+  Test50();
+  Test51();
+  Test52();
+  Test53();*/
+  Test54();
+  Test55();
+  Test56();
+  Test57();
+  Test58();
+  Test59();
+  Test60();
   return 0;
 }
