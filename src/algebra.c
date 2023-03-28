@@ -28,7 +28,9 @@
  */
 void SolveLSE(matrix *mx, dvector *solution)
 {
-  size_t i, j, k;
+  size_t i;
+  size_t j;
+  size_t k;
   long int l;
   double tmp;
   matrix *X;

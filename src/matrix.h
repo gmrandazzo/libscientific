@@ -172,7 +172,12 @@ void MT_DVectorMatrixDotProduct(matrix *m, dvector *v, dvector *p);
  */
 void DVectorTrasposedDVectorDotProduct(dvector *v1, dvector *v2, matrix *m);
 
-/* r = v/m  = (inv(m^T)*v^T)^T*/
+/* Description:
+* Calculate the vector multiplied with a transposed matrix division
+* according the following formula
+* r = v/m  = (inv(m^T)*v^T)^T
+*/
+
 void DVectorTransposedMatrixDivision(dvector *v, matrix *m, dvector *r);
 
 /*
