@@ -147,11 +147,23 @@ void LVCalc(matrix *X,
             dvector *w,
             double *bcoef)
 {
-  size_t i, j, loop;
-  double mod_p_old, dot_q, dot_t, dot_u, dot_w, deltat;
+  size_t i;
+  size_t j;
+  size_t loop;
+  double mod_p_old;
+  double dot_q;
+  double dot_t;
+  double dot_u;
+  double dot_w;
+  
   /* Make a copy of variables for memory reasons... */
-  matrix *X_, *Y_;
-  dvector *t_, *u_, *p_, *q_, *w_;
+  matrix *X_;
+  matrix *Y_;
+  dvector *t_;
+  dvector *u_;
+  dvector *p_;
+  dvector *q_;
+  dvector *w_;
   dvector *t_old;
 
   mod_p_old = dot_q = dot_t = dot_u = dot_w = 0.f;
@@ -273,22 +285,16 @@ void LVCalc(matrix *X,
     }
 
     /* Step 8 if t_old == t new with a precision PLSCONVERGENCE then stop iteration else restart from step 2 */
-
     if(loop == 0){
       for(i = 0; i < t_->size; i++)
         t_old->data[i] = t_->data[i];
     }
     else{
-      deltat = 0.f;
-      for(i = 0; i < t_->size; i++){
-        deltat += (t_->data[i] - t_old->data[i]) * (t_->data[i] - t_old->data[i]);
-        t_old->data[i] = t_->data[i];
-      }
-      deltat = sqrt(deltat);
-      //printf("deltat: %.10e %.10e %d\n", deltat, PLSCONVERGENCE, FLOAT_EQ(deltat, 0.f, PLSCONVERGENCE));
-
-      if((deltat < PLSCONVERGENCE) || _isnan_(deltat)){
+      if(calcConvergence(t_, t_old) < PLSCONVERGENCE){
         break;
+      }
+      else{
+        DVectorCopy(t_, t_old);
       }
     }
     loop++;

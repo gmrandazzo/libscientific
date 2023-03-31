@@ -22,7 +22,7 @@
 #include "vector.h"
 #include "scientificinfo.h"
 
-#define PCACONVERGENCE 1e-8
+#define PCACONVERGENCE 1e-10
 
 typedef struct{
   matrix *scores;
@@ -37,7 +37,18 @@ void NewPCAModel(PCAMODEL **m);
 void DelPCAModel(PCAMODEL **m);
 
 void calcVarExpressed(double ss, dvector *eval, dvector *varexp);
+/*
+ * Calculate the object distance.
+ * THIS METHOD IS USED INSIDE THE PCA ALGORITHM
+ */
 double calcObjectDistance(matrix *m);
+
+/*
+ * Calculate convergence criteria as described in 
+ * DOI: 10.1002/cem.1180010107 page 51 d = ...
+ * THIS METHOD IS USED INSIDE THE PCA/CPCA/PLS ALGORITHM
+ */
+double calcConvergence(dvector *t_new, dvector *t_old);
 
 /*
  * Calculate a principal component analysis

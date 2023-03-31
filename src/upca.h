@@ -33,6 +33,8 @@ typedef struct{
   dvectorlist *colscaling;
 } UPCAMODEL;
 
+#define UPCACONVERGENCE 1e-10
+
 void NewUPCAModel(UPCAMODEL **m);
 void DelUPCAModel(UPCAMODEL **m);
 

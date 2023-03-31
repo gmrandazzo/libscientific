@@ -116,7 +116,6 @@ void UPCA(tensor *X_, size_t npc, size_t autoscaling, UPCAMODEL *m, ssignal *s)
     dvector *colvar;
     dvector *t_old; /* row vector with size X->m->row */
     dvector *t_new;
-    dvector *t_diff;
     dvector *eval; /* t't */
 
     matrix *P;
@@ -328,23 +327,7 @@ void UPCA(tensor *X_, size_t npc, size_t autoscaling, UPCAMODEL *m, ssignal *s)
           PrintDVector(t_new);
           #endif
 
-          /*step 8 */
-          initDVector(&t_diff);
-          DVectorDVectorDiff(t_new, t_old, t_diff);
-
-          a = DVectorDVectorDotProd(t_diff, t_diff);
-
-          #ifdef DEBUG
-          puts("t_old - t_new vector");
-          PrintDVector(t_diff);
-          #endif
-
-          DelDVector(&t_diff);
-
-
-          /*Check Distance */
-  /*         if(a/(t_new->size*DVectorDVectorDotProd(t_new, t_new)) < 1e-10){*/
-          if(a/(t_new->size*DVectorDVectorDotProd(t_new, t_new)) < EPSILON){
+          if(calcConvergence(t_new, t_old) < UPCACONVERGENCE){
             /* storing results */
             MatrixAppendCol(m->scores, t_new);
             TensorAppendMatrix(m->loadings, P);
@@ -357,12 +340,9 @@ void UPCA(tensor *X_, size_t npc, size_t autoscaling, UPCAMODEL *m, ssignal *s)
             /*   abort(); */
           }
           else{
-            for(i = 0; i < t_new->size; i++)
-              setDVectorValue(t_old, i, getDVectorValue(t_new, i));
-            continue;
+            DVectorCopy(t_new, t_old);
           }
         }
-
 
         /* step 8 remove computed component */
         for(k = 0; k < X->order; k++){

@@ -77,18 +77,27 @@ static inline void CalcBlockLoadings(matrix *Xb, dvector *t, dvector *p){
  */
 void CPCA(tensor *x, int scaling, size_t npc, CPCAMODEL *model)
 {
-  size_t i, j, k, pc;
-  matrix *T_T, *T;
-  matrix *Eb_T, *Eb_T_E;
-  dvector *t_b, *t, *t_new;
+  size_t i;
+  size_t j;
+  size_t k;
+  size_t pc;
+  matrix *T_T;
+  matrix *T;
+  matrix *Eb_T;
+  matrix *Eb_T_E;
+  dvector *t_b;
+  dvector *t;
+  dvector *t_new;
   dvector *p_b;
   dvector *w_T;
   dvector *colvar;
   dvector *tr_orig;
   dvector *local_blockvexp;
-  double ss, mod_t, mod_t_old, mod_t_new;
+  double ss;
+  double mod_t;
   tensor *Eb; /* copy of the original data matrix to do autoscing and mean centring */
-  size_t row = 0, col = 0;
+  size_t row = 0;
+  size_t col = 0;
 
   NewTensor(&Eb, x->order);
   for(k = 0; k < Eb->order; k++){
@@ -219,8 +228,6 @@ void CPCA(tensor *x, int scaling, size_t npc, CPCAMODEL *model)
       t->data[i] = Eb->m[best_block_id]->data[i][best_colvar_id];
     }
 
-
-    mod_t_old = DVectorDVectorDotProd(t, t);
     while(1){ /* loop until convergence of t */
       for(k = 0; k < Eb->order; k++){
         NewDVector(&p_b, Eb->m[k]->col);
@@ -259,15 +266,10 @@ void CPCA(tensor *x, int scaling, size_t npc, CPCAMODEL *model)
       DVectorSet(t_new, 0.f);
       MatrixTranspose(T_T, T);
       MT_MatrixDVectorDotProduct(T, w_T, t_new);
-
-      mod_t_new = DVectorDVectorDotProd(t_new, t_new);
-      #ifdef DEBUG
-      printf("CHECK %f %f %f %f\n", mod_t_new, mod_t_new, (mod_t_new-mod_t_old), CPCACONVERGENCE);
-      #endif
+     
       /* check for convergence */
-      if(FLOAT_EQ(mod_t_new - mod_t_old, 0.f, CPCACONVERGENCE) && !_isnan_(mod_t_new)){
+      if(calcConvergence(t_new, t) < CPCACONVERGENCE){
         #ifdef DEBUG
-        printf("new eigen: %f\told eigen:%f\n", mod_t_new, mod_t_old);
         printf("new score calculated\n");
         printf("pc: %zu\n", pc);
 
@@ -336,14 +338,13 @@ void CPCA(tensor *x, int scaling, size_t npc, CPCAMODEL *model)
           */
         }
 
-        DVectorAppend(model->total_expvar, (mod_t_new/ss) * 100.);
+        DVectorAppend(model->total_expvar, (mod_t/ss) * 100.);
         DVectorListAppend(model->block_expvar, local_blockvexp);
         DelDVector(&local_blockvexp);
         break;
       }
       else{
         DVectorCopy(t_new, t);
-        mod_t_old = mod_t_new;
       }
     }
     DelDVector(&t);

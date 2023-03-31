@@ -209,7 +209,6 @@ void UPLS(tensor* X_,
     tensor *X;
     dvector *t_old; /* row vector with size X->m->row */
     dvector *t_new;
-    dvector *t_diff;
     dvector *xeval; /* t't */
     matrix *P;
     matrix *W;
@@ -461,21 +460,8 @@ void UPLS(tensor* X_,
         PrintDVector(t_new);
         #endif
 
-        initDVector(&t_diff);
-        DVectorDVectorDiff(t_new, t_old, t_diff);
-
-        a = DVectorDVectorDotProd(t_diff, t_diff);
-
-        #ifdef DEBUG
-        puts("t_old - t_new vector");
-        PrintDVector(t_diff);
-        #endif
-
-        DelDVector(&t_diff);
-
         /*Check Distance */
-/*         if(a/(t_new->size*DVectorDVectorDotProd(t_new, t_new)) < 1e-10){ */
-        if(a/(t_new->size*DVectorDVectorDotProd(t_new, t_new)) < UPLSCONVERGENCE){
+        if(calcConvergence(t_new, t_old)){
           /* storing t score result */
           MatrixAppendCol(m->xscores, t_new);
           TensorAppendMatrix(m->xweights, W);
@@ -489,9 +475,7 @@ void UPLS(tensor* X_,
           /*abort();*/
         }
         else{
-          for(i = 0; i < t_new->size; i++)
-            setDVectorValue(t_old, i, getDVectorValue(t_new, i));
-          continue;
+          DVectorCopy(t_new, t_old);
         }
       }
 

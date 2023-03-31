@@ -27,6 +27,11 @@ void BifactorialMatrixExpansion(matrix* inmx, matrix* outmx);
 void YatesVarEffect(matrix *mx, dvector *veff);
 
 */
+void test2()
+{
+  
+}
+
 void test1()
 {
   puts("Test1: ROC and Precision-Recall test.");

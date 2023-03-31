@@ -24,9 +24,62 @@
 #include "datasets.h"
 #include "scientificinfo.h"
 
+void test9()
+{
+  printf("Test PCA 9 - Check algorithm consistency: ");
+  size_t i;
+  size_t id;
+  matrix *m1;
+  matrix *m2;
+  uivector *ids;
+  PCAMODEL *mod1;
+  PCAMODEL *mod2;
+  NewMatrix(&m1, 20, 3);
+  for(i = 0; i < 20; i++){
+    m1->data[i][0] = i+1; m1->data[i][1] = i+1; m1->data[i][2] = i+1; 
+  }
+  srand_(time(NULL));
+  NewMatrix(&m2, m1->row, m1->col);
+  initUIVector(&ids);
+  i = 0;
+  while( i < 20){
+    id = randInt(0, 20);
+    if(UIVectorHasValue(ids, id) == 0){
+      continue;
+    }
+    else{
+      UIVectorAppend(ids, id);
+      m2->data[i][0] = m1->data[id][0]; m2->data[i][1] = m1->data[id][1]; m2->data[i][2] = m1->data[id][2];
+      i++;
+    }
+  }
+  NewPCAModel(&mod1);
+  NewPCAModel(&mod2);
+  PCA(m1, 1, 2, mod1, NULL);
+  PCA(m2, 1, 2, mod2, NULL);
+  for(i = 0; i < mod1->scores->row; i++){
+    id = ids->data[i];
+    if(FLOAT_EQ(mod1->scores->data[id][0], mod2->scores->data[i][0], 1e-2) &&
+       FLOAT_EQ(mod1->scores->data[id][1], mod2->scores->data[i][1], 1e-2)){
+      continue;
+    }
+    else{
+      printf("%f %f\n", mod1->scores->data[id][0], mod2->scores->data[i][0]);
+      printf("%f %f\n", mod1->scores->data[id][1], mod2->scores->data[i][1]);
+      abort();
+    }
+  }
+  printf("OK.\n");
+  DelPCAModel(&mod1);
+  DelPCAModel(&mod2);
+  DelUIVector(&ids);
+  DelMatrix(&m1);
+  DelMatrix(&m2);
+}
+
 void test8()
 {
-  puts("Test PCA 8: Score prediction test");
+  printf("Test PCA 8 - Score prediction test: ");
   size_t i, j;
   matrix *m, *_, *p;
   PCAMODEL *model;
@@ -52,7 +105,7 @@ void test8()
       }
     }
   }
-  
+  printf("OK.\n");
   DelPCAModel(&model);
   DelMatrix(&p);
   DelMatrix(&m);
@@ -61,7 +114,7 @@ void test8()
 
 void test7()
 {
-  puts("Test PCA 7: PCA on iris dataset");
+  printf("Test PCA 7 - PCA on iris dataset: ");
   matrix *m, *_;
   PCAMODEL *model;
 
@@ -80,7 +133,7 @@ void test7()
 
 void test6()
 {
-  puts("Test PCA 6: PCA on a simple dataset");
+  puts("Test PCA 6: PCA on a simple dataset: ");
   matrix *m;
   PCAMODEL *model;
 
@@ -95,7 +148,7 @@ void test6()
   NewPCAModel(&model);
 
   PCA(m, 0, 5, model, NULL);
-
+  printf("OK.\n");
   PrintPCA(model);
 
   DelPCAModel(&model);
@@ -104,7 +157,7 @@ void test6()
 
 void test5()
 {
-  puts("Test PCA 5: PCA on a simple dataset");
+  printf("Test PCA 5 - PCA on a simple dataset: ");
   matrix *m; /* Data matrix */
   PCAMODEL *model;
 
@@ -117,7 +170,7 @@ void test5()
 
   NewPCAModel(&model);
   PCA(m, 1, 5, model, NULL);
-
+  printf("OK.\n");
   PrintPCA(model);
 
   DelPCAModel(&model);
@@ -126,7 +179,7 @@ void test5()
 
 void test4()
 {
-  puts("Test PCA 4: PCA on a simple dataset");
+  printf("Test PCA 4 - PCA on a simple dataset: ");
   matrix *m; /* Data matrix */
   PCAMODEL *model;
   int run = SIGSCIENTIFICRUN;
@@ -138,25 +191,20 @@ void test4()
 
   NewPCAModel(&model);
 
-
-  printf("Test PCA 4\n");
   PCA(m, 1, 5, model, &run);
-
+  printf("OK.\n");
   PrintPCA(model);
-
   DelPCAModel(&model);
   DelMatrix(&m);
 }
 
 void test3()
 {
+  printf("Test PCA 3 - PCA on a simple dataset: ");
   matrix *m; /* Data matrix */
   PCAMODEL *model;
   int run = SIGSCIENTIFICRUN;
-
   NewMatrix(&m, 10, 2);
-
-
   m->data[0][0] = 2.2;  m->data[0][1] = 3.3;
   m->data[1][0] = 2.9;  m->data[1][1] = 4.5;
   m->data[2][0] = 4.0;  m->data[2][1] = 3.5;
@@ -170,10 +218,8 @@ void test3()
 
 
   NewPCAModel(&model);
-
-  printf("Test PCA 3\n");
   PCA(m, 1, 5, model, &run);
-
+  printf("OK.\n");
   PrintPCA(model);
 
   DelPCAModel(&model);
@@ -183,6 +229,7 @@ void test3()
 
 void test2()
 {
+  printf("Test PCA 2 - PCARankValidation test: ");
   size_t i;
   matrix *m; /* Data matrix */
   dvector *R;
@@ -204,11 +251,10 @@ void test2()
   m->data[12][0] = 5.0000;  m->data[12][1] = 11.0000;  m->data[12][2] = 1.0000;  m->data[12][3] = 85.1500;  m->data[12][4] = 0.8620;  m->data[12][5] = 266.0000;  m->data[12][6] = 379.0000;
   m->data[13][0] = 5.0000;  m->data[13][1] = 10.0000;  m->data[13][2] = 1.0000;  m->data[13][3] = 86.1300;  m->data[13][4] = 0.8800;  m->data[13][5] = 228.0000;  m->data[13][6] = 361.0000;
 
-  puts("Test 2");
   initDVector(&R);
 
   PCARankValidation(m, 5, 1, 3, 20, R, &run);
-
+  printf("OK.\n");
   puts("-----------------");
   puts("PC\t R^2");
   for(i = 0; i < R->size; i++)
@@ -221,6 +267,7 @@ void test2()
 
 void test1()
 {
+  printf("Test 1 - PCA on a simple dataset: ");
   matrix *m; /* Data matrix */
   PCAMODEL *model;
   int run = SIGSCIENTIFICRUN;
@@ -246,10 +293,8 @@ void test1()
 
   NewPCAModel(&model);
 
-
-  printf("Test PCA 1\n");
   PCA(m, 1, 5, model, &run);
-
+  printf("OK.\n");
   PrintPCA(model);
 
   DelPCAModel(&model);
@@ -266,5 +311,6 @@ int main(void)
   test6();
   test7();
   test8();
+  test9();
   return 0;
 }

@@ -25,7 +25,7 @@
 #include "vector.h"
 #include "scientificinfo.h"
 
-#define CPCACONVERGENCE 1e-12
+#define CPCACONVERGENCE 1e-18
 
 typedef struct {
   tensor *block_scores;

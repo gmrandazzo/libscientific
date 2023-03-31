@@ -77,6 +77,22 @@ double calcObjectDistance(matrix *m)
 }
 
 /*
+ * Calculate convergence criteria as described in 
+ * DOI: 10.1002/cem.1180010107 page 51 d = ...
+ */
+double calcConvergence(dvector *t_new, dvector *t_old)
+{
+  double n = 0.f;
+  double d = 0.f;
+  size_t i;
+  for(i = 0; i < t_new->size; i++){
+    n += square(t_new->data[i]-t_old->data[i]);
+    d += square(t_new->data[i]);
+  }
+  return n/((double)t_new->size*d);
+}
+
+/*
  *     NIPALS Algorithm for PCA
  * Input:
  *     E = Mean Centered Data Matrix
@@ -107,10 +123,13 @@ void PCA(matrix *mx, int scaling, size_t npc, PCAMODEL* model, ssignal *s)
 {
   size_t i, j, pc;
   dvector *t;
+  dvector *t_old;
   dvector *p;
   dvector *colvar;
   dvector *eval; /* t't */
-  double mod_p, mod_t_old, mod_t_new, ss;
+  double mod_p;
+  double mod_t;
+  double ss;
 
   matrix *E; /* data matrix of autoscaled / mean centred object */
   NewMatrix(&E, mx->row, mx->col);
@@ -131,6 +150,7 @@ void PCA(matrix *mx, int scaling, size_t npc, PCAMODEL* model, ssignal *s)
 
 
   NewDVector(&t, E->row);
+  NewDVector(&t_old, E->row);
   NewDVector(&p, E->col);
   NewDVector(&eval, npc);
 
@@ -242,11 +262,11 @@ void PCA(matrix *mx, int scaling, size_t npc, PCAMODEL* model, ssignal *s)
         /* Step 2: projection of t' in E (t'*E) */
         MT_DVectorMatrixDotProduct(E, t, p);
         /* calc the vectors product t'*t = Sum(t[i]^2) */
-        mod_t_old = DVectorDVectorDotProd(t, t);
+        mod_t = DVectorDVectorDotProd(t, t);
 
         /* division of (t'*E)/t'*t (mx.p/mx.mod_t_old) for calculate the p' vector that represents the loadings */
         for(i = 0; i < p->size; i++)
-          p->data[i] /= mod_t_old; /* now p' is the loadings vector calculated */
+          p->data[i] /= mod_t; /* now p' is the loadings vector calculated */
 
         /* End Step 2 */
 
@@ -269,7 +289,6 @@ void PCA(matrix *mx, int scaling, size_t npc, PCAMODEL* model, ssignal *s)
         /* Step 5: In order to check for the convergence of the process, the difference between the
         * modules of the new score vector with the oldest must be minus or equal tu 10^-8
         */
-        mod_t_new = DVectorDVectorDotProd(t, t);
 
         #ifdef DEBUG
         printf("new eigen: %f\told eigen:%f\n", mod_t_new, mod_t_old);
@@ -281,7 +300,7 @@ void PCA(matrix *mx, int scaling, size_t npc, PCAMODEL* model, ssignal *s)
         puts("....................");
         #endif
 
-        if(FLOAT_EQ(mod_t_new - mod_t_old, 0.f, PCACONVERGENCE) && !_isnan_(mod_t_new)){
+        if(calcConvergence(t, t_old) < PCACONVERGENCE){
           /* copy the loadings and score to the output data matrix */
           for(i = 0; i < t->size; i++){
             model->scores->data[i][pc] = t->data[i];
@@ -320,24 +339,26 @@ void PCA(matrix *mx, int scaling, size_t npc, PCAMODEL* model, ssignal *s)
           /* End Step 6 */
 
           /*t'*t correspond to the eigenvalue of the principal component*/
-          eval->data[pc] = mod_t_new;
+          eval->data[pc] = mod_t;
           break;
         }
         else{
-          continue;
+          DVectorCopy(t, t_old);
+          //continue;
           /* End Step 5 */
         }
       }
       /*Reset all the variables*/
       DVectorSet(p, 0.f);
       DVectorSet(t, 0.f);
-      mod_p = mod_t_old = mod_t_new = 0.f;
+      mod_p = mod_t = 0.f;
     }
   }
   calcVarExpressed(ss, eval, model->varexp);
 
   DelDVector(&eval);
   DelDVector(&t);
+  DelDVector(&t_old);
   DelDVector(&p);
   DelMatrix(&E);
 }
