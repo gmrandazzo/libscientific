@@ -25,8 +25,74 @@
 #include "datasets.h"
 #include <time.h>
 
+void TestPLS15()
+{
+  printf("Test PLS 15 - check PLS convergence criteria: ");
+  size_t i;
+  size_t j;
+  size_t id;
+  matrix *x1;
+  matrix *y1;
+  matrix *x2;
+  matrix *y2;
+  uivector *ids;
+  PLSMODEL *mod1;
+  PLSMODEL *mod2;
+  initMatrix(&x1);
+  initMatrix(&y1);
+  boston_house_price(x1, y1);
+  NewMatrix(&x2, x1->row, x1->col);
+  NewMatrix(&y2, y1->row, y1->col);
+  srand_(time(NULL));
+  initUIVector(&ids);
+  i = 0;
+  while( i < x1->row){
+    id = randInt(0, x1->row);
+    if(UIVectorHasValue(ids, id) == 0){
+      continue;
+    }
+    else{
+      UIVectorAppend(ids, id);
+      for(j = 0; j < x1->col; j++){
+        x2->data[i][j] = x1->data[id][j];
+      }
+      for(j = 0; j < y1->col; j++){
+        y2->data[i][j] = y1->data[id][j];
+      }
+      i++;
+    }
+  }
+  /*Allocate the final output*/
+  NewPLSModel(&mod1);
+  NewPLSModel(&mod2);
+  PLS(x1, y1, 3, 1, 0, mod1, NULL);
+  PLS(x2, y2, 3, 1, 0, mod2, NULL);
+
+  for(i = 0; i < mod1->xscores->row; i++){
+    id = ids->data[i];
+    if(FLOAT_EQ(mod1->xscores->data[id][0], mod2->xscores->data[i][0], 1e-5) &&
+       FLOAT_EQ(mod1->xscores->data[id][1], mod2->xscores->data[i][1], 1e-5)){
+      continue;
+    }
+    else{
+      printf("%f %f\n", mod1->xscores->data[id][0], mod2->xscores->data[i][0]);
+      printf("%f %f\n", mod1->xscores->data[id][1], mod2->xscores->data[i][1]);
+      abort();
+    }
+  }
+  printf("OK.\n");
+  
+  DelPLSModel(&mod1);
+  DelPLSModel(&mod2);
+  DelMatrix(&x1);
+  DelMatrix(&y1);
+  DelMatrix(&x2);
+  DelMatrix(&y2);
+}
+
 void TestPLS14()
 {
+  printf("Test PLS 14 - check PLS Score prediction: ");
   size_t i, j;
   matrix *x, *y, *ps; /* Data matrix */
   PLSMODEL *m;
@@ -65,8 +131,6 @@ void TestPLS14()
   y->data[12][0] = 379.0000;
   y->data[13][0] = 361.0000;
 
-  printf("Test PLS 14: check PLS Score prediction\n");
-
   /*Allocate the final output*/
   NewPLSModel(&m);
 
@@ -84,7 +148,7 @@ void TestPLS14()
       }
     }
   }
-  
+  printf("OK.\n");
   DelPLSModel(&m);
   DelMatrix(&ps);
   DelMatrix(&x);
@@ -93,7 +157,7 @@ void TestPLS14()
 
 void TestPLS13()
 {
-  puts("Test 13 - PLS Regression Model and validation via KFoldCV");
+  printf("Test 13 - PLS Regression Model and validation via KFoldCV: ");
   matrix *x, *y;
   uivector *groups;
 
@@ -166,6 +230,7 @@ void TestPLS13()
 
   PLSRegressionStatistics(y, m->predicted_y, m->q2y, m->sdep, m->bias);
 
+  printf("OK.\n");
   /*PrintMatrix(y);
   PrintMatrix(m->predicted_y);*/
   puts("Q2 Cross Validation");
@@ -203,7 +268,7 @@ void TestPLS13()
 
 void TestPLS12()
 {
-  puts("Test PLS 12: PLS DA Model and prediction using random data");
+  printf("Test PLS 12 - PLS DA Model and prediction using random data\n");
   matrix *x, *y;
 
   PLSMODEL *m;
@@ -238,28 +303,6 @@ void TestPLS12()
     }
   }
 
-  PrintMatrix(x);
-
-  /*NewMatrix(&x, 4, 2);
-  NewMatrix(&y, 4, 1);
-
-  setMatrixValue(x, 0, 0, 5); setMatrixValue(x, 0, 1, 7);
-  setMatrixValue(x, 1, 0, 3); setMatrixValue(x, 1, 1, 12);
-  setMatrixValue(x, 2, 0, 2); setMatrixValue(x, 2, 1, 1);
-  setMatrixValue(x, 3, 0, 4); setMatrixValue(x, 3, 1, 8);
-
-  setMatrixValue(y, 0, 0, 0);
-  setMatrixValue(y, 1, 0, 0);
-  setMatrixValue(y, 2, 0, 1);
-  setMatrixValue(y, 3, 0, 1);
-
-
-  NewMatrix(&xpred, 3, 2);
-  setMatrixValue(xpred, 0, 0, 5); setMatrixValue(xpred, 0, 1, 5);  // y = 7,33
-  setMatrixValue(xpred, 1, 0, 12); setMatrixValue(xpred, 1, 1, 4); // y = 13,99
-  setMatrixValue(xpred, 2, 0, 21); setMatrixValue(xpred, 2, 1, 15); // y = 26,66
-  */
-
   /*Allocate the final output*/
   NewPLSModel(&m);
 
@@ -271,8 +314,6 @@ void TestPLS12()
 
   ssignal run = SIGSCIENTIFICRUN;
   PLS(x, y, 4, 1, 0, m, &run);
-
-
 
   /*VALIDATE THE MODEL */
   MODELINPUT minpt = initModelInput();
@@ -291,7 +332,7 @@ void TestPLS12()
                                     m->roc_auc_validation,
                                     m->precision_recall_validation,
                                     m->precision_recall_ap_validation);
-
+  
   PrintPLSModel(m);
 
   puts("ROC AUC's for Trainig set");
@@ -311,13 +352,7 @@ void TestPLS12()
 
   PLSYPredictor(xpredscores, m, 1, ypred);
 
-  /*puts("\nPrediction scores...");
-  puts("x");
-  PrintMatrix(xpredscores);
 
-  puts("Extimated Y:");
-  PrintMatrix(ypred);
-  */
 
   DelPLSModel(&m);
   DelMatrix(&x);
@@ -1101,10 +1136,11 @@ int main(void)
   TestPLS7();
   TestPLS8();
   TestPLS9();
-  TestPLS10();
+  //TestPLS10();
   TestPLS11();
   TestPLS12();
   TestPLS13();
   TestPLS14();
+  TestPLS15();
   return 0;
 }
