@@ -10,14 +10,21 @@
  *
  * N.B.: If two points have different y but share same x the algorithm will fail
  */
-
 void cubic_spline_interpolation(matrix *xy, matrix *S)
 {
   size_t i;
   int j;
   size_t np1 = xy->row;
   size_t n = np1-1;
-  double a[np1], b[n], d[n], h[n], alpha[n], c[np1], l[np1], u[np1], z[np1];
+  double a[np1];
+  double b[n];
+  double d[n];
+  double h[n];
+  double alpha[n];
+  double c[np1];
+  double l[np1];
+  double u[np1];
+  double z[np1];
   
   for(i = 0; i < np1; i++){
     a[i] = xy->data[i][1];
@@ -67,7 +74,9 @@ void cubic_spline_interpolation(matrix *xy, matrix *S)
 
 void cubic_spline_predict(dvector *x_, matrix *S, dvector *y_pred)
 {
-  size_t i, j, n;
+  size_t i;
+  size_t j;
+  size_t n;
   n = S->row-1;
   DVectorResize(y_pred, x_->size);
   /* Now interpolate using the equations:
@@ -81,7 +90,6 @@ void cubic_spline_predict(dvector *x_, matrix *S, dvector *y_pred)
       double xi = S->data[j][0];
       if((x > xi || FLOAT_EQ(x, xi, 1e-2)) &&
       (x < S->data[j+1][0] || FLOAT_EQ(x, S->data[j+1][0], 1e-2))){
-        //printf("for %f selecting %d\n", x, j);
         y = S->data[j][1] + S->data[j][2]*(x-xi) + S->data[j][3]*(x-xi)*(x-xi) + S->data[j][4]*(x-xi)*(x-xi)*(x-xi);
         break;
       }
@@ -108,9 +116,13 @@ void cubic_spline_predict(dvector *x_, matrix *S, dvector *y_pred)
 void interpolate(matrix *xy, size_t npoints, matrix *interp_xy)
 {
   size_t i;
-  double x, dx, xmin, xmax;
+  double x;
+  double dx;
+  double xmin;
+  double xmax;
   matrix *S;
-  dvector *x_interp, *y_pred;
+  dvector *x_interp;
+  dvector *y_pred;
   initMatrix(&S);
   cubic_spline_interpolation(xy, S);
 

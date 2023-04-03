@@ -177,7 +177,6 @@ void DVectorTrasposedDVectorDotProduct(dvector *v1, dvector *v2, matrix *m);
 * according the following formula
 * r = v/m  = (inv(m^T)*v^T)^T
 */
-
 void DVectorTransposedMatrixDivision(dvector *v, matrix *m, dvector *r);
 
 /*

@@ -54,15 +54,8 @@ typedef struct{
 
 MODELINPUT initModelInput();
 
-/*
-void YScrambling(matrix *mx, matrix *my,
-                        size_t xautoscaling, size_t yautoscaling,
-                        size_t nlv, size_t block,
-                        size_t valtype, size_t rgcv_group, size_t rgcv_iterations,
-                        matrix **r2q2scrambling, size_t nthreads, ssignal *s);
-*/
-
 /* Description: Generate random groups of train and test set.
+ *
  * Usage:
  * matrix *gid, *x_train, *y_train, *x_test, *y_test;
  * initMatrix(&gid);
@@ -98,6 +91,29 @@ void kfold_group_train_test_split(matrix *x,
                                   matrix *x_test,
                                   matrix *y_test);
 
+/*
+ * Description: Generate random train/test splits
+ * 
+ * Usage:
+ * matrix *x_train, *y_train, *x_test, *y_test;
+ * initMatrix(&x_train);
+ * initMatrix(&y_train);
+ * initMatrix(&x_test);
+ * initMatrix(&y_test);
+ * train_test_split(mx,
+ *                  my,
+ *                  0.2,
+ *                  &x_train,
+ *                  &y_train,
+ *                  &x_test,
+ *                  &y_test);
+ * do your calculations....
+ *
+ * DelMatrix(&x_train);
+ * DelMatrix(&y_train);
+ * DelMatrix(&x_test);
+ * DelMatrix(&y_test);
+ */
 void train_test_split(matrix *x,
                       matrix *y,
                       double testsize,
@@ -110,7 +126,15 @@ void train_test_split(matrix *x,
 
 /*
  * Description: Calculate the Bootstrap Random group cross validation.
- * Possible algorithms
+ *              Every method has its model function. 
+ * 
+ *              Available methods:
+ *              - PLS: partial least squares
+ *              - PLS_DA: partial least squares discriminant analysis
+ *              - EPLS: ensemble partial least squares
+ *              - EPLS_DA: ensemble partial least squares discriminant analysis
+ *              - MLR: multiple linear regression
+ *              - LDA: linear discriminant analysis
  */
 void BootstrapRandomGroupsCV(MODELINPUT *input,
                              size_t group,
@@ -124,8 +148,16 @@ void BootstrapRandomGroupsCV(MODELINPUT *input,
                              ...);
 
 /*
- * Description:
- * Leave one object/instance out cross validation.
+ * Description: Calculate the Leave-One-Out cross validation.
+ *              Every method has its model function. 
+ * 
+ *              Available methods:
+ *              - PLS: partial least squares
+ *              - PLS_DA: partial least squares discriminant analysis
+ *              - EPLS: ensemble partial least squares
+ *              - EPLS_DA: ensemble partial least squares discriminant analysis
+ *              - MLR: multiple linear regression
+ *              - LDA: linear discriminant analysis
  */
 void LeaveOneOut(MODELINPUT *input,
                  AlgorithmType algo,
@@ -137,11 +169,16 @@ void LeaveOneOut(MODELINPUT *input,
                  ...);
 
 /*
- * Description:
- * Group cross validation.
- * After the groups definition (uivector *groups), the algorithm will leave out
- * step by step a group, compute a model and predict the out group.
- * This methodology should be prefered when similar instances are present in the dataset
+ * Description: Calculate the k-fold cross validation.
+ *              Every method has its model function. 
+ * 
+ *              Available methods:
+ *              - PLS: partial least squares
+ *              - PLS_DA: partial least squares discriminant analysis
+ *              - EPLS: ensemble partial least squares
+ *              - EPLS_DA: ensemble partial least squares discriminant analysis
+ *              - MLR: multiple linear regression
+ *              - LDA: linear discriminant analysis
  */
 void KFoldCV(MODELINPUT *input,
              uivector *groups,
@@ -153,6 +190,18 @@ void KFoldCV(MODELINPUT *input,
              int arg,
              ...);
 
+/*
+ * Description: Calculate the Y-scrambling cross validation test.
+ *              Every method has its model function. 
+ * 
+ *              Available methods:
+ *              - PLS: partial least squares
+ *              - PLS_DA: partial least squares discriminant analysis
+ *              - EPLS: ensemble partial least squares
+ *              - EPLS_DA: ensemble partial least squares discriminant analysis
+ *              - MLR: multiple linear regression
+ *              - LDA: linear discriminant analysis
+ */
 void YScrambling(MODELINPUT *input,
                  AlgorithmType algo,
                  ValidationArg varg,
