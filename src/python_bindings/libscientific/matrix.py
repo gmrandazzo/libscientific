@@ -74,6 +74,8 @@ def new_matrix(mtx_input_):
         nrows = len(mtx_input)
         try:
             ncols = len(mtx_input[0])
+        except TypeError:
+            ncols = 1
         except IndexError:
             ncols = 0
     except IndexError:
@@ -89,6 +91,8 @@ def new_matrix(mtx_input_):
             val = None
             try:
                 val = float(mtx_input[i][j])
+            except TypeError:
+                val = float(mtx_input[i])
             except ValueError:
                 val = None
 

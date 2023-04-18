@@ -315,7 +315,6 @@ class PLS():
         p_scores_ = mx.init_matrix()
         p_y_ = mx.init_matrix()
 
-
         pls_y_predictor_all_lv(x_input_, self.mpls, p_scores_, p_y_)
         p_scores = mx.matrix_to_list(p_scores_)
 
