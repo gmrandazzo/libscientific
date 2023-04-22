@@ -138,7 +138,7 @@ def pls_beta_coefficients(mpls, nlv, bcoeff):
     """
     PLSBetasCoeff calculation
     """
-    lsci.PLSBetasCoeff(mpls, nlv, ctypes.pointer(bcoeff))
+    lsci.PLSBetasCoeff(mpls, nlv, bcoeff)
 
 
 
@@ -301,11 +301,46 @@ class PLS():
         """
         return mx.matrix_to_list(self.mpls[0].xweights)
 
+    def get_beta_coefficients(self, nlv : int=1):
+        """
+        Get the Beta Coefficients for fast predictions
+        """
+        b = vect.init_dvector()
+        pls_beta_coefficients(self.mpls, nlv, b)
+        r = vect.dvector_tolist(b)
+        vect.del_dvector(b)
+        return r
+    
     def get_exp_variance(self):
         """
         Get the explained variance
         """
         return vect.dvector_tolist(self.mpls[0].xvarexp)
+
+    def get_x_column_scaling(self):
+        """
+        Get the model column scaling
+        """
+        return vect.dvector_tolist(self.mpls[0].xcolscaling)
+
+    def get_x_averages(self):
+        """
+        Get the feature averages
+        """
+        return vect.dvector_tolist(self.mpls[0].xcolaverage)
+
+
+    def get_y_column_scaling(self):
+        """
+        Get the model column scaling
+        """
+        return vect.dvector_tolist(self.mpls[0].ycolscaling)
+
+    def get_y_averages(self):
+        """
+        Get the feature averages
+        """
+        return vect.dvector_tolist(self.mpls[0].ycolaverage)
 
     def predict(self, x_input, nlv_=None):
         """
@@ -355,6 +390,7 @@ if __name__ == '__main__':
     print("Computing PLS ...")
     model = PLS(nlv=2, xscaling=1, yscaling=0)
     model.fit(x, y)
+
     print("Showing the PLS T scores")
     tscores = model.get_tscores()
     mx_to_video(tscores, 3)
@@ -370,10 +406,36 @@ if __name__ == '__main__':
     print("Showing the X Variance")
     print(model.get_exp_variance())
 
-
+    print("Beta Coefficients")
+    b = model.get_beta_coefficients(2)
+    print(b)
+    
     print("Predict XP")
     py, pscores = model.predict(xp)
     print("Predicted Y for all LVs")
     mx_to_video(py, 3)
     print("Predicted Scores")
     mx_to_video(pscores, 3)
+
+    print("Predict using beta coefficients")
+    xa = model.get_x_averages()
+    xs = model.get_x_column_scaling()
+    ya = model.get_y_averages()
+    ys = model.get_y_column_scaling()
+    xps = []
+    for i in range(len(xp)):
+        xps.append(list())
+        for j in range(len(xp[i])):
+            xps[-1].append(((xp[i][j] - xa[j])/xs[j]))
+    xps_ = mx.new_matrix(xps)
+    pby_ = vect.new_dvector([0 for i in range(len(xps))])
+    b_ = vect.new_dvector(b)
+    mx.matrix_dvector_dot_product(xps_, b_, pby_)
+    pby = vect.dvector_tolist(pby_)
+    vect.del_dvector(pby_)
+    vect.del_dvector(b_)
+    mx.del_matrix(xps_)
+    for i in range(len(pby)):
+        pby[i] = pby[i]*ys[0]+ya[0]
+        print(f'{pby[i]} == {py[i][-1]}')
+    
