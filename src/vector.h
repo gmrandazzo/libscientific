@@ -123,6 +123,9 @@ void initIVector(ivector **d);
 /* Delete a ivector */
 void DelIVector(ivector **d);
 
+/* Print IVector */
+void PrintIVector(ivector *v);
+
 /* Append a ivector */
 void IVectorAppend(ivector *d, int val);
 

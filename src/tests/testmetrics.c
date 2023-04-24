@@ -24,12 +24,296 @@
 #include "matrix.h"
 #include "statistic.h"
 
+void test15()
+{
+  puts("Test15: ManhattanDistanceCondensed");
+  size_t i;
+  size_t j;
+  size_t indx;
+  matrix *m;
+  dvector *dist_condensed;
+  matrix *dist_st;
 
-/*
-void EuclideanDistanceCondensed(matrix* m, dvector *distances, size_t nthreads);
-void SquaredEuclideanDistanceCondensed(matrix *m, dvector *distances, size_t nthreads);
-void ManhattanDistanceCondensed(matrix *m, dvector *distances, size_t nthreads);
-*/
+  NewMatrix(&m, 4, 3);
+  m->data[0][0] = 1; m->data[0][1] = 2; m->data[0][2] = 3;
+  m->data[1][0] = 4; m->data[1][1] = 5; m->data[1][2] = 6;
+  m->data[2][0] = 7; m->data[2][1] = 8; m->data[2][2] = 11;
+  m->data[3][0] = 9; m->data[3][1] = 10; m->data[3][2] = 12;
+
+  initDVector(&dist_condensed);
+  ManhattanDistanceCondensed(m, dist_condensed, 2);
+
+  initMatrix(&dist_st);
+  ManhattanDistance_ST(m, m, dist_st);
+
+  for(i = 0; i < dist_st->row; i++){
+    double val;
+    for(j = 0; j < dist_st->col; j++){
+      if(i == j){
+        val = 0.f;
+      }
+      else{
+        indx = square_to_condensed_index(i, j, m->row);
+        val = dist_condensed->data[indx];
+      }
+
+      if(FLOAT_EQ(val, dist_st->data[i][j], EPSILON)){
+        continue;
+      }
+      else{
+        puts("Test 15 Failed!");
+        abort();
+      }
+    }
+  }
+  puts("ManhattanDistanceCondensed: OK");
+  DelDVector(&dist_condensed);
+  DelMatrix(&dist_st);
+  DelMatrix(&m);
+}
+
+void test14()
+{
+  puts("Test14: SquaredEuclideanDistanceCondensed");
+  size_t i;
+  size_t j;
+  size_t indx;
+  matrix *m;
+  dvector *dist_condensed;
+  matrix *dist_st;
+
+  NewMatrix(&m, 4, 3);
+  m->data[0][0] = 1; m->data[0][1] = 2; m->data[0][2] = 3;
+  m->data[1][0] = 4; m->data[1][1] = 5; m->data[1][2] = 6;
+  m->data[2][0] = 7; m->data[2][1] = 8; m->data[2][2] = 11;
+  m->data[3][0] = 9; m->data[3][1] = 10; m->data[3][2] = 12;
+
+  initDVector(&dist_condensed);
+  SquaredEuclideanDistanceCondensed(m, dist_condensed, 2);
+
+  initMatrix(&dist_st);
+  SquaredEuclideanDistance_ST(m, m, dist_st);
+
+  for(i = 0; i < dist_st->row; i++){
+    double val;
+    for(j = 0; j < dist_st->col; j++){
+      if(i == j){
+        val = 0.f;
+      }
+      else{
+        indx = square_to_condensed_index(i, j, m->row);
+        val = dist_condensed->data[indx];
+      }
+
+      if(FLOAT_EQ(val, dist_st->data[i][j], EPSILON)){
+        continue;
+      }
+      else{
+        puts("Test 14 Failed!");
+        abort();
+      }
+    }
+  }
+  puts("SquaredEuclideanDistanceCondensed: OK");
+  DelDVector(&dist_condensed);
+  DelMatrix(&dist_st);
+  DelMatrix(&m);
+}
+
+void test13()
+{
+  puts("Test13: EuclideanDistanceCondensed");
+  size_t i;
+  size_t j;
+  size_t indx;
+  matrix *m;
+  dvector *dist_condensed;
+  matrix *dist_st;
+
+  NewMatrix(&m, 4, 3);
+  m->data[0][0] = 1; m->data[0][1] = 2; m->data[0][2] = 3;
+  m->data[1][0] = 4; m->data[1][1] = 5; m->data[1][2] = 6;
+  m->data[2][0] = 7; m->data[2][1] = 8; m->data[2][2] = 11;
+  m->data[3][0] = 9; m->data[3][1] = 10; m->data[3][2] = 12;
+
+  initDVector(&dist_condensed);
+  EuclideanDistanceCondensed(m, dist_condensed, 2);
+
+  initMatrix(&dist_st);
+  EuclideanDistance_ST(m, m, dist_st);
+
+  for(i = 0; i < dist_st->row; i++){
+    double val;
+    for(j = 0; j < dist_st->col; j++){
+      if(i == j){
+        val = 0.f;
+      }
+      else{
+        indx = square_to_condensed_index(i, j, m->row);
+        val = dist_condensed->data[indx];
+      }
+
+      if(FLOAT_EQ(val, dist_st->data[i][j], EPSILON)){
+        continue;
+      }
+      else{
+        puts("Test 13 Failed!");
+        abort();
+      }
+    }
+  }
+  puts("EuclideanDistanceCondensed: OK");
+  DelDVector(&dist_condensed);
+  DelMatrix(&dist_st);
+  DelMatrix(&m);
+}
+
+void test12()
+{
+  puts("Test11: ManhattanDistance");
+  size_t i;
+  size_t j;
+  matrix *m1;
+  matrix *m2;
+  matrix *dist_mt;
+  matrix *dist_st;
+
+  NewMatrix(&m1, 4, 3);
+  m1->data[0][0] = 1; m1->data[0][1] = 2; m1->data[0][2] = 3;
+  m1->data[1][0] = 4; m1->data[1][1] = 5; m1->data[1][2] = 6;
+  m1->data[2][0] = 7; m1->data[2][1] = 8; m1->data[2][2] = 11;
+  m1->data[3][0] = 9; m1->data[3][1] = 10; m1->data[3][2] = 12;
+
+  NewMatrix(&m2, 6, 3);
+  m2->data[0][0] = 1; m2->data[0][1] = 2; m2->data[0][2] = 3;
+  m2->data[1][0] = 1; m2->data[1][1] = 8; m2->data[1][2] = 1;
+  m2->data[2][0] = 4; m2->data[2][1] = 0; m2->data[2][2] = 7;
+  m2->data[3][0] = 5; m2->data[3][1] = 1; m2->data[3][2] = 6;
+  m2->data[4][0] = 3; m2->data[4][1] = 3; m2->data[4][2] = 4;
+  m2->data[5][0] = 5; m2->data[5][1] = 2; m2->data[5][2] = 7;
+
+
+  initMatrix(&dist_mt);
+  ManhattanDistance(m2, m1, dist_mt, 2);
+
+  initMatrix(&dist_st);
+  ManhattanDistance_ST(m2, m1, dist_st);
+
+  for(i = 0; i < dist_st->row; i++){
+    for(j = 0; j < dist_st->col; j++){
+      if(FLOAT_EQ(dist_mt->data[i][j], dist_st->data[i][j], EPSILON)){
+        continue;
+      }
+      else{
+        puts("Test 12 Failed!");
+        abort();
+      }
+    }
+  }
+  puts("ManhattanDistance: OK");
+  DelMatrix(&dist_mt);
+  DelMatrix(&dist_st);
+  DelMatrix(&m1);
+  DelMatrix(&m2);
+}
+
+void test11()
+{
+  puts("Test11: CosineDistance");
+  size_t i;
+  size_t j;
+  matrix *m1;
+  matrix *m2;
+  matrix *dist_mt;
+  matrix *dist_st;
+
+  NewMatrix(&m1, 4, 3);
+  m1->data[0][0] = 1; m1->data[0][1] = 2; m1->data[0][2] = 3;
+  m1->data[1][0] = 4; m1->data[1][1] = 5; m1->data[1][2] = 6;
+  m1->data[2][0] = 7; m1->data[2][1] = 8; m1->data[2][2] = 11;
+  m1->data[3][0] = 9; m1->data[3][1] = 10; m1->data[3][2] = 12;
+
+  NewMatrix(&m2, 6, 3);
+  m2->data[0][0] = 1; m2->data[0][1] = 2; m2->data[0][2] = 3;
+  m2->data[1][0] = 1; m2->data[1][1] = 8; m2->data[1][2] = 1;
+  m2->data[2][0] = 4; m2->data[2][1] = 0; m2->data[2][2] = 7;
+  m2->data[3][0] = 5; m2->data[3][1] = 1; m2->data[3][2] = 6;
+  m2->data[4][0] = 3; m2->data[4][1] = 3; m2->data[4][2] = 4;
+  m2->data[5][0] = 5; m2->data[5][1] = 2; m2->data[5][2] = 7;
+
+
+  initMatrix(&dist_mt);
+  CosineDistance(m2, m1, dist_mt, 2);
+
+  initMatrix(&dist_st);
+  CosineDistance_ST(m2, m1, dist_st);
+
+  for(i = 0; i < dist_st->row; i++){
+    for(j = 0; j < dist_st->col; j++){
+      if(FLOAT_EQ(dist_mt->data[i][j], dist_st->data[i][j], EPSILON)){
+        continue;
+      }
+      else{
+        puts("Test11 Failed!");
+        abort();
+      }
+    }
+  }
+  puts("CosineDistance: OK");
+  DelMatrix(&dist_mt);
+  DelMatrix(&dist_st);
+  DelMatrix(&m1);
+  DelMatrix(&m2);
+}
+
+void test10()
+{
+  puts("Test10: SquaredEuclideanDistance");
+  size_t i;
+  size_t j;
+  matrix *m1;
+  matrix *m2;
+  matrix *dist_mt;
+  matrix *dist_st;
+
+  NewMatrix(&m1, 4, 3);
+  m1->data[0][0] = 1; m1->data[0][1] = 2; m1->data[0][2] = 3;
+  m1->data[1][0] = 4; m1->data[1][1] = 5; m1->data[1][2] = 6;
+  m1->data[2][0] = 7; m1->data[2][1] = 8; m1->data[2][2] = 11;
+  m1->data[3][0] = 9; m1->data[3][1] = 10; m1->data[3][2] = 12;
+
+  NewMatrix(&m2, 6, 3);
+  m2->data[0][0] = 1; m2->data[0][1] = 2; m2->data[0][2] = 3;
+  m2->data[1][0] = 1; m2->data[1][1] = 8; m2->data[1][2] = 1;
+  m2->data[2][0] = 4; m2->data[2][1] = 0; m2->data[2][2] = 7;
+  m2->data[3][0] = 5; m2->data[3][1] = 1; m2->data[3][2] = 6;
+  m2->data[4][0] = 3; m2->data[4][1] = 3; m2->data[4][2] = 4;
+  m2->data[5][0] = 5; m2->data[5][1] = 2; m2->data[5][2] = 7;
+
+
+  initMatrix(&dist_mt);
+  SquaredEuclideanDistance(m2, m1, dist_mt, 2);
+
+  initMatrix(&dist_st);
+  SquaredEuclideanDistance_ST(m2, m1, dist_st);
+
+  for(i = 0; i < dist_st->row; i++){
+    for(j = 0; j < dist_st->col; j++){
+      if(FLOAT_EQ(dist_mt->data[i][j], dist_st->data[i][j], EPSILON)){
+        continue;
+      }
+      else{
+        puts("Test10 Failed!");
+        abort();
+      }
+    }
+  }
+  puts("SquaredEuclideanDistance: OK");
+  DelMatrix(&dist_mt);
+  DelMatrix(&dist_st);
+  DelMatrix(&m1);
+  DelMatrix(&m2);
+}
 
 void test9()
 {
@@ -170,9 +454,10 @@ void test5()
 void test4()
 {
   puts("Test4: MahalanobisDistance");
-  size_t i, j;
-  matrix *m, *c, *edst;
+  matrix *m;
   dvector *mdst;
+  dvector *mu;
+  matrix *invcov;
 
   NewMatrix(&m, 100, 2);
 
@@ -278,33 +563,12 @@ void test4()
   m->data[99][0] = 3.058209; m->data[99][1] = 3.857030;
 
   initDVector(&mdst);
-  dvector *mu;
-  matrix *invcov;
   initDVector(&mu);
   initMatrix(&invcov);
   MahalanobisDistance(m, invcov, mu, mdst);
   puts("MahalanobisDistance: OK");
   DelMatrix(&invcov);
   DelDVector(&mu);
-
-  NewMatrix(&c, 1, 2);
-
-  for(j = 0; j < m->col; j++){
-    for(i = 0; i < m->row; i++){
-      c->data[0][j] += m->data[i][j];
-    }
-    c->data[0][j] /= (double)m->row;
-  }
-
-  initMatrix(&edst);
-  ManhattanDistance(m, c, edst, 4);
-  /*
-  for(i = 0; i < m->row; i++){
-    printf("%.4f %.4f\n", mdst->data[i], edst->data[0][i]);
-  }
-  */ 
-  DelMatrix(&edst);
-  DelMatrix(&c);
   DelMatrix(&m);
   DelDVector(&mdst);
 }
@@ -449,11 +713,13 @@ void test2()
 
 void test1()
 {
-  puts("Test1: Euclidean distance between two matrix.");
-  /* Euclidean distance between two matrix test */
+  puts("Test1: EuclideanDistance");
+  size_t i;
+  size_t j;
   matrix *m1;
   matrix *m2;
-  matrix *dist;
+  matrix *dist_mt;
+  matrix *dist_st;
 
   NewMatrix(&m1, 4, 3);
   m1->data[0][0] = 1; m1->data[0][1] = 2; m1->data[0][2] = 3;
@@ -470,23 +736,32 @@ void test1()
   m2->data[5][0] = 5; m2->data[5][1] = 2; m2->data[5][2] = 7;
 
 
-  initMatrix(&dist);
-  EuclideanDistance(m2, m1, dist, 1);
+  initMatrix(&dist_mt);
+  EuclideanDistance(m2, m1, dist_mt, 2);
 
-  /*puts("Matrix");
-  PrintMatrix(m);
-  */
-  puts("Distance Matrix");
-  PrintMatrix(dist);
+  initMatrix(&dist_st);
+  EuclideanDistance_ST(m2, m1, dist_st);
 
-  DelMatrix(&dist);
+  for(i = 0; i < dist_st->row; i++){
+    for(j = 0; j < dist_st->col; j++){
+      if(FLOAT_EQ(dist_mt->data[i][j], dist_st->data[i][j], EPSILON)){
+        continue;
+      }
+      else{
+        puts("Test1 Failed!");
+        abort();
+      }
+    }
+  }
+  puts("EuclideanDistance: OK");
+  DelMatrix(&dist_mt);
+  DelMatrix(&dist_st);
   DelMatrix(&m1);
   DelMatrix(&m2);
 }
 
 int main(void)
 {
-
   test1();
   test2();
   test3();
@@ -496,4 +771,10 @@ int main(void)
   test7();
   test8();
   test9();
+  test10();
+  test11();
+  test12();
+  test13();
+  test14();
+  test15();
 }

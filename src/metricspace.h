@@ -22,19 +22,45 @@
 #include "matrix.h"
 #include "vector.h"
 
+/* Description: calculate the euclidean distance between two matrix with the same column number.
+ *              Multi-thread implementation.
+ */
 
-
-/* Description: calculate the euclidean distance between two matrix with the same column number */
 void EuclideanDistance(matrix* m1, matrix* m2, matrix *distances, size_t nthreads);
+/* Description: calculate the euclidean distance between two matrix with the same column number.
+ *              Single thread implementation
+ */
+void EuclideanDistance_ST(matrix *m1, matrix *m2, matrix *distances);
 
-/* Description: calculate the square euclidean distance between two matrix with the same column number */
+/* Description: calculate the square euclidean distance between two matrix with the same column number.
+ *              Multi-thread implementation.
+ */
 void SquaredEuclideanDistance(matrix *m1, matrix *m2, matrix *distances, size_t nthreads);
 
-/* Description: calculate the manhattan distance between two matrix with the same column number */
+/* Description: calculate the square euclidean distance between two matrix with the same column number.
+ *              Single thread implementation
+ */
+void SquaredEuclideanDistance_ST(matrix *m1, matrix *m2, matrix *distances);
+
+/* Description: calculate the manhattan distance between two matrix with the same column number.
+ *              Multi-thread implementation.
+ */
 void ManhattanDistance(matrix *m1, matrix *m2, matrix *distances, size_t nthreads);
 
-/* Description: calculate the cosine distance between two matrix with the same column number */
+/* Description: calculate the manhattan distance between two matrix with the same column number.
+ *              Single thread implementation
+ */
+void ManhattanDistance_ST(matrix *m1, matrix *m2, matrix *distances);
+
+/* Description: calculate the cosine distance between two matrix with the same column number.
+ *              Multi-thread implementation.
+ */
 void CosineDistance(matrix *m1, matrix *m2, matrix *distances, size_t nthreads);
+
+/* Description: calculate the cosine distance between two matrix with the same column number.
+ *              Single thread implementation
+ */
+void CosineDistance_ST(matrix *m1, matrix *m2, matrix *distances);
 
 /* Description: calculate the Mahalanobis distance between two matrix with the same column number */
 double MatrixMahalanobisDistance(matrix *g1, matrix *g2);

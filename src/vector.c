@@ -548,6 +548,16 @@ void DelIVector(ivector **d )
   }
 }
 
+void PrintIVector(ivector* v)
+{
+  if(v->size > 0){
+    size_t i;
+    for(i = 0; i < v->size; i++){
+      printf("[%u]: %i\n", (unsigned int)i, (int)getIVectorValue(v, i));
+    }
+  }
+}
+
 void IVectorAppend(ivector *d, int val)
 {
   long int size = d->size+1;
@@ -668,7 +678,6 @@ void UIVectorResize(uivector *d, size_t size_)
 }
 
 void PrintUIVector(uivector* v)
-
 {
   if(v->size > 0){
     size_t i;
