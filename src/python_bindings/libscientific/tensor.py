@@ -202,7 +202,10 @@ class Tensor():
     Translate a list of list of list into a libscientific tensor
     """
     def __init__(self, tns_):
-        self.tns = new_tensor(tns_)
+        if tns_ is None:
+            self.tns = init_tensor()
+        else:
+            self.tns = new_tensor(tns_)
 
     def __del__(self):
         del_tensor(self.tns)

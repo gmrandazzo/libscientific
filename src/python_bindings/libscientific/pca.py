@@ -159,7 +159,7 @@ class PCA():
         fit a PCA model using an input matrix
         """
         if "Matrix" in str(type(m_input)):
-            pca_algorithm(m_input, self.scaling, self.npc, self.mpca)
+            pca_algorithm(m_input.mtx, self.scaling, self.npc, self.mpca)
         else:
             m_input_ = mx.new_matrix(m_input)
             pca_algorithm(m_input_, self.scaling, self.npc, self.mpca)
@@ -188,12 +188,16 @@ class PCA():
         """
         Project an input matrix into the PCA model
         """
-        m_input_ = mx.new_matrix(m_input)
         pscores_ = mx.init_matrix()
-        pca_score_predictor(m_input_, self.mpca, self.npc, pscores_)
+        if "Matrix" in str(type(m_input)):
+            m_input_ = m_input
+            pca_score_predictor(m_input.mtx, self.mpca, self.npc, pscores_)
+        else:
+            m_input_ = mx.new_matrix(m_input)
+            pca_score_predictor(m_input_, self.mpca, self.npc, pscores_)
+            mx.del_matrix(m_input_)
+            del m_input_
         pscores = mx.matrix_to_list(pscores_)
-        mx.del_matrix(m_input_)
-        del m_input_
         mx.del_matrix(pscores_)
         del pscores_
         return pscores
@@ -240,14 +244,20 @@ if __name__ == '__main__':
     import random
     random.seed(123456)
     a = [[random.random() for j in range(4)] for i in range(10)]
+    m = mx.Matrix(a)
     print("Original Matrix")
     mx_to_video(a)
     print("Computing PCA ...")
     model = PCA(1, 2)
     model.fit(a)
+    model2 = PCA(1, 2)
+    model2.fit(m)
     print("Showing the PCA scores")
     scores = model.get_scores()
     mx_to_video(scores, 3)
+    print("Showing the PCA scores")
+    scores2 = model2.get_scores()
+    mx_to_video(scores2, 3)
     print("Showing the PCA loadings")
     loadings = model.get_loadings()
     mx_to_video(loadings, 3)
@@ -259,3 +269,4 @@ if __name__ == '__main__':
     for i, row1 in enumerate(pred_scores):
         row2 = scores[i]
         print(row1, row2)
+    

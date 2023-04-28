@@ -501,8 +501,11 @@ class DVector():
     """
     Translate a list  into a libscientific double vector
     """
-    def __init__(self, dvect_):
-        self.dvect = new_dvector(dvect_)
+    def __init__(self, dvect_ = None):
+        if dvect_ is None:
+            self.dvect = init_dvector()
+        else:
+            self.dvect = new_dvector(dvect_)
 
     def __del__(self):
         del_dvector(self.dvect)

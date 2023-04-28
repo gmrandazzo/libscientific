@@ -138,7 +138,7 @@ class CPCA():
         fit a cpca model using an input tensor
         """
         if "Tensor" in str(type(t_input)):
-            cpca_algorithm(t_input, self.scaling, self.npc, self.model)
+            cpca_algorithm(t_input.tns, self.scaling, self.npc, self.model)
         else:
             t_input_ = tns.new_tensor(t_input)
             cpca_algorithm(t_input_, self.scaling, self.npc, self.model)
@@ -228,12 +228,14 @@ if __name__ == '__main__':
     import random
     random.seed(123456)
     a = [[[random.random() for j in range(4)] for i in range(10)] for k in range(4)]
-    t = tns.new_tensor(a)
+    t = tns.Tensor(a)
     print("Original Tensor")
     t_to_video(a)
     print("Computing CPCA ...")
     cpca = CPCA(1, 2)
     cpca.fit(a)
+    cpca2 = CPCA(1, 2)
+    cpca2.fit(t)
     print("Showing the CPCA super scores")
     sscores = cpca.get_super_scores()
     mx_to_video(sscores, 3)

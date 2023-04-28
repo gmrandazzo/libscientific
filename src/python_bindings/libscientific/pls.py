@@ -246,7 +246,7 @@ class PLS():
             x_input_ = mx.new_matrix(x_input)
             xalloc = True
         else:
-            x_input_ = x_input
+            x_input_ = x_input.mtx
 
         y_input_ = None
         yalloc = False
@@ -254,7 +254,7 @@ class PLS():
             y_input_ = mx.new_matrix(y_input)
             yalloc = True
         else:
-            y_input_ = y_input
+            y_input_ = y_input.mtx
 
         pls_algorithm(x_input_,
                       y_input_,
@@ -379,7 +379,7 @@ if __name__ == '__main__':
     x = [[random.random() for j in range(4)] for i in range(10)]
     y = [[random.random() for j in range(1)] for i in range(10)]
     xp = [[random.random() for j in range(4)] for i in range(10)]
-
+    
     print("Original Matrix")
     print("X")
     mx_to_video(x)
@@ -390,6 +390,11 @@ if __name__ == '__main__':
     print("Computing PLS ...")
     model = PLS(nlv=2, xscaling=1, yscaling=0)
     model.fit(x, y)
+
+    xm = mx.Matrix(x)
+    ym = mx.Matrix(y)
+    model2 = PLS(nlv=2, xscaling=1, yscaling=0)
+    model2.fit(xm, ym)
 
     print("Showing the PLS T scores")
     tscores = model.get_tscores()

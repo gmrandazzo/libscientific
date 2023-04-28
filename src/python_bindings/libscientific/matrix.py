@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import ctypes
+import csv
 from libscientific.loadlibrary import load_libscientific_library
 from libscientific import misc
 from libscientific import vector
@@ -58,29 +59,22 @@ lsci.NewMatrix.argtypes = [ctypes.POINTER(ctypes.POINTER(MATRIX)),
                            ctypes.c_size_t]
 lsci.NewMatrix.restype = None
 
-
-def new_matrix(mtx_input_):
+def new_matrix_from_list(mx_lst):
     """
-    new_matrix: Allocate in memory a libscientific matrix from a list of lists
+    Import a matrix from a list
     """
-    mtx_input = None
-    if "numpy" in str(type(mtx_input_)):
-        mtx_input = mtx_input_.tolist()
-    else:
-        mtx_input = mtx_input_
     nrows = None
     ncols = None
     try:
-        nrows = len(mtx_input)
+        nrows = len(mx_lst)
         try:
-            ncols = len(mtx_input[0])
+            ncols = len(mx_lst[0])
         except TypeError:
             ncols = 1
         except IndexError:
             ncols = 0
     except IndexError:
         nrows = 0
-
     mtx = ctypes.POINTER(MATRIX)()
     lsci.NewMatrix(ctypes.pointer(mtx),
                    nrows,
@@ -90,9 +84,9 @@ def new_matrix(mtx_input_):
         for j in range(ncols):
             val = None
             try:
-                val = float(mtx_input[i][j])
+                val = float(mx_lst[i][j])
             except TypeError:
-                val = float(mtx_input[i])
+                val = float(mx_lst[i])
             except ValueError:
                 val = None
 
@@ -101,6 +95,27 @@ def new_matrix(mtx_input_):
             else:
                 lsci.setMatrixValue(mtx, i, j, val)
     return mtx
+
+def new_matrix_from_csv(fcsv):
+    """
+    Import a matrix directly from CSV file
+    """
+    mtx = init_matrix()
+    with open(fcsv, "r", encoding='utf-8') as fcsv_:
+        reader = csv.reader(fcsv_, delimiter=',', quotechar='"')
+        for csvrow in reader:
+            row_lst = vector.DVector(csvrow)
+            matrix_append_row(mtx, row_lst)
+            del row_lst
+    return mtx
+
+def new_matrix(mtx_input_):
+    """
+    new_matrix: Allocate in memory a libscientific matrix from a list of lists
+    """
+    if "str" in str(type(mtx_input_)):
+        return new_matrix_from_csv(mtx_input_)
+    return new_matrix_from_list(mtx_input_)
 
 
 lsci.ResizeMatrix.argtypes = [ctypes.POINTER(MATRIX),
@@ -487,8 +502,11 @@ class Matrix():
     """
     Translate a list of list into a libscientific matrix
     """
-    def __init__(self, mx_):
-        self.mtx = new_matrix(mx_)
+    def __init__(self, mx_ = None):
+        if mx_ is None:
+            self.mtx = init_matrix()
+        else:
+            self.mtx = new_matrix(mx_)
 
     def __del__(self):
         del_matrix(self.mtx)
@@ -550,6 +568,7 @@ class Matrix():
         row_lst = vector.DVector(row_lst_)
         matrix_append_row(self.mtx, row_lst)
         del row_lst
+
 
     def appendcol(self, col_lst_):
         """
@@ -749,7 +768,9 @@ if __name__ in "__main__":
         print(row)
     for row in e_vals:
         print(row)
-
     u, s, vt = m.svd()
-
     del m
+    m = Matrix()
+    m.appendrow([1,2,3,4])
+    m.appendrow([5,6,7,8])
+    m.debug()
