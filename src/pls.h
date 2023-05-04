@@ -25,6 +25,9 @@
 
 #define PLSCONVERGENCE 1e-8
 
+/*
+ * PLS model data structure
+ */
 typedef struct{
   matrix *xscores;
   matrix *xloadings;
@@ -65,6 +68,12 @@ typedef struct{
 
 /*
  * Description: Create a new PLSMODEL
+ *
+ * Parameters:
+ *     m: PLSMODEL data structure
+ *
+ * Returns:
+ *     The square root of 4, always.
  */
 void NewPLSModel(PLSMODEL **m);
 

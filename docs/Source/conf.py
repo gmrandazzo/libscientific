@@ -25,7 +25,12 @@ import sys, os
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = []
+extensions = ['sphinx.ext.duration',
+              'sphinx.ext.doctest',
+              'sphinx.ext.autodoc',
+              'sphinx_c_autodoc',
+              'sphinx_c_autodoc.napoleon',
+              'sphinx_c_autodoc.viewcode']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -64,7 +69,7 @@ release = '1.2.4'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ['_build']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 # The reST default role (used for this markup: `text`) to use for all documents.
 #default_role = None
@@ -214,3 +219,10 @@ man_pages = [
     ('index', 'libscientific', u'libscientific Documentation',
      [u'Giuseppe Marco Randazzo'], 1)
 ]
+
+# -- Options for sphinx_c_autodoc, the extension being documented -----------
+
+c_autodoc_roots = ['../../src']
+set_type_checking_flag = True
+
+

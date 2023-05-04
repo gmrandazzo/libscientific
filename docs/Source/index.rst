@@ -8,7 +8,7 @@ The libscientific documentation
 
 .. toctree::
   :maxdepth: 2
-
+  
   Overview
   Install
   GettingStartedInC

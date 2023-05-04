@@ -141,6 +141,7 @@ Compile from source
 
   cmake -DCMAKE_INSTALL_PREFIX=/usr/local/ ..
   make -j5
+  mate test
   sudo make install
 
 Homebrew OSX
@@ -165,9 +166,20 @@ Contributing
 To contribute, you can fork the project, or if you have already forked the project
 update to the latest version of libscientific, make the changes and open a Pull Request.
 
-However, here are some recommendations.
+However, here are some requests.
 Before opening a Pull Request:
   * Be sure that your code it's working.
   * No leaks. Run valgrind
   * Comment your code with Parameters, attributes, returns, notes, and References.
-  * A test example is necessary.
+  * Test examples are necessary. Tests must prove that
+    - the algorithm works correctly
+    - the algorithm do not present any memory leak
+
+### How to write a unit test?
+
+Please first read the cmake documentation about [testing with cmake and ctest](https://cmake.org/cmake/help/book/mastering-cmake/chapter/Testing%20With%20CMake%20and%20CTest.html)
+
+Then write a test for the algorithm you propose and save it in "src/tests" directory.
+Run and submit the resulting output in the pull request specifying:
+- What the algorithm does
+- What the unit tests represent and what they prove.
