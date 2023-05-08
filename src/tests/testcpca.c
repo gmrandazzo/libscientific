@@ -34,9 +34,10 @@ void PrepareMatrix4PCA(tensor *t, CPCAMODEL *model, matrix *X)
 
 void test4()
 {
+  puts("Test 4: CPCA on 100x500x3 tensor ");
   int i, j, k;
   int nobj = 100;
-  int nvars = 1000;
+  int nvars = 500;
   int norder = 3;
   tensor *t; // Definition of the input matrix 
   CPCAMODEL *model; // Definition of the PCA model
@@ -52,6 +53,7 @@ void test4()
   }
   NewCPCAModel(&model);
   CPCA(t, 1, 5, model);
+  puts("CPCA on 100x500x3 tensor: OK");
   DelCPCAModel(&model);
   DelTensor(&t);
 }
@@ -120,7 +122,7 @@ void test3()
     }
   }
 
-
+  puts("Projection test: OK");
   DelMatrix(&p_super_scores);
   DelTensor(&p_block_scores);
   DelCPCAModel(&model);
@@ -242,9 +244,9 @@ void test1(){
 }
 
 int main(void){
-  /*test1();
+  test1();
   test2();
-  test3();*/
+  test3();
   test4();
   return 0;
 }
