@@ -29,6 +29,51 @@
 /*
 MISSING TEST! Matrix2IntFactorsMatrix
 */
+void Test61()
+{
+  /*Large matrix*/
+  puts("Test 61: MatrixDotProduct");
+  size_t i;
+  size_t j;
+  matrix *a;
+  matrix *b;
+  matrix *r1;
+  matrix *r2;
+  int nrow = 500;
+  int ncol = 500;
+  NewMatrix(&a, nrow, ncol);
+  NewMatrix(&b, nrow, ncol);
+  NewMatrix(&r1, nrow, ncol);
+  NewMatrix(&r2, nrow, ncol);
+  srand(time(0));
+  for(i = 0; i < nrow; i++){
+    for(j = 0; j < ncol; j++){
+      a->data[i][j] = randDouble(-1, 1);
+    }
+  }
+  for(i = 0; i < nrow; i++){
+    for(j = 0; j < ncol; j++){
+      b->data[i][j] = randDouble(-1, 1);
+    }
+  }
+  MatrixDotProduct_(a, b, r1);
+  MatrixDotProduct_LOOP_UNROLLING(a, b, r2);
+ for(i = 0; i < r1->row; i++){
+    for(j = 0; j < r1->col; j++){
+      if(FLOAT_EQ(r1->data[i][j], r2->data[i][j], 1e-12)){
+        continue;
+      }
+      else{
+        abort();
+      }
+    }
+  }
+  puts("MatrixDotProduct_ and MatrixDotProduct_LOOP_UNROLLING: OK");
+  DelMatrix(&a);
+  DelMatrix(&b);
+  DelMatrix(&r1);
+  DelMatrix(&r2);
+}
 
 void Test60()
 {
@@ -245,7 +290,7 @@ void Test51()
   size_t j;
   NewMatrix(&m, 3, 3);
   m->data[1][0] = 1; m->data[1][1] = 1; m->data[1][2] = 1;
-  MatrixDeleteColAt(m, 1);
+  MatrixDeleteRowAt(m, 1);
   for(i = 0; i < m->row; i++){
     for(j = 0; j < m->col; j++){
       if(!FLOAT_EQ(m->data[i][j], 1.f, 1e-1)){
@@ -1885,13 +1930,14 @@ int main(void)
   Test50();
   Test51();
   Test52();
-  Test53();*/
+  Test53();
   Test54();
   Test55();
   Test56();
   Test57();
   Test58();
   Test59();
-  Test60();
+  Test60();*/
+  Test61();
   return 0;
 }

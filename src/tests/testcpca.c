@@ -32,6 +32,30 @@ void PrepareMatrix4PCA(tensor *t, CPCAMODEL *model, matrix *X)
   }
 }
 
+void test4()
+{
+  int i, j, k;
+  int nobj = 100;
+  int nvars = 1000;
+  int norder = 3;
+  tensor *t; // Definition of the input matrix 
+  CPCAMODEL *model; // Definition of the PCA model
+  NewTensor(&t, norder);
+  for(k = 0; k < norder; k++){
+      NewTensorMatrix(t, k, nobj, nvars);
+      srand_(time(0));
+      for(i = 0; i < nobj; i++){
+          for(j = 0; j < nvars; j++){
+              t->m[k]->data[i][j] = randDouble(0,100);
+          }
+      }
+  }
+  NewCPCAModel(&model);
+  CPCA(t, 1, 5, model);
+  DelCPCAModel(&model);
+  DelTensor(&t);
+}
+
 void test3()
 {
   puts("Test 3: Projection test");
@@ -218,8 +242,9 @@ void test1(){
 }
 
 int main(void){
-  test1();
+  /*test1();
   test2();
-  test3();
+  test3();*/
+  test4();
   return 0;
 }

@@ -93,7 +93,7 @@ double calcConvergence(dvector *t_new, dvector *t_old)
 }
 
 /*
- *     NIPALS Algorithm for PCA
+ * NIPALS Algorithm for PCA
  * Input:
  *     E = Mean Centered Data Matrix
  * Local Variable:
@@ -118,6 +118,11 @@ double calcConvergence(dvector *t_new, dvector *t_old)
  * Martens, Harald, and Magni Martens. 2001. Multivariate Analysis of Quality: An Introduction. J.Wiley & Son
  * https://www.wiley.com/en-us/Multivariate+Analysis+of+Quality%3A+An+Introduction-p-9780471974284
  *
+ * @param mx: input matrix
+ * @param scaling: type of scaling: 0 no scaling, 1 unit variance scaling, 2 pareto scaling 
+ * @param npc: number of principal components
+ * @param model: model results
+ * @param ssignal: scientific signal
  */
 void PCA(matrix *mx, int scaling, size_t npc, PCAMODEL* model, ssignal *s)
 {

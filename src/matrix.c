@@ -592,6 +592,7 @@ void MatrixDeleteColAt(matrix *m, size_t col)
   NewMatrix(&c, m->row, m->col);
   MatrixCopy(m, &c);
   ResizeMatrix(m, c->row, c->col-1);
+
   k = 0;
   for(j = 0; j < c->col; j++){
     if(j == col){
@@ -676,7 +677,7 @@ void *MatrixDVectorDotProductWorker(void *arg_){
       }
     }
   }
-  return NULL;
+  pthread_exit(NULL);
 }
 
 void MT_MatrixDVectorDotProduct(matrix *m, dvector *v, dvector *p)
@@ -790,7 +791,7 @@ void *DVectorMatrixDotProductWorker(void *arg_)
       }
     }
   }
-  return NULL;
+  pthread_exit(NULL);
 }
 
  /*
@@ -886,54 +887,52 @@ void DVectorTransposedMatrixDivision(dvector *v, matrix *m, dvector *r)
     abort();
   }
 }
-/*
- * R = M'M
- * opp
- *
+
+void MatrixDotProduct_LOOP_UNROLLING(matrix *a, matrix *b, matrix *r)
+{
+  size_t i, j, k;
+  double res;
+  for(i = 0; i < a->row; i++){
+    for(j = 0; j < b->col; j++){
+      res = 0.f;
+      for(k = 0; k < a->col-3; k+=4){
+        res += a->data[i][k] * b->data[k][j] + a->data[i][k+1] * b->data[k+1][j] + a->data[i][k+2] * b->data[k+2][j] + a->data[i][k+3] * b->data[k+3][j];
+      }
+      for (k = a->col - (a->col%4); k < a->col; k++){
+        res += a->data[i][k] * b->data[k][j];
+      }
+      r->data[i][j] +=  res;
+    }
+  }
+}
+
+
+void MatrixDotProduct_(matrix *a, matrix *b, matrix *r)
+{
+  size_t i, j, k;
+  for(i = 0; i < a->row; i++){
+    for(j = 0; j < b->col; j++){
+      for(k = 0; k < a->col; k++){
+        r->data[i][j] +=  a->data[i][k] * b->data[k][j];
+      }
+    }
+  }
+}
+
+/* Matrix-Matrix Dot product
  * The product of an m x n matrix A and an n x p matrix B is an m x p matrix C where
  *
  * c[i][j] = Sum a[i][k]*b[k][j]
  */
 
-/*
- * m_t is the transposed matrix of m. The result is a square matrix named r.
- * void MatrixDotProduct(matrix *m_t, matrix *m, matrix **r)
-{
-  int i, j, k;
-//  (*r).row =(*r).col = m.col; square matrix
-  for(i = 0; i < (*r)->row; i++){
-    for(j = 0; j < m_t->row; j++){
-      for(k = 0; k < m_t->col; k++){
-        (*r)->data[j][i] += m_t->data[j][k] * m->data[k][i];
-      }
-    }
-  }
-}
-*/
-
 void MatrixDotProduct(matrix *a, matrix *b, matrix *r)
 {
   if(a->col == b->row){
-    size_t i, j, k;
-    double res;
-    for(i = 0; i < a->row; i++){ /* m */
-      for(j = 0; j < b->col; j++){ /* p */
-        for(k = 0; k < a->col; k++){ /* n */
-          if(FLOAT_EQ(a->data[i][k], MISSING, 1e-1) ||
-             FLOAT_EQ(b->data[k][j], MISSING, 1e-1)){
-            continue;
-          }
-          else{
-            res = a->data[i][k] * b->data[k][j];
-            if(_isnan_(res) || _isinf_(res)){
-              r->data[i][j] +=  +0.f;
-            }
-            else{
-              r->data[i][j] +=  res;
-            }
-          }
-        }
-      }
+    if((int)a->col-3 > 0){
+      MatrixDotProduct_LOOP_UNROLLING(a, b, r);
+    }
+    else{
+      MatrixDotProduct_(a, b, r);
     }
   }
   else{

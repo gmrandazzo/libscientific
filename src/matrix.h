@@ -181,9 +181,11 @@ void DVectorTransposedMatrixDivision(dvector *v, matrix *m, dvector *r);
 
 /*
  * Description:
- * Calculate the matrix matrix product
+ * Calculate the matrix matrix product using the loop unrolling technique
  */
 void MatrixDotProduct(matrix *a, matrix *b, matrix *r);
+void MatrixDotProduct_(matrix *a, matrix *b, matrix *r);
+void MatrixDotProduct_LOOP_UNROLLING(matrix *a, matrix *b, matrix *r);
 void RowColOuterProduct(dvector *a, dvector *b, matrix *m);
 
 /*

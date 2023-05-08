@@ -146,7 +146,7 @@ Compile from source
 
 Homebrew OSX
 ------------
-
+brew tap gmrandazzo/homebrew-gmr
 brew install --HEAD libscientific
 
 

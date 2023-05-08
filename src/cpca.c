@@ -157,7 +157,7 @@ void CPCA(tensor *x, int scaling, size_t npc, CPCAMODEL *model)
         ss += square(Eb->m[k]->data[i][j]/model->scaling_factor->data[k]);
       }
     }
-    //block_sum_of_squares->data[k] = block_ss;
+    /*block_sum_of_squares->data[k] = block_ss;*/
   }
 
  /*
@@ -278,7 +278,6 @@ void CPCA(tensor *x, int scaling, size_t npc, CPCAMODEL *model)
           printf("%f %f\n", tpca->data[i], t_new->data[i]);
         DelDVector(&tpca);
         #endif
-
         /* store the block scores, the super scores and super weights */
         TensorAppendMatrix(model->block_scores, T);
 
@@ -290,6 +289,7 @@ void CPCA(tensor *x, int scaling, size_t npc, CPCAMODEL *model)
 
         /* Deflation and calculation block variance explained */
         NewDVector(&local_blockvexp, Eb->order);
+
         for(k = 0; k < Eb->order; k++){
           /* Calculate the block loadings */
           NewDVector(&p_b, Eb->m[k]->col);
@@ -307,15 +307,16 @@ void CPCA(tensor *x, int scaling, size_t npc, CPCAMODEL *model)
             }
           }
           DelDVector(&p_b);
-
+        
+       
+        
          /*
           * Calculate cumulative percentage explained for each block
           */
           NewMatrix(&Eb_T, Eb->m[k]->col, Eb->m[k]->row);
           MatrixTranspose(Eb->m[k], Eb_T);
           NewMatrix(&Eb_T_E, Eb->m[k]->col, Eb->m[k]->col);
-          MatrixDotProduct(Eb_T, Eb->m[k], Eb_T_E);
-
+          MatrixDotProduct(Eb_T, Eb->m[k], Eb_T_E); /*SLOW ISNAN TEST +1SEC*/
           local_blockvexp->data[k] = (1.f-(MatrixTrace(Eb_T_E)/tr_orig->data[k]))*100.;
           DelMatrix(&Eb_T_E);
           DelMatrix(&Eb_T);

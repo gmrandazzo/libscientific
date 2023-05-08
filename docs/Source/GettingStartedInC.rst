@@ -167,7 +167,7 @@ In this example we show how to factorize a square matrix using the singular valu
 
 .. literalinclude:: c_code_examples/mxexample7.c
    :language: c
-   :lineos:
+   :linenos:
 
 Tensor operations
 =================
@@ -233,6 +233,8 @@ and is adapted to run in multithreading to speed up the calculation.
 
 Principal Component Analysis (PCA)
 ----------------------------------
+
+.. autocfunction:: pca.c::PCA
 
 Here is an example that shows how to compute a principal component analysis on a matrix.
 
