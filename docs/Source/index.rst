@@ -14,6 +14,8 @@ The libscientific documentation
   GettingStartedInC
   GettingStartedInPython
   Licensing
+  C-API
+  Python-API
 
 
 Indices and tables

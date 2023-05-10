@@ -22,9 +22,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MAXCHARSIZE 6114
-
-/* string vector */
+/**
+ * A dynamic array of strings.
+ * The strvector struct is a dynamic array of strings represented
+ * by a pointer to a character pointer (char data) and its size (size_t size).
+ * 
+ * - **data** A pointer to a character pointer representing the array of strings.
+ * - **size** The size of the array of strings.
+ */
 typedef struct{
   char **data;
   size_t size;

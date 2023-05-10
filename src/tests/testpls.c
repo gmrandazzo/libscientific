@@ -82,6 +82,7 @@ void TestPLS15()
   }
   printf("OK.\n");
   
+  DelUIVector(&ids);
   DelPLSModel(&mod1);
   DelPLSModel(&mod2);
   DelMatrix(&x1);

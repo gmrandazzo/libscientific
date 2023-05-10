@@ -234,8 +234,6 @@ and is adapted to run in multithreading to speed up the calculation.
 Principal Component Analysis (PCA)
 ----------------------------------
 
-.. autocfunction:: pca.c::PCA
-
 Here is an example that shows how to compute a principal component analysis on a matrix.
 
 

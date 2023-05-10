@@ -54,8 +54,7 @@ void NewStrVector(strvector **s, size_t size)
     (*s)->size = size;
     (*s)->data = xmalloc(sizeof(char*)*size);
     for(i = 0; i < (*s)->size; i++){
-      (*s)->data[i] = xmalloc(sizeof(char)/**MAXCHARSIZE*/);
-//       memset((*s)->data[i], 0, MAXCHARSIZE);
+      (*s)->data[i] = xmalloc(sizeof(char));
     }
 }
 
@@ -95,7 +94,6 @@ void StrVectorAppend(strvector *s, char *str)
   }
 
   s->data = xrealloc(s->data, sizeof(char*)*size);
-//   s->data[s->size] = xmalloc(sizeof(char)*MAXCHARSIZE);
   s->data[s->size] = xmalloc(sizeof(char));
   s->size += 1;
 

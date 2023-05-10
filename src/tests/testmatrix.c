@@ -102,6 +102,7 @@ void Test60()
   puts("RowColOuterProduct: OK");
   DelDVector(&a);
   DelDVector(&b);
+  DelMatrix(&m);
 }
 
 void Test59()
@@ -1877,7 +1878,7 @@ void Test1()
 
 int main(void)
 {
-  /*Test1();
+  Test1();
   Test2();
   Test3();
   Test4();
@@ -1937,7 +1938,7 @@ int main(void)
   Test57();
   Test58();
   Test59();
-  Test60();*/
+  Test60();
   Test61();
   return 0;
 }

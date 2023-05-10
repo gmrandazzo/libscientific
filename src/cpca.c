@@ -71,9 +71,13 @@ static inline void CalcBlockLoadings(matrix *Xb, dvector *t, dvector *p){
 }
 
 /*
+ * Consensus Principal Component Analysis
+ *
  * ANALYSIS OF MULTIBLOCK AND HIERARCHICAL PCA AND PLS MODELS
  * JOHAN A. WESTERHUIS, THEODORA KOURTI* AND JOHN F. MACGREGOR
  * J. Chemometrics 12, 301–321 (1998)
+ *
+ * N.B.: The superscores of CPCA are the scores of a PCA!!
  */
 void CPCA(tensor *x, int scaling, size_t npc, CPCAMODEL *model)
 {

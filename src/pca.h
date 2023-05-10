@@ -24,6 +24,15 @@
 
 #define PCACONVERGENCE 1e-10
 
+/**
+ * PCA model data structure.
+ * 
+ * - **scores** matrix of scores
+ * - **loadings** matrix of loadings
+ * - **varexp** vector of explained variance by every component 
+ * - **colaverage** input matrix column average
+ * - **colaverage** input matrix column scaling
+ */
 typedef struct{
   matrix *scores;
   matrix *loadings;
@@ -33,10 +42,18 @@ typedef struct{
   dvector *colscaling;
 } PCAMODEL;
 
+/**
+ * Initialize an empty PCAMODEL 
+ */
 void NewPCAModel(PCAMODEL **m);
+
+/**
+ * Delete a PCAMODEL 
+ */
 void DelPCAModel(PCAMODEL **m);
 
 void calcVarExpressed(double ss, dvector *eval, dvector *varexp);
+
 /*
  * Calculate the object distance.
  * THIS METHOD IS USED INSIDE THE PCA ALGORITHM
@@ -50,8 +67,32 @@ double calcObjectDistance(matrix *m);
  */
 double calcConvergence(dvector *t_new, dvector *t_old);
 
-/*
- * Calculate a principal component analysis
+
+/**
+ * @brief Calculate a principal component analysis using the NIPALS algorithm.
+ *
+ * @param [in] mx libscientific matrix data input 
+ * @param [in] scaling scaling type expressed as unsigned int type
+ * @param [in] npc number of desired principal components
+ * @param [out] PCAMODEL initialized model using NewPCAModel(...). The datastructure will be populated with results
+ * @param [in] ssignal libscientific signal. Default value is NULL
+ * 
+ * Available scalings:
+ *
+ * - 0: No scaling. Only mean centering
+ *
+ * - 1: Mean centering and STDEV scaling
+ *
+ * - 2: Mean centering and Root-Mean-Square column scaling
+ *
+ * - 3: Mean centering and Pareto scaling
+ *
+ * - 4: Mean centering and min-max range scaling
+ *
+ * - 5: Mean centering and level scaling
+ *
+ * @par Returns
+ *    Nothing.
  */
 void PCA(matrix *mx,
          int scaling,
@@ -59,16 +100,35 @@ void PCA(matrix *mx,
          PCAMODEL *model,
          ssignal *s);
 
-/*
- * Predict scores given a principal component analysis and a matrix as input
+
+/**
+ * @brief Predict scores given a principal component analysis and a matrix as input.
+ *
+ * @param [in] mx libscientific matrix data input 
+ * @param [in] PCAMODEL pca model input
+ * @param [in] npc number of desired principal components
+ * @param [in] pscores predicted scores 
+ *
+ * @par Returns
+ *    Nothing.
  */
 void PCAScorePredictor(matrix *mx,
                        PCAMODEL *model,
                        size_t npc,
                        matrix *pscores);
 
-/*
- * Reconstruct the original matrix from PCA model, scores and loadings
+/**
+ * @brief Reconstruct the original input matrix from PCA model using scores and loadings.
+ *
+ * @param [in] t pca scores with size #objects x npc
+ * @param [in] p pca loadings with size npc x #features
+ * @param [in] colaverage input column average with size #features
+ * @param [in] colscaling input column scaling with size #features
+ * @param [in] npc desired principal components to use for the matrix reconstruction
+ * @param [in] mx ouptut reconstructed matrix
+ *
+ * @par Returns
+ *    Nothing.
  */
 void PCAIndVarPredictor(matrix *t,
                         matrix *p,
@@ -90,17 +150,30 @@ void PCARankValidation(matrix *mx,
                        dvector *r2,
                        ssignal *s);
 
-/*Compute the residual matrix for a specific number of component.
- * mx = matrix of origin model
- * model = PCA model where are stored scores and loadings
- * pc = max component to extract the residual matrix
- * rmx = residual matrix of output. must be initialized with initMatrix(&rmx)
+/**
+ * @brief Compute the residual matrix for a specific number of component.
+ *
+ * @param [in] mx original input matrix
+ * @param [in] model computed pca model
+ * @param [in] pc max component to extract the residual matrix
+ * @param [in] rmx residual matrix of output
+ *
+ * @par Returns
+ *    Nothing.
  */
 void GetResidualMatrix(matrix *mx,
                        PCAMODEL *model,
                        size_t pc,
                        matrix *rmx);
 
+/**
+ * @brief Print PCAMODEL to video.
+ *
+ * @param [in] m computed pca model
+ *
+ * @par Returns
+ *    Nothing.
+ */
 void PrintPCA(PCAMODEL *m);
 
 #endif

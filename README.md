@@ -1,7 +1,6 @@
 libscientific
 =============
 
-![Page views](https://visitor-badge.glitch.me/badge?page_id=gmrandazzo.libscientific)
 [![status](https://joss.theoj.org/papers/afc8dfc4cdd496f6f51813dbaa5ad310/status.svg)](https://joss.theoj.org/papers/afc8dfc4cdd496f6f51813dbaa5ad310)
 [![Licence: GPL v3](https://img.shields.io/github/license/gmrandazzo/libscientific)](https://github.com/gmrandazzo/libscientific/blob/master/LICENSE)
 [![Maintainability Rating](https://sonarqube.gmrandazzo.com/api/project_badges/measure?project=libscientific&metric=sqale_rating&token=sqb_426f9a683b14ac981c8e32a1782672fc11c1a789)](https://sonarqube.gmrandazzo.com/dashboard?id=libscientific)
@@ -9,13 +8,17 @@ libscientific
 [![Bugs](https://sonarqube.gmrandazzo.com/api/project_badges/measure?project=libscientific&metric=bugs&token=sqb_426f9a683b14ac981c8e32a1782672fc11c1a789)](https://sonarqube.gmrandazzo.com/dashboard?id=libscientific)
 [![Security Hotspots](https://sonarqube.gmrandazzo.com/api/project_badges/measure?project=libscientific&metric=security_hotspots&token=sqb_426f9a683b14ac981c8e32a1782672fc11c1a789)](https://sonarqube.gmrandazzo.com/dashboard?id=libscientific)
 
-Documentation available at http://gmrandazzo.github.io/libscientific/
+Libscientific is a C framework for multivariate and other statistical analysis
+written to be quasi-completely independent of common and well-established calculus libraries,
+except for the lapack library, which is used only to calculate left eigenvectors and eigenvalues.
 
-Libscientific is a C framework for multivariate and other statistical analysis.
-It is written in C language using their numerical algorithms for matrix computations.
-Only left eigenvectors and eigenvalues are calculated using a third-party library, lapack.
+The main goals of libscientific are:
 
-Actually libscientific is able to compute:
+1. To provide a simple and tiny framework for multivariate analysis that can be used not only in regular computers but also in embedded systems
+2. Create a robust library of multivariate algorithms for any research and industrial application
+
+
+Currently libscientific is able to compute:
 
   - Multivariate analysis
     - Principal Component Analysis (PCA) NIPALS algorithm) [1]
@@ -24,15 +27,13 @@ Actually libscientific is able to compute:
     - Multiple Linear Regression (MLR) Ordinary least squares algorithm
     - Unfold PCA (UPCA) [2]
     - Unfold PLS (UPLS) [2]
-
-  - Pattern recognition
     - Fisher LDA
 
-  - Cluster analysis
+  - Clustering
     - K-means++ (David Arthur modification) [3]
     - Hierarchical clustering
 
-  - Object selection
+  - Object/Instance selection
     - Most Descriptive Compounds (MDC) [4]
     - Most Dissimilar Compounds  (DIS) [5]
 
@@ -60,8 +61,14 @@ with parallel computing to be faster:
 - Leave-One-Out
 - Y-Scrambling [6]
 
+Documentation
+-------------
+
+The library documentation is available at [http://gmrandazzo.github.io/libscientific/](http://gmrandazzo.github.io/libscientific/)
+
+
 Usage examples
----------------
+--------------
 
 * Sampling example on a drug dataset    [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1gp8ppAsGlUbC4qGT-1Frc9ru1PiDvBl1)
 
@@ -70,8 +77,14 @@ Usage examples
 
 TODO
 ----
+
 - Implement Independent Component Analysis ICA
+
+- Implement PARAFAC
+
 - Exstensive test of some numerical analyisis methods: CholeskyReduction, QR Decomposition, LU Decomposition, HouseholderReduction and so on.
+
+- Fix UPLS algorithm
 
 References:
 -----------
@@ -139,43 +152,60 @@ Install
 Compile from source
 -------------------
 
+```
   cmake -DCMAKE_INSTALL_PREFIX=/usr/local/ ..
   make -j5
   mate test
   sudo make install
+```
+
 
 Homebrew OSX
 ------------
-brew tap gmrandazzo/homebrew-gmr
-brew install --HEAD libscientific
 
+```
+brew tap gmrandazzo/homebrew-gmr
+
+brew install --HEAD libscientific
+```
 
 Development
 ===========
-GIT
----
 
-You can check the latest sources with the command::
+If you are interested in extending or developing a new algorithm, please read here to understand the logic behind the library.
 
-  git clone https://github.com/gmrandazzo/libscientific.git
+The library is engineered to have a specific data structure for every model, which is then stored in the HEAP to support dynamic memory allocation.
+Every data object, such as matrix, vectors, tensors, or in general pca/pls/upca/...models, need to be manually allocated/deallocated 
+using the predefined constructs  “NewSOMETHING(&…);” and “DelSOMETHING(&…);”.
+
+For example, pca.c contains:
+
+1. A data structure to store the model output (PCAMODEL). In this data structure, you have standard libscientific types such as matrix and vectors.
+2. A function that computes the PCA model (PCA(...)). This function takes an input matrix using the libscientific data type and uses this to produce and store the pca model inside the PCAMODEL data structure.
+
+All the multivariate analysis algorithms are implemented with this logic: reusing libscientific datatype, writing a data structure for the algorithm, and writing the necessary functions to run the calculation. 
+
+N.B.: If you develop or modify an algorithm, a unit test and a stress test needs to be created to prove that the algorithm works and his numerically solid.
 
 
-Contributing
-------------
+General rules for contributing
+------------------------------
 
 To contribute, you can fork the project, or if you have already forked the project
 update to the latest version of libscientific, make the changes and open a Pull Request.
 
-However, here are some requests.
+Here are some important requests.
+
 Before opening a Pull Request:
   * Be sure that your code it's working.
-  * No leaks. Run valgrind
+  * No leaks. Run valgrind.
   * Comment your code with Parameters, attributes, returns, notes, and References.
   * Test examples are necessary. Tests must prove that
     - the algorithm works correctly
     - the algorithm do not present any memory leak
 
-### How to write a unit test?
+How to write a unit test?
+-------------------------
 
 Please first read the cmake documentation about [testing with cmake and ctest](https://cmake.org/cmake/help/book/mastering-cmake/chapter/Testing%20With%20CMake%20and%20CTest.html)
 

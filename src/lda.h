@@ -49,17 +49,44 @@ typedef struct{
   dvector *pr_aucs;
 } LDAMODEL;
 
+/**
+ * Initialize and LDAMODEL
+ */
 void NewLDAModel(LDAMODEL **m);
+
+/**
+ * Delete and LDAMODEL
+ */
 void DelLDAModel(LDAMODEL **m);
+
+/**
+ * @brief Print LDAMODEL to video.
+ *
+ * @param [in] m computed lda model
+ *
+ * @par Returns
+ *    Nothing.
+ */
 void PrintLDAModel(LDAMODEL *m);
 
+/**
+ * Calculate and LDA Fisher discriminant analyisis model
+ * 
+ * @param [in] mx input matrix of independent variables
+ * @param [in] my input matrix of classes
+ * @param [out] lda initialized model using NewLDAModel(...). The datastructure will be populated with results
+ */
 void LDA(matrix *mx, matrix *my, LDAMODEL *lda);
-/*prediction
- * OUTPUT:
- *  - predicted features
- *  - probability
- *  - multivariate normal probability distribution of features
- *  - class prediction
+
+/** Predict classes using an LDA fisher discriminant analysis model
+ * 
+ * @param [in] mx input matrix of independent variables
+ * @param [in] lda computed LDAMODEL
+ * @param [out] pfeatures predicted features
+ * @param [out] probabilities
+ * @param [out] multivariate normal probability distribution of features
+ * @param [out] predicted classes
+ * 
  */
 void LDAPrediction(matrix *mx,
                    LDAMODEL *lda,
@@ -68,7 +95,9 @@ void LDAPrediction(matrix *mx,
                    matrix *mnpdf,
                    matrix *prediction);
 
-/* Binary statistics */
+/**
+ * Binary statistics
+ */
 void LDAStatistics(dvector *y_true,
                    dvector *y_pred,
                    matrix *roc,
@@ -76,7 +105,9 @@ void LDAStatistics(dvector *y_true,
                    matrix *precision_recal,
                    double *pr_auc);
 
-/* Multiclass statistics */
+/**
+ *  Multiclass statistics
+ */
 void LDAMulticlassStatistics(matrix *y_true,
                              matrix *y_pred,
                              tensor *roc,
