@@ -144,7 +144,6 @@ void MatrixAppendUIRow(matrix *m, uivector *row);
  */
 void MatrixAppendUIRow(matrix *m, uivector *row);
 
-
 /**
  * Delete a specific row in a matrix
  */

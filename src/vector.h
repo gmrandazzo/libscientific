@@ -35,72 +35,137 @@ typedef struct{
   size_t size;
 } strvector;
 
-/* Allocate a strvector */
+/**
+ * Allocate a strvector with a specific size
+ */
 void NewStrVector(strvector **s, size_t size);
+
+/**
+ * initialize an empty strvector 
+ */
 void initStrVector(strvector **s);
 
-/* Delete a strvector */
+/**
+ *  Delete a strvector
+ */
 void DelStrVector(strvector **s);
 
+/**
+ * Resize a strvector
+ */
 void StrVectorResize(strvector *s, size_t size_);
 
-/* Append a value to a strvector */
+/**
+ * Append a string value to a strvector
+ */
 void StrVectorAppend(strvector *s, char *str);
+
+/**
+ * Append a integer value to a strvector
+ */
 void StrVectorAppendInt(strvector *s, int val);
+
+/**
+ * Append a double value to a strvector
+ */
 void StrVectorAppendDouble(strvector *s, double val);
 
 void setStr(strvector *s, size_t i, char *str);
 char* getStr(strvector *s, size_t i);
 
-/* Append to a strvector an other strvector */
+/**
+ * Extend a strvector with an other strvector
+ */
 strvector *StrVectorExtend(strvector *s1, strvector *s2);
+
+/**
+ * Print to video a strvector 
+ */
 void PrintStrVector(strvector *s);
 
 /*operations with string*/
 
-/*Trim a string: remove \n*/
+/**
+ * Trim a string: remove
+ */
 char *Trim(char *s);
-/*Split a string and fill the splitted string into a strvector*/
+
+/**
+ * Split a string and fill the splitted string into a strvector
+ */
 void SplitString(char *str, char *sep, strvector *tokens);
 
 
-/* double vector */
+/**
+ * A dynamic array of doubles.
+ * The dvector struct is a dynamic array of double represented
+ * by a pointer to a double and its size (size_t size).
+ * 
+ * - **data** A pointer to a double type.
+ * - **size** The size of the array of strings.
+ */
 typedef struct{
   double *data;
   size_t size;
 } dvector;
 
-/* Allocate a dvector */
+/**
+ * Allocate a dvector with a specific size
+ */
 void NewDVector(dvector **d, size_t size);
+
+/**
+ * initialize an empty dvector 
+ */
 void initDVector(dvector **d);
 
-/* Delete a dvector */
+/**
+ * Delete a dvector
+ */
 void DelDVector(dvector **d);
 
-/* Resize a dvector */
+/**
+ * Resize a dvector
+ */
 void DVectorResize(dvector *d, size_t size_);
 
+/**
+ * Print a dvector to video
+ */
 void PrintDVector(dvector *v);
 
-/* Append a value to a dvector */
+/**
+ * Append a value to a dvector
+ */
 void DVectorAppend(dvector *d, double val);
 
-/* Remove a value to a dvector */
+/**
+ * Remove a value to a dvector
+ */
 void DVectorRemoveAt(dvector *d, size_t indx);
 
-/* Copy a Dvector from dsrc: source to ddst: destination */
+/**
+ * Copy a Dvector from dsrc: source to ddst: destination
+ */
 void DVectorCopy(dvector *dsrc, dvector *ddst);
 
-/* Append to a dvector an other dvector */
+/*
+ * Extend a divector with another dvector
+ */
 dvector *DVectorExtend(dvector *d1, dvector *d2);
 
 void setDVectorValue(dvector *d, size_t id, double val);
 double getDVectorValue(dvector *d, size_t id);
 
-/*check if dvector has a value val. Return 0 if is present, 1 if is not present*/
+/**
+ * Check if dvector has a value val.
+ * Return 0 if is present, 1 if is not present
+ */
 int DVectorHasValue(dvector *d, double val);
 
-/*Vector operations*/
+/*
+ * Vector operations
+ */
 void DVectorSet(dvector *v, double val);
 double DVectorDVectorDotProd(dvector *v1, dvector *v2); /* product between two vector */
 
@@ -115,29 +180,52 @@ void DVectorSDEV(dvector *d, double *sdev);
 void DVectorSort(dvector *v);
 
 
-/* Int Vector */
+/**
+ * A dynamic array of integers.
+ * The dvector struct is a dynamic array of integers represented
+ * by a pointer to a integers and its size (size_t size).
+ * 
+ * - **data** A pointer to a double type.
+ * - **size** The size of the array of strings.
+ */
 typedef struct{
   int *data;
   size_t size;
 } ivector;
 
-/* Allocate a ivector */
+/**
+ * Allocate a ivector with a specific size
+ */
 void NewIVector(ivector** d, size_t size);
+
+/**
+ * Initialize an ivector
+ */
 void initIVector(ivector **d);
 
-/* Delete a ivector */
+/**
+ * Delete a ivector
+ */
 void DelIVector(ivector **d);
 
-/* Print IVector */
+/**
+ * Print to video an ivector
+ */
 void PrintIVector(ivector *v);
 
-/* Append a ivector */
+/**
+ * Append a value to an ivector
+ */
 void IVectorAppend(ivector *d, int val);
 
-/* Remove a value to a ivector */
+/**
+ * Remove a value to a ivector
+ */
 void IVectorRemoveAt(ivector *d, size_t indx);
 
-/* Append to a ivector an other ivector */
+/**
+ * Extend an ivector with another ivector
+ */
 ivector *IVectorExtend(ivector *d1, ivector *d2);
 
 void setIVectorValue(ivector *d, size_t id, int val);
@@ -147,38 +235,65 @@ int IVectorHasValue(ivector *d, int val);
 void IVectorSet(ivector *d, int val);
 
 
-/* size_t VECTOR */
+/**
+ * A dynamic array of unsigned integers.
+ * The dvector struct is a dynamic array of unsigned integers represented
+ * by a pointer to a unsigned integers and its size (size_t size).
+ * 
+ * - **data** A pointer to unsigned integer type.
+ * - **size** The size of the array of strings.
+ */
 typedef struct{
   size_t *data;
   size_t size;
 } uivector;
 
-/* Allocate a uivector */
+/**
+ * Allocate a uivector with a specific size
+ */
 void NewUIVector(uivector **d, size_t size);
+
+/**
+ * Initialize an empty uivector
+ */
 void initUIVector(uivector **d);
 
-/* Delete a uivector */
+/**
+ * Delete a uivector
+ */
 void DelUIVector(uivector **d);
 
+/**
+ * Resize an uivector
+ */
 void UIVectorResize(uivector *d, size_t size_);
 
+/**
+ * Print an uivector 
+ */
 void PrintUIVector(uivector *v);
 
-/* Append a uivector */
+/**
+ * Append a value to an uivector
+ */
 void UIVectorAppend(uivector *d, size_t val);
 
-/* Remove a value to uivector */
+/**
+ * Remove a value to an uivector
+ */
 void UIVectorRemoveAt(uivector *d, size_t indx);
 
-/* Append to a uivector an other uivector */
+/**
+ * Extend an uivector with another uivector
+ */
 uivector *UIVectorExtend(uivector *d1, uivector *d2);
 
 void setUIVectorValue(uivector *d, size_t id, size_t val);
 size_t getUIVectorValue(uivector *d, size_t id);
 
-/*
- * UIVectorHasValue: if the vector "u" has the "id" value
- *                   return 0, else return 1
+/**
+ * Check if an uivector has a value.
+ * if found return 0, else return 1
  */
 int UIVectorHasValue(uivector *u, size_t id);
 int UIVectorIndexOf(uivector *u, size_t id);

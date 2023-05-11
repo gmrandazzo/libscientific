@@ -1,21 +1,21 @@
-"""
-matrix libscientific python binding
+# matrix libscientific python binding
+#
+#
+# Copyright (C) <2019>  Giuseppe Marco Randazzo
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Copyright (C) <2019>  Giuseppe Marco Randazzo
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
-"""
 import ctypes
 import csv
 from libscientific.loadlibrary import load_libscientific_library
@@ -126,8 +126,7 @@ lsci.ResizeMatrix.restype = None
 
 def resize_matrix(mtx, nrows, ncols):
     """
-    resize_matrix: Resize an already allocated or reallocate a libscientific
-                  matrix
+    resize_matrix: Resize an already allocated or reallocate a libscientific matrix
     """
     lsci.ResizeMatrix(mtx, nrows, ncols)
 
@@ -149,8 +148,7 @@ lsci.MatrixCheck.restype = None
 
 def matrix_check(mtx):
     """
-    matrix_check: Find infinite and nan numbers and sobstitute
-                 with MISSING value.
+    matrix_check: Find infinite and nan numbers and sobstitute with MISSING value.
     """
     lsci.MatrixCheck(mtx)
 
@@ -172,8 +170,8 @@ lsci.ValInMatrix.restype = ctypes.c_int
 
 def val_in_matrix(mtx, val):
     """
-    val_in_matrix: Check if a libscientific matrix contains an exact value "val"
-                   and return 1 or 0 respectivelly for yes or no.
+    val_in_matrix: Check if a libscientific matrix contains an exact value "val" 
+    and return 1 or 0 respectivelly for yes or no.
     """
     return lsci.ValInMatrix(mtx, val)
 
@@ -210,8 +208,7 @@ lsci.setMatrixValue.restype = None
 
 def set_matrix_value(mtx, irow, jcol, value):
     """
-    set_matrix_value: Set/modify a value in the irow and jcol of a libscientific
-                    matrix
+    set_matrix_value: Set/modify a value in the irow and jcol of a libscientific matrix
     """
     lsci.setMatrixValue(mtx, irow, jcol, value)
 
@@ -224,8 +221,7 @@ lsci.getMatrixValue.restype = ctypes.c_double
 
 def get_matrix_value(mtx, irow, jcol):
     """
-    get_matrix_value: Get a value in the irow and jcol of a libscientific
-                    matrix
+    get_matrix_value: Get a value in the irow and jcol of a libscientific matrix
     """
     return lsci.getMatrixValue(mtx, irow, jcol)
 
@@ -242,8 +238,7 @@ def get_matrix_row(mtx, irow):
 
 def get_matrix_column(mtx, jcol):
     """
-    getMatrixColumn: Python version of getting a column from a libscientific
-                     matrix
+    getMatrixColumn: Python version of getting a column from a libscientific  matrix
     """
     col_lst = []
     for i in range(mtx[0].row):
@@ -314,11 +309,7 @@ lsci.MatrixDVectorDotProduct.restype = None
 
 def matrix_dvector_dot_product(mtx, dvect, res):
     """
-    /* Description:
-    * matrix - row double vector product: the result is a row double vector
-    * i.e.: X(10x5) * d(5x1) = r(10x1)
-    */
-    void matrix_dvector_dot_product(matrix *mtx, dvector *v, dvector *r);
+    Calculate a matrix-vector dot product
     """
     return lsci.MatrixDVectorDotProduct(mtx, dvect, res)
 
@@ -331,8 +322,7 @@ lsci.MT_MatrixDVectorDotProduct.restype = None
 
 def mt_matrix_dvector_dot_product(mtx, dvect, res):
     """
-    /* Multithread version of matrix_dvector_dot_product */
-    void MT_MatrixDVectorDotProduct(matrix *mx, dvector *v, dvector *p);
+    Calculate a matrix-vector dot product in multi-threads
     """
     return lsci.MT_MatrixDVectorDotProduct(mtx, dvect, res)
 
@@ -344,11 +334,7 @@ lsci.DVectorMatrixDotProduct.restype = None
 
 def dvector_matrix_dot_product(mtx, dvect, res):
     """
-    /* Description:
-    * column double vector - matrix product: the result is a column double vector
-    * i.e.: d(1x5) * X(5x10) = r(1x10)
-    */
-    void DVectorMatrixDotProduct(matrix *mx, dvector *v, dvector *p);
+    Calculate a vector-matrix dot product
     """
     return lsci.DVectorMatrixDotProduct(mtx, dvect, res)
 
@@ -361,8 +347,7 @@ lsci.MT_DVectorMatrixDotProduct.restype = None
 
 def mt_dvector_matrix_dot_product(mtx, dvect, res):
     """
-    /* Multithread version of DVectorMatrixDotProduct */
-    void MT_DVectorMatrixDotProduct(matrix *mx, dvector *v, dvector *p);
+    Calculate a vector-matrix dot product in multi-threads
     """
     return lsci.MT_DVectorMatrixDotProduct(mtx, dvect, res)
 
@@ -374,12 +359,7 @@ lsci.DVectorTrasposedDVectorDotProduct.restype = None
 
 def dvector_transposed_dvector_dot_product(mtx, dvect, res):
     """
-    /* Description:
-    * transposed double vector - double vecrtor product: the result is a matrix
-    * i.e.: X  = d'd
-    * i.e.: d'(5x1) * d(1x5) = X(1x10)
-    */
-    void DVectorTrasposedDVectorDotProduct(dvector *v1, dvector *v2, matrix *m);
+    Calculate a dvector transposed dvector dot product
     """
     return lsci.DVectorTrasposedDVectorDotProduct(mtx, dvect, res)
 
@@ -391,8 +371,7 @@ lsci.DVectorTransposedMatrixDivision.restype = None
 
 def dvector_transposed_matrix_division(dvect, mtx, res):
     """
-    /* r = v/mx  = (inv(mx^T)*v^T)^T*/
-    void DVectorTransposedMatrixDivision(dvector *v, matrix *mx, dvector *r);
+    Calculate a dvector transposed-matrix division
     """
     return lsci.DVectorTransposedMatrixDivision(dvect, mtx, res)
 
@@ -404,11 +383,7 @@ lsci.MatrixDotProduct.restype = None
 
 def matrix_dot_product(mtx_t, mtx, res):
     """
-    /*
-    * Description:
-    * Calculate the matrix matrix product
-    */
-    void MatrixDotProduct(matrix *m_t, matrix *mtx, matrix *r);
+    Calculate the matrix-matrix product
     """
     return lsci.MatrixDotProduct(mtx_t, mtx, res)
 
@@ -420,11 +395,7 @@ lsci.RowColOuterProduct.restype = None
 
 def row_col_outer_product(dvect_a, dvect_b, res):
     """
-    /*
-    * Description:
-    * Calculate the matrix matrix product
-    */
-    void RowColOuterProduct(dvector *a, dvector *b, matrix *m);
+    Calculate the row-column outer product of two dvectors
     """
     return lsci.RowColOuterProduct(dvect_a, dvect_b, res)
 
@@ -435,11 +406,7 @@ lsci.MatrixTranspose.restype = None
 
 def matrix_transpose(mtx, mtx_t):
     """
-    /*
-    * Description:
-    * Generate a transpose matrix of m
-    */
-    void MatrixTranspose(matrix *mtx, matrix *r);
+    Transpose a matrix
     """
     return lsci.MatrixTranspose(mtx, mtx_t)
 
@@ -451,11 +418,7 @@ lsci.MatrixInversion.restype = None
 
 def matrix_inversion(mtx, mtx_inv):
     """
-    /*
-    * Description:
-    * Matrix inversion using the Gauss-Jordan algorithm
-    */
-    void MatrixInversion(matrix *mtx, matrix **m_inv);
+    Invert a matrix
     """
     return lsci.MatrixInversion(mtx, mtx_inv)
 
@@ -467,7 +430,7 @@ lsci.EVectEval.restype = None
 
 def evect_eval(mtx, mtx_e_vect, mtx_e_val):
     """
-    Eigenvectors and Eigenvalues using a lapack method
+    Eigenvectors and Eigenvalues using lapack
     """
     return lsci.EVectEval(mtx, mtx_e_vect, mtx_e_val)
 
@@ -514,7 +477,7 @@ class Matrix():
         self.mtx = None
 
     def __getitem__(self, keys):
-        i, j = keys
+        i, j = keys     
         return self.data_ptr()[i][j]
 
     def __setitem__(self, keys, value):

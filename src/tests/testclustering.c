@@ -28,7 +28,6 @@ void test19()
   puts("Test Clustering 19: MDC with 1000x50 random data");
   size_t i, j, maxrow, maxcol;
   matrix *m; /* Data matrix */
-  int run = SIGSCIENTIFICRUN;
 
   uivector *selections;
 
@@ -46,7 +45,7 @@ void test19()
 
   initUIVector(&selections);
 
-  MDC(m, 0, 0, selections, 8, &run);
+  MDC(m, 0, 0, selections, 8);
   printf("Selected instances %zu\n", selections->size);
   PrintUIVector(selections);
   DelUIVector(&selections);
@@ -57,7 +56,6 @@ void test18()
 {
   puts("Test Clustering 18: KMeans++ clustering on random data");
   matrix *m, *centroids;
-  int run = SIGSCIENTIFICRUN;
   uivector *clusters;
 
   size_t i, j, maxrow, maxcol;
@@ -75,7 +73,7 @@ void test18()
 
   initUIVector(&clusters);
   initMatrix(&centroids);
-  KMeans(m, 1000, 0, clusters, centroids, 4, &run);
+  KMeans(m, 1000, 0, clusters, centroids, 4);
 
 
   DelUIVector(&clusters);
@@ -88,7 +86,6 @@ void test17()
   puts("Test Clustering 17: Hierarchical clustering");
   matrix *m;
   uivector *clusters;
-
   size_t i, j, maxrow, maxcol;
   maxrow = 100;
   maxcol = 50;
@@ -183,7 +180,6 @@ void test14()
 {
   puts("Test Clustering 14: matrix - matrix malhanobis distance");
   matrix *m1, *m2;
-
   double dist;
 
   NewMatrix(&m1, 10, 2);
@@ -218,22 +214,22 @@ void test14()
 void test13()
 {
   puts("Test Clustering 13: KMeans ++ start");
- matrix *m, *centroids;
- uivector *clusters;
+  matrix *m, *centroids;
+  uivector *clusters;
 
- NewMatrix(&m, 6, 1);
- setMatrixValue(m, 0, 0, 1.2);
- setMatrixValue(m, 1, 0, 5.6);
- setMatrixValue(m, 2, 0, 3.7);
- setMatrixValue(m, 3, 0, 0.6);
- setMatrixValue(m, 4, 0, 0.1);
- setMatrixValue(m, 5, 0, 2.6);
+  NewMatrix(&m, 6, 1);
+  setMatrixValue(m, 0, 0, 1.2);
+  setMatrixValue(m, 1, 0, 5.6);
+  setMatrixValue(m, 2, 0, 3.7);
+  setMatrixValue(m, 3, 0, 0.6);
+  setMatrixValue(m, 4, 0, 0.1);
+  setMatrixValue(m, 5, 0, 2.6);
 
 
   initUIVector(&clusters);
   initMatrix(&centroids);
 
-  KMeans(m, 2, 1, clusters, centroids, 4, NULL);
+  KMeans(m, 2, 1, clusters, centroids, 4);
 
   puts("Centroids");
   PrintMatrix(centroids);
@@ -256,7 +252,6 @@ void test12()
   puts("Test Clustering 12: KMeans ++ start and random group cross validation method");
   size_t i, j;
   matrix *m; /* Data matrix */
-  int run = SIGSCIENTIFICRUN;
   dvector *ssdist;
 
   NewMatrix(&m, 100, 2);
@@ -269,7 +264,7 @@ void test12()
 
   initDVector(&ssdist);
   puts("KMeans ++ Cross Validation");
-  KMeansRandomGroupsCV(m, 15, 1, 3, 10, ssdist, 4, &run);
+  KMeansRandomGroupsCV(m, 15, 1, 3, 10, ssdist, 4);
 
   puts("ssdist");
   PrintDVector(ssdist);
@@ -282,7 +277,6 @@ void test11()
 {
   puts("Test Clustering 11: KMeans ++ start and jump method cross validation");
   matrix *m; /* Data matrix */
-  int run = SIGSCIENTIFICRUN;
   dvector *ssdist;
 
   NewMatrix(&m, 14, 2);
@@ -304,9 +298,9 @@ void test11()
 
   initDVector(&ssdist);
   puts("KMeans ++ Cross Validation");
-  /*KMeansRandomGroupsCV(m, 9, 1, 3, 20, &ssdist, &run);*/
+  /*KMeansRandomGroupsCV(m, 9, 1, 3, 20, &ssdist);*/
 
-  KMeansJumpMethod(m, 9, 1, ssdist, 4, &run);
+  KMeansJumpMethod(m, 9, 1, ssdist, 4);
 
   puts("ssdist");
   PrintDVector(ssdist);
@@ -319,7 +313,6 @@ void test10()
 {
   puts("Test Clustering 10: KMeans ++ start");
   matrix *m; /* Data matrix */
-  int run = SIGSCIENTIFICRUN;
   uivector *clusters;
   matrix *centroids;
 
@@ -343,7 +336,7 @@ void test10()
   initUIVector(&clusters);
   initMatrix(&centroids);
 
-  KMeans(m, 3, 1, clusters, centroids, 4, &run);
+  KMeans(m, 3, 1, clusters, centroids, 4);
 
   puts("Centroids");
   PrintMatrix(centroids);
@@ -366,8 +359,7 @@ void test9()
   puts("Test Clustering 9: KMeans random start");
   matrix *m; /* Data matrix */
   uivector *clusters;
-  int run = SIGSCIENTIFICRUN;
-
+  
   NewMatrix(&m, 100, 2);
 
   setMatrixValue(m, 0, 0, 7.651165);  setMatrixValue(m, 0, 1, 33.374403);
@@ -474,7 +466,7 @@ void test9()
   initUIVector(&clusters);
 
 
-  KMeans(m, 10, 3, clusters, NULL, 4, &run);
+  KMeans(m, 10, 3, clusters, NULL, 4);
 
   puts("Selections");
   PrintUIVector(clusters);
@@ -487,7 +479,6 @@ void test8()
 {
   puts("Test Clustering 8: KMeans MaxDis start random");
   matrix *m; /* Data matrix */
-  int run = SIGSCIENTIFICRUN;
   uivector *clusters;
   matrix *centroids;
 
@@ -512,7 +503,7 @@ void test8()
   initMatrix(&centroids);
 
   puts("KMeans MaxDis");
-  KMeans(m, 2, 3, clusters, centroids, 4, &run);
+  KMeans(m, 2, 3, clusters, centroids, 4);
 
   puts("Selections");
   PrintUIVector(clusters);
@@ -528,7 +519,6 @@ void test7()
 {
   puts("Test Clustering 6: KMeans MDC start");
   matrix *m; /* Data matrix */
-  int run = SIGSCIENTIFICRUN;
   uivector *clusters;
   matrix *centroids;
 
@@ -552,7 +542,7 @@ void test7()
   initUIVector(&clusters);
   initMatrix(&centroids);
 
-  KMeans(m, 2, 2, clusters, centroids, 4, &run);
+  KMeans(m, 2, 2, clusters, centroids, 4);
 
   puts("Selections");
   PrintUIVector(clusters);
@@ -568,7 +558,6 @@ void test6()
 {
   puts("Test Clustering 6: KMeans random start");
   matrix *m; /* Data matrix */
-  int run = SIGSCIENTIFICRUN;
   uivector *clusters;
   matrix *centroids;
 
@@ -592,7 +581,7 @@ void test6()
   initUIVector(&clusters);
   initMatrix(&centroids);
 
-  KMeans(m, 2, 0, clusters, centroids, 4, &run);
+  KMeans(m, 2, 0, clusters, centroids, 4);
 
   puts("Selections");
   PrintUIVector(clusters);
@@ -608,7 +597,6 @@ void test5()
 {
   puts("Test Clustering 5: KMeans++ test");
   matrix *m; /* Data matrix */
-  int run = SIGSCIENTIFICRUN;
   uivector *clusters;
   matrix *centroids;
 
@@ -632,7 +620,7 @@ void test5()
   initUIVector(&clusters);
   initMatrix(&centroids);
 
-  KMeans(m, 2, 1, clusters, centroids, 4, &run);
+  KMeans(m, 2, 1, clusters, centroids, 4);
 
   puts("Selections");
   PrintUIVector(clusters);
@@ -650,7 +638,6 @@ void test4()
   puts("Test Clustering 4: KMeans center instance selection");
   size_t i;
   matrix *m; /* Data matrix */
-  int run = SIGSCIENTIFICRUN;
   uivector *selections;
 
   NewMatrix(&m, 14, 2);
@@ -673,7 +660,7 @@ void test4()
   initUIVector(&selections);
 
   puts("KMeansppCenters TEST");
-  KMeansppCenters(m, 2, selections, 1, &run);
+  KMeansppCenters(m, 2, selections, 1);
 
   puts("Selections");
   PrintUIVector(selections);
@@ -691,7 +678,6 @@ void test3()
   puts("Test Clustering 3: Max dissimilarity instance selection");
   size_t i;
   matrix *m; /* Data matrix */
-  int run = SIGSCIENTIFICRUN;
   uivector *selections;
 
   NewMatrix(&m, 14, 2);
@@ -715,7 +701,7 @@ void test3()
   PrintMatrix(m);
   initUIVector(&selections);
 
-  MaxDis(m, floor(0.35*m->row), 0, selections, 4, &run);
+  MaxDis(m, floor(0.35*m->row), 0, selections, 4);
 
   puts("Selections");
   PrintUIVector(selections);
@@ -733,8 +719,6 @@ void test2()
   puts("Test Clustering 2: Most descriptive instance selection");
   size_t i;
   matrix *m; /* Data matrix */
-  int run = SIGSCIENTIFICRUN;
-
   uivector *selections;
 
   NewMatrix(&m, 14, 2);
@@ -757,7 +741,7 @@ void test2()
 
   initUIVector(&selections);
 
-  MDC(m, 0, 0, selections, 4, &run);
+  MDC(m, 0, 0, selections, 4);
 
   puts("Selections");
   PrintUIVector(selections);
@@ -777,8 +761,6 @@ void test1()
   size_t i;
   matrix *m; /* Data matrix */
   uivector *selections;
-  int run = SIGSCIENTIFICRUN;
-
   NewMatrix(&m, 100, 2);
 
   setMatrixValue(m, 0, 0, 7.651165);  setMatrixValue(m, 0, 1, 33.374403);
@@ -884,8 +866,8 @@ void test1()
 
   initUIVector(&selections);
 
-  /*MDC(m, 0, 0, &selections, 4, &run);*/
-  MaxDis(m, floor(0.35*m->row), 0, selections, 4, &run);
+  /*MDC(m, 0, 0, &selections, 4);*/
+  MaxDis(m, floor(0.35*m->row), 0, selections, 4);
 
   puts("Selections");
 

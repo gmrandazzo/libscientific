@@ -170,9 +170,6 @@ void GetResidualMatrix(matrix *mx,
  * @brief Print PCAMODEL to video.
  *
  * @param [in] m computed pca model
- *
- * @par Returns
- *    Nothing.
  */
 void PrintPCA(PCAMODEL *m);
 

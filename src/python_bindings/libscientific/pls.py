@@ -1,21 +1,20 @@
-"""
-pls libscientific python binding
+# pls libscientific python binding
+#
+# Copyright (C) <2019>  Giuseppe Marco Randazzo
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Copyright (C) <2019>  Giuseppe Marco Randazzo
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
-"""
 import ctypes
 import libscientific.matrix as mx
 import libscientific.vector as vect
@@ -107,16 +106,7 @@ lsci.PLS.restype = None
 
 def pls_algorithm(x_input, y_input, nlv, x_scaling, y_scaling, mpls):
     """
-    PLS: Calculate the PLS model using a matrix x and a matrix y
-         according to the NIPALS algorithm
-
-    PLS(matrix *mx,
-        matrix *my,
-        size_t nlv,
-        size_t xautoscaling,
-        size_t yautoscaling,
-        PLSMODEL* model,
-        ssignal *s)
+    PLS: Calculate the PLS model using a matrix x and a matrix y according to the NIPALS algorithm
     """
     ssignal = ctypes.c_int(0)
     lsci.PLS(x_input,
@@ -187,9 +177,8 @@ lsci.PLSYPredictorAllLV.restype = None
 
 def pls_y_predictor_all_lv(x_input, mpls, predicted_scores, predicted_y):
     """
-    PLSYPredictorAllLV: Predict the Y according the original
-                        feature matrix and the calculated pls model.
-                        This function is NOT dependent on PLSScorePredictor.
+    PLSYPredictorAllLV: Predict the Y according the original feature matrix and the calculated pls model. 
+    This function is NOT dependent on PLSScorePredictor.
     """
     lsci.PLSYPredictorAllLV(x_input,
                             mpls,
@@ -212,17 +201,19 @@ def print_pls(mpls):
 class PLS():
     """
     Partial least squares
-        Arguments:
-            nlv (int) : number of latent variable
-            xscaling (int) : scaling type for x matrix
-            yscaling (int) : scaling type for y matrix
-            N.B.: xscaling and yscaling can be:
-                0 -> No scaling
-                1 -> Standard deviation scaling
-                2 -> Root mean squared scaling
-                3 -> Pareto scaling
-                4 -> Range scaling
-                5 -> Level scaling
+
+    Parameters
+    ----------
+        nlv (int) : number of latent variable
+        xscaling (int) : scaling type for x matrix
+        yscaling (int) : scaling type for y matrix
+        N.B.: xscaling and yscaling can be:
+            0 -> No scaling
+            1 -> Standard deviation scaling
+            2 -> Root mean squared scaling
+            3 -> Pareto scaling
+            4 -> Range scaling
+            5 -> Level scaling
     """
     def __init__(self, nlv, xscaling=1, yscaling=0):
         self.mpls = new_pls_model()
@@ -344,7 +335,7 @@ class PLS():
 
     def predict(self, x_input, nlv_=None):
         """
-        Predict the y giving an x_ matrix
+        Predict the y giving an x matrix
         """
         x_input_ = mx.new_matrix(x_input)
         p_scores_ = mx.init_matrix()
@@ -369,9 +360,6 @@ class PLS():
 
 if __name__ == '__main__':
     def mx_to_video(m_input, decimals=5):
-        """
-        print a matrix to video
-        """
         for row in m_input:
             print("\t".join([str(round(x, decimals)) for x in row]))
     import random

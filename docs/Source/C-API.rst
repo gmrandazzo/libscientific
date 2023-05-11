@@ -2,6 +2,73 @@
 C API Reference
 ***************
 
+Double Vector Functions
+-----------------------
+
+.. autocstruct:: vector.h::dvector
+
+.. autocfunction:: vector.h::NewDVector
+
+.. autocfunction:: vector.h::DelDVector
+
+.. autocfunction:: vector.h::initDVector
+
+.. autocfunction:: vector.h::DVectorAppend
+
+.. autocfunction:: vector.h::DVectorRemoveAt
+
+.. autocfunction:: vector.h::PrintDVector
+
+
+Unsigned int Vector Functions
+-----------------------------
+
+.. autocstruct:: vector.h::uivector
+
+.. autocfunction:: vector.h::NewUIVector
+
+.. autocfunction:: vector.h::DelUIVector
+
+.. autocfunction:: vector.h::initUIVector
+
+.. autocfunction:: vector.h::UIVectorAppend
+
+.. autocfunction:: vector.h::UIVectorRemoveAt
+
+.. autocfunction:: vector.h::PrintUIVector
+
+
+Int Vector Functions
+--------------------
+.. autocstruct:: vector.h::ivector
+
+.. autocfunction:: vector.h::NewIVector
+
+.. autocfunction:: vector.h::DelIVector
+
+.. autocfunction:: vector.h::initIVector
+
+.. autocfunction:: vector.h::IVectorAppend
+
+.. autocfunction:: vector.h::IVectorRemoveAt
+
+.. autocfunction:: vector.h::PrintIVector
+
+
+String Vector Functions
+-----------------------
+
+.. autocstruct:: vector.h::strvector
+
+.. autocfunction:: vector.h::NewStrVector
+
+.. autocfunction:: vector.h::DelStrVector
+
+.. autocfunction:: vector.h::initStrVector
+
+.. autocfunction:: vector.h::StrVectorAppend
+
+.. autocfunction:: vector.h::PrintStrVector
 
 Matrix Functions
 ----------------
@@ -14,8 +81,15 @@ Matrix Functions
 
 .. autocfunction:: matrix.h::initMatrix
 
-.. autocfunction:: matrix.h::PrintMatrix
+.. autocfunction:: matrix.h::MatrixAppendRow
 
+.. autocfunction:: matrix.h::MatrixAppendCol
+
+.. autocfunction:: matrix.h::MatrixDeleteRowAt
+
+.. autocfunction:: matrix.h::MatrixDeleteColAt
+
+.. autocfunction:: matrix.h::PrintMatrix
 
 Tensor Functions
 ----------------
@@ -33,7 +107,6 @@ Tensor Functions
 .. autocfunction:: tensor.h::initTensor
 
 .. autocfunction:: tensor.h::PrintTensor
-
 
 PCA Functions
 -------------
@@ -150,4 +223,4 @@ UPCA Functions
 
 .. autocfunction:: upca.h::UPCAIndVarPredictor
 
-.. autocfunction:: ldupcaa.h::PrintUPCAModel   
+.. autocfunction:: upca.h::PrintUPCAModel   

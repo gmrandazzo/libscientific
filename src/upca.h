@@ -54,12 +54,12 @@ void NewUPCAModel(UPCAMODEL **m);
  */
 void DelUPCAModel(UPCAMODEL **m);
 
-int CheckTensor(tensor *X_);
+int CheckTensor(tensor *X);
 
 /**
  * Unfolded Principal Component Analysis
  * 
- * @param [in] X_ input tensor
+ * @param [in] X input tensor
  * @param [in] npc number of desired principal components
  * @param [in] autoscaling
  * @param [out] m initialized model using NewUPCAModel(...). The datastructure will be populated with results
@@ -80,7 +80,7 @@ int CheckTensor(tensor *X_);
  * - 5: Mean centering and level scaling
  * 
  */
-void UPCA(tensor *X_,
+void UPCA(tensor *X,
           size_t npc,
           size_t autoscaling,
           UPCAMODEL *m,
@@ -89,13 +89,13 @@ void UPCA(tensor *X_,
 /**
  *  Predict scores given an unfolded principal component analysis and a tensor as input. 
  * 
- * @param [in] X_ input tensor
+ * @param [in] X input tensor
  * @param [in] model computed UPCAMODEL
  * @param [in] npc number of desired principal components
  * @param [out] pscores predicted scores
  * 
  */
-void UPCAScorePredictor(tensor *X_,
+void UPCAScorePredictor(tensor *X,
                         UPCAMODEL *model,
                         size_t npc,
                         matrix *pscores);
@@ -124,9 +124,6 @@ void UPCAIndVarPredictor(matrix *T,
  * @brief Print UPCAMODEL to video.
  *
  * @param [in] m computed upca model
- *
- * @par Returns
- *    Nothing.
  */
 void PrintUPCAModel(UPCAMODEL *m);
 

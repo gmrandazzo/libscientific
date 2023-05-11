@@ -82,8 +82,7 @@ void MDC(matrix* m,
          size_t n,
          int metric,
          uivector *selections,
-         size_t nthreads,
-         ssignal *s)
+         size_t nthreads)
 {
   size_t i;
   size_t j;
@@ -154,112 +153,107 @@ void MDC(matrix* m,
 
   nmdc = 0;
   while(1){
-    if(s && (*s) == SIGSCIENTIFICSTOP){
-      break;
-    }
-    else{
-      /* Find the compound with largest value in vectinfo */
+    /* Find the compound with largest value in vectinfo */
 
-      dist = vectinfo->data[0];
-      mdc = 0;
+    dist = vectinfo->data[0];
+    mdc = 0;
 
-      for(i = 0; i < vectinfo->size; i++){
-        if(vectinfo->data[i] > dist){
-          dist = vectinfo->data[i];
-          mdc = i;
-        }
-        else{
-          continue;
-        }
-      }
-
-      nmdc++;
-
-      /*now mdc is the MDC */
-
-      UIVectorAppend(selections, mdc);
-      /*Recalculate the disances of the MDC to all the other compounds 
-       * and the reciprocal ranks as aboce subtract these reciprocal 
-       * ranks from 1 and store in the rank vector R
-       */
-      /* MULTITHREAD IMPLEMENTATION */
-      size_t step = (size_t)ceil((double)m->row/(double)nthreads);
-      size_t from = 0;
-      size_t to = step;
-      for(th = 0; th < nthreads; th++){
-        args[th].from = from;
-        args[th].to = to;
-        args[th].mdc = mdc;
-        pthread_create(&threads[th], NULL, MDCWorker, (void*) &args[th]);
-
-        from = to;
-        if(from+step > m->row){
-          to = m->row;
-        }
-        else{
-          to+=step;
-        }
-      }
-
-      for(th = 0; th < nthreads; th++){
-        pthread_join(threads[th], NULL);
-      }
-
-      MatrixSort(tmprank, 0);
-
-
-      d = 2.;
-      for(i = 0; i < tmprank->row; i++){
-        j = (size_t)tmprank->data[i][1];
-        if(j == mdc){
-          rankvector->data[j] = 0.f;/* set to 0 the mdc in order to unselect this..*/
-        }
-        else{
-          rankvector->data[j] = 1 - (1 / d);
-          d += 1;
-        }
-      }
-
-      /* Multiply values in I by the corresponding values in  R. Store the result in I.*/
-      for(i = 0 ; i < vectinfo->size; i++){
-        vectinfo->data[i] *= rankvector->data[i];
-      }
-
-      /*check that all number in the I Exceded 1 if they do then go to "Find the compound with largest value in vectinfo"
-      * else stop....
-      */
-      if(n > 0){
-        if(nmdc < n){
-          continue;
-        }
-        else{
-          break;
-        }
+    for(i = 0; i < vectinfo->size; i++){
+      if(vectinfo->data[i] > dist){
+        dist = vectinfo->data[i];
+        mdc = i;
       }
       else{
-        k = 0; /* objects > 1 */
-        l = 0; /* extracted objects */
-        for(i = 0; i < vectinfo->size; i++){
-          double val = getDVectorValue(vectinfo, i);
-          if(val > 1){
-            k++;
-          }
-          else{
-            if(FLOAT_EQ(val, 0.f, EPSILON)){
-              l++;
-            }
-            else{
-              continue;
-            }
-          }
-        }
+        continue;
+      }
+    }
 
-        if(k == vectinfo->size-l){
-          continue;
+    nmdc++;
+
+    /*now mdc is the MDC */
+
+    UIVectorAppend(selections, mdc);
+    /*Recalculate the disances of the MDC to all the other compounds 
+      * and the reciprocal ranks as aboce subtract these reciprocal 
+      * ranks from 1 and store in the rank vector R
+      */
+    /* MULTITHREAD IMPLEMENTATION */
+    size_t step = (size_t)ceil((double)m->row/(double)nthreads);
+    size_t from = 0;
+    size_t to = step;
+    for(th = 0; th < nthreads; th++){
+      args[th].from = from;
+      args[th].to = to;
+      args[th].mdc = mdc;
+      pthread_create(&threads[th], NULL, MDCWorker, (void*) &args[th]);
+
+      from = to;
+      if(from+step > m->row){
+        to = m->row;
+      }
+      else{
+        to+=step;
+      }
+    }
+
+    for(th = 0; th < nthreads; th++){
+      pthread_join(threads[th], NULL);
+    }
+
+    MatrixSort(tmprank, 0);
+
+
+    d = 2.;
+    for(i = 0; i < tmprank->row; i++){
+      j = (size_t)tmprank->data[i][1];
+      if(j == mdc){
+        rankvector->data[j] = 0.f;/* set to 0 the mdc in order to unselect this..*/
+      }
+      else{
+        rankvector->data[j] = 1 - (1 / d);
+        d += 1;
+      }
+    }
+
+    /* Multiply values in I by the corresponding values in  R. Store the result in I.*/
+    for(i = 0 ; i < vectinfo->size; i++){
+      vectinfo->data[i] *= rankvector->data[i];
+    }
+
+    /*check that all number in the I Exceded 1 if they do then go to "Find the compound with largest value in vectinfo"
+    * else stop....
+    */
+    if(n > 0){
+      if(nmdc < n){
+        continue;
+      }
+      else{
+        break;
+      }
+    }
+    else{
+      k = 0; /* objects > 1 */
+      l = 0; /* extracted objects */
+      for(i = 0; i < vectinfo->size; i++){
+        double val = getDVectorValue(vectinfo, i);
+        if(val > 1){
+          k++;
         }
         else{
-          break;
+          if(FLOAT_EQ(val, 0.f, EPSILON)){
+            l++;
+          }
+          else{
+            continue;
+          }
         }
+      }
+
+      if(k == vectinfo->size-l){
+        continue;
+      }
+      else{
+        break;
       }
     }
   }
@@ -278,8 +272,7 @@ void MaxDis(matrix* m,
             size_t n,
             int metric,
             uivector *selections,
-            size_t nthreads,
-            ssignal *s)
+            size_t nthreads)
 {
   size_t i;
   size_t j;
@@ -335,111 +328,99 @@ void MaxDis(matrix* m,
   UIVectorAppend(idselection, far_away);
 
   /* OLD IMPLEMENTATION SELECTED THE FIRST COMPOUND AS MDC
-   * MDC(m, 1, metric, &idselection, nthreads, s);
+   * MDC(m, 1, metric, &idselection, nthreads);
    */
 
   /* 1. Initialise Subset by transferring to it a componund */
-  if(s && (*s) == SIGSCIENTIFICRUN){
-    UIVectorAppend(selections, getUIVectorValue(idselection, 0));
+  UIVectorAppend(selections, getUIVectorValue(idselection, 0));
 
-    tmp = getMatrixRow(m, getUIVectorValue(idselection, 0));
+  tmp = getMatrixRow(m, getUIVectorValue(idselection, 0));
+  MatrixAppendRow(m2, tmp);
+  DelDVector(&tmp);
+
+  DelUIVector(&idselection);
+
+  /* 2. Calculate the dissimilarity between each remaining object in Database and the compounds in Subset */
+  if(n > m->row){
+    ntotobj = m->row;
+  }
+  else{
+    ntotobj = n;
+  }
+
+  for(nobj = 1; nobj < ntotobj; nobj++){
+    initMatrix(&m1);
+    initUIVector(&idselection);
+
+    for(i = 0; i < m->row; i++){
+      if(UIVectorHasValue(selections, i) == 1){
+        tmp = getMatrixRow(m, i);
+        MatrixAppendRow(m1, tmp);
+        UIVectorAppend(idselection, i);
+        DelDVector(&tmp);
+      }
+      else{
+        continue;
+      }
+    }
+
+    initMatrix(&distances);
+
+    if(metric == 0){
+      EuclideanDistance(m1, m2, distances, nthreads);
+    }
+    else if(metric == 1){
+      ManhattanDistance(m1, m2, distances, nthreads);
+    }
+    else{
+      CosineDistance(m1, m2, distances, nthreads);
+      PrintMatrix(distances);
+    }
+
+    /* 3. The next object to be selected is always as distant as possible from already selected molecules */
+
+    NewDVector(&mindists, m1->row);
+
+    /* Select the minumum distances from all distances */
+    for(j = 0; j < distances->col; j++){ /*for each molecule remaining in database */
+      dis = distances->data[0][j];
+      for(i = 1; i < distances->row; i++){
+        if(distances->data[i][j] < dis){
+          dis = distances->data[i][j];
+        }
+        else{
+          continue;
+        }
+      }
+      mindists->data[j] = dis;
+    }
+
+
+    /*Select the maximum object distant from all minimum distances */
+
+    size_t l = 0;
+    for(i = 1; i < mindists->size; i++){
+      if(mindists->data[i] > mindists->data[l]){
+        l = i;
+      }
+      else{
+        continue;
+      }
+    }
+
+    /* l is the max min object to select */
+    UIVectorAppend(selections, getUIVectorValue(idselection, l));
+
+    tmp = getMatrixRow(m, getUIVectorValue(idselection, l));
     MatrixAppendRow(m2, tmp);
     DelDVector(&tmp);
 
+
+    DelDVector(&mindists);
+    DelMatrix(&distances);
     DelUIVector(&idselection);
-
-    /* 2. Calculate the dissimilarity between each remaining object in Database and the compounds in Subset */
-    if(n > m->row){
-      ntotobj = m->row;
-    }
-    else{
-      ntotobj = n;
-    }
-
-    for(nobj = 1; nobj < ntotobj; nobj++){
-      if(s && (*s) == SIGSCIENTIFICSTOP){
-        break;
-      }
-      else{
-        initMatrix(&m1);
-        initUIVector(&idselection);
-
-        for(i = 0; i < m->row; i++){
-          if(UIVectorHasValue(selections, i) == 1){
-            tmp = getMatrixRow(m, i);
-            MatrixAppendRow(m1, tmp);
-            UIVectorAppend(idselection, i);
-            DelDVector(&tmp);
-          }
-          else{
-            continue;
-          }
-        }
-
-        initMatrix(&distances);
-
-        if(metric == 0){
-          EuclideanDistance(m1, m2, distances, nthreads);
-        }
-        else if(metric == 1){
-          ManhattanDistance(m1, m2, distances, nthreads);
-        }
-        else{
-          CosineDistance(m1, m2, distances, nthreads);
-          PrintMatrix(distances);
-        }
-
-        /* 3. The next object to be selected is always as distant as possible from already selected molecules */
-
-        NewDVector(&mindists, m1->row);
-
-        /* Select the minumum distances from all distances */
-        for(j = 0; j < distances->col; j++){ /*for each molecule remaining in database */
-          dis = distances->data[0][j];
-          for(i = 1; i < distances->row; i++){
-            if(distances->data[i][j] < dis){
-              dis = distances->data[i][j];
-            }
-            else{
-              continue;
-            }
-          }
-          mindists->data[j] = dis;
-        }
-
-
-        /*Select the maximum object distant from all minimum distances */
-
-        size_t l = 0;
-        for(i = 1; i < mindists->size; i++){
-          if(mindists->data[i] > mindists->data[l]){
-            l = i;
-          }
-          else{
-            continue;
-          }
-        }
-
-        /* l is the max min object to select */
-        UIVectorAppend(selections, getUIVectorValue(idselection, l));
-
-        tmp = getMatrixRow(m, getUIVectorValue(idselection, l));
-        MatrixAppendRow(m2, tmp);
-        DelDVector(&tmp);
-
-
-        DelDVector(&mindists);
-        DelMatrix(&distances);
-        DelUIVector(&idselection);
-        DelMatrix(&m1);
-      }
-    }
-
+    DelMatrix(&m1);
   }
-  else{
-    DelUIVector(&idselection);
-  }
-
   DelMatrix(&m2);
 }
 
@@ -450,8 +431,7 @@ void MaxDis_Fast(matrix* m,
                  size_t n,
                  int metric,
                  uivector *selections,
-                 size_t nthreads,
-                 ssignal *s)
+                 size_t nthreads)
 {
   size_t i;
   size_t j;
@@ -529,49 +509,45 @@ void MaxDis_Fast(matrix* m,
 
   /* ntob = 1 because we have already selected the first object, the far away objcet*/
   for(nobj = 1; nobj < n; nobj++){
-    if(s && (*s) == SIGSCIENTIFICRUN){
-      /* Select the minumum distance of all remaining objects
-       * from the already selected points
-       */
-      NewDVector(&mindists, id->size);
-      for(i = 0; i < id->size; i++){
-        size_t ii = id->data[i];
-        size_t jj = selections->data[0];
+    /* Select the minumum distance of all remaining objects
+      * from the already selected points
+      */
+    NewDVector(&mindists, id->size);
+    for(i = 0; i < id->size; i++){
+      size_t ii = id->data[i];
+      size_t jj = selections->data[0];
+      indx = square_to_condensed_index(ii, jj, m->row);
+      dis = distances->data[indx];
+      for(j = 1; j < selections->size; j++){
+        jj = selections->data[j];
         indx = square_to_condensed_index(ii, jj, m->row);
-        dis = distances->data[indx];
-        for(j = 1; j < selections->size; j++){
-          jj = selections->data[j];
-          indx = square_to_condensed_index(ii, jj, m->row);
-          if(distances->data[indx] < dis){
-            dis = distances->data[indx];
-          }
-          else{
-            continue;
-          }
-        }
-        mindists->data[i] = dis;
-      }
-
-      /*
-       * From the final smallest distance list select the maximum distant objects
-       */
-      j = 0;
-      for(i = 1; i < mindists->size; i++){
-        if(mindists->data[i] > mindists->data[j]){
-          j = i;
+        if(distances->data[indx] < dis){
+          dis = distances->data[indx];
         }
         else{
           continue;
         }
       }
+      mindists->data[i] = dis;
+    }
 
-      /* l is the max min object to select */
-      UIVectorAppend(selections, id->data[j]);
-      UIVectorRemoveAt(id, j);
+    /*
+      * From the final smallest distance list select the maximum distant objects
+      */
+    j = 0;
+    for(i = 1; i < mindists->size; i++){
+      if(mindists->data[i] > mindists->data[j]){
+        j = i;
+      }
+      else{
+        continue;
+      }
     }
-    else{
-      break;
-    }
+
+    /* l is the max min object to select */
+    UIVectorAppend(selections, id->data[j]);
+    UIVectorRemoveAt(id, j);
+
     DelDVector(&mindists);
   }
   DelDVector(&distances);
@@ -789,8 +765,7 @@ void *kmppDistanceWorker(void *arg_)
 void KMeansppCenters(matrix *m,
                      size_t n,
                      uivector *selections,
-                     int nthreads,
-                     ssignal *s)
+                     int nthreads)
 {
   size_t i;
   size_t j;
@@ -811,67 +786,61 @@ void KMeansppCenters(matrix *m,
 
   /* Step 2 */
   while(q > 1){
-    if(s && (*s) == SIGSCIENTIFICSTOP){
-      break;
+    size_t nobj = ceil((double)m->row/(double)nthreads);
+    size_t from = 0;
+    for(i = 0; i < nthreads; i++){
+      arg[i].m = m;
+      arg[i].selections = selections;
+      arg[i].D = D;
+      arg[i].from = from;
+      if(from+nobj > m->row){
+        from = m->row;
+      }
+      else{
+        from += nobj;
+      }
+      arg[i].to = from;
+      pthread_create(&threads[i], NULL, kmppDistanceWorker, (void*) &arg[i]);
     }
-    else{
-      size_t nobj = ceil((double)m->row/(double)nthreads);
-      size_t from = 0;
-      for(i = 0; i < nthreads; i++){
-        arg[i].m = m;
-        arg[i].selections = selections;
-        arg[i].D = D;
-        arg[i].from = from;
-        if(from+nobj > m->row){
-          from = m->row;
+
+    for(i = 0; i < nthreads; i++){
+      pthread_join(threads[i], NULL);
+    }
+
+    /* Step 3 Calculate the square of distances and store in
+    * a vector and in a sum (dist)
+    */
+    for(i = 0; i < D->size; i++){
+      D_square->data[i] = square(D->data[i]);
+    }
+    /* Step 4 */
+    A = 0.f;
+    B = 0.f;
+    /* Step 4: choose two number A and B that satisfy these releaction:
+      * A = D(x_1)^2 + D(x_2)^2 + ... D(x_i)^2
+      * B = D(x_1)^2 + D(x_2)^2 + ... + D(x_(i-1))^2
+      */
+    for(i = 0; i < D_square->size; i++){
+      for(j = 0; j <= i; j++){
+        A += getDVectorValue(D_square, j);
+        if(j < i){
+          B += getDVectorValue(D_square, j);
         }
         else{
-          from += nobj;
-        }
-        arg[i].to = from;
-        pthread_create(&threads[i], NULL, kmppDistanceWorker, (void*) &arg[i]);
-      }
-
-      for(i = 0; i < nthreads; i++){
-        pthread_join(threads[i], NULL);
-      }
-
-      /* Step 3 Calculate the square of distances and store in
-      * a vector and in a sum (dist)
-      */
-      for(i = 0; i < D->size; i++){
-        D_square->data[i] = square(D->data[i]);
-      }
-      /* Step 4 */
-      A = 0.f;
-      B = 0.f;
-      /* Step 4: choose two number A and B that satisfy these releaction:
-        * A = D(x_1)^2 + D(x_2)^2 + ... D(x_i)^2
-        * B = D(x_1)^2 + D(x_2)^2 + ... + D(x_(i-1))^2
-        */
-      for(i = 0; i < D_square->size; i++){
-        for(j = 0; j <= i; j++){
-          A += getDVectorValue(D_square, j);
-          if(j < i){
-            B += getDVectorValue(D_square, j);
-          }
-          else{
-            continue;
-          }
-        }
-        y = randDouble(B, A);
-        if(A >= y && y > B ){
-          if(UIVectorHasValue(selections, i) == 1){
-            UIVectorAppend(selections, i);
-            q--;
-            break;
-          }
-          else{
-            continue;
-          }
+          continue;
         }
       }
-
+      y = randDouble(B, A);
+      if(A >= y && y > B ){
+        if(UIVectorHasValue(selections, i) == 1){
+          UIVectorAppend(selections, i);
+          q--;
+          break;
+        }
+        else{
+          continue;
+        }
+      }
     }
   }
   DelDVector(&D);
@@ -881,7 +850,12 @@ void KMeansppCenters(matrix *m,
 }
 
 /*This function rank and get the nmaxobj near or far from centroids */
-void PruneResults(matrix *m, matrix *centroids, size_t nmaxobj, int type, uivector* clusters, size_t nthreads)
+void PruneResults(matrix *m,
+                  matrix *centroids,
+                  size_t nmaxobj,
+                  int type,
+                  uivector* clusters,
+                  size_t nthreads)
 {
   size_t i;
   size_t j;
@@ -996,7 +970,10 @@ void PruneResults(matrix *m, matrix *centroids, size_t nmaxobj, int type, uivect
  * 4. If no object moved to group stop; else recompute new centroids and go to step 2
 */
 
-int shouldStop(matrix *centroids, matrix *oldcentroids, size_t iterations, size_t max_iterations)
+int shouldStop(matrix *centroids,
+               matrix *oldcentroids,
+               size_t iterations,
+               size_t max_iterations)
 {
   size_t i;
   size_t j;
@@ -1187,8 +1164,7 @@ void KMeans(matrix* m,
             int initializer,
             uivector *cluster_labels,
             matrix *_centroids_,
-            size_t nthreads,
-            ssignal *s)
+            size_t nthreads)
 {
   size_t i;
   size_t j;
@@ -1216,13 +1192,13 @@ void KMeans(matrix* m,
     }
   }
   else if(initializer == 1){ /* KMeansppCenters */
-    KMeansppCenters(m, nclusters, pre_centroids, nthreads, s);
+    KMeansppCenters(m, nclusters, pre_centroids, nthreads);
   }
   else if(initializer == 2){ /* MDC */
-    MDC(m, nclusters, 0, pre_centroids, nthreads, s);
+    MDC(m, nclusters, 0, pre_centroids, nthreads);
   }
   else{ /*if(initializer == 3){  MaxDis */
-    MaxDis(m, nclusters, 0, pre_centroids, nthreads, s);
+    MaxDis(m, nclusters, 0, pre_centroids, nthreads);
   }
   
   /* else personal centroid configuration */
@@ -1281,8 +1257,7 @@ void KMeansRandomGroupsCV(matrix* m,
                           size_t groups,
                           size_t iterations,
                           dvector *ssdist,
-                          size_t nthreads,
-                          ssignal *s)
+                          size_t nthreads)
 {
 
   size_t i;
@@ -1308,165 +1283,154 @@ void KMeansRandomGroupsCV(matrix* m,
 
   iterations_ = 0;
   while(iterations_ <  iterations){
-    if(s && (*s) == SIGSCIENTIFICSTOP){
-      break;
+    /* Divide in group  all the Dataset */
+    MatrixSet(gid, -1);
+
+    /* step 1 generate the random groups */
+    k = 0;
+    for(i = 0; i <  gid->row; i++){
+      for(j = 0; j <  gid->col; j++){
+        do{
+          n = (size_t)randInt(0, m->row);
+        } while(ValInMatrix(gid, n) == 1 && k < (m->row));
+        if(k < m->row){
+          setMatrixValue(gid, i, j, n);
+          k++;
+        }
+        else
+          continue;
+      }
     }
-    else{
-      /* Divide in group  all the Dataset */
-      MatrixSet(gid, -1);
 
-      /* step 1 generate the random groups */
-      k = 0;
-      for(i = 0; i <  gid->row; i++){
-        for(j = 0; j <  gid->col; j++){
-          do{
-            n = (size_t)randInt(0, m->row);
-          } while(ValInMatrix(gid, n) == 1 && k < (m->row));
-          if(k < m->row){
-            setMatrixValue(gid, i, j, n);
-            k++;
+    #ifdef DEBUG
+    puts("Gid Matrix");
+    PrintMatrix(gid);
+    #endif
+
+    /*step 2*/
+    for(g = 0; g < gid->row; g++){ /*For aeach group */
+      /* Estimate how many objects are inside the sub model without the group "g" */
+      n = 0;
+      for(i = 0; i < gid->row; i++){
+        if(i != g){
+          for(j = 0; j < gid->col; j++){
+            if((int)getMatrixValue(gid, i, j) != -1)
+              n++;
+            else
+              continue;
           }
-          else
-            continue;
+        }
+        else
+          continue;
+      }
+
+      /*Allocate the submodel*/
+      NewMatrix(&subm, n, m->col);
+
+      /* Estimate how many objects are inside the group "g" to predict*/
+      n = 0;
+      for(j = 0; j < gid->col; j++){
+        if((int)getMatrixValue(gid, g, j) != -1)
+          n++;
+        else
+          continue;
+      }
+
+
+      /*Allocate the */
+      NewMatrix(&predm, n, m->col);
+
+
+      /* copy the submodel values */
+
+      for(i = 0, k = 0; i < gid->row; i++){
+        if(i != g){
+          for(j = 0; j < gid->col; j++){
+            a =  (size_t)getMatrixValue(gid, i, j); /* get the row index */
+            if(a != -1){
+              for(n = 0; n < m->col; n++){
+                setMatrixValue(subm, k, n, getMatrixValue(m, a, n));
+              }
+              k++;
+            }
+            else{
+              continue;
+            }
+          }
+        }
+        else{
+          continue;
         }
       }
 
-      #ifdef DEBUG
-      puts("Gid Matrix");
-      PrintMatrix(gid);
-      #endif
-
-      /*step 2*/
-      for(g = 0; g < gid->row; g++){ /*For aeach group */
-        /* Estimate how many objects are inside the sub model without the group "g" */
-        n = 0;
-        for(i = 0; i < gid->row; i++){
-          if(i != g){
-            for(j = 0; j < gid->col; j++){
-              if((int)getMatrixValue(gid, i, j) != -1)
-                n++;
-              else
-                continue;
-            }
+      /* copy the objects to predict into predictm*/
+      for(j = 0, k = 0; j < gid->col; j++){
+        a = (size_t)getMatrixValue(gid, g, j);
+        if(a != -1){
+          for(n = 0; n < m->col; n++){
+            setMatrixValue(predm, k, n, getMatrixValue(m, a, n));
           }
-          else
-            continue;
+          k++;
         }
-
-        /*Allocate the submodel*/
-        NewMatrix(&subm, n, m->col);
-
-        /* Estimate how many objects are inside the group "g" to predict*/
-        n = 0;
-        for(j = 0; j < gid->col; j++){
-          if((int)getMatrixValue(gid, g, j) != -1)
-            n++;
-          else
-            continue;
+        else{
+          continue;
         }
-
-
-        /*Allocate the */
-        NewMatrix(&predm, n, m->col);
-
-
-        /* copy the submodel values */
-
-        for(i = 0, k = 0; i < gid->row; i++){
-          if(i != g){
-            for(j = 0; j < gid->col; j++){
-              a =  (size_t)getMatrixValue(gid, i, j); /* get the row index */
-              if(a != -1){
-                for(n = 0; n < m->col; n++){
-                  setMatrixValue(subm, k, n, getMatrixValue(m, a, n));
-                }
-                k++;
-              }
-              else{
-                continue;
-              }
-            }
-          }
-          else{
-            continue;
-          }
-        }
-
-        /* copy the objects to predict into predictm*/
-        for(j = 0, k = 0; j < gid->col; j++){
-          a = (size_t)getMatrixValue(gid, g, j);
-          if(a != -1){
-            for(n = 0; n < m->col; n++){
-              setMatrixValue(predm, k, n, getMatrixValue(m, a, n));
-            }
-            k++;
-          }
-          else{
-            continue;
-          }
-        }
-
-        /* Kmeans
-          * calculate the sum of square of the distance for each object from all the centroids...
-          * store in the vector ssdist
-        */
-        for(j = 1; j <= maxnclusters; j++){
-          initMatrix(&centroids);
-          initUIVector(&clusters);
-
-          KMeans(subm, j, initializer, clusters, centroids, nthreads, s);
-
-          initMatrix(&distances);
-          EuclideanDistance(centroids, predm, distances, nthreads);
-
-          #ifdef DEBUG
-          puts("Centroids");
-          PrintMatrix(centroids);
-          puts("Matrix to predict");
-          PrintMatrix(predm);
-          puts("Distances");
-          PrintMatrix(distances);
-          #endif
-
-          /*Get the minumum distance for each point ant sum it in ssdist. This is the kmeans clustering*/
-          for(i = 0; i < distances->row; i++){ /* for each object */
-            mindist = getMatrixValue(distances, i, 0);
-            for(k = 1; k < distances->col; k++){ /*for each centroid */
-              if(getMatrixValue(distances, i, k) < mindist){
-                mindist = getMatrixValue(distances, i, k);
-              }
-              else{
-                continue;
-              }
-            }
-            setDVectorValue(ssdist, j-1, getDVectorValue(ssdist, j-1) + mindist);
-          }
-          DelMatrix(&distances);
-          DelUIVector(&clusters);
-          DelMatrix(&centroids);
-        }
-
-
-        DelMatrix(&subm);
-        DelMatrix(&predm);
       }
+
+      /* Kmeans
+        * calculate the sum of square of the distance for each object from all the centroids...
+        * store in the vector ssdist
+      */
+      for(j = 1; j <= maxnclusters; j++){
+        initMatrix(&centroids);
+        initUIVector(&clusters);
+
+        KMeans(subm, j, initializer, clusters, centroids, nthreads);
+
+        initMatrix(&distances);
+        EuclideanDistance(centroids, predm, distances, nthreads);
+
+        #ifdef DEBUG
+        puts("Centroids");
+        PrintMatrix(centroids);
+        puts("Matrix to predict");
+        PrintMatrix(predm);
+        puts("Distances");
+        PrintMatrix(distances);
+        #endif
+
+        /*Get the minumum distance for each point ant sum it in ssdist. This is the kmeans clustering*/
+        for(i = 0; i < distances->row; i++){ /* for each object */
+          mindist = getMatrixValue(distances, i, 0);
+          for(k = 1; k < distances->col; k++){ /*for each centroid */
+            if(getMatrixValue(distances, i, k) < mindist){
+              mindist = getMatrixValue(distances, i, k);
+            }
+            else{
+              continue;
+            }
+          }
+          setDVectorValue(ssdist, j-1, getDVectorValue(ssdist, j-1) + mindist);
+        }
+        DelMatrix(&distances);
+        DelUIVector(&clusters);
+        DelMatrix(&centroids);
+      }
+
+
+      DelMatrix(&subm);
+      DelMatrix(&predm);
     }
     iterations_++;
   }
 
-  if(s && (*s) == SIGSCIENTIFICSTOP){
-    DVectorResize(ssdist, 0);
-    DelMatrix(&gid);
+  /* divide all the value of the ssdist for the number of iteration */
+  for(i = 0; i < ssdist->size; i++){
+    setDVectorValue(ssdist, i, getDVectorValue(ssdist, i) / iterations);
   }
-  else{
-    /* divide all the value of the ssdist for the number of iteration */
-    for(i = 0; i < ssdist->size; i++){
-      setDVectorValue(ssdist, i, getDVectorValue(ssdist, i) / iterations);
-    }
 
-    DVectNorm(ssdist, ssdist);
-    DelMatrix(&gid);
-  }
+  DVectNorm(ssdist, ssdist);
+  DelMatrix(&gid);
 }
 
 /*
@@ -1490,8 +1454,7 @@ void KMeansJumpMethod(matrix* m,
                       size_t maxnclusters,
                       int initializer,
                       dvector *jumps,
-                      size_t nthreads,
-                      ssignal *s)
+                      size_t nthreads)
 {
   size_t k;
   size_t i;
@@ -1516,7 +1479,7 @@ void KMeansJumpMethod(matrix* m,
     initUIVector(&clusters);
     initMatrix(&centroids);
 
-    KMeans(m, k, initializer, clusters, centroids, nthreads, s);
+    KMeans(m, k, initializer, clusters, centroids, nthreads);
     dist = MatrixMahalanobisDistance(m, centroids);
 
     printf("dist %f  %f\n", dist, pow(dist, -y));
