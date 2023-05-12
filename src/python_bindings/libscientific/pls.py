@@ -34,7 +34,6 @@ class PLSMODEL(ctypes.Structure):
         ("xweights", ctypes.POINTER(mx.MATRIX)),
         ("yscores", ctypes.POINTER(mx.MATRIX)),
         ("yloadings", ctypes.POINTER(mx.MATRIX)),
-        ("cweights", ctypes.POINTER(mx.MATRIX)),
         ("b", ctypes.POINTER(vect.DVECTOR)),
         ("xvarexp", ctypes.POINTER(vect.DVECTOR)),
         ("xcolaverage", ctypes.POINTER(vect.DVECTOR)),
@@ -45,7 +44,6 @@ class PLSMODEL(ctypes.Structure):
         ("recalc_residuals", ctypes.POINTER(mx.MATRIX)),
         ("predicted_y", ctypes.POINTER(mx.MATRIX)),
         ("pred_residuals", ctypes.POINTER(mx.MATRIX)),
-        ("recalc_residuals", ctypes.POINTER(mx.MATRIX)),
         ("r2y_recalculated", ctypes.POINTER(mx.MATRIX)),
         ("r2y_validation", ctypes.POINTER(mx.MATRIX)),
         ("q2y", ctypes.POINTER(mx.MATRIX)),
@@ -55,7 +53,6 @@ class PLSMODEL(ctypes.Structure):
         ("roc_recalculated", ctypes.POINTER(t.TENSOR)),
         ("roc_validation", ctypes.POINTER(t.TENSOR)),
         ("roc_auc_recalculated", ctypes.POINTER(mx.MATRIX)),
-        ("roc_auc_validation", ctypes.POINTER(mx.MATRIX)),
         ("roc_auc_validation", ctypes.POINTER(mx.MATRIX)),
         ("precision_recall_recalculated", ctypes.POINTER(t.TENSOR)),
         ("precision_recall_validation", ctypes.POINTER(t.TENSOR)),
@@ -67,7 +64,7 @@ class PLSMODEL(ctypes.Structure):
         return self.__class__.__name__
 
     def __str__(self):
-        return self.__class__.__name__
+        return self.__class__.__nam
 
 
 lsci.NewPLSModel.argtypes = [ctypes.POINTER(ctypes.POINTER(PLSMODEL))]
@@ -116,7 +113,6 @@ def pls_algorithm(x_input, y_input, nlv, x_scaling, y_scaling, mpls):
              y_scaling,
              mpls,
              ctypes.pointer(ssignal))
-
 
 lsci.PLSBetasCoeff.argtypes = [ctypes.POINTER(PLSMODEL),
                                ctypes.c_size_t,
@@ -266,31 +262,31 @@ class PLS():
         """
         Get the T-Scores
         """
-        return mx.matrix_to_list(self.mpls[0].xscores)
+        return mx.matrix_to_list(self.mpls.contents.xscores)
 
     def get_uscores(self):
         """
         Get the U-Scores
         """
-        return mx.matrix_to_list(self.mpls[0].yscores)
+        return mx.matrix_to_list(self.mpls.contents.yscores)
 
     def get_ploadings(self):
         """
         Get the P-Loadings
         """
-        return mx.matrix_to_list(self.mpls[0].xloadings)
+        return mx.matrix_to_list(self.mpls.contents.xloadings)
 
     def get_qloadings(self):
         """
         Get the Q-Loadings
         """
-        return mx.matrix_to_list(self.mpls[0].yloadings)
+        return mx.matrix_to_list(self.mpls.contents.yloadings)
 
     def get_weights(self):
         """
         Get the W-weigths
         """
-        return mx.matrix_to_list(self.mpls[0].xweights)
+        return mx.matrix_to_list(self.mpls.contents.xweights)
 
     def get_beta_coefficients(self, nlv : int=1):
         """
@@ -306,32 +302,32 @@ class PLS():
         """
         Get the explained variance
         """
-        return vect.dvector_tolist(self.mpls[0].xvarexp)
+        return vect.dvector_tolist(self.mpls.contents.xvarexp)
 
     def get_x_column_scaling(self):
         """
         Get the model column scaling
         """
-        return vect.dvector_tolist(self.mpls[0].xcolscaling)
+        return vect.dvector_tolist(self.mpls.contents.xcolscaling)
 
     def get_x_averages(self):
         """
         Get the feature averages
         """
-        return vect.dvector_tolist(self.mpls[0].xcolaverage)
+        return vect.dvector_tolist(self.mpls.contents.xcolaverage)
 
 
     def get_y_column_scaling(self):
         """
         Get the model column scaling
         """
-        return vect.dvector_tolist(self.mpls[0].ycolscaling)
+        return vect.dvector_tolist(self.mpls.contents.ycolscaling)
 
     def get_y_averages(self):
         """
         Get the feature averages
         """
-        return vect.dvector_tolist(self.mpls[0].ycolaverage)
+        return vect.dvector_tolist(self.mpls.contents.ycolaverage)
 
     def predict(self, x_input, nlv_=None):
         """
@@ -378,6 +374,7 @@ if __name__ == '__main__':
     print("Computing PLS ...")
     model = PLS(nlv=2, xscaling=1, yscaling=0)
     model.fit(x, y)
+    vect.print_dvector(model.mpls.contents.xcolscaling)
 
     xm = mx.Matrix(x)
     ym = mx.Matrix(y)
@@ -415,6 +412,10 @@ if __name__ == '__main__':
     xs = model.get_x_column_scaling()
     ya = model.get_y_averages()
     ys = model.get_y_column_scaling()
+    print(len(xs))
+    print(xa)
+    vect.print_dvector(model.mpls.contents.xcolscaling)
+    print(len(xp[0]))
     xps = []
     for i in range(len(xp)):
         xps.append(list())

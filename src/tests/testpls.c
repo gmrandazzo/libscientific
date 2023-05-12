@@ -1073,10 +1073,10 @@ void TestPLS1()
   /*Allocate the final output*/
   NewPLSModel(&m);
 
-  PLS(x, y, 3, 0, 0, m, NULL);
+  PLS(x, y, 3, 1, 0, m, NULL);
 
   PrintPLSModel(m);
-
+  
   /*VALIDATE THE MODEL */
   MODELINPUT minpt = initModelInput();
   minpt.mx = x;

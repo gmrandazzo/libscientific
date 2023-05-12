@@ -207,7 +207,6 @@ LDA Functions
 .. autocfunction:: lda.h::PrintLDAModel
 
 
-
 UPCA Functions
 --------------
 
@@ -224,3 +223,7 @@ UPCA Functions
 .. autocfunction:: upca.h::UPCAIndVarPredictor
 
 .. autocfunction:: upca.h::PrintUPCAModel   
+
+
+Object Selection Functions
+--------------------------

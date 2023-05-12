@@ -148,37 +148,37 @@ class CPCA():
         """
         get the cpca super scores
         """
-        return mx.matrix_to_list(self.model[0].super_scores)
+        return mx.matrix_to_list(self.model.contents.super_scores)
 
     def get_super_weights(self):
         """
         get the cpca super weights
         """
-        return mx.matrix_to_list(self.model[0].super_weights)
+        return mx.matrix_to_list(self.model.contents.super_weights)
 
     def get_block_scores(self):
         """
         get the cpca block scores
         """
-        return tns.tensor_tolist(self.model[0].block_scores)
+        return tns.tensor_tolist(self.model.contents.block_scores)
 
     def get_block_loadings(self):
         """
         get the cpca block loadings
         """
-        return tns.tensor_tolist(self.model[0].block_loadings)
+        return tns.tensor_tolist(self.model.contents.block_loadings)
 
     def get_block_expvar(self):
         """
         get the cpca block variance explained
         """
-        return vlst.dvector_list_tolist(self.model[0].block_expvar)
+        return vlst.dvector_list_tolist(self.model.contents.block_expvar)
 
     def get_total_exp_variance(self):
         """
         get the cpca total variance explained
         """
-        return vect.dvector_tolist(self.model[0].total_expvar)
+        return vect.dvector_tolist(self.model.contents.total_expvar)
 
     def predict(self, t_input):
         """

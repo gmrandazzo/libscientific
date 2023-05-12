@@ -1,21 +1,20 @@
-"""
-pca libscientific python binding
+# pca libscientific python binding
+#
+# Copyright (C) <2019>  Giuseppe Marco Randazzo
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Copyright (C) <2019>  Giuseppe Marco Randazzo
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
-"""
 import ctypes
 import libscientific.matrix as mx
 import libscientific.vector as vect
@@ -170,19 +169,19 @@ class PCA():
         """
         get the PCA scores
         """
-        return mx.matrix_to_list(self.mpca[0].scores)
+        return mx.matrix_to_list(self.mpca.contents.scores)
 
     def get_loadings(self):
         """
         get the PCA loadings
         """
-        return mx.matrix_to_list(self.mpca[0].loadings)
+        return mx.matrix_to_list(self.mpca.contents.loadings)
 
     def get_exp_variance(self):
         """
         get the PCA explained variance
         """
-        return vect.dvector_tolist(self.mpca[0].varexp)
+        return vect.dvector_tolist(self.mpca.contents.varexp)
 
     def predict(self, m_input):
         """
@@ -217,15 +216,15 @@ class PCA():
 
         scores_ = None
         if scores_input is None:
-            scores_ = self.mpca[0].scores
+            scores_ = self.mpca.contents.scores
         else:
             scores_ = scores_input
 
         ind_vars = mx.init_matrix()
         pca_ind_var_predictor(scores_,
-                              self.mpca[0].loadings,
-                              self.mpca[0].colaverage,
-                              self.mpca[0].colscaling,
+                              self.mpca.contents.loadings,
+                              self.mpca.contents.colaverage,
+                              self.mpca.contents.colscaling,
                               npc_,
                               ind_vars)
         omx = mx.matrix_to_list(ind_vars)
