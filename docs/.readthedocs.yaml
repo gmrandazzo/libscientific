@@ -12,18 +12,27 @@ build:
     python: "3.11"
   apt_packages:
     - libclang-14-dev
+    - gfortran
+    - gcc
+    - liblapack-dev
+    - cmake
+  jobs:
+    pre_install:
+      - mkdir build && cd build && cmake -DCMAKE_INSTALL_PREFIX=$READTHEDOCS_VIRTUALENV_PATH .. && make install
+    post_install:
+      - export LD_LIBRARY_PATH=$READTHEDOCS_VIRTUALENV_PATH:$LD_LIBRARY_PATH 
 
 # Build documentation in the docs/ directory with Sphinx
 sphinx:
    configuration: docs/Source/conf.py
    fail_on_warning: false
 
-# If using Sphinx, optionally build your docs in additional formats such as PDF
-# formats:
-#    - pdf
 formats: all
 
 # Optionally declare the Python requirements required to build your docs
 python:
    install:
-   - requirements: docs/Source/requirements.txt
+    - requirements: docs/Source/requirements.txt
+    - method: pip
+      path: src/python_bindings/
+      

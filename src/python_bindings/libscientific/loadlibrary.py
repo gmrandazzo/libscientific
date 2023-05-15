@@ -25,8 +25,8 @@ def load_libscientific_library():
     lsci = None
     library = find_library("scientific")
     if library is None:
-        message = "Please install libscientific. "
-        message += "Go to https://github.com/gmrandazzo/libscientific"
+        message = "Please install libscientific.\n"
+        message += "Go to https://github.com/gmrandazzo/libscientific\n"
         message += "or if it is installed please check/specify the location in LD_LIBRARY_PATH"
         print(message)
     else:

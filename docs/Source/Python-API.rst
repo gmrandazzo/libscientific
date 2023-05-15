@@ -50,14 +50,6 @@ libscientific.cpca module
    :undoc-members:
    :show-inheritance:
 
-libscientific.info module
--------------------------
-
-.. automodule:: libscientific.info
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 libscientific.interpolate module
 --------------------------------
 

@@ -15,6 +15,9 @@ import sys, os
 
 sys.path.insert(0, os.path.abspath('../../src/python_bindings/'))
 
+if 'READTHEDOCS' in os.environ:
+    sys.path.insert(0, os.environ.get('READTHEDOCS_VIRTUALENV_PATH'))
+
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
