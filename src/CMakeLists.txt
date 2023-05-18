@@ -12,7 +12,7 @@ set(Scientific_C_SRCS memwrapper.c
                    metricspace.c
                    interpolate.c
                    preprocessing.c
-                   #ica.c
+                   ica.c
                    pca.c
                    cpca.c
                    pls.c
@@ -39,7 +39,7 @@ set(Scientific_C_H
                 metricspace.h
                 interpolate.h
                 preprocessing.h
-                #ica.h
+                ica.h
                 pca.h
                 pls.h
                 epls.h

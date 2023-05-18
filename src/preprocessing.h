@@ -26,7 +26,7 @@
 #include "scientificinfo.h"
 
 
-/*
+/**
  * Matrix Prepreprocess
  * This method will center and scale your "orig" matrix and store the result
  * on "trans".
@@ -54,7 +54,14 @@ void MatrixPreprocess(matrix *orig,
                       dvector *colscaling,
                       matrix *trans);
 
-/*
+
+/**
+ * Matrix Whitening method.
+ * TO BE TESTED!!
+ */
+void MatrixWhitening(matrix *orig, matrix *whiten_matrix);
+
+/**
  * Tensor Prepreprocess
  * This method will center and scale your "orig" tensor and store the result
  * on "trans".

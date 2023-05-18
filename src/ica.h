@@ -26,10 +26,8 @@
 #define ICACONVERGENCE 1e-8
 
 typedef struct{
-  matrix *scores;
-  matrix *loadings;
-  matrix *dmodx;
-  dvector *varexp;
+  matrix *S;
+  matrix *W;
   dvector *colaverage;
   dvector *colscaling;
 } ICAMODEL;

@@ -85,6 +85,46 @@ void MatrixPreprocess(matrix *orig,
   }
 }
 
+void MatrixWhitening(matrix *X, matrix *X_whiten)
+{
+  size_t i;
+  matrix *Xcov, *D, *Dinv, *evect, *evectT, *eX, *DinveX;
+  dvector *eval;
+  NewMatrix(&Xcov, X->row, X->row);
+  MatrixCovariance(X, Xcov);
+  initDVector(&eval);
+  initMatrix(&evect);
+  EVectEval(Xcov, eval, evect);
+  NewMatrix(&D, eval->size, eval->size);
+  for(i = 0; i < eval->size; i++)
+    D->data[i][i] = eval->data[i];
+
+  NewMatrix(&Dinv, D->row, D->col);
+  MatrixInversion(D, Dinv);
+
+  NewMatrix(&evectT, evect->col, evect->row);
+  MatrixTranspose(evect, evectT);
+
+  /* here to predict we need evect/evectT and Dinv*/
+  NewMatrix(&eX, evectT->row, X->col);
+  MatrixDotProduct(evectT, X, eX);
+
+  NewMatrix(&DinveX, Dinv->row, eX->col);
+  MatrixDotProduct(Dinv, eX, DinveX);
+
+  DelMatrix(&eX);
+  ResizeMatrix(X_whiten, evect->row, DinveX->col);
+  MatrixDotProduct(evect, DinveX, X_whiten);
+
+  DelMatrix(&DinveX);
+  DelMatrix(&evect);
+  DelMatrix(&Dinv);
+  DelMatrix(&evectT);
+  DelMatrix(&D);
+  DelDVector(&eval);
+  DelMatrix(&Xcov);
+}
+
 void TensorPreprocess(tensor *orig,
                       int type,
                       dvectorlist *colaverages,
@@ -108,3 +148,4 @@ void TensorPreprocess(tensor *orig,
     DelDVector(&colscaling);
   }
 }
+
