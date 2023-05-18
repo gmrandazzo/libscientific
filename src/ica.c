@@ -23,6 +23,7 @@
 #include "memwrapper.h"
 #include "numeric.h"
 #include "ica.h"
+#include "pca.h"
 #include "vector.h"
 #include "matrix.h"
 #include "preprocessing.h"
@@ -133,8 +134,7 @@ void newW(dvector *w, matrix *X, dvector *new_w)
 void ICA(matrix *mx,
          size_t scaling,
          size_t n_signals,
-         ICAMODEL *model,
-         ssignal *s)
+         ICAMODEL *model)
 {
  /* 1. Calculate the PCA extracting
   * 2. Rotation of loadings
@@ -146,6 +146,7 @@ void ICA(matrix *mx,
 
   size_t i;
   size_t j;
+  size_t k;
   size_t ic;
 
   matrix *E; /* data matrix of autoscaled / mean centred object */
@@ -163,9 +164,9 @@ void ICA(matrix *mx,
                    model->colaverage,
                    model->colscaling,
                    E);
-
+  printf("Whitening\n");
   MatrixWhitening(E, E);
-  
+  printf("Dome");
   ResizeMatrix(model->W, n_signals, E->col);
   ResizeMatrix(model->S, E->row, n_signals);
 
@@ -179,15 +180,44 @@ void ICA(matrix *mx,
     for(i = 0; i < 1000; i++){
       newW(w, E, w_new);
       if(ic >= 1){ /* remove the other source s */
-        /*w_new -= np.dot(np.dot(w_new, W[:i].T), W[:i])*/
+        dvector *a;
+        dvector *b;
+        matrix *W;
+        matrix *W_T;
+        NewMatrix(&W, W->row, ic);
+        for(k = 0; k  < W->row; k++){
+          for(j=0; j < ic; j++)
+            W->data[k][j] = model->W->data[k][j];
+        }
+        NewDVector(&a, W->col);
+        MatrixTranspose(W, W_T);
+        DVectorMatrixDotProduct(W_T, w_new, a);
+        NewDVector(&b, W->row);
+        DVectorMatrixDotProduct(W, a, b);
+        for(j = 0; j < w_new->size; j++){
+          w_new->data[j] -= b->data[j];
+        }
+        DelMatrix(&W_T);
+        DelMatrix(&W);
+        DelDVector(&a);
+        DelDVector(&b);
       }
-    }    
+
+      if(calcConvergence(w_new, w) < ICACONVERGENCE)
+        break;
+
+      for(j = 0; j < w_new->size; j++)
+        w->data[j] = w_new->data[j];
+    }  
+    
+    for(j = 0; j < w->size; j++){
+      model->W->data[ic][j] = w_new->data[i];
+    }
     DelDVector(&w);
     DelDVector(&w_new);
   }
-  
   /* S = np.dot(W, X) */
-  
+  MatrixDotProduct(model->W, E, model->S);
 }
 
 

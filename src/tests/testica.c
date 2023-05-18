@@ -21,13 +21,14 @@
 #include "numeric.h"
 #include "ica.h"
 #include "datasets.h"
+#include "numeric.h"
 #include "scientificinfo.h"
 
-void test1()
+void test2()
 {
-  puts("Test ICA 1: ICA on iris dataset");
+  puts("Test ICA 2: ICA on iris dataset");
   matrix *m, *_;
-  PCAMODEL *model;
+  ICAMODEL *model;
 
   initMatrix(&m);
   initMatrix(&_);
@@ -35,7 +36,33 @@ void test1()
 
   NewICAModel(&model);
 
-  ICA(m, 1, 2, model, NULL);
+  ICA(m, 1, 2, model);
+
+  PrintICA(model);
+  DelICAModel(&model);
+  DelMatrix(&m);
+  DelMatrix(&_);
+}
+
+
+void test1()
+{
+  puts("Test ICA 1: ICA on iris dataset");
+  matrix *m, *_;
+  ICAMODEL *model;
+  size_t i;
+  size_t j;
+  NewMatrix(&m, 10, 3);
+  for(i = 0; i < 10; i++){
+    for(j = 0; j < 3; j++){
+      m->data[i][j] = randDouble(-2, 2);
+    }
+  }
+
+  NewICAModel(&model);
+
+  ICA(m, 1, 2, model);
+
   PrintICA(model);
   DelICAModel(&model);
   DelMatrix(&m);
@@ -46,11 +73,5 @@ void test1()
 int main(void)
 {
   test1();
-  test2();
-  test3();
-  test4();
-  test5();
-  test6();
-  test7();
   return 0;
 }

@@ -35,7 +35,7 @@ typedef struct{
 void NewICAModel(ICAMODEL **m);
 void DelICAModel(ICAMODEL **m);
 
-void ICA(matrix *mx, size_t scaling, size_t n_signals, ICAMODEL *model, ssignal *s);
+void ICA(matrix *mx, size_t scaling, size_t n_signals, ICAMODEL *model);
 
 void PrintICA(ICAMODEL *m);
 
