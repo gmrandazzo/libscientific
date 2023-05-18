@@ -108,6 +108,16 @@ void newW(dvector *w, matrix *X, dvector *new_w)
     b->data[j] -= mean_g_der;
     new_w->data[j] = b->data[j]*w->data[j];
   }
+  
+  double sum_sqrt = 0.f;
+  for(j = 0; j < X->col; j++){
+    sum_sqrt += b->data[j]*b->data[j];
+  }
+
+  sum_sqrt = sqrt(sum_sqrt);
+   for(j = 0; j < X->col; j++){
+    b->data[j] /= sum_sqrt;
+  }
 
   DelDVector(&g_a);
   DelDVector(&g_der_a);
