@@ -28,7 +28,7 @@
 typedef struct{
   matrix *S;
   matrix *W;
-  matrix *white_matrix;
+  matrix *whitening_matrix;
   dvector *colaverage;
   dvector *colscaling;
 } ICAMODEL;
@@ -36,7 +36,10 @@ typedef struct{
 void NewICAModel(ICAMODEL **m);
 void DelICAModel(ICAMODEL **m);
 
-void ICA(matrix *mx, size_t scaling, size_t n_signals, ICAMODEL *model);
+void ICA(matrix *mx,
+         size_t scaling,
+         size_t n_signals,
+         ICAMODEL *model);
 
 void PrintICA(ICAMODEL *m);
 

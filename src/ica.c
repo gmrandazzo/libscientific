@@ -35,7 +35,7 @@ void NewICAModel(ICAMODEL **m)
   (*m) = xmalloc(sizeof(ICAMODEL));
   initMatrix(&((*m)->S));
   initMatrix(&((*m)->W));
-  initMatrix(&((*m)->white_matrix));
+  initMatrix(&((*m)->whitening_matrix));
   initDVector(&((*m)->colaverage));
   initDVector(&((*m)->colscaling));
 }
@@ -44,7 +44,7 @@ void DelICAModel(ICAMODEL** m)
 {
   DelDVector(&((*m)->colscaling));
   DelDVector(&((*m)->colaverage));
-  DelMatrix(&((*m)->white_matrix));
+  DelMatrix(&((*m)->whitening_matrix));
   DelMatrix(&((*m)->W));
   DelMatrix(&((*m)->S));
   xfree((*m));
@@ -68,6 +68,7 @@ void g_der(dvector *x)
   }
 }
 
+/* TEST THIS METHOD!! */
 void newW(dvector *w, matrix *X, dvector *new_w)
 {
   size_t i;
@@ -122,14 +123,15 @@ void newW(dvector *w, matrix *X, dvector *new_w)
     new_w->data[j] /= sum_sqrt;
   }
   
-
   DelDVector(&g_a);
   DelDVector(&g_der_a);
   DelDVector(&a);
+  DelDVector(&b);
 }
 
 /*
- * Algorithm:
+ * FAST ica Algorithm:
+ * - https://en.wikipedia.org/wiki/FastICA#Prewhitening_the_data
  * - doi:10.1016/j.trac.2013.03.013
  * - https://towardsdatascience.com/independent-component-analysis-ica-in-python-a0ef0db0955e
  * 
@@ -155,6 +157,10 @@ void ICA(matrix *mx,
   matrix *E; /* data matrix of autoscaled / mean centred object */
   dvector *w;
   dvector *w_new;
+  dvector *wj;
+  dvector *s;
+
+  double mod;
 
   NewMatrix(&E, mx->row, mx->col);
 
@@ -168,43 +174,40 @@ void ICA(matrix *mx,
                    model->colscaling,
                    E);
   
-  MatrixWhitening(E, model->white_matrix, E);
-  ResizeMatrix(model->W, n_signals, E->col);
-  ResizeMatrix(model->S, E->row, n_signals);
+  MatrixWhitening(E, model->whitening_matrix, E);
+  /*ResizeMatrix(model->W, n_signals, E->col);*/
+  
 
   for(ic = 0; ic < n_signals; ic++){
+    
     NewDVector(&w, E->col);
     NewDVector(&w_new, E->col);
     for(j = 0; j < w->size; j++){
       w->data[j] = randDouble(-1, 1);
     }
-    
+
     for(i = 0; i < 1000; i++){
       newW(w, E, w_new);
-      if(ic >= 1){ /* remove the other source s */
-        dvector *a;
-        dvector *b;
-        matrix *W;
-        matrix *W_T;
-        NewMatrix(&W, model->W->row, ic+1);
-        
-        for(k = 0; k  < W->row; k++){
-          for(j=0; j < ic; j++)
-            W->data[k][j] = model->W->data[k][j];
+      
+      if(ic >= 1){ /* remove the other sources */
+        NewDVector(&s, w_new->size);
+        for(j = 0; j < model->W->col; j++){
+          wj = getMatrixColumn(model->W, j);
+          mod = DVectorDVectorDotProd(w_new, wj);
+          for(k = 0; k < s->size; k++){
+            s->data[k] += mod*wj->data[k];
+          }
+          DelDVector(&wj); 
         }
-        NewDVector(&a, W->col);
-        NewMatrix(&W_T, W->col, W->row);
-        MatrixTranspose(W, W_T);
-        DVectorMatrixDotProduct(W_T, w_new, a);
-        NewDVector(&b, W->row);
-        DVectorMatrixDotProduct(W, a, b);
-        for(j = 0; j < w_new->size; j++){
-          w_new->data[j] -= b->data[j];
+
+        for(k = 0; k < s->size; k++){
+          w_new->data[k] -= s->data[k];
         }
-        DelMatrix(&W_T);
-        DelMatrix(&W);
-        DelDVector(&a);
-        DelDVector(&b);
+        mod = DVectorDVectorDotProd(w_new, w_new);
+        for(k = 0; k < s->size; k++){
+          w_new->data[k] /= mod;
+        }
+        DelDVector(&s);
       }
 
       if(calcConvergence(w_new, w) < ICACONVERGENCE)
@@ -213,15 +216,20 @@ void ICA(matrix *mx,
       for(j = 0; j < w_new->size; j++)
         w->data[j] = w_new->data[j];
     }  
+    /* Append the calculated w_new result to model->W
+     * Every column represent an independent component
+     */
+    MatrixAppendCol(model->W, w_new);
     
-    for(j = 0; j < w->size; j++){
-      model->W->data[ic][j] = w_new->data[i];
-    }
     DelDVector(&w);
     DelDVector(&w_new);
   }
+  
   /* S = np.dot(W, X) */
-  MatrixDotProduct(model->W, E, model->S);
+  ResizeMatrix(model->S, E->row, n_signals);
+  PrintMatrix(model->W);
+  MatrixDotProduct(E, model->W, model->S);
+  DelMatrix(&E);
 }
 
 
@@ -233,4 +241,7 @@ void PrintICA(ICAMODEL *m)
 
   puts("\nICA Weights");
   PrintMatrix(m->W);
+
+  puts("\nICA whitening matrix");
+  PrintMatrix(m->whitening_matrix);
 }

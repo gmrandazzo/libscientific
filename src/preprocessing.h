@@ -62,7 +62,7 @@ void MatrixPreprocess(matrix *orig,
  * each others and they will have variance equal to 1.
  */
 void MatrixWhitening(matrix *orig,
-                    matrix *white_matrix,
+                    matrix *whitening_matrix,
                     matrix *whiten_matrix);
 
 /**

@@ -48,10 +48,8 @@ void test2()
 void test1()
 {
   puts("Test ICA 1: ICA on iris dataset");
-  matrix *m, *_;
+  matrix *m;
   ICAMODEL *model;
-  size_t i;
-  size_t j;
 
   NewMatrix(&m, 10, 3);
   m->data[0][0] = -1.; m->data[0][1] = -1.; m->data[0][2] = -2.;
@@ -67,13 +65,12 @@ void test1()
 
 
   NewICAModel(&model);
-
+  PrintMatrix(m);
   ICA(m, 0, 2, model);
 
   PrintICA(model);
   DelICAModel(&model);
   DelMatrix(&m);
-  DelMatrix(&_);
 }
 
 

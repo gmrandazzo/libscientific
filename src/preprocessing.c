@@ -86,7 +86,7 @@ void MatrixPreprocess(matrix *orig,
 }
 
 void MatrixWhitening(matrix *X,
-                     matrix *white_matrix,
+                     matrix *whitening_matrix,
                      matrix *X_whiten)
 {
   size_t i;
@@ -121,8 +121,8 @@ void MatrixWhitening(matrix *X,
   MatrixDotProduct(D, u_T, a);
   DelMatrix(&u_T);
   
-  ResizeMatrix(white_matrix, u->row, a->col);
-  MatrixDotProduct(u, a, white_matrix);
+  ResizeMatrix(whitening_matrix, u->row, a->col);
+  MatrixDotProduct(u, a, whitening_matrix);
   DelMatrix(&a);
   DelMatrix(&u);
   DelMatrix(&s);
@@ -130,7 +130,7 @@ void MatrixWhitening(matrix *X,
 
 
   NewMatrix(&X_whiten_, X->row, X->col);
-  MatrixDotProduct(X, white_matrix, X_whiten_);
+  MatrixDotProduct(X, whitening_matrix, X_whiten_);
   MatrixCopy(X_whiten_, &X_whiten);
 
   DelMatrix(&X_whiten_);
