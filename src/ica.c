@@ -35,6 +35,7 @@ void NewICAModel(ICAMODEL **m)
   (*m) = xmalloc(sizeof(ICAMODEL));
   initMatrix(&((*m)->S));
   initMatrix(&((*m)->W));
+  initMatrix(&((*m)->white_matrix));
   initDVector(&((*m)->colaverage));
   initDVector(&((*m)->colscaling));
 }
@@ -43,6 +44,7 @@ void DelICAModel(ICAMODEL** m)
 {
   DelDVector(&((*m)->colscaling));
   DelDVector(&((*m)->colaverage));
+  DelMatrix(&((*m)->white_matrix));
   DelMatrix(&((*m)->W));
   DelMatrix(&((*m)->S));
   xfree((*m));
@@ -72,7 +74,8 @@ void newW(dvector *w, matrix *X, dvector *new_w)
   size_t j;
   dvector *a;
   NewDVector(&a, X->row);
-  DVectorMatrixDotProduct(X, w, a);
+  MatrixDVectorDotProduct(X, w, a);
+  
   dvector *g_a;
   dvector *g_der_a;
   initDVector(&g_a);
@@ -105,20 +108,20 @@ void newW(dvector *w, matrix *X, dvector *new_w)
    */
 
   for(j = 0; j < X->col; j++){
-    b->data[j] /= (double)X->row;
-    b->data[j] -= mean_g_der;
-    new_w->data[j] = b->data[j]*w->data[j];
+    b->data[j] /= (double)X->row; /*.mean(axis=1)*/
+    new_w->data[j] = b->data[j] - mean_g_der * w->data[j];
   }
   
   double sum_sqrt = 0.f;
   for(j = 0; j < X->col; j++){
-    sum_sqrt += b->data[j]*b->data[j];
+    sum_sqrt += new_w->data[j]*new_w->data[j];
   }
 
   sum_sqrt = sqrt(sum_sqrt);
    for(j = 0; j < X->col; j++){
-    b->data[j] /= sum_sqrt;
+    new_w->data[j] /= sum_sqrt;
   }
+  
 
   DelDVector(&g_a);
   DelDVector(&g_der_a);
@@ -164,9 +167,8 @@ void ICA(matrix *mx,
                    model->colaverage,
                    model->colscaling,
                    E);
-  printf("Whitening\n");
-  MatrixWhitening(E, E);
-  printf("Dome");
+  
+  MatrixWhitening(E, model->white_matrix, E);
   ResizeMatrix(model->W, n_signals, E->col);
   ResizeMatrix(model->S, E->row, n_signals);
 
@@ -176,7 +178,7 @@ void ICA(matrix *mx,
     for(j = 0; j < w->size; j++){
       w->data[j] = randDouble(-1, 1);
     }
-
+    
     for(i = 0; i < 1000; i++){
       newW(w, E, w_new);
       if(ic >= 1){ /* remove the other source s */
@@ -184,13 +186,15 @@ void ICA(matrix *mx,
         dvector *b;
         matrix *W;
         matrix *W_T;
-        NewMatrix(&W, W->row, ic);
+        NewMatrix(&W, W->row, ic+1);
+        
         for(k = 0; k  < W->row; k++){
           for(j=0; j < ic; j++)
             W->data[k][j] = model->W->data[k][j];
         }
         NewDVector(&a, W->col);
         MatrixTranspose(W, W_T);
+        
         DVectorMatrixDotProduct(W_T, w_new, a);
         NewDVector(&b, W->row);
         DVectorMatrixDotProduct(W, a, b);

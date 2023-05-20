@@ -85,43 +85,56 @@ void MatrixPreprocess(matrix *orig,
   }
 }
 
-void MatrixWhitening(matrix *X, matrix *X_whiten)
+void MatrixWhitening(matrix *X,
+                     matrix *white_matrix,
+                     matrix *X_whiten)
 {
   size_t i;
-  matrix *Xcov, *D, *Dinv, *evect, *evectT, *eX, *DinveX;
-  dvector *eval;
-  NewMatrix(&Xcov, X->row, X->row);
+  matrix *Xcov;
+  matrix *D;
+  matrix *u;
+  matrix *u_T;
+  matrix *vt;
+  matrix *s;
+  matrix *a;
+  matrix *X_whiten_;
+
+  matrix *Xt;
+  NewMatrix(&Xt, X->col, X->row);
+  MatrixTranspose(X, Xt);
+  initMatrix(&Xcov);
   MatrixCovariance(X, Xcov);
-  initDVector(&eval);
-  initMatrix(&evect);
-  EVectEval(Xcov, eval, evect);
-  NewMatrix(&D, eval->size, eval->size);
-  for(i = 0; i < eval->size; i++)
-    D->data[i][i] = eval->data[i];
+  DelMatrix(&Xt);
 
-  NewMatrix(&Dinv, D->row, D->col);
-  MatrixInversion(D, Dinv);
+  initMatrix(&u);
+  initMatrix(&s);
+  initMatrix(&vt);
+  SVDlapack(Xcov, u, s, vt);
 
-  NewMatrix(&evectT, evect->col, evect->row);
-  MatrixTranspose(evect, evectT);
+  NewMatrix(&D, s->col, s->col);
+  for(i = 0; i < s->col; i++)
+    D->data[i][i] = 1/sqrt(s->data[i][i]);
 
-  /* here to predict we need evect/evectT and Dinv*/
-  NewMatrix(&eX, evectT->row, X->col);
-  MatrixDotProduct(evectT, X, eX);
+  NewMatrix(&u_T, u->col, u->row);
+  MatrixTranspose(u, u_T);
+  NewMatrix(&a, D->row, u_T->col);
+  MatrixDotProduct(D, u_T, a);
+  DelMatrix(&u_T);
+  
+  ResizeMatrix(white_matrix, u->row, a->col);
+  MatrixDotProduct(u, a, white_matrix);
+  DelMatrix(&a);
+  DelMatrix(&u);
+  DelMatrix(&s);
+  DelMatrix(&vt);
 
-  NewMatrix(&DinveX, Dinv->row, eX->col);
-  MatrixDotProduct(Dinv, eX, DinveX);
 
-  DelMatrix(&eX);
-  ResizeMatrix(X_whiten, evect->row, DinveX->col);
-  MatrixDotProduct(evect, DinveX, X_whiten);
+  NewMatrix(&X_whiten_, X->row, X->col);
+  MatrixDotProduct(X, white_matrix, X_whiten_);
+  MatrixCopy(X_whiten_, &X_whiten);
 
-  DelMatrix(&DinveX);
-  DelMatrix(&evect);
-  DelMatrix(&Dinv);
-  DelMatrix(&evectT);
+  DelMatrix(&X_whiten_);
   DelMatrix(&D);
-  DelDVector(&eval);
   DelMatrix(&Xcov);
 }
 

@@ -28,6 +28,7 @@
 typedef struct{
   matrix *S;
   matrix *W;
+  matrix *white_matrix;
   dvector *colaverage;
   dvector *colscaling;
 } ICAMODEL;

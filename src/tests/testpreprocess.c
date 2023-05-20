@@ -25,6 +25,54 @@
 #include "datasets.h"
 #include "scientificinfo.h"
 
+void test3()
+{
+  puts("Test3: Matrix Whitening");
+  matrix *m;
+  matrix *w;
+  matrix *m_w;
+  matrix *cov;
+  size_t i;
+  size_t j;
+
+  NewMatrix(&m, 4, 3);
+  for(i = 0 ; i < 4; i++){
+    for(j = 0; j < 3; j++){
+      m->data[i][j] = randDouble(-2, 2);
+    }
+  }
+  initMatrix(&w);
+  initMatrix(&m_w);
+  MatrixWhitening(m, w, m_w);
+
+  /* test
+   * the covariance matrix of the whitened signal
+   * should equal the identity matrix
+   */
+  initMatrix(&cov);
+  MatrixCovariance(m_w, cov);
+  PrintMatrix(cov);
+  for(i = 0; i < cov->row; i++){
+    for(j = 0; j < cov->col; j++){
+      if(i == j){
+        if(FLOAT_EQ(cov->data[i][j], 1.f, 1e-2))
+          continue;
+        else
+          abort();
+      }
+      else{
+        if(FLOAT_EQ(cov->data[i][j], 0.f, 1e-2))
+          continue;
+        else
+          abort();
+      }
+    }
+  }
+  DelMatrix(&cov);
+  DelMatrix(&m);
+  DelMatrix(&m_w);
+  DelMatrix(&w);
+}
 void test2()
 {
     puts("Test1: MatrixPreprocess");
@@ -174,6 +222,6 @@ int main(void)
 {
   test1();
   test2();
-  /*test3();*/
+  test3();
   return 0;
 }

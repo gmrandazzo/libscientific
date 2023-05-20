@@ -57,9 +57,13 @@ void MatrixPreprocess(matrix *orig,
 
 /**
  * Matrix Whitening method.
- * TO BE TESTED!!
+ * This method will transform the original input matrix
+ * into a new matrix where the new variables are uncorrelated
+ * each others and they will have variance equal to 1.
  */
-void MatrixWhitening(matrix *orig, matrix *whiten_matrix);
+void MatrixWhitening(matrix *orig,
+                    matrix *white_matrix,
+                    matrix *whiten_matrix);
 
 /**
  * Tensor Prepreprocess
