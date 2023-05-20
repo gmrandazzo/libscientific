@@ -186,7 +186,7 @@ void ICA(matrix *mx,
         dvector *b;
         matrix *W;
         matrix *W_T;
-        NewMatrix(&W, W->row, ic+1);
+        NewMatrix(&W, model->W->row, ic+1);
         
         for(k = 0; k  < W->row; k++){
           for(j=0; j < ic; j++)
