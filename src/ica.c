@@ -193,8 +193,8 @@ void ICA(matrix *mx,
             W->data[k][j] = model->W->data[k][j];
         }
         NewDVector(&a, W->col);
+        NewMatrix(&W_T, W->col, W->row);
         MatrixTranspose(W, W_T);
-        
         DVectorMatrixDotProduct(W_T, w_new, a);
         NewDVector(&b, W->row);
         DVectorMatrixDotProduct(W, a, b);
