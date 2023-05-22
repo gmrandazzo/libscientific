@@ -389,37 +389,13 @@ void PCAScorePredictor(matrix *mx, PCAMODEL *model, size_t npc, matrix *pscores)
   ResizeMatrix(pscores, mx->row, npc);
 
   NewMatrix(&E, mx->row, mx->col);
-
-  if(model->colaverage->size > 0){
-    for(j = 0; j < E->col; j++){
-      for(i = 0; i < E->row; i++){
-        E->data[i][j] = mx->data[i][j] - model->colaverage->data[j];
-      }
-    }
-  }
-  else{
-    for(j = 0; j < mx->col; j++){
-      for(i = 0; i < mx->row; i++){
-        E->data[i][j] = mx->data[i][j];
-      }
-    }
-  }
-
-  if(model->colscaling->size > 0){
-    for(j = 0; j < E->col; j++){
-      if(getDVectorValue(model->colscaling, j) == 0){
-        for(i = 0; i< E->row; i++){
-          E->data[i][j] = 0.f;
-        }
-      }
-      else{
-        for(i = 0; i < E->row; i++){
-          E->data[i][j] /= model->colscaling->data[j];
-        }
-      }
-    }
-  }
-
+  
+  MatrixPreprocess(mx,
+                   -1,
+                   model->colaverage,
+                   model->colscaling,
+                   E);
+  
   NewDVector(&t, E->row);
   NewDVector(&p, model->loadings->row);
 

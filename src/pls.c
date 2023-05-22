@@ -647,37 +647,11 @@ void PLSScorePredictor(matrix *mx,
   dvector *w;
 
   NewMatrix(&X, mx->row, mx->col);
-  if(model->xcolaverage->size > 0){
-    for(i = 0; i < mx->row; i++){
-      for(j = 0; j < mx->col; j++){
-        X->data[i][j] = mx->data[i][j] - model->xcolaverage->data[j];
-      }
-    }
-  }
-  else{
-    for(i = 0; i < mx->row; i++){
-      for(j = 0; j < mx->col; j++){
-        X->data[i][j] = mx->data[i][j];
-      }
-    }
-  }
-
-  if(model->xcolscaling != NULL && model->xcolscaling->data != NULL
-    && model->xcolscaling->size > 0){
-    for(j = 0; j < X->col; j++){
-      if(model->xcolscaling->data[j] == 0){
-        for(i = 0; i< X->row; i++){
-          X->data[i][j] = 0.f;
-        }
-      }
-      else{
-        /* Autoscaling for the column j of data by its standar deviation */
-        for(i = 0; i < X->row; i++){
-          X->data[i][j] /= model->xcolscaling->data[j];
-        }
-      }
-    }
-  }
+  MatrixPreprocess(mx,
+                   -1,
+                   model->xcolaverage,
+                   model->xcolscaling,
+                   X);
 
   #ifdef DEBUG
   puts("Preprocessed Matrix to predict");
@@ -759,7 +733,6 @@ void PLSYPredictor(matrix *tscore, PLSMODEL *model, size_t nlv, matrix *y)
       }
     }
   }
-
 
   if(model->ycolaverage->size > 0){
     for(j = 0; j < model->ycolaverage->size; j++){

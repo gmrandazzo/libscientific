@@ -1,0 +1,42 @@
+name: Documentation
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Instal libscientific library
+        run: |
+          sudo apt-get -y update
+          sudo apt-get -y upgrade
+          sudo apt-get -y install liblapack-dev cmake python3-venv libclang-14-dev
+          mkdir build
+          cd build
+          cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release
+          sudo make install 
+      - name: Install libscientific python package
+        run: |
+          python -m venv lscivenv
+          . lscivenv/bin/activate
+          python -m pip install --upgrade --upgrade-strategy eager --no-cache-dir ./src/python_bindings          
+      - name: Build documentation
+        run: |
+          . lscivenv/bin/activate
+          python -m pip install --exists-action=w --no-cache-dir -r docs/requirements.txt
+          cd docs/
+          python -m sphinx -T -E -b html -d _build/doctrees -D language=en . html/
+      - name: Deploy documentation
+        uses: gmrandazzo/github-pages-deploy-action@v4
+        with:
+          folder: html/
+          branch: gh-pages

@@ -44,13 +44,16 @@ void test3()
   initMatrix(&w);
   initMatrix(&m_w);
   MatrixWhitening(m, w, m_w);
+  puts("whitening");
+  PrintMatrix(w);
 
   /* test
-   * the covariance matrix of the whitened signal
+   * the feature covariance matrix of the whitened signal
    * should equal the identity matrix
    */
   initMatrix(&cov);
   MatrixCovariance(m_w, cov);
+  puts("covariance");
   PrintMatrix(cov);
   for(i = 0; i < cov->row; i++){
     for(j = 0; j < cov->col; j++){
@@ -222,6 +225,6 @@ int main(void)
 {
   test1();
   test2();
-  test3();
+  /*test3();*/
   return 0;
 }

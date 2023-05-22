@@ -849,6 +849,103 @@ void Test27()
   DelMatrix(&t);
   DelMatrix(&m);
 }
+void Test26_tris()
+{
+  matrix *m, *U, *S, *V_T;
+
+  puts("Test 26 tris: Computing Singular Value Decomposition Lapack method");
+
+  NewMatrix(&m, 6, 4);
+  m->data[0][0] = 7.52; m->data[0][1] = -1.10; m->data[0][2] = -7.95; m->data[0][3] = 1.08;
+  m->data[1][0] = -0.76; m->data[1][1] = 0.62; m->data[1][2] = 9.34; m->data[1][3] = -7.10;
+  m->data[2][0] = 5.13; m->data[2][1] = 6.62; m->data[2][2] = -5.66 ; m->data[2][3] = 0.87;
+  m->data[3][0] = -4.75; m->data[3][1] = 8.52; m->data[3][2] = 5.75; m->data[3][3] = 5.30;
+  m->data[4][0] = 1.33; m->data[4][1] = 4.91; m->data[4][2] = -5.49 ; m->data[4][3] = -3.52;
+  m->data[5][0] = -2.40; m->data[5][1] = -6.77; m->data[5][2] = 2.34 ; m->data[5][3] = 3.95;
+
+  initMatrix(&U);
+  initMatrix(&S);
+  initMatrix(&V_T);
+
+  SVDlapack(m, U, S, V_T);
+  PrintMatrix(U);
+  PrintMatrix(S);
+  PrintMatrix(V_T);
+
+  DelMatrix(&U);
+  DelMatrix(&S);
+  DelMatrix(&V_T);
+  DelMatrix(&m);
+}
+
+void Test26_bis()
+{
+  size_t i, j, k;
+  matrix *m, *U, *S, *V_T;
+  matrix *Ur, *Sr, *V_Tr; /* Results */
+  puts("Test 26 bis: Computing Singular Value Decomposition Lapack method");
+
+  NewMatrix(&m, 2, 4);
+  k = 1;
+  for(i = 0; i < 2; i++){
+    for(j = 0; j < 4; j++){
+      m->data[i][j] = k;
+      k++;
+    }
+  }
+
+  initMatrix(&U);
+  initMatrix(&S);
+  initMatrix(&V_T);
+
+  SVDlapack(m, U, S, V_T);
+
+  NewMatrix(&Ur, 2, 2);
+  NewMatrix(&Sr, 2, 2);
+  NewMatrix(&V_Tr, 2, 4);
+  Ur->data[0][0] = -0.376168; Ur->data[0][1] = -0.926551;
+  Ur->data[1][0] = -0.926551; Ur->data[1][1] =0.376168;
+  Sr->data[0][0] = 14.227407; Sr->data[1][1] = 1.257330;
+  V_Tr->data[0][0] = -0.352062; V_Tr->data[0][1] = -0.443626; V_Tr->data[0][2] = -0.535190; V_Tr->data[0][3] = -0.626754;
+  V_Tr->data[1][0] = 0.758981; V_Tr->data[1][1] = 0.321242; V_Tr->data[1][1] = -0.116498; V_Tr->data[1][1] = -0.554238;
+
+  int ok = 1;
+  for(int i = 0; i < 2; i++){
+    for(int j = 0; j < 2; j++){
+      if(FLOAT_EQ(U->data[i][j], Ur->data[i][j], 1e-2) &&
+         FLOAT_EQ(S->data[i][j], Sr->data[i][j], 1e-2) &&
+         FLOAT_EQ(V_T->data[i][j], V_Tr->data[i][j], 1e-2)){
+         continue;
+      }
+      else{
+        ok = 0;
+        break;
+      }
+    }
+  }
+
+  if(ok == 1)
+    puts("SVD Lapack: OK");
+  else{
+    printf("Problem on SVD Lapack decomposition\n");
+    puts("Current answer");
+    puts("U"); PrintMatrix(U);
+    puts("S"); PrintMatrix(S);
+    puts("V_T"); PrintMatrix(V_T);
+    puts("Correct answer");
+    puts("U"); PrintMatrix(Ur);
+    puts("S"); PrintMatrix(Sr);
+    puts("V_T"); PrintMatrix(V_T);
+  }
+
+  DelMatrix(&Ur);
+  DelMatrix(&Sr);
+  DelMatrix(&V_Tr);
+  DelMatrix(&U);
+  DelMatrix(&S);
+  DelMatrix(&V_T);
+  DelMatrix(&m);
+}
 
 void Test26()
 {
@@ -1905,6 +2002,8 @@ int main(void)
   Test24();
   Test25();
   Test26();
+  Test26_bis();
+  //Test26_tris();
   Test27();
   Test28();
   Test29();

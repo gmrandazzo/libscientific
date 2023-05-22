@@ -54,7 +54,6 @@ void MatrixPreprocess(matrix *orig,
                       dvector *colscaling,
                       matrix *trans);
 
-
 /**
  * Matrix Whitening method.
  * This method will transform the original input matrix

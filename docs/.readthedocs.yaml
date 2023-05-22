@@ -9,7 +9,7 @@ version: 2
 build:
   os: ubuntu-22.04
   tools:
-    python: "3.11"
+    python: "3.10"
   apt_packages:
     - libclang-14-dev
     - gfortran
@@ -17,9 +17,12 @@ build:
     - liblapack-dev
     - cmake
   jobs:
-    pre_install:
-      - mkdir build && cd build && cmake -DCMAKE_INSTALL_PREFIX=$READTHEDOCS_VIRTUALENV_PATH .. && make install
-      - echo "export LD_LIBRARY_PATH=$READTHEDOCS_VIRTUALENV_PATH/lib:$LD_LIBRARY_PATH" >> ~/.bashrc && . ~/.bashrc
+    post_create_environment:
+      - mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$READTHEDOCS_VIRTUALENV_PATH .. && make install
+      - cd src/python_bindings/ && python setup.py install
+    #pre_build:
+    #  - mkdir $READTHEDOCS_OUTPUT
+    #  - cd docs/Source && make html && mv _build/html $READTHEDOCS_OUTPUT
 
 # Build documentation in the docs/ directory with Sphinx
 sphinx:
@@ -32,6 +35,6 @@ formats: all
 python:
    install:
     - requirements: docs/Source/requirements.txt
-    - method: pip
-      path: src/python_bindings/
+    #- method: pip
+    #  path: src/python_bindings/
       

@@ -67,73 +67,92 @@ void g_der(dvector *x)
     x->data[i] = 1.f-(v*v);
   }
 }
+#include<unistd.h>
 
-/* TEST THIS METHOD!! */
+/*
+ * new_w = (X_whitened * g(w^T*X_whitened)^T)/M - (g_der(w^T*X_whitened)*1_vector_size_M*w)/M
+ */
 void newW(dvector *w, matrix *X, dvector *new_w)
 {
   size_t i;
-  size_t j;
-  dvector *a;
-  NewDVector(&a, X->row);
-  MatrixDVectorDotProduct(X, w, a);
-  
-  dvector *g_a;
-  dvector *g_der_a;
-  initDVector(&g_a);
-  initDVector(&g_der_a);
-  DVectorCopy(a, g_a);
-  g(g_a);
-  DVectorCopy(a, g_der_a);
-  g_der(g_der_a);
-  double mean_g_der = 0.f;
-  for(i = 0; i < g_der_a->size; i++)
-    mean_g_der += g_der_a->data[i];
-  mean_g_der /= (double)g_der_a->size;
+  dvector *wX;
+  dvector *wX_copy;
+  dvector *XwX;
+  dvector *one;
+  dvector *g_der_one_w;
+  /* Calculation of X * g(w^T*X)^T)/M */
+  NewDVector(&wX, X->row);
+  NewDVector(&wX_copy, X->row);
+  NewDVector(&XwX, X->col);
+  NewDVector(&one, X->row);
+  DVectorSet(one, 1.f);
 
-  dvector *b;
-  NewDVector(&b, X->col);
-  
-  for(i = 0; i < X->row; i++){
-    for(j = 0; j < X->col; j++){
-      b->data[j] += X->data[i][j] * g_a->data[i];
-    }
+  /*printf("%zu x %zu x %zu x 1 = %zu x 1 \n", X->row, X->col, w->size, wX->size);*/
+  MatrixDVectorDotProduct(X, w, wX);
+  DVectorCopy(wX, wX_copy);/* copy of wX to calculate the derivative */
+  g(wX);
+  /*printf("%zu x %zu x %zu x 1 = %zu x 1 \n", X->row, X->col, wX->size, XwX->size);*/
+  DVectorMatrixDotProduct(X, wX, XwX);
+  for(i = 0; i < XwX->size; i++){
+    XwX->data[i]/=(double)X->row;
   }
 
-  /* 
-   * w_new = (X * g(np.dot(w.T, X))).mean(axis=1) - g_der(np.dot(w.T, X)).mean() * w
-   *
-   * (X * g(np.dot(w.T, X))).mean(axis=1)  = b
-   * 
-   * g_der(np.dot(w.T, X)).mean()  = mean_g_der
-   * 
+  /* Calculation of (g_der(w^T*X)*one*w)/M */
+  g_der(wX_copy);
+  double g_der_one = DVectorDVectorDotProd(wX_copy, one);
+  
+  initDVector(&g_der_one_w);
+  DVectorCopy(w, g_der_one_w);
+  
+  for(i = 0; i < w->size; i++){
+    g_der_one_w->data[i] *= g_der_one;
+    g_der_one_w->data[i] /= (double)X->row;
+  }
+  
+  /* Calculation of new_w = (X * g(w^T*X)^T)/M - (g_der(w^T*X)*one*w)/M 
+   * by using the previous calculations.
    */
-
-  for(j = 0; j < X->col; j++){
-    b->data[j] /= (double)X->row; /*.mean(axis=1)*/
-    new_w->data[j] = b->data[j] - mean_g_der * w->data[j];
-  }
-  
-  double sum_sqrt = 0.f;
-  for(j = 0; j < X->col; j++){
-    sum_sqrt += new_w->data[j]*new_w->data[j];
+  for(i = 0; i < new_w->size; i++){
+    new_w->data[i] = XwX->data[i] - g_der_one_w->data[i];
   }
 
-  sum_sqrt = sqrt(sum_sqrt);
-   for(j = 0; j < X->col; j++){
-    new_w->data[j] /= sum_sqrt;
-  }
-  
-  DelDVector(&g_a);
-  DelDVector(&g_der_a);
-  DelDVector(&a);
-  DelDVector(&b);
+  DelDVector(&one);
+  DelDVector(&g_der_one_w);
+  DelDVector(&XwX);
+  DelDVector(&wX_copy);
+  DelDVector(&wX);
 }
 
 /*
  * FAST ica Algorithm:
  * - https://en.wikipedia.org/wiki/FastICA#Prewhitening_the_data
  * - doi:10.1016/j.trac.2013.03.013
- * - https://towardsdatascience.com/independent-component-analysis-ica-in-python-a0ef0db0955e
+ * 
+ * Algorithm
+ * 
+ * inputs: 
+ *     - mx M x N matrix
+ *     - n_signals = number of source signals to extracts
+ * outputs:
+ *     - S new signal space size  M x n_signals
+ *     - W unmixing matrix size M x n_signals
+ * 
+ * center matrix to zero  mx = X
+ * whitening matrix X -> X_whitened (store the whitening matrix for future predictions)
+ * 
+ * for p in 1 to C:
+ *     w = random vector of lenght N
+ *     while w changes
+ *        new_w = (X_whitened * g(w^T*X_whitened)^T)/M - (g_der(w^T*X_whitened)*1*w)/M
+ *        new_w = new_w - Sum (new_w - all_prev_w) * new_w
+ *        new_w = new_w/||new_w||
+ *        check if new_w ~ w. If yes stop else continue
+ *     W.append(new_w)
+ * 
+ *  S = X_whitened * W 
+ * 
+ * 
+ * 
  * 
  */
 void ICA(matrix *mx,
@@ -149,12 +168,11 @@ void ICA(matrix *mx,
   * X = loadings from PCA
   */
 
-  size_t i;
   size_t j;
   size_t k;
   size_t ic;
 
-  matrix *E; /* data matrix of autoscaled / mean centred object */
+  matrix *mx_whitened; /* data matrix of autoscaled / mean centred object */
   dvector *w;
   dvector *w_new;
   dvector *wj;
@@ -162,34 +180,56 @@ void ICA(matrix *mx,
 
   double mod;
 
-  NewMatrix(&E, mx->row, mx->col);
-
   /* check if matrix have nan or infinite and convert them to MISSING */
   MatrixCheck(mx);
 
+  NewMatrix(&mx_whitened, mx->row, mx->col);
+  matrix *a;
+  NewMatrix(&a, mx->row, mx->col);
   /* Center and scale the input matrix */
   MatrixPreprocess(mx,
                    scaling,
                    model->colaverage,
                    model->colscaling,
-                   E);
-  
-  MatrixWhitening(E, model->whitening_matrix, E);
-  /*ResizeMatrix(model->W, n_signals, E->col);*/
-  
+                   a);
+  puts("Centered matrix");
+  PrintMatrix(a);
+
+  MatrixWhitening(a,
+                  model->whitening_matrix,
+                  mx_whitened);
+  DelMatrix(&a);
+
+  puts("Whitened Matrix");
+  printf("%zu %zu\n", model->whitening_matrix->row, model->whitening_matrix->col);
+  PrintMatrix(mx_whitened);
+  sleep(2);
+
+  mx_whitened->data[0][0] = 15581708.89772898; mx_whitened->data[0][1] = 3738282.0789715727; mx_whitened->data[0][2] = 616737.7235975976;
+  mx_whitened->data[1][0] = -33024973.944985524; mx_whitened->data[1][1] = -61100142.84298632; mx_whitened->data[1][2] = -68499847.63121258;
+  mx_whitened->data[2][0] = -273674700.82157916; mx_whitened->data[2][1] = -303367702.828234; mx_whitened->data[2][2] = -311193815.5725274;
+  mx_whitened->data[3][0] = -310021478.96733695; mx_whitened->data[3][1] = -353761425.7790786; mx_whitened->data[3][2] = -365289860.2342865;
+  mx_whitened->data[4][0] = 32355196.352794625; mx_whitened->data[4][1] = 15106939.908953723; mx_whitened->data[4][2] = 10560859.556477588;
+  mx_whitened->data[5][0] = 12257796.148508463; mx_whitened->data[5][1] = -2169869.944647597; mx_whitened->data[5][2] = -5972535.927271978;
+  mx_whitened->data[6][0] = -242395274.77423197; mx_whitened->data[6][1] = -261796514.41807708; mx_whitened->data[6][2] = -266910052.90352032;
+  mx_whitened->data[7][0] = -116787811.31648967; mx_whitened->data[7][1] = -160695662.42759553; mx_whitened->data[7][2] = -172268349.50678033;
+  mx_whitened->data[8][0] = 213605536.8350418; mx_whitened->data[8][1] = 200453330.40735683; mx_whitened->data[8][2] = 196986834.20210207;
+  mx_whitened->data[9][0] = 155-24815055.1608388781708; mx_whitened->data[9][1] = -57687855.3787338; mx_whitened->data[9][2] = -66352060.85964788;
 
   for(ic = 0; ic < n_signals; ic++){
-    
-    NewDVector(&w, E->col);
-    NewDVector(&w_new, E->col);
+    NewDVector(&w, mx_whitened->col);
+    NewDVector(&w_new, mx_whitened->col);
     for(j = 0; j < w->size; j++){
       w->data[j] = randDouble(-1, 1);
     }
-
-    for(i = 0; i < 1000; i++){
-      newW(w, E, w_new);
-      
-      if(ic >= 1){ /* remove the other sources */
+    
+    do{ /* Loop untill convergence! */
+      newW(w, mx_whitened, w_new);
+      /*
+       * Remove the other sources
+       * new_w = new_w - Sum (new_w - all_prev_w) * new_w
+       */
+      if(ic >= 1){
         NewDVector(&s, w_new->size);
         for(j = 0; j < model->W->col; j++){
           wj = getMatrixColumn(model->W, j);
@@ -203,35 +243,58 @@ void ICA(matrix *mx,
         for(k = 0; k < s->size; k++){
           w_new->data[k] -= s->data[k];
         }
+
+        /*
+         * new_w normalization 
+         * new_w = new_w/||new_w||
+         */
         mod = DVectorDVectorDotProd(w_new, w_new);
         for(k = 0; k < s->size; k++){
           w_new->data[k] /= mod;
         }
         DelDVector(&s);
       }
-
-      if(calcConvergence(w_new, w) < ICACONVERGENCE)
-        break;
-
+      
+      printf("Loop %f\n", calcConvergence(w_new, w));
       for(j = 0; j < w_new->size; j++)
         w->data[j] = w_new->data[j];
-    }  
+    } while(calcConvergence(w_new, w) > ICACONVERGENCE);
+
     /* Append the calculated w_new result to model->W
      * Every column represent an independent component
      */
     MatrixAppendCol(model->W, w_new);
-    
-    DelDVector(&w);
+
     DelDVector(&w_new);
+    DelDVector(&w);
   }
   
   /* S = np.dot(W, X) */
-  ResizeMatrix(model->S, E->row, n_signals);
-  PrintMatrix(model->W);
-  MatrixDotProduct(E, model->W, model->S);
-  DelMatrix(&E);
+  ResizeMatrix(model->S, mx_whitened->row, n_signals);
+  MatrixDotProduct(mx_whitened, model->W, model->S);
+  DelMatrix(&mx_whitened);
 }
 
+
+void ICASignalPredictor(matrix *mx,
+                        ICAMODEL *model,
+                        matrix *p_signals)
+{
+  matrix *mx_whitened;
+  initMatrix(&mx_whitened);
+  MatrixPreprocess(mx,
+                   -1,
+                   model->colaverage,
+                   model->colscaling, mx_whitened);
+
+  MatrixWhitening(mx_whitened,
+                  model->whitening_matrix,
+                  mx_whitened);
+
+  ResizeMatrix(p_signals, mx_whitened->row, model->W->col);
+  MatrixDotProduct(mx_whitened, model->W, p_signals);
+  DelMatrix(&mx_whitened);
+}
 
 void PrintICA(ICAMODEL *m)
 {

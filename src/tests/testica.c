@@ -24,6 +24,41 @@
 #include "numeric.h"
 #include "scientificinfo.h"
 
+void test3()
+{
+  puts("Test ICA 3: ICA Prediction");
+  size_t i, j;
+  matrix *m, *_;
+  matrix *psignals;
+  ICAMODEL *model;
+
+  initMatrix(&m);
+  initMatrix(&_);
+  iris(m, _);
+
+  NewICAModel(&model);
+
+  ICA(m, 1, 2, model);
+  initMatrix(&psignals);
+  ICASignalPredictor(m, model, psignals);
+  for(i = 0; i < model->S->row; i++){
+    for(j = 0; j < model->S->col; j++){
+      if(FLOAT_EQ(model->S->data[i][j], psignals->data[i][j], 1e-12)){
+        continue;
+      }
+      else{
+        abort();
+      }
+    }
+  }
+  puts("OK.");
+  DelICAModel(&model);
+  DelMatrix(&m);
+  DelMatrix(&psignals);
+  DelMatrix(&_);
+}
+
+
 void test2()
 {
   puts("Test ICA 2: ICA on iris dataset");
@@ -37,8 +72,8 @@ void test2()
   NewICAModel(&model);
 
   ICA(m, 1, 2, model);
-
   PrintICA(model);
+  puts("OK.");
   DelICAModel(&model);
   DelMatrix(&m);
   DelMatrix(&_);
@@ -47,7 +82,7 @@ void test2()
 
 void test1()
 {
-  puts("Test ICA 1: ICA on iris dataset");
+  puts("Test ICA 1: ICA on a random 10x3 dataset");
   matrix *m;
   ICAMODEL *model;
 
@@ -63,12 +98,11 @@ void test1()
   m->data[8][0] = 1.2186072;  m->data[8][1] = 1.72041471; m->data[8][2] = 0.93902191;
   m->data[9][0] = -2.28790332; m->data[9][1] = -3.14395166; m->data[9][2] = -3.43185497;
 
-
   NewICAModel(&model);
   PrintMatrix(m);
   ICA(m, 0, 2, model);
-
   PrintICA(model);
+  puts("OK.");
   DelICAModel(&model);
   DelMatrix(&m);
 }
@@ -77,5 +111,7 @@ void test1()
 int main(void)
 {
   test1();
+  /*test2();
+  test3();*/
   return 0;
 }

@@ -1614,7 +1614,12 @@ void MatrixColDescStat(matrix *m, matrix *ds)
   DelDVector(&v);
 }
 
-/* calculation of the covariance matrix */
+/**
+ *  Calculation of the covariance matrix
+ *  m x n x n x m = m x m
+ */
+/*
+WRONG!
 void MatrixCovariance(matrix *m, matrix *cm)
 {
   size_t i;
@@ -1638,6 +1643,28 @@ void MatrixCovariance(matrix *m, matrix *cm)
   }
 
   DelDVector(&colaverage);
+}*/
+
+void MatrixCovariance(matrix *m, matrix *cm)
+{
+  size_t i;
+  size_t j;
+  size_t k;
+  double sum;
+  dvector *rowaverage;
+  initDVector(&rowaverage);
+  MatrixRowAverage(m, rowaverage);
+  ResizeMatrix(cm, m->row, m->row);
+  for(i = 0; i < m->row; i++){
+    for(j = 0; j < m->row; j++){
+      sum = +0.f;
+      for(k =0; k < m->col; k++){
+        sum += (m->data[i][k] - rowaverage->data[i]) * (m->data[j][k] - rowaverage->data[j]);
+      }
+      cm->data[i][j] = sum/(m->col-1);
+    }
+  }
+  DelDVector(&rowaverage);
 }
 
 /* Transform a matrix into a logaritmic matrix */
@@ -2113,7 +2140,7 @@ void SVDlapack(matrix *m_, matrix *u, matrix *s, matrix *vt)
   }
 
   /* s are the eigenvectors singular values diagonal matrix*/
-  ResizeMatrix(s, m, n);
+  ResizeMatrix(s, n, n);
   for(i = 0; i < m_->col; i++){
     s->data[i][i] = s_[i];
   }
@@ -2121,7 +2148,7 @@ void SVDlapack(matrix *m_, matrix *u, matrix *s, matrix *vt)
   /* u is left singular vectors */
   conv2matrix(m, n, u_, ldu, u);
   /*vt is the right singular vectors */
-  conv2matrix( n, n, vt_, ldvt, vt);
+  conv2matrix(m, n, vt_, ldvt, vt);
   /* Free workspace */
   xfree(work);
   xfree(a);

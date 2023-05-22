@@ -62,11 +62,8 @@ void CosineDistance(matrix *m1, matrix *m2, matrix *distances, size_t nthreads);
  */
 void CosineDistance_ST(matrix *m1, matrix *m2, matrix *distances);
 
-/* Description: calculate the Mahalanobis distance between two matrix with the same column number */
-double MatrixMahalanobisDistance(matrix *g1, matrix *g2);
-
-/* Description: calculate the Mahalanobis distance of each point function of its distribution */
-void MahalanobisDistance(matrix* m, matrix *invcov, dvector *mu, dvector *dists);
+/* Descriptuon matrix-matrix distance defined as euclidean distance and frobenius norm of it */
+double MatrixMatrixDistance(matrix *m1, matrix *m2);
 
 /* Description: convert the matrix mi (mxn) into a covariance distance map (mxn) */
 void CovarianceDistanceMap(matrix* mi, matrix *mo);

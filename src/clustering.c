@@ -1480,7 +1480,7 @@ void KMeansJumpMethod(matrix* m,
     initMatrix(&centroids);
 
     KMeans(m, k, initializer, clusters, centroids, nthreads);
-    dist = MatrixMahalanobisDistance(m, centroids);
+    dist = MatrixMatrixDistance(m, centroids);
 
     printf("dist %f  %f\n", dist, pow(dist, -y));
 

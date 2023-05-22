@@ -13,10 +13,8 @@
 
 import sys, os
 
-sys.path.insert(0, os.path.abspath('../../src/python_bindings/'))
+sys.path.insert(0, os.path.abspath('../src/python_bindings/'))
 
-if 'READTHEDOCS' in os.environ:
-    sys.path.insert(0, os.environ.get('READTHEDOCS_VIRTUALENV_PATH'))
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -52,6 +50,7 @@ master_doc = 'index'
 # General information about the project.
 project = u'libscientific'
 copyright = u'2011, Giuseppe Marco Randazzo'
+author = u'Giuseppe Marco Randazzo'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -226,5 +225,5 @@ man_pages = [
 ]
 
 # -- Options for sphinx_c_autodoc, the extension being documented -----------
-c_autodoc_roots = ['../../src']
+c_autodoc_roots = ['../src']
 set_type_checking_flag = True
