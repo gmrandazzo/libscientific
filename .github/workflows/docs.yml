@@ -34,9 +34,9 @@ jobs:
           . lscivenv/bin/activate
           python -m pip install --exists-action=w --no-cache-dir -r docs/requirements.txt
           cd docs/
-          python -m sphinx -T -E -b html -d _build/doctrees -D language=en . html/
+          make html
       - name: Deploy documentation
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: html/
+          folder: _build/html/
           branch: gh-pages
