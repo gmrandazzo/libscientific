@@ -1,0 +1,479 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>matrix.h &#8212; libscientific 1.5.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.5.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">matrix.h</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for matrix.h</h1><div class="highlight"><pre>
+<span></span><span class="cm">/* matrix.h</span>
+<span class="cm">*</span>
+<span class="cm">* Copyright (C) &lt;2016&gt;  Giuseppe Marco Randazzo</span>
+<span class="cm">*</span>
+<span class="cm">* This program is free software: you can redistribute it and/or modify</span>
+<span class="cm">* it under the terms of the GNU General Public License as published by</span>
+<span class="cm">* the Free Software Foundation, either version 3 of the License, or</span>
+<span class="cm">* (at your option) any later version.</span>
+<span class="cm">*</span>
+<span class="cm">* This program is distributed in the hope that it will be useful,</span>
+<span class="cm">* but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="cm">* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="cm">* GNU General Public License for more details.</span>
+<span class="cm">*</span>
+<span class="cm">* You should have received a copy of the GNU General Public License</span>
+<span class="cm">* along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="cm">*/</span>
+
+<span class="cp">#ifndef MATRIX_H</span>
+<div class="viewcode-block" id="c.MATRIX_H"><span class="cp">#define MATRIX_H</span></div>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdlib.h&gt;</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;vector.h&quot;</span>
+
+<div class="viewcode-block" id="c.matrix"><a class="viewcode-back" href="../C-API.html#c.matrix">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Matrix data structure </span>
+<span class="cm"> *</span>
+<span class="cm"> * - **data** two dimensional array of double</span>
+<span class="cm"> * - **row** number of rows</span>
+<span class="cm"> * - **col** number of columns</span>
+<span class="cm"> */</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="p">{</span>
+<div class="viewcode-block" id="c.matrix.data"><span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="o">**</span><span class="n">data</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.matrix.col"><div class="viewcode-block" id="c.matrix.row"><span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="p">;</span></div></div>
+<span class="p">}</span><span class="n">matrix</span><span class="p">;</span></div>
+
+<div class="viewcode-block" id="c.initMatrix"><a class="viewcode-back" href="../C-API.html#c.initMatrix">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Description:</span>
+<span class="cm"> * Allocate a matrix in memory without a dimension.</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">initMatrix</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">**</span><span class="n">m</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.NewMatrix"><a class="viewcode-back" href="../C-API.html#c.NewMatrix">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Allocate a matrix in memory with dimension &quot;row&quot; and &quot;col&quot;</span>
+<span class="cm"> * </span>
+<span class="cm"> * @param [in] m matrix data structure</span>
+<span class="cm"> * @param [in] row number of rows</span>
+<span class="cm"> * @param [in] col number of columns</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">NewMatrix</span><span class="p">(</span><span class="n">matrix</span><span class="o">**</span><span class="w"> </span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">row_</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">col_</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.ResizeMatrix"><span class="cm">/**</span>
+<span class="cm"> * Resize a matrix to new &quot;row&quot; and &quot;col&quot;</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">ResizeMatrix</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">row_</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">col_</span><span class="p">);</span><span class="w"> </span><span class="cm">/*ResizeMatrix Delete all the data stored inside the matrix */</span></div>
+
+<div class="viewcode-block" id="c.DelMatrix"><a class="viewcode-back" href="../C-API.html#c.DelMatrix">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Destroy a matrix allocation</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">DelMatrix</span><span class="p">(</span><span class="n">matrix</span><span class="o">**</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.MatrixCheck"><span class="cm">/**</span>
+<span class="cm"> * Check if some value in matrix are NAN or INFINITE</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">MatrixCheck</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.FindNan"><span class="cm">/**</span>
+<span class="cm"> * Find NAN and print the output position to cmdout</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">FindNan</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.PrintMatrix"><a class="viewcode-back" href="../C-API.html#c.PrintMatrix">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Print a matrix to cmdout</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">PrintMatrix</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.ValInMatrix"><span class="cm">/**</span>
+<span class="cm"> * Check if a value &quot;val&quot; is in the matrix.</span>
+<span class="cm"> * if the value is present return 1 else 0.</span>
+<span class="cm"> */</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">ValInMatrix</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">val</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.MatrixSet"><span class="cm">/**</span>
+<span class="cm"> * Set all values of a matrix to &quot;val&quot;</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">MatrixSet</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">val</span><span class="p">);</span></div>
+
+
+<div class="viewcode-block" id="c.MatrixInitRandomInt"><span class="cm">/**</span>
+<span class="cm"> * Initialize the matrix elements to a random integer</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">MatrixInitRandomInt</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">low</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">high</span><span class="p">);</span></div>
+
+
+<div class="viewcode-block" id="c.MatrixInitRandomFloat"><span class="cm">/**</span>
+<span class="cm"> * Initialize the matrix elements to a random float</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">MatrixInitRandomFloat</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">low</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">high</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.MatrixCopy"><span class="cm">/**</span>
+<span class="cm"> * Copy a matrix from a source &quot;msrc&quot; to a destination matrix &quot;mdst&quot;</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">MatrixCopy</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">msrc</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">**</span><span class="n">mdst</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.setMatrixValue"><span class="cm">/**</span>
+<span class="cm"> * Set  matrix value &quot;value&quot; at position &quot;row&quot; and &quot;col&quot;</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">setMatrixValue</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">col</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">val</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.getMatrixValue"><span class="cm">/**</span>
+<span class="cm"> * Get the matrix value at position &quot;row&quot; and &quot;col&quot;</span>
+<span class="cm"> */</span>
+<span class="kt">double</span><span class="w"> </span><span class="nf">getMatrixValue</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">col</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.getMatrixRow"><span class="cm">/**</span>
+<span class="cm"> * Get row matrix with index &quot;row&quot; as double vector.</span>
+<span class="cm"> */</span>
+<span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="nf">getMatrixRow</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">row</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.getMatrixColumn"><span class="cm">/**</span>
+<span class="cm"> * Get column matrix with index &quot;col&quot; as double vector.</span>
+<span class="cm"> */</span>
+<span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="nf">getMatrixColumn</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">col</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.MatrixAppendRow"><a class="viewcode-back" href="../C-API.html#c.MatrixAppendRow">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Append double vector uivector as row.</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">MatrixAppendRow</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">row</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.MatrixAppendCol"><a class="viewcode-back" href="../C-API.html#c.MatrixAppendCol">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Append double vector uivector as column.</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">MatrixAppendCol</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">col</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.MatrixAppendUIRow"><span class="cm">/**</span>
+<span class="cm"> * Append unsigned int vector uivector as row</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">MatrixAppendUIRow</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">uivector</span><span class="w"> </span><span class="o">*</span><span class="n">row</span><span class="p">);</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Append unsigned int vector uivector as column</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">MatrixAppendUIRow</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">uivector</span><span class="w"> </span><span class="o">*</span><span class="n">row</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.MatrixDeleteRowAt"><a class="viewcode-back" href="../C-API.html#c.MatrixDeleteRowAt">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Delete a specific row in a matrix</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">MatrixDeleteRowAt</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">row</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.MatrixDeleteColAt"><a class="viewcode-back" href="../C-API.html#c.MatrixDeleteColAt">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Delete a specific column in a matrix</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">MatrixDeleteColAt</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">col</span><span class="p">);</span></div>
+
+<span class="cm">/*  Matrix Operations */</span>
+
+<div class="viewcode-block" id="c.MatrixDVectorDotProduct"><span class="cm">/**</span>
+<span class="cm"> * matrix - row double vector product: the result is a row double vector</span>
+<span class="cm"> * i.e.: X(10x5) * d(5x1) = r(10x1)</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">MatrixDVectorDotProduct</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">p</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.MT_MatrixDVectorDotProduct"><span class="cm">/** Multithread version of MatrixDVectorDotProduct */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">MT_MatrixDVectorDotProduct</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">p</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.DVectorMatrixDotProduct"><span class="cm">/**</span>
+<span class="cm"> * column double vector - matrix product: the result is a column double vector</span>
+<span class="cm"> * i.e.: d(1x5) * X(5x10) = r(1x10)</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">DVectorMatrixDotProduct</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">p</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.MT_DVectorMatrixDotProduct"><span class="cm">/**</span>
+<span class="cm"> * Multithread version of DVectorMatrixDotProduct</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">MT_DVectorMatrixDotProduct</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">p</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.DVectorTrasposedDVectorDotProduct"><span class="cm">/**</span>
+<span class="cm"> * transposed double vector - double vecrtor product: the result is a matrix</span>
+<span class="cm"> * i.e.: X  = d&#39;d</span>
+<span class="cm"> * i.e.: d&#39;(5x1) * d(1x5) = X(1x10)</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">DVectorTrasposedDVectorDotProduct</span><span class="p">(</span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.DVectorTransposedMatrixDivision"><span class="cm">/**</span>
+<span class="cm"> * Calculate the vector multiplied with a transposed matrix division</span>
+<span class="cm"> * according the following formula</span>
+<span class="cm"> * r = v/m  = (inv(m^T)*v^T)^T</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">DVectorTransposedMatrixDivision</span><span class="p">(</span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">r</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.MatrixDotProduct"><span class="cm">/**</span>
+<span class="cm"> * Calculate the matrix matrix product using the loop unrolling technique</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">MatrixDotProduct</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">r</span><span class="p">);</span></div>
+<div class="viewcode-block" id="c.MatrixDotProduct_"><span class="kt">void</span><span class="w"> </span><span class="nf">MatrixDotProduct_</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">r</span><span class="p">);</span></div>
+<div class="viewcode-block" id="c.MatrixDotProduct_LOOP_UNROLLING"><span class="kt">void</span><span class="w"> </span><span class="nf">MatrixDotProduct_LOOP_UNROLLING</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">r</span><span class="p">);</span></div>
+<div class="viewcode-block" id="c.RowColOuterProduct"><span class="kt">void</span><span class="w"> </span><span class="nf">RowColOuterProduct</span><span class="p">(</span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.MatrixTranspose"><span class="cm">/**</span>
+<span class="cm"> * Generate a transpose matrix of m</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">MatrixTranspose</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">r</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.MatrixInversion"><span class="cm">/**</span>
+<span class="cm"> * Matrix inversion using the Gauss-Jordan algorithm</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">MatrixInversion</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m_inv</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.MatrixLUInversion"><span class="cm">/**</span>
+<span class="cm"> * Matrix inversion using the LU decompositio</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">MatrixLUInversion</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m_inv</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.MatrixPseudoinversion"><span class="cm">/**</span>
+<span class="cm"> * Matrix pseudo inversion using the SVD algorithm</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">MatrixPseudoinversion</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m_inv</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.MatrixMoorePenrosePseudoinverse"><span class="cm">/**</span>
+<span class="cm"> * Matrix pseudo inversion using the Moore-Penrose pseudoinverse</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">MatrixMoorePenrosePseudoinverse</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">inv</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.MatrixTrace"><span class="cm">/**</span>
+<span class="cm"> * Return the trace of a square matrix</span>
+<span class="cm"> */</span>
+<span class="kt">double</span><span class="w"> </span><span class="nf">MatrixTrace</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.GenIdentityMatrix"><span class="cm">/**</span>
+<span class="cm"> * Generate the identity matrix</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">GenIdentityMatrix</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.MeanCenteredMatrix"><span class="cm">/**</span>
+<span class="cm"> * Calculate the mean centered matrix</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">MeanCenteredMatrix</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">mc</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.PearsonCorrelMatrix"><span class="cm">/**</span>
+<span class="cm"> * Calculate the pearson correlation matrix</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">PearsonCorrelMatrix</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">msrc</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">mdst</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.SpearmanCorrelMatrix"><span class="cm">/**</span>
+<span class="cm"> * Calculate the spearmann correlation matrix</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">SpearmanCorrelMatrix</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">msrc</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">mdst</span><span class="p">);</span></div>
+
+<span class="cm">/*</span>
+<span class="cm"> * Calculate the column Average for the matrix m</span>
+<span class="cm"> */</span>
+<div class="viewcode-block" id="c.MatrixColAverage"><span class="kt">void</span><span class="w"> </span><span class="nf">MatrixColAverage</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">colaverage</span><span class="p">);</span></div>
+
+<span class="cm">/*</span>
+<span class="cm"> * Calculate the row Average for the matrix m</span>
+<span class="cm"> */</span>
+<div class="viewcode-block" id="c.MatrixRowAverage"><span class="kt">void</span><span class="w"> </span><span class="nf">MatrixRowAverage</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">rowaverage</span><span class="p">);</span></div>
+
+<span class="cm">/*</span>
+<span class="cm"> * Calculate the column Standard Deviation for the matrix m</span>
+<span class="cm"> */</span>
+<div class="viewcode-block" id="c.MatrixColSDEV"><span class="kt">void</span><span class="w"> </span><span class="nf">MatrixColSDEV</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">colsdev</span><span class="p">);</span></div>
+
+<span class="cm">/*</span>
+<span class="cm"> * Calculate the column Root Mean Square for the matrix m</span>
+<span class="cm"> */</span>
+<div class="viewcode-block" id="c.MatrixColRMS"><span class="kt">void</span><span class="w"> </span><span class="nf">MatrixColRMS</span><span class="p">(</span><span class="n">matrix</span><span class="o">*</span><span class="w"> </span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">colrms</span><span class="p">);</span></div>
+
+<span class="cm">/*</span>
+<span class="cm"> * Calculate the column variance for the matrix m</span>
+<span class="cm"> */</span>
+<div class="viewcode-block" id="c.MatrixColVar"><span class="kt">void</span><span class="w"> </span><span class="nf">MatrixColVar</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">colvar</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.MatrixColDescStat"><span class="cm">/**</span>
+<span class="cm"> *  Calculate the matrix descriptive statistics:</span>
+<span class="cm"> * </span>
+<span class="cm"> *  - Column Average</span>
+<span class="cm"> *  - Column Median</span>
+<span class="cm"> *  - Column Armonic Average</span>
+<span class="cm"> *  - Column Variance Population</span>
+<span class="cm"> *  - Column Variance Sample (Correcter Variance)</span>
+<span class="cm"> *  - Column Standard Deviation</span>
+<span class="cm"> *  - Column Standard Deviation Sample (Corrected Standard Deviation)</span>
+<span class="cm"> *  - Column Max</span>
+<span class="cm"> *  - Column Min</span>
+<span class="cm"> *  - Column of missing values</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">MatrixColDescStat</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">ds</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.MatrixCovariance"><span class="cm">/**</span>
+<span class="cm"> * Calculate the covariance matrix</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">MatrixCovariance</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">cm</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.Matrix2LogMatrix"><span class="cm">/**</span>
+<span class="cm"> * Transform a matrix into a logaritmic matrix</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">Matrix2LogMatrix</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m_in</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m_out</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.Matrix2SquareMatrix"><span class="cm">/**</span>
+<span class="cm"> * Transform a matrix into a SQUARE matrix</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">Matrix2SquareMatrix</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m_in</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m_out</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.Matrix2SQRTMatrix"><span class="cm">/**</span>
+<span class="cm"> * Transform a matrix into a SQRT matrix</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">Matrix2SQRTMatrix</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m_in</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m_out</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.Matrix2ABSMatrix"><span class="cm">/**</span>
+<span class="cm"> * Transform a matrix into ABS matrix</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">Matrix2ABSMatrix</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m_in</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m_out</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.Matrix2IntFactorsMatrix"><span class="cm">/**</span>
+<span class="cm"> * Develop an interaction factors matrix for DOE</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">Matrix2IntFactorsMatrix</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m_in</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">factors</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m_out</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.MatrixRowCenterScaling"><span class="cm">/**</span>
+<span class="cm"> * Transform a matrix into a row centered scaled matrix</span>
+<span class="cm"> * Es. Use in Spectroscopy</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">MatrixRowCenterScaling</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m_in</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m_out</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.MatrixSVNScaling"><span class="cm">/**</span>
+<span class="cm"> * Transform a matrix into a SVN row scaled matrix</span>
+<span class="cm"> * Es. Use in Spectroscopy</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">MatrixSVNScaling</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m_in</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m_out</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.Matrixnorm"><span class="cm">/**</span>
+<span class="cm"> * calculate the square root of the sum of the squares</span>
+<span class="cm"> * of all the elements in the matrix</span>
+<span class="cm"> * ||X|| = double</span>
+<span class="cm"> */</span>
+<span class="kt">double</span><span class="w"> </span><span class="nf">Matrixnorm</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.MatrixDeterminant"><span class="cm">/**</span>
+<span class="cm"> * calculate the determinant of a matrix</span>
+<span class="cm"> */</span>
+<span class="kt">double</span><span class="w"> </span><span class="nf">MatrixDeterminant</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.MatrixNorm"><span class="cm">/**</span>
+<span class="cm"> * Normalize the matrix for the Matrixnorm value.</span>
+<span class="cm"> * Each value of m is divided by double Matrixnorm(matrix *m);</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">MatrixNorm</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">nm</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.MatrixColumnMinMax"><span class="cm">/**</span>
+<span class="cm"> * Find the minimum and maximum of a column in matrix</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">MatrixColumnMinMax</span><span class="p">(</span><span class="n">matrix</span><span class="o">*</span><span class="w"> </span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">col</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">min</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">max</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.MatrixSort"><span class="cm">/**</span>
+<span class="cm"> * Sort of a matrix ba a column number col_n</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">MatrixSort</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">col_n</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.MatrixReverseSort"><span class="cm">/**</span>
+<span class="cm"> * Reverse sort of a matrix by a column number col_n</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">MatrixReverseSort</span><span class="p">(</span><span class="n">matrix</span><span class="o">*</span><span class="w"> </span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">col_n</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.MatrixGetMaxValueIndex"><span class="cm">/**</span>
+<span class="cm"> * find the maximum value in matrix and return the row and col indexes</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">MatrixGetMaxValueIndex</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="o">*</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="o">*</span><span class="n">col</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.MatrixGetMinValueIndex"><span class="cm">/**</span>
+<span class="cm"> * find the minimum value in matrix and return the row and col indexes</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">MatrixGetMinValueIndex</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="o">*</span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="o">*</span><span class="n">col</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.SVD"><span class="cm">/**</span>
+<span class="cm"> * Singular Value Decomposition local implementation</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">SVD</span><span class="p">(</span><span class="n">matrix</span><span class="o">*</span><span class="w"> </span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">U</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">S</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">VT</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.SVDlapack"><span class="cm">/**</span>
+<span class="cm"> * Singular Value Decomposition lapack implementation</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">SVDlapack</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m_</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">u</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">s</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">vt</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.EVectEval"><span class="cm">/**</span>
+<span class="cm"> * Eigenvectors and Eigenvalues with the QR Method</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">EVectEval</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">eval</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">evect</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.QRDecomposition"><span class="cm">/**</span>
+<span class="cm"> * QR Decomposition with the householder method</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">QRDecomposition</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">Q</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">R</span><span class="p">);</span></div>
+
+<span class="cp">#endif</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.5.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">matrix.h</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2011, Giuseppe Marco Randazzo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    </div>
+  </body>
+</html>

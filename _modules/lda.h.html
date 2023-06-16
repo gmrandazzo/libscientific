@@ -1,0 +1,202 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>lda.h &#8212; libscientific 1.5.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.5.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">lda.h</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for lda.h</h1><div class="highlight"><pre>
+<span></span><span class="cm">/* lda.h</span>
+<span class="cm">*</span>
+<span class="cm">* Copyright (C) &lt;2016&gt;  Giuseppe Marco Randazzo</span>
+<span class="cm">*</span>
+<span class="cm">* This program is free software: you can redistribute it and/or modify</span>
+<span class="cm">* it under the terms of the GNU General Public License as published by</span>
+<span class="cm">* the Free Software Foundation, either version 3 of the License, or</span>
+<span class="cm">* (at your option) any later version.</span>
+<span class="cm">*</span>
+<span class="cm">* This program is distributed in the hope that it will be useful,</span>
+<span class="cm">* but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="cm">* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="cm">* GNU General Public License for more details.</span>
+<span class="cm">*</span>
+<span class="cm">* You should have received a copy of the GNU General Public License</span>
+<span class="cm">* along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="cm">*/</span>
+
+<span class="cp">#ifndef LDA_H</span>
+<div class="viewcode-block" id="c.LDA_H"><span class="cp">#define LDA_H</span></div>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;matrix.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;vector.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;tensor.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;scientificinfo.h&quot;</span>
+
+
+<div class="viewcode-block" id="c.LDAMODEL"><a class="viewcode-back" href="../C-API.html#c.LDAMODEL">[docs]</a><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="p">{</span>
+<div class="viewcode-block" id="c.LDAMODEL.inv_cov"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">inv_cov</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.LDAMODEL.features"><span class="w">  </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">features</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.LDAMODEL.mnpdf"><span class="w">  </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">mnpdf</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.LDAMODEL.evect"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">evect</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.LDAMODEL.mu"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">mu</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.LDAMODEL.fmean"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">fmean</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.LDAMODEL.fsdev"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">fsdev</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.LDAMODEL.yscrambling"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">yscrambling</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.LDAMODEL.recalculated_y"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">recalculated_y</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.LDAMODEL.recalculated_residuals"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">recalculated_residuals</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.LDAMODEL.predicted_y"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">predicted_y</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.LDAMODEL.predicted_residuals"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">predicted_residuals</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.LDAMODEL.eval"><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">eval</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.LDAMODEL.pprob"><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">pprob</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.LDAMODEL.classid"><span class="w">  </span><span class="n">uivector</span><span class="w"> </span><span class="o">*</span><span class="n">classid</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.LDAMODEL.nclass"><span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">nclass</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.LDAMODEL.class_start"><span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">class_start</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.LDAMODEL.roc"><span class="w">  </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">roc</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.LDAMODEL.pr"><span class="w">  </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">pr</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.LDAMODEL.roc_aucs"><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">roc_aucs</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.LDAMODEL.pr_aucs"><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">pr_aucs</span><span class="p">;</span></div>
+<span class="p">}</span><span class="w"> </span><span class="n">LDAMODEL</span><span class="p">;</span></div>
+
+<div class="viewcode-block" id="c.NewLDAModel"><a class="viewcode-back" href="../C-API.html#c.NewLDAModel">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Initialize and LDAMODEL</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">NewLDAModel</span><span class="p">(</span><span class="n">LDAMODEL</span><span class="w"> </span><span class="o">**</span><span class="n">m</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.DelLDAModel"><a class="viewcode-back" href="../C-API.html#c.DelLDAModel">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Delete and LDAMODEL</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">DelLDAModel</span><span class="p">(</span><span class="n">LDAMODEL</span><span class="w"> </span><span class="o">**</span><span class="n">m</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.PrintLDAModel"><a class="viewcode-back" href="../C-API.html#c.PrintLDAModel">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * @brief Print LDAMODEL to video.</span>
+<span class="cm"> *</span>
+<span class="cm"> * @param [in] m computed lda model</span>
+<span class="cm"> *</span>
+<span class="cm"> * @par Returns</span>
+<span class="cm"> *    Nothing.</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">PrintLDAModel</span><span class="p">(</span><span class="n">LDAMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.LDA"><a class="viewcode-back" href="../C-API.html#c.LDA">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Calculate and LDA Fisher discriminant analyisis model</span>
+<span class="cm"> * </span>
+<span class="cm"> * @param [in] mx input matrix of independent variables</span>
+<span class="cm"> * @param [in] my input matrix of classes</span>
+<span class="cm"> * @param [out] lda initialized model using NewLDAModel(...). The datastructure will be populated with results</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">LDA</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">mx</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">my</span><span class="p">,</span><span class="w"> </span><span class="n">LDAMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">lda</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.LDAPrediction"><a class="viewcode-back" href="../C-API.html#c.LDAPrediction">[docs]</a><span class="cm">/** Predict classes using an LDA fisher discriminant analysis model</span>
+<span class="cm"> * </span>
+<span class="cm"> * @param [in] mx input matrix of independent variables</span>
+<span class="cm"> * @param [in] lda computed LDAMODEL</span>
+<span class="cm"> * @param [out] pfeatures predicted features</span>
+<span class="cm"> * @param [out] probabilities</span>
+<span class="cm"> * @param [out] multivariate normal probability distribution of features</span>
+<span class="cm"> * @param [out] predicted classes</span>
+<span class="cm"> * </span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">LDAPrediction</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">mx</span><span class="p">,</span>
+<span class="w">                   </span><span class="n">LDAMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">lda</span><span class="p">,</span>
+<span class="w">                   </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">pfeatures</span><span class="p">,</span>
+<span class="w">                   </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">probability</span><span class="p">,</span>
+<span class="w">                   </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">mnpdf</span><span class="p">,</span>
+<span class="w">                   </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">prediction</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.LDAStatistics"><a class="viewcode-back" href="../C-API.html#c.LDAStatistics">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Binary statistics</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">LDAStatistics</span><span class="p">(</span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">y_true</span><span class="p">,</span>
+<span class="w">                   </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">y_pred</span><span class="p">,</span>
+<span class="w">                   </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">roc</span><span class="p">,</span>
+<span class="w">                   </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">roc_auc</span><span class="p">,</span>
+<span class="w">                   </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">precision_recal</span><span class="p">,</span>
+<span class="w">                   </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">pr_auc</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.LDAMulticlassStatistics"><a class="viewcode-back" href="../C-API.html#c.LDAMulticlassStatistics">[docs]</a><span class="cm">/**</span>
+<span class="cm"> *  Multiclass statistics</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">LDAMulticlassStatistics</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">y_true</span><span class="p">,</span>
+<span class="w">                             </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">y_pred</span><span class="p">,</span>
+<span class="w">                             </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">roc</span><span class="p">,</span>
+<span class="w">                             </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">roc_aucs</span><span class="p">,</span>
+<span class="w">                             </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">precision_recals</span><span class="p">,</span>
+<span class="w">                             </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">pr_aucs</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.getNClasses"><span class="kt">int</span><span class="w"> </span><span class="nf">getNClasses</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">my</span><span class="p">);</span></div>
+
+<span class="cp">#endif</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.5.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">lda.h</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2011, Giuseppe Marco Randazzo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    </div>
+  </body>
+</html>

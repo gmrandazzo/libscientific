@@ -1,0 +1,386 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>vector.h &#8212; libscientific 1.5.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.5.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">vector.h</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for vector.h</h1><div class="highlight"><pre>
+<span></span><span class="cm">/* vector.h</span>
+<span class="cm">*</span>
+<span class="cm">* Copyright (C) &lt;2016&gt;  Giuseppe Marco Randazzo</span>
+<span class="cm">*</span>
+<span class="cm">* This program is free software: you can redistribute it and/or modify</span>
+<span class="cm">* it under the terms of the GNU General Public License as published by</span>
+<span class="cm">* the Free Software Foundation, either version 3 of the License, or</span>
+<span class="cm">* (at your option) any later version.</span>
+<span class="cm">*</span>
+<span class="cm">* This program is distributed in the hope that it will be useful,</span>
+<span class="cm">* but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="cm">* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="cm">* GNU General Public License for more details.</span>
+<span class="cm">*</span>
+<span class="cm">* You should have received a copy of the GNU General Public License</span>
+<span class="cm">* along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="cm">*/</span>
+
+<span class="cp">#ifndef VECTOR_H</span>
+<div class="viewcode-block" id="c.VECTOR_H"><span class="cp">#define VECTOR_H</span></div>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdlib.h&gt;</span>
+
+<div class="viewcode-block" id="c.strvector"><a class="viewcode-back" href="../C-API.html#c.strvector">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * A dynamic array of strings.</span>
+<span class="cm"> * The strvector struct is a dynamic array of strings represented</span>
+<span class="cm"> * by a pointer to a character pointer (char data) and its size (size_t size).</span>
+<span class="cm"> * </span>
+<span class="cm"> * - **data** A pointer to a character pointer representing the array of strings.</span>
+<span class="cm"> * - **size** The size of the array of strings.</span>
+<span class="cm"> */</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="p">{</span>
+<div class="viewcode-block" id="c.strvector.data"><span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="o">**</span><span class="n">data</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.strvector.size"><span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">;</span></div>
+<span class="p">}</span><span class="w"> </span><span class="n">strvector</span><span class="p">;</span></div>
+
+<div class="viewcode-block" id="c.NewStrVector"><a class="viewcode-back" href="../C-API.html#c.NewStrVector">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Allocate a strvector with a specific size</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">NewStrVector</span><span class="p">(</span><span class="n">strvector</span><span class="w"> </span><span class="o">**</span><span class="n">s</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.initStrVector"><a class="viewcode-back" href="../C-API.html#c.initStrVector">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * initialize an empty strvector </span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">initStrVector</span><span class="p">(</span><span class="n">strvector</span><span class="w"> </span><span class="o">**</span><span class="n">s</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.DelStrVector"><a class="viewcode-back" href="../C-API.html#c.DelStrVector">[docs]</a><span class="cm">/**</span>
+<span class="cm"> *  Delete a strvector</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">DelStrVector</span><span class="p">(</span><span class="n">strvector</span><span class="w"> </span><span class="o">**</span><span class="n">s</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.StrVectorResize"><span class="cm">/**</span>
+<span class="cm"> * Resize a strvector</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">StrVectorResize</span><span class="p">(</span><span class="n">strvector</span><span class="w"> </span><span class="o">*</span><span class="n">s</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size_</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.StrVectorAppend"><a class="viewcode-back" href="../C-API.html#c.StrVectorAppend">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Append a string value to a strvector</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">StrVectorAppend</span><span class="p">(</span><span class="n">strvector</span><span class="w"> </span><span class="o">*</span><span class="n">s</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">str</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.StrVectorAppendInt"><span class="cm">/**</span>
+<span class="cm"> * Append a integer value to a strvector</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">StrVectorAppendInt</span><span class="p">(</span><span class="n">strvector</span><span class="w"> </span><span class="o">*</span><span class="n">s</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">val</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.StrVectorAppendDouble"><span class="cm">/**</span>
+<span class="cm"> * Append a double value to a strvector</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">StrVectorAppendDouble</span><span class="p">(</span><span class="n">strvector</span><span class="w"> </span><span class="o">*</span><span class="n">s</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">val</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.setStr"><span class="kt">void</span><span class="w"> </span><span class="nf">setStr</span><span class="p">(</span><span class="n">strvector</span><span class="w"> </span><span class="o">*</span><span class="n">s</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">str</span><span class="p">);</span></div>
+<div class="viewcode-block" id="c.getStr"><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="nf">getStr</span><span class="p">(</span><span class="n">strvector</span><span class="w"> </span><span class="o">*</span><span class="n">s</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.StrVectorExtend"><span class="cm">/**</span>
+<span class="cm"> * Extend a strvector with an other strvector</span>
+<span class="cm"> */</span>
+<span class="n">strvector</span><span class="w"> </span><span class="o">*</span><span class="nf">StrVectorExtend</span><span class="p">(</span><span class="n">strvector</span><span class="w"> </span><span class="o">*</span><span class="n">s1</span><span class="p">,</span><span class="w"> </span><span class="n">strvector</span><span class="w"> </span><span class="o">*</span><span class="n">s2</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.PrintStrVector"><a class="viewcode-back" href="../C-API.html#c.PrintStrVector">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Print to video a strvector </span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">PrintStrVector</span><span class="p">(</span><span class="n">strvector</span><span class="w"> </span><span class="o">*</span><span class="n">s</span><span class="p">);</span></div>
+
+<span class="cm">/*operations with string*/</span>
+
+<div class="viewcode-block" id="c.Trim"><span class="cm">/**</span>
+<span class="cm"> * Trim a string: remove</span>
+<span class="cm"> */</span>
+<span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="nf">Trim</span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">s</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.SplitString"><span class="cm">/**</span>
+<span class="cm"> * Split a string and fill the splitted string into a strvector</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">SplitString</span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">str</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">sep</span><span class="p">,</span><span class="w"> </span><span class="n">strvector</span><span class="w"> </span><span class="o">*</span><span class="n">tokens</span><span class="p">);</span></div>
+
+
+<div class="viewcode-block" id="c.dvector"><a class="viewcode-back" href="../C-API.html#c.dvector">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * A dynamic array of doubles.</span>
+<span class="cm"> * The dvector struct is a dynamic array of double represented</span>
+<span class="cm"> * by a pointer to a double and its size (size_t size).</span>
+<span class="cm"> * </span>
+<span class="cm"> * - **data** A pointer to a double type.</span>
+<span class="cm"> * - **size** The size of the array of strings.</span>
+<span class="cm"> */</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="p">{</span>
+<div class="viewcode-block" id="c.dvector.data"><span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">data</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.dvector.size"><span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">;</span></div>
+<span class="p">}</span><span class="w"> </span><span class="n">dvector</span><span class="p">;</span></div>
+
+<div class="viewcode-block" id="c.NewDVector"><a class="viewcode-back" href="../C-API.html#c.NewDVector">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Allocate a dvector with a specific size</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">NewDVector</span><span class="p">(</span><span class="n">dvector</span><span class="w"> </span><span class="o">**</span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.initDVector"><a class="viewcode-back" href="../C-API.html#c.initDVector">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * initialize an empty dvector </span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">initDVector</span><span class="p">(</span><span class="n">dvector</span><span class="w"> </span><span class="o">**</span><span class="n">d</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.DelDVector"><a class="viewcode-back" href="../C-API.html#c.DelDVector">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Delete a dvector</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">DelDVector</span><span class="p">(</span><span class="n">dvector</span><span class="w"> </span><span class="o">**</span><span class="n">d</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.DVectorResize"><span class="cm">/**</span>
+<span class="cm"> * Resize a dvector</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">DVectorResize</span><span class="p">(</span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size_</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.PrintDVector"><a class="viewcode-back" href="../C-API.html#c.PrintDVector">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Print a dvector to video</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">PrintDVector</span><span class="p">(</span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">v</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.DVectorAppend"><a class="viewcode-back" href="../C-API.html#c.DVectorAppend">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Append a value to a dvector</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">DVectorAppend</span><span class="p">(</span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">val</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.DVectorRemoveAt"><a class="viewcode-back" href="../C-API.html#c.DVectorRemoveAt">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Remove a value to a dvector</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">DVectorRemoveAt</span><span class="p">(</span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">indx</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.DVectorCopy"><span class="cm">/**</span>
+<span class="cm"> * Copy a Dvector from dsrc: source to ddst: destination</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">DVectorCopy</span><span class="p">(</span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">dsrc</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">ddst</span><span class="p">);</span></div>
+
+<span class="cm">/*</span>
+<span class="cm"> * Extend a divector with another dvector</span>
+<span class="cm"> */</span>
+<div class="viewcode-block" id="c.DVectorExtend"><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="nf">DVectorExtend</span><span class="p">(</span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">d1</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">d2</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.setDVectorValue"><span class="kt">void</span><span class="w"> </span><span class="nf">setDVectorValue</span><span class="p">(</span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">val</span><span class="p">);</span></div>
+<div class="viewcode-block" id="c.getDVectorValue"><span class="kt">double</span><span class="w"> </span><span class="nf">getDVectorValue</span><span class="p">(</span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">id</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.DVectorHasValue"><span class="cm">/**</span>
+<span class="cm"> * Check if dvector has a value val.</span>
+<span class="cm"> * Return 0 if is present, 1 if is not present</span>
+<span class="cm"> */</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">DVectorHasValue</span><span class="p">(</span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">val</span><span class="p">);</span></div>
+
+<span class="cm">/*</span>
+<span class="cm"> * Vector operations</span>
+<span class="cm"> */</span>
+<div class="viewcode-block" id="c.DVectorSet"><span class="kt">void</span><span class="w"> </span><span class="nf">DVectorSet</span><span class="p">(</span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">val</span><span class="p">);</span></div>
+<div class="viewcode-block" id="c.DVectorDVectorDotProd"><span class="kt">double</span><span class="w"> </span><span class="nf">DVectorDVectorDotProd</span><span class="p">(</span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">v2</span><span class="p">);</span><span class="w"> </span><span class="cm">/* product between two vector */</span></div>
+
+<div class="viewcode-block" id="c.DvectorModule"><span class="kt">double</span><span class="w"> </span><span class="nf">DvectorModule</span><span class="p">(</span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">v</span><span class="p">);</span><span class="w"> </span><span class="cm">/* get the Dvector Module */</span></div>
+<div class="viewcode-block" id="c.DVectNorm"><span class="kt">void</span><span class="w"> </span><span class="nf">DVectNorm</span><span class="p">(</span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">nv</span><span class="p">);</span><span class="w"> </span><span class="cm">/* vector normalizing */</span></div>
+<div class="viewcode-block" id="c.DVectorDVectorDiff"><span class="kt">void</span><span class="w"> </span><span class="nf">DVectorDVectorDiff</span><span class="p">(</span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">v3</span><span class="p">);</span></div>
+<div class="viewcode-block" id="c.DVectorDVectorSum"><span class="kt">void</span><span class="w"> </span><span class="nf">DVectorDVectorSum</span><span class="p">(</span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">v1</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">v2</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">v3</span><span class="p">);</span></div>
+<div class="viewcode-block" id="c.DVectorMinMax"><span class="kt">void</span><span class="w"> </span><span class="nf">DVectorMinMax</span><span class="p">(</span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">min</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">max</span><span class="p">);</span></div>
+<div class="viewcode-block" id="c.DVectorMean"><span class="kt">void</span><span class="w"> </span><span class="nf">DVectorMean</span><span class="p">(</span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">mean</span><span class="p">);</span></div>
+<div class="viewcode-block" id="c.DVectorMedian"><span class="kt">void</span><span class="w"> </span><span class="nf">DVectorMedian</span><span class="p">(</span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">median</span><span class="p">);</span></div>
+<div class="viewcode-block" id="c.DVectorSDEV"><span class="kt">void</span><span class="w"> </span><span class="nf">DVectorSDEV</span><span class="p">(</span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">sdev</span><span class="p">);</span></div>
+<div class="viewcode-block" id="c.DVectorSort"><span class="kt">void</span><span class="w"> </span><span class="nf">DVectorSort</span><span class="p">(</span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">v</span><span class="p">);</span></div>
+
+
+<div class="viewcode-block" id="c.ivector"><a class="viewcode-back" href="../C-API.html#c.ivector">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * A dynamic array of integers.</span>
+<span class="cm"> * The dvector struct is a dynamic array of integers represented</span>
+<span class="cm"> * by a pointer to a integers and its size (size_t size).</span>
+<span class="cm"> * </span>
+<span class="cm"> * - **data** A pointer to a double type.</span>
+<span class="cm"> * - **size** The size of the array of strings.</span>
+<span class="cm"> */</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="p">{</span>
+<div class="viewcode-block" id="c.ivector.data"><span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">data</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.ivector.size"><span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">;</span></div>
+<span class="p">}</span><span class="w"> </span><span class="n">ivector</span><span class="p">;</span></div>
+
+<div class="viewcode-block" id="c.NewIVector"><a class="viewcode-back" href="../C-API.html#c.NewIVector">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Allocate a ivector with a specific size</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">NewIVector</span><span class="p">(</span><span class="n">ivector</span><span class="o">**</span><span class="w"> </span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.initIVector"><a class="viewcode-back" href="../C-API.html#c.initIVector">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Initialize an ivector</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">initIVector</span><span class="p">(</span><span class="n">ivector</span><span class="w"> </span><span class="o">**</span><span class="n">d</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.DelIVector"><a class="viewcode-back" href="../C-API.html#c.DelIVector">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Delete a ivector</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">DelIVector</span><span class="p">(</span><span class="n">ivector</span><span class="w"> </span><span class="o">**</span><span class="n">d</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.PrintIVector"><a class="viewcode-back" href="../C-API.html#c.PrintIVector">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Print to video an ivector</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">PrintIVector</span><span class="p">(</span><span class="n">ivector</span><span class="w"> </span><span class="o">*</span><span class="n">v</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.IVectorAppend"><a class="viewcode-back" href="../C-API.html#c.IVectorAppend">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Append a value to an ivector</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">IVectorAppend</span><span class="p">(</span><span class="n">ivector</span><span class="w"> </span><span class="o">*</span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">val</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.IVectorRemoveAt"><a class="viewcode-back" href="../C-API.html#c.IVectorRemoveAt">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Remove a value to a ivector</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">IVectorRemoveAt</span><span class="p">(</span><span class="n">ivector</span><span class="w"> </span><span class="o">*</span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">indx</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.IVectorExtend"><span class="cm">/**</span>
+<span class="cm"> * Extend an ivector with another ivector</span>
+<span class="cm"> */</span>
+<span class="n">ivector</span><span class="w"> </span><span class="o">*</span><span class="nf">IVectorExtend</span><span class="p">(</span><span class="n">ivector</span><span class="w"> </span><span class="o">*</span><span class="n">d1</span><span class="p">,</span><span class="w"> </span><span class="n">ivector</span><span class="w"> </span><span class="o">*</span><span class="n">d2</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.setIVectorValue"><span class="kt">void</span><span class="w"> </span><span class="nf">setIVectorValue</span><span class="p">(</span><span class="n">ivector</span><span class="w"> </span><span class="o">*</span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">val</span><span class="p">);</span></div>
+<div class="viewcode-block" id="c.getIVectorValue"><span class="kt">int</span><span class="w"> </span><span class="nf">getIVectorValue</span><span class="p">(</span><span class="n">ivector</span><span class="w"> </span><span class="o">*</span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">id</span><span class="p">);</span></div>
+<div class="viewcode-block" id="c.IVectorHasValue"><span class="kt">int</span><span class="w"> </span><span class="nf">IVectorHasValue</span><span class="p">(</span><span class="n">ivector</span><span class="w"> </span><span class="o">*</span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">val</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.IVectorSet"><span class="kt">void</span><span class="w"> </span><span class="nf">IVectorSet</span><span class="p">(</span><span class="n">ivector</span><span class="w"> </span><span class="o">*</span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">val</span><span class="p">);</span></div>
+
+
+<div class="viewcode-block" id="c.uivector"><a class="viewcode-back" href="../C-API.html#c.uivector">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * A dynamic array of unsigned integers.</span>
+<span class="cm"> * The dvector struct is a dynamic array of unsigned integers represented</span>
+<span class="cm"> * by a pointer to a unsigned integers and its size (size_t size).</span>
+<span class="cm"> * </span>
+<span class="cm"> * - **data** A pointer to unsigned integer type.</span>
+<span class="cm"> * - **size** The size of the array of strings.</span>
+<span class="cm"> */</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="p">{</span>
+<div class="viewcode-block" id="c.uivector.data"><span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="o">*</span><span class="n">data</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.uivector.size"><span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">;</span></div>
+<span class="p">}</span><span class="w"> </span><span class="n">uivector</span><span class="p">;</span></div>
+
+<div class="viewcode-block" id="c.NewUIVector"><a class="viewcode-back" href="../C-API.html#c.NewUIVector">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Allocate a uivector with a specific size</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">NewUIVector</span><span class="p">(</span><span class="n">uivector</span><span class="w"> </span><span class="o">**</span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.initUIVector"><a class="viewcode-back" href="../C-API.html#c.initUIVector">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Initialize an empty uivector</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">initUIVector</span><span class="p">(</span><span class="n">uivector</span><span class="w"> </span><span class="o">**</span><span class="n">d</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.DelUIVector"><a class="viewcode-back" href="../C-API.html#c.DelUIVector">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Delete a uivector</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">DelUIVector</span><span class="p">(</span><span class="n">uivector</span><span class="w"> </span><span class="o">**</span><span class="n">d</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.UIVectorResize"><span class="cm">/**</span>
+<span class="cm"> * Resize an uivector</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">UIVectorResize</span><span class="p">(</span><span class="n">uivector</span><span class="w"> </span><span class="o">*</span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size_</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.PrintUIVector"><a class="viewcode-back" href="../C-API.html#c.PrintUIVector">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Print an uivector </span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">PrintUIVector</span><span class="p">(</span><span class="n">uivector</span><span class="w"> </span><span class="o">*</span><span class="n">v</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.UIVectorAppend"><a class="viewcode-back" href="../C-API.html#c.UIVectorAppend">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Append a value to an uivector</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">UIVectorAppend</span><span class="p">(</span><span class="n">uivector</span><span class="w"> </span><span class="o">*</span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">val</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.UIVectorRemoveAt"><a class="viewcode-back" href="../C-API.html#c.UIVectorRemoveAt">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Remove a value to an uivector</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">UIVectorRemoveAt</span><span class="p">(</span><span class="n">uivector</span><span class="w"> </span><span class="o">*</span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">indx</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.UIVectorExtend"><span class="cm">/**</span>
+<span class="cm"> * Extend an uivector with another uivector</span>
+<span class="cm"> */</span>
+<span class="n">uivector</span><span class="w"> </span><span class="o">*</span><span class="nf">UIVectorExtend</span><span class="p">(</span><span class="n">uivector</span><span class="w"> </span><span class="o">*</span><span class="n">d1</span><span class="p">,</span><span class="w"> </span><span class="n">uivector</span><span class="w"> </span><span class="o">*</span><span class="n">d2</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.setUIVectorValue"><span class="kt">void</span><span class="w"> </span><span class="nf">setUIVectorValue</span><span class="p">(</span><span class="n">uivector</span><span class="w"> </span><span class="o">*</span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">val</span><span class="p">);</span></div>
+<div class="viewcode-block" id="c.getUIVectorValue"><span class="kt">size_t</span><span class="w"> </span><span class="nf">getUIVectorValue</span><span class="p">(</span><span class="n">uivector</span><span class="w"> </span><span class="o">*</span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">id</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.UIVectorHasValue"><span class="cm">/**</span>
+<span class="cm"> * Check if an uivector has a value.</span>
+<span class="cm"> * if found return 0, else return 1</span>
+<span class="cm"> */</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">UIVectorHasValue</span><span class="p">(</span><span class="n">uivector</span><span class="w"> </span><span class="o">*</span><span class="n">u</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">id</span><span class="p">);</span></div>
+<div class="viewcode-block" id="c.UIVectorIndexOf"><span class="kt">int</span><span class="w"> </span><span class="nf">UIVectorIndexOf</span><span class="p">(</span><span class="n">uivector</span><span class="w"> </span><span class="o">*</span><span class="n">u</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">id</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.UIVectorSet"><span class="kt">void</span><span class="w"> </span><span class="nf">UIVectorSet</span><span class="p">(</span><span class="n">uivector</span><span class="w"> </span><span class="o">*</span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">val</span><span class="p">);</span></div>
+<div class="viewcode-block" id="c.SortUIVector"><span class="kt">void</span><span class="w"> </span><span class="nf">SortUIVector</span><span class="p">(</span><span class="n">uivector</span><span class="w"> </span><span class="o">*</span><span class="n">d</span><span class="p">);</span></div>
+
+<span class="cp">#endif</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.5.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">vector.h</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2011, Giuseppe Marco Randazzo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,258 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pca.h &#8212; libscientific 1.5.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.5.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">pca.h</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for pca.h</h1><div class="highlight"><pre>
+<span></span><span class="cm">/* pca.h</span>
+<span class="cm">*</span>
+<span class="cm">* Copyright (C) &lt;2016&gt;  Giuseppe Marco Randazzo</span>
+<span class="cm">*</span>
+<span class="cm">* This program is free software: you can redistribute it and/or modify</span>
+<span class="cm">* it under the terms of the GNU General Public License as published by</span>
+<span class="cm">* the Free Software Foundation, either version 3 of the License, or</span>
+<span class="cm">* (at your option) any later version.</span>
+<span class="cm">*</span>
+<span class="cm">* This program is distributed in the hope that it will be useful,</span>
+<span class="cm">* but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="cm">* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="cm">* GNU General Public License for more details.</span>
+<span class="cm">*</span>
+<span class="cm">* You should have received a copy of the GNU General Public License</span>
+<span class="cm">* along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="cm">*/</span>
+
+<span class="cp">#ifndef PCA_H</span>
+<div class="viewcode-block" id="c.PCA_H"><span class="cp">#define PCA_H</span></div>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;matrix.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;vector.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;scientificinfo.h&quot;</span>
+
+<div class="viewcode-block" id="c.PCACONVERGENCE"><span class="cp">#define PCACONVERGENCE 1e-10</span></div>
+
+<div class="viewcode-block" id="c.PCAMODEL"><a class="viewcode-back" href="../C-API.html#c.PCAMODEL">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * PCA model data structure.</span>
+<span class="cm"> * </span>
+<span class="cm"> * - **scores** matrix of scores</span>
+<span class="cm"> * - **loadings** matrix of loadings</span>
+<span class="cm"> * - **varexp** vector of explained variance by every component </span>
+<span class="cm"> * - **colaverage** input matrix column average</span>
+<span class="cm"> * - **colaverage** input matrix column scaling</span>
+<span class="cm"> */</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="p">{</span>
+<div class="viewcode-block" id="c.PCAMODEL.scores"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">scores</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.PCAMODEL.loadings"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">loadings</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.PCAMODEL.dmodx"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">dmodx</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.PCAMODEL.varexp"><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">varexp</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.PCAMODEL.colaverage"><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">colaverage</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.PCAMODEL.colscaling"><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">colscaling</span><span class="p">;</span></div>
+<span class="p">}</span><span class="w"> </span><span class="n">PCAMODEL</span><span class="p">;</span></div>
+
+<div class="viewcode-block" id="c.NewPCAModel"><a class="viewcode-back" href="../C-API.html#c.NewPCAModel">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Initialize an empty PCAMODEL </span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">NewPCAModel</span><span class="p">(</span><span class="n">PCAMODEL</span><span class="w"> </span><span class="o">**</span><span class="n">m</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.DelPCAModel"><a class="viewcode-back" href="../C-API.html#c.DelPCAModel">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Delete a PCAMODEL </span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">DelPCAModel</span><span class="p">(</span><span class="n">PCAMODEL</span><span class="w"> </span><span class="o">**</span><span class="n">m</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.calcVarExpressed"><span class="kt">void</span><span class="w"> </span><span class="nf">calcVarExpressed</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">ss</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">eval</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">varexp</span><span class="p">);</span></div>
+
+<span class="cm">/*</span>
+<span class="cm"> * Calculate the object distance.</span>
+<span class="cm"> * THIS METHOD IS USED INSIDE THE PCA ALGORITHM</span>
+<span class="cm"> */</span>
+<div class="viewcode-block" id="c.calcObjectDistance"><span class="kt">double</span><span class="w"> </span><span class="nf">calcObjectDistance</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">);</span></div>
+
+<span class="cm">/*</span>
+<span class="cm"> * Calculate convergence criteria as described in </span>
+<span class="cm"> * DOI: 10.1002/cem.1180010107 page 51 d = ...</span>
+<span class="cm"> * THIS METHOD IS USED INSIDE THE PCA/CPCA/PLS ALGORITHM</span>
+<span class="cm"> */</span>
+<div class="viewcode-block" id="c.calcConvergence"><span class="kt">double</span><span class="w"> </span><span class="nf">calcConvergence</span><span class="p">(</span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">t_new</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">t_old</span><span class="p">);</span></div>
+
+
+<div class="viewcode-block" id="c.PCA"><a class="viewcode-back" href="../C-API.html#c.PCA">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * @brief Calculate a principal component analysis using the NIPALS algorithm.</span>
+<span class="cm"> *</span>
+<span class="cm"> * @param [in] mx libscientific matrix data input </span>
+<span class="cm"> * @param [in] scaling scaling type expressed as unsigned int type</span>
+<span class="cm"> * @param [in] npc number of desired principal components</span>
+<span class="cm"> * @param [out] PCAMODEL initialized model using NewPCAModel(...). The datastructure will be populated with results</span>
+<span class="cm"> * @param [in] ssignal libscientific signal. Default value is NULL</span>
+<span class="cm"> * </span>
+<span class="cm"> * Available scalings:</span>
+<span class="cm"> *</span>
+<span class="cm"> * - 0: No scaling. Only mean centering</span>
+<span class="cm"> *</span>
+<span class="cm"> * - 1: Mean centering and STDEV scaling</span>
+<span class="cm"> *</span>
+<span class="cm"> * - 2: Mean centering and Root-Mean-Square column scaling</span>
+<span class="cm"> *</span>
+<span class="cm"> * - 3: Mean centering and Pareto scaling</span>
+<span class="cm"> *</span>
+<span class="cm"> * - 4: Mean centering and min-max range scaling</span>
+<span class="cm"> *</span>
+<span class="cm"> * - 5: Mean centering and level scaling</span>
+<span class="cm"> *</span>
+<span class="cm"> * @par Returns</span>
+<span class="cm"> *    Nothing.</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">PCA</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">mx</span><span class="p">,</span>
+<span class="w">         </span><span class="kt">int</span><span class="w"> </span><span class="n">scaling</span><span class="p">,</span>
+<span class="w">         </span><span class="kt">size_t</span><span class="w"> </span><span class="n">npc</span><span class="p">,</span>
+<span class="w">         </span><span class="n">PCAMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">model</span><span class="p">,</span>
+<span class="w">         </span><span class="n">ssignal</span><span class="w"> </span><span class="o">*</span><span class="n">s</span><span class="p">);</span></div>
+
+
+<div class="viewcode-block" id="c.PCAScorePredictor"><a class="viewcode-back" href="../C-API.html#c.PCAScorePredictor">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * @brief Predict scores given a principal component analysis and a matrix as input.</span>
+<span class="cm"> *</span>
+<span class="cm"> * @param [in] mx libscientific matrix data input </span>
+<span class="cm"> * @param [in] PCAMODEL pca model input</span>
+<span class="cm"> * @param [in] npc number of desired principal components</span>
+<span class="cm"> * @param [in] pscores predicted scores </span>
+<span class="cm"> *</span>
+<span class="cm"> * @par Returns</span>
+<span class="cm"> *    Nothing.</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">PCAScorePredictor</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">mx</span><span class="p">,</span>
+<span class="w">                       </span><span class="n">PCAMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">model</span><span class="p">,</span>
+<span class="w">                       </span><span class="kt">size_t</span><span class="w"> </span><span class="n">npc</span><span class="p">,</span>
+<span class="w">                       </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">pscores</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.PCAIndVarPredictor"><a class="viewcode-back" href="../C-API.html#c.PCAIndVarPredictor">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * @brief Reconstruct the original input matrix from PCA model using scores and loadings.</span>
+<span class="cm"> *</span>
+<span class="cm"> * @param [in] t pca scores with size #objects x npc</span>
+<span class="cm"> * @param [in] p pca loadings with size npc x #features</span>
+<span class="cm"> * @param [in] colaverage input column average with size #features</span>
+<span class="cm"> * @param [in] colscaling input column scaling with size #features</span>
+<span class="cm"> * @param [in] npc desired principal components to use for the matrix reconstruction</span>
+<span class="cm"> * @param [in] mx ouptut reconstructed matrix</span>
+<span class="cm"> *</span>
+<span class="cm"> * @par Returns</span>
+<span class="cm"> *    Nothing.</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">PCAIndVarPredictor</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">t</span><span class="p">,</span>
+<span class="w">                        </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">p</span><span class="p">,</span>
+<span class="w">                        </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">colaverage</span><span class="p">,</span>
+<span class="w">                        </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">colscaling</span><span class="p">,</span>
+<span class="w">                        </span><span class="kt">size_t</span><span class="w"> </span><span class="n">npc</span><span class="p">,</span>
+<span class="w">                        </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">mx</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.PCARSquared"><span class="kt">void</span><span class="w"> </span><span class="nf">PCARSquared</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">mx</span><span class="p">,</span>
+<span class="w">                 </span><span class="n">PCAMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">model</span><span class="p">,</span>
+<span class="w">                 </span><span class="kt">size_t</span><span class="w"> </span><span class="n">npc</span><span class="p">,</span>
+<span class="w">                 </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">r2</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.PCARankValidation"><span class="kt">void</span><span class="w"> </span><span class="nf">PCARankValidation</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">mx</span><span class="p">,</span>
+<span class="w">                       </span><span class="kt">size_t</span><span class="w"> </span><span class="n">npc</span><span class="p">,</span>
+<span class="w">                       </span><span class="kt">size_t</span><span class="w"> </span><span class="n">scaling</span><span class="p">,</span>
+<span class="w">                       </span><span class="kt">size_t</span><span class="w"> </span><span class="n">group</span><span class="p">,</span>
+<span class="w">                       </span><span class="kt">size_t</span><span class="w"> </span><span class="n">iterations</span><span class="p">,</span>
+<span class="w">                       </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">r2</span><span class="p">,</span>
+<span class="w">                       </span><span class="n">ssignal</span><span class="w"> </span><span class="o">*</span><span class="n">s</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.GetResidualMatrix"><a class="viewcode-back" href="../C-API.html#c.GetResidualMatrix">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * @brief Compute the residual matrix for a specific number of component.</span>
+<span class="cm"> *</span>
+<span class="cm"> * @param [in] mx original input matrix</span>
+<span class="cm"> * @param [in] model computed pca model</span>
+<span class="cm"> * @param [in] pc max component to extract the residual matrix</span>
+<span class="cm"> * @param [in] rmx residual matrix of output</span>
+<span class="cm"> *</span>
+<span class="cm"> * @par Returns</span>
+<span class="cm"> *    Nothing.</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">GetResidualMatrix</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">mx</span><span class="p">,</span>
+<span class="w">                       </span><span class="n">PCAMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">model</span><span class="p">,</span>
+<span class="w">                       </span><span class="kt">size_t</span><span class="w"> </span><span class="n">pc</span><span class="p">,</span>
+<span class="w">                       </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">rmx</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.PrintPCA"><a class="viewcode-back" href="../C-API.html#c.PrintPCA">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * @brief Print PCAMODEL to video.</span>
+<span class="cm"> *</span>
+<span class="cm"> * @param [in] m computed pca model</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">PrintPCA</span><span class="p">(</span><span class="n">PCAMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">);</span></div>
+
+<span class="cp">#endif</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.5.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">pca.h</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2011, Giuseppe Marco Randazzo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    </div>
+  </body>
+</html>

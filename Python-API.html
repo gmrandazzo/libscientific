@@ -1,0 +1,2070 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Pyhton API Reference &#8212; libscientific 1.5.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="C API Reference" href="C-API.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="C-API.html" title="C API Reference"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">libscientific 1.5.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Pyhton API Reference</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="pyhton-api-reference">
+<h1>Pyhton API Reference<a class="headerlink" href="#pyhton-api-reference" title="Permalink to this heading">¶</a></h1>
+<section id="module-libscientific.matrix">
+<span id="libscientific-matrix-module"></span><h2>libscientific.matrix module<a class="headerlink" href="#module-libscientific.matrix" title="Permalink to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="libscientific.matrix.MATRIX">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">MATRIX</span></span><a class="headerlink" href="#libscientific.matrix.MATRIX" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Structure</span></code></p>
+<p>matrix data structure</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.matrix.MATRIX.col">
+<span class="sig-name descname"><span class="pre">col</span></span><a class="headerlink" href="#libscientific.matrix.MATRIX.col" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.matrix.MATRIX.data">
+<span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#libscientific.matrix.MATRIX.data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.matrix.MATRIX.row">
+<span class="sig-name descname"><span class="pre">row</span></span><a class="headerlink" href="#libscientific.matrix.MATRIX.row" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="libscientific.matrix.Matrix">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">Matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mx_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.Matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Translate a list of list into a libscientific matrix</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.matrix.Matrix.appendcol">
+<span class="sig-name descname"><span class="pre">appendcol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">col_lst_</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.Matrix.appendcol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append a columnt vector to the matrix</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.matrix.Matrix.appendrow">
+<span class="sig-name descname"><span class="pre">appendrow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">row_lst_</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.Matrix.appendrow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append a row to the matrix</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.matrix.Matrix.data_ptr">
+<span class="sig-name descname"><span class="pre">data_ptr</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.Matrix.data_ptr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the matrix data pointer</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.matrix.Matrix.debug">
+<span class="sig-name descname"><span class="pre">debug</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.Matrix.debug" title="Permalink to this definition">¶</a></dt>
+<dd><p>Debug the matrix content</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.matrix.Matrix.fromlist">
+<span class="sig-name descname"><span class="pre">fromlist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx_</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.Matrix.fromlist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the matrix from a list</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.matrix.Matrix.fromnumpy">
+<span class="sig-name descname"><span class="pre">fromnumpy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">npmx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.Matrix.fromnumpy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the matrix from a numpy array</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.matrix.Matrix.get_evect_evals">
+<span class="sig-name descname"><span class="pre">get_evect_evals</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.Matrix.get_evect_evals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the eigenvectors and eigenvalues of the matrix</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.matrix.Matrix.ncol">
+<span class="sig-name descname"><span class="pre">ncol</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.Matrix.ncol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of columns of the matrix</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.matrix.Matrix.nrow">
+<span class="sig-name descname"><span class="pre">nrow</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.Matrix.nrow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of rows of the matrix</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.matrix.Matrix.svd">
+<span class="sig-name descname"><span class="pre">svd</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.Matrix.svd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the SVD U,S and VT of the matrix</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.matrix.Matrix.tolist">
+<span class="sig-name descname"><span class="pre">tolist</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.Matrix.tolist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the matrix into a list form</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.matrix.Matrix.transpose">
+<span class="sig-name descname"><span class="pre">transpose</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.Matrix.transpose" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transpose the matrix</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.del_matrix">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">del_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.del_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>del_matrix: Delete an allocated libscientific matrix</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.dvector_matrix_dot_product">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">dvector_matrix_dot_product</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dvect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.dvector_matrix_dot_product" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate a vector-matrix dot product</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.dvector_transposed_dvector_dot_product">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">dvector_transposed_dvector_dot_product</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dvect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.dvector_transposed_dvector_dot_product" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate a dvector transposed dvector dot product</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.dvector_transposed_matrix_division">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">dvector_transposed_matrix_division</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dvect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.dvector_transposed_matrix_division" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate a dvector transposed-matrix division</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.evect_eval">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">evect_eval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtx_e_vect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtx_e_val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.evect_eval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Eigenvectors and Eigenvalues using lapack</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.get_matrix_column">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">get_matrix_column</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jcol</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.get_matrix_column" title="Permalink to this definition">¶</a></dt>
+<dd><p>getMatrixColumn: Python version of getting a column from a libscientific  matrix</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.get_matrix_row">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">get_matrix_row</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">irow</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.get_matrix_row" title="Permalink to this definition">¶</a></dt>
+<dd><p>get_matrix_row: Python version of getting a row from a libscientific matrix</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.get_matrix_value">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">get_matrix_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">irow</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jcol</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.get_matrix_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>get_matrix_value: Get a value in the irow and jcol of a libscientific matrix</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.init_matrix">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">init_matrix</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.init_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>init_matrix: Allocate in memory an empty libscientific matrix</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.matrix_append_col">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">matrix_append_col</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_vect</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.matrix_append_col" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append to a libscientific matrix a column list</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.matrix_append_row">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">matrix_append_row</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">row_vect</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.matrix_append_row" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append to a libscientific matrix a row list</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.matrix_check">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">matrix_check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.matrix_check" title="Permalink to this definition">¶</a></dt>
+<dd><p>matrix_check: Find infinite and nan numbers and sobstitute with MISSING value.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.matrix_copy">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">matrix_copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msrc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mdst</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.matrix_copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>matrix_copy: Copy a libscientifi matrix to another allocated one</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.matrix_dot_product">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">matrix_dot_product</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx_t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.matrix_dot_product" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the matrix-matrix product</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.matrix_dvector_dot_product">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">matrix_dvector_dot_product</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dvect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.matrix_dvector_dot_product" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate a matrix-vector dot product</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.matrix_from_numpy">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">matrix_from_numpy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">npm</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.matrix_from_numpy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a numpy matrix into a libscientific matrix</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.matrix_inversion">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">matrix_inversion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtx_inv</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.matrix_inversion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Invert a matrix</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.matrix_set">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">matrix_set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.matrix_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>matrix_set: Set all values of a libscientific matrix to “val”</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.matrix_to_list">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">matrix_to_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.matrix_to_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>matrix_to_list: Convert a libscientific matrix to list of list</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.matrix_transpose">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">matrix_transpose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtx_t</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.matrix_transpose" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transpose a matrix</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.mt_dvector_matrix_dot_product">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">mt_dvector_matrix_dot_product</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dvect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.mt_dvector_matrix_dot_product" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate a vector-matrix dot product in multi-threads</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.mt_matrix_dvector_dot_product">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">mt_matrix_dvector_dot_product</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dvect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.mt_matrix_dvector_dot_product" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate a matrix-vector dot product in multi-threads</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.new_matrix">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">new_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx_input_</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.new_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>new_matrix: Allocate in memory a libscientific matrix from a list of lists</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.new_matrix_from_csv">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">new_matrix_from_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fcsv</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.new_matrix_from_csv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Import a matrix directly from CSV file</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.new_matrix_from_list">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">new_matrix_from_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mx_lst</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.new_matrix_from_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Import a matrix from a list</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.print_matrix">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">print_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.print_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>print_matrix: Print to video a libscientific matrix</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.resize_matrix">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">resize_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nrows</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncols</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.resize_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>resize_matrix: Resize an already allocated or reallocate a libscientific matrix</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.row_col_outer_product">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">row_col_outer_product</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dvect_a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dvect_b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.row_col_outer_product" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the row-column outer product of two dvectors</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.set_matrix_value">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">set_matrix_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">irow</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jcol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.set_matrix_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>set_matrix_value: Set/modify a value in the irow and jcol of a libscientific matrix</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.set_missing_matrix_value">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">set_missing_matrix_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">row_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.set_missing_matrix_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a value of a matrix into a missing value</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.svd">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">svd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u_mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s_mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vt_mtx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.svd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the SVD of a matrix mtx using the eigenvector/values lapack method</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.svd_lapack">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">svd_lapack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u_mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s_mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vt_mtx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.svd_lapack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the SVD of a matrix mtx using the SVD lapack method</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.val_in_matrix">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">val_in_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.val_in_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>val_in_matrix: Check if a libscientific matrix contains an exact value “val”
+and return 1 or 0 respectivelly for yes or no.</p>
+</dd></dl>
+
+</section>
+<section id="module-libscientific.tensor">
+<span id="libscientific-tensor-module"></span><h2>libscientific.tensor module<a class="headerlink" href="#module-libscientific.tensor" title="Permalink to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="libscientific.tensor.TENSOR">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.tensor.</span></span><span class="sig-name descname"><span class="pre">TENSOR</span></span><a class="headerlink" href="#libscientific.tensor.TENSOR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Structure</span></code></p>
+<p>tensor data structure</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.tensor.TENSOR.m">
+<span class="sig-name descname"><span class="pre">m</span></span><a class="headerlink" href="#libscientific.tensor.TENSOR.m" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.tensor.TENSOR.order">
+<span class="sig-name descname"><span class="pre">order</span></span><a class="headerlink" href="#libscientific.tensor.TENSOR.order" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="libscientific.tensor.Tensor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.tensor.</span></span><span class="sig-name descname"><span class="pre">Tensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tns_</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.Tensor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Translate a list of list of list into a libscientific tensor</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.tensor.Tensor.data_ptr">
+<span class="sig-name descname"><span class="pre">data_ptr</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.Tensor.data_ptr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the tensor data pointer</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.tensor.Tensor.debug">
+<span class="sig-name descname"><span class="pre">debug</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.Tensor.debug" title="Permalink to this definition">¶</a></dt>
+<dd><p>Debug to video the tensor</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.tensor.Tensor.fromlist">
+<span class="sig-name descname"><span class="pre">fromlist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tns_</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.Tensor.fromlist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a tensor fro list</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.tensor.Tensor.fromnumpy">
+<span class="sig-name descname"><span class="pre">fromnumpy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">npt</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.Tensor.fromnumpy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a tensor from numpy</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.tensor.Tensor.ncol">
+<span class="sig-name descname"><span class="pre">ncol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.Tensor.ncol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of column of the matrix k of the tensor</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.tensor.Tensor.nrow">
+<span class="sig-name descname"><span class="pre">nrow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.Tensor.nrow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of rows of the matrix k of the tensor</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.tensor.Tensor.order">
+<span class="sig-name descname"><span class="pre">order</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.Tensor.order" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the order of the tensor aka the number of matrix
+constituting the tensor</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.tensor.Tensor.tolist">
+<span class="sig-name descname"><span class="pre">tolist</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.Tensor.tolist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the tensor as list</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.tensor.add_tensor_matrix">
+<span class="sig-prename descclassname"><span class="pre">libscientific.tensor.</span></span><span class="sig-name descname"><span class="pre">add_tensor_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_row</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_col</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.add_tensor_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a new matrix to the tensor tns</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.tensor.del_tensor">
+<span class="sig-prename descclassname"><span class="pre">libscientific.tensor.</span></span><span class="sig-name descname"><span class="pre">del_tensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tns</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.del_tensor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete the moemory allocated tensor</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.tensor.init_tensor">
+<span class="sig-prename descclassname"><span class="pre">libscientific.tensor.</span></span><span class="sig-name descname"><span class="pre">init_tensor</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.init_tensor" title="Permalink to this definition">¶</a></dt>
+<dd><p>initTensor: Allocate in memory an empty libscientific tensor</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.tensor.new_tensor">
+<span class="sig-prename descclassname"><span class="pre">libscientific.tensor.</span></span><span class="sig-name descname"><span class="pre">new_tensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tns_input_</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.new_tensor" title="Permalink to this definition">¶</a></dt>
+<dd><p>NewTensor: Allocate in memory a libscientific tensor
+from a list of lists of lists</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.tensor.new_tensor_matrix">
+<span class="sig-prename descclassname"><span class="pre">libscientific.tensor.</span></span><span class="sig-name descname"><span class="pre">new_tensor_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_indx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_row</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_col</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.new_tensor_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new matrix on tensor tns at index k_indx</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.tensor.print_tensor">
+<span class="sig-prename descclassname"><span class="pre">libscientific.tensor.</span></span><span class="sig-name descname"><span class="pre">print_tensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tns</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.print_tensor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Debug the tensor content</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.tensor.set_tensor_value">
+<span class="sig-prename descclassname"><span class="pre">libscientific.tensor.</span></span><span class="sig-name descname"><span class="pre">set_tensor_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_indx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i_indx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j_indx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.set_tensor_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the tensor value at indexes k_indx, i_indx, j_indx</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.tensor.tensor_append_column">
+<span class="sig-prename descclassname"><span class="pre">libscientific.tensor.</span></span><span class="sig-name descname"><span class="pre">tensor_append_column</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_indx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dvect</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.tensor_append_column" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append a colum to the matrix at index k_indx inside the tensor tns</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.tensor.tensor_append_row">
+<span class="sig-prename descclassname"><span class="pre">libscientific.tensor.</span></span><span class="sig-name descname"><span class="pre">tensor_append_row</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_indx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dvect</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.tensor_append_row" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append a row to the matrix at index k_indx inside the tensor tns</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.tensor.tensor_copy">
+<span class="sig-prename descclassname"><span class="pre">libscientific.tensor.</span></span><span class="sig-name descname"><span class="pre">tensor_copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src_tns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dst_tns</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.tensor_copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copy a source tensor to a destination tensor</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.tensor.tensor_set">
+<span class="sig-prename descclassname"><span class="pre">libscientific.tensor.</span></span><span class="sig-name descname"><span class="pre">tensor_set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.tensor_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set all the tensor values to a given value val</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.tensor.tensor_tolist">
+<span class="sig-prename descclassname"><span class="pre">libscientific.tensor.</span></span><span class="sig-name descname"><span class="pre">tensor_tolist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tns</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.tensor_tolist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a tensor to list</p>
+</dd></dl>
+
+</section>
+<section id="module-libscientific.vectlist">
+<span id="libscientific-vectlist-module"></span><h2>libscientific.vectlist module<a class="headerlink" href="#module-libscientific.vectlist" title="Permalink to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="libscientific.vectlist.DVECTLIST">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.vectlist.</span></span><span class="sig-name descname"><span class="pre">DVECTLIST</span></span><a class="headerlink" href="#libscientific.vectlist.DVECTLIST" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Structure</span></code></p>
+<p>DVECTLIST data structure</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.vectlist.DVECTLIST.dvector">
+<span class="sig-name descname"><span class="pre">dvector</span></span><a class="headerlink" href="#libscientific.vectlist.DVECTLIST.dvector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.vectlist.DVECTLIST.size">
+<span class="sig-name descname"><span class="pre">size</span></span><a class="headerlink" href="#libscientific.vectlist.DVECTLIST.size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="libscientific.vectlist.DVectorList">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.vectlist.</span></span><span class="sig-name descname"><span class="pre">DVectorList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dvl_</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vectlist.DVectorList" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Translate a list  into a libscientific double vector</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.vectlist.DVectorList.append">
+<span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v_lst</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vectlist.DVectorList.append" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append a value to the dvector</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.vectlist.DVectorList.data_ptr">
+<span class="sig-name descname"><span class="pre">data_ptr</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vectlist.DVectorList.data_ptr" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the pointer to data</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.vectlist.DVectorList.debug">
+<span class="sig-name descname"><span class="pre">debug</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vectlist.DVectorList.debug" title="Permalink to this definition">¶</a></dt>
+<dd><p>Debug the double list vector</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.vectlist.DVectorList.fromlist">
+<span class="sig-name descname"><span class="pre">fromlist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v_lists</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vectlist.DVectorList.fromlist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a list of list to a dvector list</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.vectlist.DVectorList.size">
+<span class="sig-name descname"><span class="pre">size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vectlist.DVectorList.size" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the size of the divector</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.vectlist.DVectorList.tolist">
+<span class="sig-name descname"><span class="pre">tolist</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vectlist.DVectorList.tolist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the dvector list to a list of list</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vectlist.del_dvector_list">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vectlist.</span></span><span class="sig-name descname"><span class="pre">del_dvector_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dvl</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vectlist.del_dvector_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>del_dvector_list: Delete an allocated libscientific double vector</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vectlist.dvector_list_append">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vectlist.</span></span><span class="sig-name descname"><span class="pre">dvector_list_append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dvl</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dvect</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vectlist.dvector_list_append" title="Permalink to this definition">¶</a></dt>
+<dd><p>dvector_list_append: Append a double vector to a DvectorList</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vectlist.dvector_list_tolist">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vectlist.</span></span><span class="sig-name descname"><span class="pre">dvector_list_tolist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dvl</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vectlist.dvector_list_tolist" title="Permalink to this definition">¶</a></dt>
+<dd><p>convert a divector list into a list of lists</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vectlist.init_dvector_list">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vectlist.</span></span><span class="sig-name descname"><span class="pre">init_dvector_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vectlist.init_dvector_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>init_dvector_list: Allocate in memory an empty libscientific double vector list</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vectlist.new_dvector_list">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vectlist.</span></span><span class="sig-name descname"><span class="pre">new_dvector_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dvl_</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vectlist.new_dvector_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>new_dvector_list: Allocate in memory a libscientific double vector list
+from a list of lists</p>
+</dd></dl>
+
+</section>
+<section id="module-libscientific.vector">
+<span id="libscientific-vector-module"></span><h2>libscientific.vector module<a class="headerlink" href="#module-libscientific.vector" title="Permalink to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="libscientific.vector.DVECTOR">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">DVECTOR</span></span><a class="headerlink" href="#libscientific.vector.DVECTOR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Structure</span></code></p>
+<p>double vector data structure</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.vector.DVECTOR.data">
+<span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#libscientific.vector.DVECTOR.data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.vector.DVECTOR.size">
+<span class="sig-name descname"><span class="pre">size</span></span><a class="headerlink" href="#libscientific.vector.DVECTOR.size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="libscientific.vector.DVector">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">DVector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dvect_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.DVector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Translate a list  into a libscientific double vector</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.vector.DVector.append">
+<span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.DVector.append" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append a value to the dvector</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.vector.DVector.data_ptr">
+<span class="sig-name descname"><span class="pre">data_ptr</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.DVector.data_ptr" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the pointer to data</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.vector.DVector.debug">
+<span class="sig-name descname"><span class="pre">debug</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.DVector.debug" title="Permalink to this definition">¶</a></dt>
+<dd><p>Debug the dvector</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.vector.DVector.extend">
+<span class="sig-name descname"><span class="pre">extend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v_lst</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.DVector.extend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extend the dvector by adding a list</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.vector.DVector.fromlist">
+<span class="sig-name descname"><span class="pre">fromlist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vlst_</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.DVector.fromlist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a list to a dvector</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.vector.DVector.size">
+<span class="sig-name descname"><span class="pre">size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.DVector.size" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the size of the dvector</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.vector.DVector.tolist">
+<span class="sig-name descname"><span class="pre">tolist</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.DVector.tolist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the dvector to a list</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="libscientific.vector.IVECTOR">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">IVECTOR</span></span><a class="headerlink" href="#libscientific.vector.IVECTOR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Structure</span></code></p>
+<p>unsigned int vector data structure</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.vector.IVECTOR.data">
+<span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#libscientific.vector.IVECTOR.data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.vector.IVECTOR.size">
+<span class="sig-name descname"><span class="pre">size</span></span><a class="headerlink" href="#libscientific.vector.IVECTOR.size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="libscientific.vector.STRVECTOR">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">STRVECTOR</span></span><a class="headerlink" href="#libscientific.vector.STRVECTOR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Structure</span></code></p>
+<p>string vector data structure</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.vector.STRVECTOR.data">
+<span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#libscientific.vector.STRVECTOR.data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.vector.STRVECTOR.size">
+<span class="sig-name descname"><span class="pre">size</span></span><a class="headerlink" href="#libscientific.vector.STRVECTOR.size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="libscientific.vector.UIVECTOR">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">UIVECTOR</span></span><a class="headerlink" href="#libscientific.vector.UIVECTOR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Structure</span></code></p>
+<p>unsigned int vector data structure</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.vector.UIVECTOR.data">
+<span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#libscientific.vector.UIVECTOR.data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.vector.UIVECTOR.size">
+<span class="sig-name descname"><span class="pre">size</span></span><a class="headerlink" href="#libscientific.vector.UIVECTOR.size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="libscientific.vector.UIVector">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">UIVector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uivect_</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.UIVector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Translate a list  into a libscientific unsigned int vector</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.vector.UIVector.append">
+<span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.UIVector.append" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append a value to the uivector</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.vector.UIVector.data_ptr">
+<span class="sig-name descname"><span class="pre">data_ptr</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.UIVector.data_ptr" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the pointer to data</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.vector.UIVector.debug">
+<span class="sig-name descname"><span class="pre">debug</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.UIVector.debug" title="Permalink to this definition">¶</a></dt>
+<dd><p>Debug the iuvector</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.vector.UIVector.extend">
+<span class="sig-name descname"><span class="pre">extend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v_lst</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.UIVector.extend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extend the dvector by adding a list</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.vector.UIVector.fromlist">
+<span class="sig-name descname"><span class="pre">fromlist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vlst_</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.UIVector.fromlist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a list to a dvector</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.vector.UIVector.size">
+<span class="sig-name descname"><span class="pre">size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.UIVector.size" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the size of the uivector</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.vector.UIVector.tolist">
+<span class="sig-name descname"><span class="pre">tolist</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.UIVector.tolist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the dvector to a list</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.del_dvector">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">del_dvector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dvect</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.del_dvector" title="Permalink to this definition">¶</a></dt>
+<dd><p>DelDVector: Delete an allocated libscientific double vector</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.del_ivector">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">del_ivector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ivect</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.del_ivector" title="Permalink to this definition">¶</a></dt>
+<dd><p>DelIVector: Delete an allocated libscientific int vector</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.del_uivector">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">del_uivector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uivect</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.del_uivector" title="Permalink to this definition">¶</a></dt>
+<dd><p>DelUIVector: Delete an allocated libscientific unsigned int vector</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.dvector_append">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">dvector_append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dvect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.dvector_append" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append a value to a double vector d</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.dvector_copy">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">dvector_copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dvect_src</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.dvector_copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a copy of dvector d to a</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.dvector_has_value">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">dvector_has_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dvect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.dvector_has_value" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>DVectorHasValue: Check if a libscientific double vector contains an exact</dt><dd><p>value “val” and return 0 or 1 respectivelly for have or not have.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.dvector_remove_at">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">dvector_remove_at</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dvect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.dvector_remove_at" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a value from a double vector d at index indx</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.dvector_resize">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">dvector_resize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dvect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.dvector_resize" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>DVectorResize: Resize an already allocated or reallocate a libscientific</dt><dd><p>double vector</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.dvector_set">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">dvector_set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dvect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.dvector_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>DVectorSet: Set all values of a libscientific double vector to “val”</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.dvector_tolist">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">dvector_tolist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dvect</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.dvector_tolist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Double vector to python list</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.get_dvector_value">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">get_dvector_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dvect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.get_dvector_value" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>getDVectorValue: Get a value in the row of a libscientific</dt><dd><p>double vector</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.get_ivector_value">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">get_ivector_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ivect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.get_ivector_value" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>getIVectorValue: Get a value in the row of a libscientific</dt><dd><p>double vector</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.get_uivector_value">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">get_uivector_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uivect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.get_uivector_value" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>getUIVectorValue: Get a value in the row of a libscientific</dt><dd><p>double vector</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.init_dvector">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">init_dvector</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.init_dvector" title="Permalink to this definition">¶</a></dt>
+<dd><p>initDVector: Allocate in memory an empty libscientific double vector</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.init_ivector">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">init_ivector</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.init_ivector" title="Permalink to this definition">¶</a></dt>
+<dd><p>initIVector: Allocate in memory an empty libscientific double vector</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.init_uivector">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">init_uivector</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.init_uivector" title="Permalink to this definition">¶</a></dt>
+<dd><p>initUIVector: Allocate in memory an empty libscientific double vector</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.ivector_append">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">ivector_append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ivect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.ivector_append" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append a value to an int vector</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.ivector_remove_at">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">ivector_remove_at</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ivect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.ivector_remove_at" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a value from an int vector at index indx</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.ivector_tolist">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">ivector_tolist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ivect</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.ivector_tolist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Int vector to python list</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.new_dvector">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">new_dvector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v_lst</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.new_dvector" title="Permalink to this definition">¶</a></dt>
+<dd><p>NewDVector: Allocate in memory a libscientific double vector from a list</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.new_ivector">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">new_ivector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v_lst</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.new_ivector" title="Permalink to this definition">¶</a></dt>
+<dd><p>NewIVector: Allocate in memory a libscientific int vector from a list</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.new_uivector">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">new_uivector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v_lst</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.new_uivector" title="Permalink to this definition">¶</a></dt>
+<dd><p>NewUIVector: Allocate in memory a libscientific unsigned int vector from a list</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.print_dvector">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">print_dvector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dvect</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.print_dvector" title="Permalink to this definition">¶</a></dt>
+<dd><p>PrintDVector: Print to video a libscientific double vector</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.print_uivector">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">print_uivector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uivect</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.print_uivector" title="Permalink to this definition">¶</a></dt>
+<dd><p>PrintUIVector: Print to video a libscientific unsigned int vector</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.set_dvector_value">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">set_dvector_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dvect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.set_dvector_value" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>setDVectorValue: Set/modify a value in the row of a libscientific</dt><dd><p>double vector</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.set_ivector_value">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">set_ivector_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ivect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.set_ivector_value" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>setIVectorValue: Set/modify a value in the row of a libscientific</dt><dd><p>int vector</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.set_uivector_value">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">set_uivector_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uivect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.set_uivector_value" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>setUIVectorValue: Set/modify a value in the row of a libscientific</dt><dd><p>unsigned int vector</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.uivector_append">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">uivector_append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uivect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.uivector_append" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append a value to an unsigned int vector</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.uivector_remove_at">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">uivector_remove_at</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uivect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.uivector_remove_at" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a value from an unsigned int vector at index indx</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.uivector_resize">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">uivector_resize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uivect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.uivector_resize" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>DVectorResize: Resize an already allocated or reallocate a libscientific</dt><dd><p>unsigned int vector</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.uivector_tolist">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">uivector_tolist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uivect</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.uivector_tolist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unsigned int vector to python list</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.xvector_tolist">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">xvector_tolist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dvect</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.xvector_tolist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a libscientific double/unsigned int/int vector into a python list</p>
+</dd></dl>
+
+</section>
+<section id="module-libscientific.clustering">
+<span id="libscientific-clustering-module"></span><h2>libscientific.clustering module<a class="headerlink" href="#module-libscientific.clustering" title="Permalink to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.clustering.k_means_plus_plus">
+<span class="sig-prename descclassname"><span class="pre">libscientific.clustering.</span></span><span class="sig-name descname"><span class="pre">k_means_plus_plus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_clusters</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.clustering.k_means_plus_plus" title="Permalink to this definition">¶</a></dt>
+<dd><p>K-Means++ clustering using david arthur initialization</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.clustering.max_dissimilarity_selection">
+<span class="sig-prename descclassname"><span class="pre">libscientific.clustering.</span></span><span class="sig-name descname"><span class="pre">max_dissimilarity_selection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nobjects</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.clustering.max_dissimilarity_selection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Max dissimilarity compound selection algorithm</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.clustering.most_descriptive_compound">
+<span class="sig-prename descclassname"><span class="pre">libscientific.clustering.</span></span><span class="sig-name descname"><span class="pre">most_descriptive_compound</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nobjects</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.clustering.most_descriptive_compound" title="Permalink to this definition">¶</a></dt>
+<dd><p>Most Descriptive Compound algorithm</p>
+</dd></dl>
+
+</section>
+<section id="module-libscientific.cpca">
+<span id="libscientific-cpca-module"></span><h2>libscientific.cpca module<a class="headerlink" href="#module-libscientific.cpca" title="Permalink to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="libscientific.cpca.CPCA">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.cpca.</span></span><span class="sig-name descname"><span class="pre">CPCA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scaling</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npc</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.cpca.CPCA" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>CPCA model class</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.cpca.CPCA.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t_input</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.cpca.CPCA.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>fit a cpca model using an input tensor</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.cpca.CPCA.get_block_expvar">
+<span class="sig-name descname"><span class="pre">get_block_expvar</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.cpca.CPCA.get_block_expvar" title="Permalink to this definition">¶</a></dt>
+<dd><p>get the cpca block variance explained</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.cpca.CPCA.get_block_loadings">
+<span class="sig-name descname"><span class="pre">get_block_loadings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.cpca.CPCA.get_block_loadings" title="Permalink to this definition">¶</a></dt>
+<dd><p>get the cpca block loadings</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.cpca.CPCA.get_block_scores">
+<span class="sig-name descname"><span class="pre">get_block_scores</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.cpca.CPCA.get_block_scores" title="Permalink to this definition">¶</a></dt>
+<dd><p>get the cpca block scores</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.cpca.CPCA.get_super_scores">
+<span class="sig-name descname"><span class="pre">get_super_scores</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.cpca.CPCA.get_super_scores" title="Permalink to this definition">¶</a></dt>
+<dd><p>get the cpca super scores</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.cpca.CPCA.get_super_weights">
+<span class="sig-name descname"><span class="pre">get_super_weights</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.cpca.CPCA.get_super_weights" title="Permalink to this definition">¶</a></dt>
+<dd><p>get the cpca super weights</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.cpca.CPCA.get_total_exp_variance">
+<span class="sig-name descname"><span class="pre">get_total_exp_variance</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.cpca.CPCA.get_total_exp_variance" title="Permalink to this definition">¶</a></dt>
+<dd><p>get the cpca total variance explained</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.cpca.CPCA.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t_input</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.cpca.CPCA.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>get the cpca block variance explained</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="libscientific.cpca.CPCAMODEL">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.cpca.</span></span><span class="sig-name descname"><span class="pre">CPCAMODEL</span></span><a class="headerlink" href="#libscientific.cpca.CPCAMODEL" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Structure</span></code></p>
+<p>CPCA model data structure</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.cpca.CPCAMODEL.block_expvar">
+<span class="sig-name descname"><span class="pre">block_expvar</span></span><a class="headerlink" href="#libscientific.cpca.CPCAMODEL.block_expvar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.cpca.CPCAMODEL.block_loadings">
+<span class="sig-name descname"><span class="pre">block_loadings</span></span><a class="headerlink" href="#libscientific.cpca.CPCAMODEL.block_loadings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.cpca.CPCAMODEL.block_scores">
+<span class="sig-name descname"><span class="pre">block_scores</span></span><a class="headerlink" href="#libscientific.cpca.CPCAMODEL.block_scores" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.cpca.CPCAMODEL.colaverage">
+<span class="sig-name descname"><span class="pre">colaverage</span></span><a class="headerlink" href="#libscientific.cpca.CPCAMODEL.colaverage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.cpca.CPCAMODEL.colscaling">
+<span class="sig-name descname"><span class="pre">colscaling</span></span><a class="headerlink" href="#libscientific.cpca.CPCAMODEL.colscaling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.cpca.CPCAMODEL.scaling_factor">
+<span class="sig-name descname"><span class="pre">scaling_factor</span></span><a class="headerlink" href="#libscientific.cpca.CPCAMODEL.scaling_factor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.cpca.CPCAMODEL.super_scores">
+<span class="sig-name descname"><span class="pre">super_scores</span></span><a class="headerlink" href="#libscientific.cpca.CPCAMODEL.super_scores" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.cpca.CPCAMODEL.super_weights">
+<span class="sig-name descname"><span class="pre">super_weights</span></span><a class="headerlink" href="#libscientific.cpca.CPCAMODEL.super_weights" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.cpca.CPCAMODEL.total_expvar">
+<span class="sig-name descname"><span class="pre">total_expvar</span></span><a class="headerlink" href="#libscientific.cpca.CPCAMODEL.total_expvar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.cpca.cpca_algorithm">
+<span class="sig-prename descclassname"><span class="pre">libscientific.cpca.</span></span><span class="sig-name descname"><span class="pre">cpca_algorithm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t_input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaling</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mpca</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.cpca.cpca_algorithm" title="Permalink to this definition">¶</a></dt>
+<dd><p>CPCA: Calculate the CPCA model for a matrix m using the NIPALS algorithm</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.cpca.cpca_score_predictor">
+<span class="sig-prename descclassname"><span class="pre">libscientific.cpca.</span></span><span class="sig-name descname"><span class="pre">cpca_score_predictor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t_input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_super_scores</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_block_scores</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.cpca.cpca_score_predictor" title="Permalink to this definition">¶</a></dt>
+<dd><p>cpca_score_predictor: Predict scores for a matrix m in the computed CPCA modes</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.cpca.del_cpca_model">
+<span class="sig-prename descclassname"><span class="pre">libscientific.cpca.</span></span><span class="sig-name descname"><span class="pre">del_cpca_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mpca</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.cpca.del_cpca_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>del_cpca_model: Delete an allocated libscientific CPCA model</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.cpca.new_cpca_model">
+<span class="sig-prename descclassname"><span class="pre">libscientific.cpca.</span></span><span class="sig-name descname"><span class="pre">new_cpca_model</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.cpca.new_cpca_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>new_cpca_model: Allocate in memory an empty libscientific CPCA model</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.cpca.print_cpca">
+<span class="sig-prename descclassname"><span class="pre">libscientific.cpca.</span></span><span class="sig-name descname"><span class="pre">print_cpca</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mpca</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.cpca.print_cpca" title="Permalink to this definition">¶</a></dt>
+<dd><p>PrintCPCA: Print to video the CPCA Model</p>
+</dd></dl>
+
+</section>
+<section id="module-libscientific.interpolate">
+<span id="libscientific-interpolate-module"></span><h2>libscientific.interpolate module<a class="headerlink" href="#module-libscientific.interpolate" title="Permalink to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.interpolate.cubic_spline_interpolation">
+<span class="sig-prename descclassname"><span class="pre">libscientific.interpolate.</span></span><span class="sig-name descname"><span class="pre">cubic_spline_interpolation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s_interp</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.interpolate.cubic_spline_interpolation" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>CubicSplineInterpolation: Given a matrix x_y, interpolate the npoints</dt><dd><p>using a natural cubic spline approach</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.interpolate.cubic_spline_predict">
+<span class="sig-prename descclassname"><span class="pre">libscientific.interpolate.</span></span><span class="sig-name descname"><span class="pre">cubic_spline_predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_cc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s_interp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.interpolate.cubic_spline_predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Natural cubic spline prediction</p>
+</dd></dl>
+
+</section>
+<section id="module-libscientific.loadlibrary">
+<span id="libscientific-loadlibrary-module"></span><h2>libscientific.loadlibrary module<a class="headerlink" href="#module-libscientific.loadlibrary" title="Permalink to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.loadlibrary.get_posix_library">
+<span class="sig-prename descclassname"><span class="pre">libscientific.loadlibrary.</span></span><span class="sig-name descname"><span class="pre">get_posix_library</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.loadlibrary.get_posix_library" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.loadlibrary.load_libscientific_library">
+<span class="sig-prename descclassname"><span class="pre">libscientific.loadlibrary.</span></span><span class="sig-name descname"><span class="pre">load_libscientific_library</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.loadlibrary.load_libscientific_library" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load the libscientific library</p>
+</dd></dl>
+
+</section>
+<section id="module-libscientific.misc">
+<span id="libscientific-misc-module"></span><h2>libscientific.misc module<a class="headerlink" href="#module-libscientific.misc" title="Permalink to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.misc.missing_value">
+<span class="sig-prename descclassname"><span class="pre">libscientific.misc.</span></span><span class="sig-name descname"><span class="pre">missing_value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.misc.missing_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>missing_value: return the standard missing value in
+libscientific. T^his variable is useful to
+compute PCA or PLS with missing values.</p>
+</dd></dl>
+
+</section>
+<section id="module-libscientific.pca">
+<span id="libscientific-pca-module"></span><h2>libscientific.pca module<a class="headerlink" href="#module-libscientific.pca" title="Permalink to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="libscientific.pca.PCA">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.pca.</span></span><span class="sig-name descname"><span class="pre">PCA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scaling</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npc</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pca.PCA" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>PCA model class</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.pca.PCA.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m_input</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pca.PCA.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>fit a PCA model using an input matrix</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.pca.PCA.get_exp_variance">
+<span class="sig-name descname"><span class="pre">get_exp_variance</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pca.PCA.get_exp_variance" title="Permalink to this definition">¶</a></dt>
+<dd><p>get the PCA explained variance</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.pca.PCA.get_loadings">
+<span class="sig-name descname"><span class="pre">get_loadings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pca.PCA.get_loadings" title="Permalink to this definition">¶</a></dt>
+<dd><p>get the PCA loadings</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.pca.PCA.get_scores">
+<span class="sig-name descname"><span class="pre">get_scores</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pca.PCA.get_scores" title="Permalink to this definition">¶</a></dt>
+<dd><p>get the PCA scores</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.pca.PCA.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m_input</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pca.PCA.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Project an input matrix into the PCA model</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.pca.PCA.reconstruct_original_matrix">
+<span class="sig-name descname"><span class="pre">reconstruct_original_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">npc_input</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scores_input</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pca.PCA.reconstruct_original_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reconstruct the original input matrix giving a
+number of principal components to be used from scores and loadings</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="libscientific.pca.PCAMODEL">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.pca.</span></span><span class="sig-name descname"><span class="pre">PCAMODEL</span></span><a class="headerlink" href="#libscientific.pca.PCAMODEL" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Structure</span></code></p>
+<p>PCA model data structure</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.pca.PCAMODEL.colaverage">
+<span class="sig-name descname"><span class="pre">colaverage</span></span><a class="headerlink" href="#libscientific.pca.PCAMODEL.colaverage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.pca.PCAMODEL.colscaling">
+<span class="sig-name descname"><span class="pre">colscaling</span></span><a class="headerlink" href="#libscientific.pca.PCAMODEL.colscaling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.pca.PCAMODEL.dmodx">
+<span class="sig-name descname"><span class="pre">dmodx</span></span><a class="headerlink" href="#libscientific.pca.PCAMODEL.dmodx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.pca.PCAMODEL.loadings">
+<span class="sig-name descname"><span class="pre">loadings</span></span><a class="headerlink" href="#libscientific.pca.PCAMODEL.loadings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.pca.PCAMODEL.scores">
+<span class="sig-name descname"><span class="pre">scores</span></span><a class="headerlink" href="#libscientific.pca.PCAMODEL.scores" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.pca.PCAMODEL.varexp">
+<span class="sig-name descname"><span class="pre">varexp</span></span><a class="headerlink" href="#libscientific.pca.PCAMODEL.varexp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.pca.del_pca_model">
+<span class="sig-prename descclassname"><span class="pre">libscientific.pca.</span></span><span class="sig-name descname"><span class="pre">del_pca_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mpca</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pca.del_pca_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>del_pca_model: Delete an allocated libscientific PCA model</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.pca.new_pca_model">
+<span class="sig-prename descclassname"><span class="pre">libscientific.pca.</span></span><span class="sig-name descname"><span class="pre">new_pca_model</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pca.new_pca_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>new_pca_model: Allocate in memory an empty libscientific PCA model</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.pca.pca_algorithm">
+<span class="sig-prename descclassname"><span class="pre">libscientific.pca.</span></span><span class="sig-name descname"><span class="pre">pca_algorithm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m_input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaling</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mpca</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pca.pca_algorithm" title="Permalink to this definition">¶</a></dt>
+<dd><p>PCA: Calculate the PCA model for a matrix m using the NIPALS algorithm</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.pca.pca_ind_var_predictor">
+<span class="sig-prename descclassname"><span class="pre">libscientific.pca.</span></span><span class="sig-name descname"><span class="pre">pca_ind_var_predictor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scores_input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loadings_input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colaverage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colscaling</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ind_vars_out</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pca.pca_ind_var_predictor" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>pca_ind_var_predictor: Reconstruct the original matrix</dt><dd><p>from PCA model using scores and loadings</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.pca.pca_score_predictor">
+<span class="sig-prename descclassname"><span class="pre">libscientific.pca.</span></span><span class="sig-name descname"><span class="pre">pca_score_predictor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m_input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mpca</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pscores</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pca.pca_score_predictor" title="Permalink to this definition">¶</a></dt>
+<dd><p>pca_score_predictor: Predict scores for a matrix m in the computed PCA modes</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.pca.print_pca">
+<span class="sig-prename descclassname"><span class="pre">libscientific.pca.</span></span><span class="sig-name descname"><span class="pre">print_pca</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mpca</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pca.print_pca" title="Permalink to this definition">¶</a></dt>
+<dd><p>PrintPCA: Print to video the PCA Model</p>
+</dd></dl>
+
+</section>
+<section id="module-libscientific.pls">
+<span id="libscientific-pls-module"></span><h2>libscientific.pls module<a class="headerlink" href="#module-libscientific.pls" title="Permalink to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="libscientific.pls.PLS">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.pls.</span></span><span class="sig-name descname"><span class="pre">PLS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nlv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xscaling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yscaling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pls.PLS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Partial least squares</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>(</strong><strong>int</strong><strong>)</strong> (<em>yscaling</em>) – </p></li>
+<li><p><strong>(</strong><strong>int</strong><strong>)</strong> – </p></li>
+<li><p><strong>(</strong><strong>int</strong><strong>)</strong> – </p></li>
+<li><p><strong>N.B.</strong> (<em>xscaling and yscaling can be:</em>) – 0 -&gt; No scaling
+1 -&gt; Standard deviation scaling
+2 -&gt; Root mean squared scaling
+3 -&gt; Pareto scaling
+4 -&gt; Range scaling
+5 -&gt; Level scaling</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.pls.PLS.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_input</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pls.PLS.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit a pls model giving x matrix and y matrix</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.pls.PLS.get_beta_coefficients">
+<span class="sig-name descname"><span class="pre">get_beta_coefficients</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nlv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pls.PLS.get_beta_coefficients" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the Beta Coefficients for fast predictions</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.pls.PLS.get_exp_variance">
+<span class="sig-name descname"><span class="pre">get_exp_variance</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pls.PLS.get_exp_variance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the explained variance</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.pls.PLS.get_ploadings">
+<span class="sig-name descname"><span class="pre">get_ploadings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pls.PLS.get_ploadings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the P-Loadings</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.pls.PLS.get_qloadings">
+<span class="sig-name descname"><span class="pre">get_qloadings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pls.PLS.get_qloadings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the Q-Loadings</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.pls.PLS.get_tscores">
+<span class="sig-name descname"><span class="pre">get_tscores</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pls.PLS.get_tscores" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the T-Scores</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.pls.PLS.get_uscores">
+<span class="sig-name descname"><span class="pre">get_uscores</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pls.PLS.get_uscores" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the U-Scores</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.pls.PLS.get_weights">
+<span class="sig-name descname"><span class="pre">get_weights</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pls.PLS.get_weights" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the W-weigths</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.pls.PLS.get_x_averages">
+<span class="sig-name descname"><span class="pre">get_x_averages</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pls.PLS.get_x_averages" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the feature averages</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.pls.PLS.get_x_column_scaling">
+<span class="sig-name descname"><span class="pre">get_x_column_scaling</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pls.PLS.get_x_column_scaling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the model column scaling</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.pls.PLS.get_y_averages">
+<span class="sig-name descname"><span class="pre">get_y_averages</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pls.PLS.get_y_averages" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the feature averages</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.pls.PLS.get_y_column_scaling">
+<span class="sig-name descname"><span class="pre">get_y_column_scaling</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pls.PLS.get_y_column_scaling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the model column scaling</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.pls.PLS.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nlv_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pls.PLS.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predict the y giving an x matrix</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="libscientific.pls.PLSMODEL">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.pls.</span></span><span class="sig-name descname"><span class="pre">PLSMODEL</span></span><a class="headerlink" href="#libscientific.pls.PLSMODEL" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Structure</span></code></p>
+<p>PLSMODEL data structure</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.pls.PLSMODEL.b">
+<span class="sig-name descname"><span class="pre">b</span></span><a class="headerlink" href="#libscientific.pls.PLSMODEL.b" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.pls.PLSMODEL.bias">
+<span class="sig-name descname"><span class="pre">bias</span></span><a class="headerlink" href="#libscientific.pls.PLSMODEL.bias" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.pls.PLSMODEL.precision_recall_ap_recalculated">
+<span class="sig-name descname"><span class="pre">precision_recall_ap_recalculated</span></span><a class="headerlink" href="#libscientific.pls.PLSMODEL.precision_recall_ap_recalculated" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.pls.PLSMODEL.precision_recall_ap_validation">
+<span class="sig-name descname"><span class="pre">precision_recall_ap_validation</span></span><a class="headerlink" href="#libscientific.pls.PLSMODEL.precision_recall_ap_validation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.pls.PLSMODEL.precision_recall_recalculated">
+<span class="sig-name descname"><span class="pre">precision_recall_recalculated</span></span><a class="headerlink" href="#libscientific.pls.PLSMODEL.precision_recall_recalculated" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.pls.PLSMODEL.precision_recall_validation">
+<span class="sig-name descname"><span class="pre">precision_recall_validation</span></span><a class="headerlink" href="#libscientific.pls.PLSMODEL.precision_recall_validation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.pls.PLSMODEL.pred_residuals">
+<span class="sig-name descname"><span class="pre">pred_residuals</span></span><a class="headerlink" href="#libscientific.pls.PLSMODEL.pred_residuals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.pls.PLSMODEL.predicted_y">
+<span class="sig-name descname"><span class="pre">predicted_y</span></span><a class="headerlink" href="#libscientific.pls.PLSMODEL.predicted_y" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.pls.PLSMODEL.q2y">
+<span class="sig-name descname"><span class="pre">q2y</span></span><a class="headerlink" href="#libscientific.pls.PLSMODEL.q2y" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.pls.PLSMODEL.r2y_recalculated">
+<span class="sig-name descname"><span class="pre">r2y_recalculated</span></span><a class="headerlink" href="#libscientific.pls.PLSMODEL.r2y_recalculated" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.pls.PLSMODEL.r2y_validation">
+<span class="sig-name descname"><span class="pre">r2y_validation</span></span><a class="headerlink" href="#libscientific.pls.PLSMODEL.r2y_validation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.pls.PLSMODEL.recalc_residuals">
+<span class="sig-name descname"><span class="pre">recalc_residuals</span></span><a class="headerlink" href="#libscientific.pls.PLSMODEL.recalc_residuals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.pls.PLSMODEL.recalculated_y">
+<span class="sig-name descname"><span class="pre">recalculated_y</span></span><a class="headerlink" href="#libscientific.pls.PLSMODEL.recalculated_y" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.pls.PLSMODEL.roc_auc_recalculated">
+<span class="sig-name descname"><span class="pre">roc_auc_recalculated</span></span><a class="headerlink" href="#libscientific.pls.PLSMODEL.roc_auc_recalculated" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.pls.PLSMODEL.roc_auc_validation">
+<span class="sig-name descname"><span class="pre">roc_auc_validation</span></span><a class="headerlink" href="#libscientific.pls.PLSMODEL.roc_auc_validation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.pls.PLSMODEL.roc_recalculated">
+<span class="sig-name descname"><span class="pre">roc_recalculated</span></span><a class="headerlink" href="#libscientific.pls.PLSMODEL.roc_recalculated" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.pls.PLSMODEL.roc_validation">
+<span class="sig-name descname"><span class="pre">roc_validation</span></span><a class="headerlink" href="#libscientific.pls.PLSMODEL.roc_validation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.pls.PLSMODEL.sdec">
+<span class="sig-name descname"><span class="pre">sdec</span></span><a class="headerlink" href="#libscientific.pls.PLSMODEL.sdec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.pls.PLSMODEL.sdep">
+<span class="sig-name descname"><span class="pre">sdep</span></span><a class="headerlink" href="#libscientific.pls.PLSMODEL.sdep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.pls.PLSMODEL.xcolaverage">
+<span class="sig-name descname"><span class="pre">xcolaverage</span></span><a class="headerlink" href="#libscientific.pls.PLSMODEL.xcolaverage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.pls.PLSMODEL.xcolscaling">
+<span class="sig-name descname"><span class="pre">xcolscaling</span></span><a class="headerlink" href="#libscientific.pls.PLSMODEL.xcolscaling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.pls.PLSMODEL.xloadings">
+<span class="sig-name descname"><span class="pre">xloadings</span></span><a class="headerlink" href="#libscientific.pls.PLSMODEL.xloadings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.pls.PLSMODEL.xscores">
+<span class="sig-name descname"><span class="pre">xscores</span></span><a class="headerlink" href="#libscientific.pls.PLSMODEL.xscores" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.pls.PLSMODEL.xvarexp">
+<span class="sig-name descname"><span class="pre">xvarexp</span></span><a class="headerlink" href="#libscientific.pls.PLSMODEL.xvarexp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.pls.PLSMODEL.xweights">
+<span class="sig-name descname"><span class="pre">xweights</span></span><a class="headerlink" href="#libscientific.pls.PLSMODEL.xweights" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.pls.PLSMODEL.ycolaverage">
+<span class="sig-name descname"><span class="pre">ycolaverage</span></span><a class="headerlink" href="#libscientific.pls.PLSMODEL.ycolaverage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.pls.PLSMODEL.ycolscaling">
+<span class="sig-name descname"><span class="pre">ycolscaling</span></span><a class="headerlink" href="#libscientific.pls.PLSMODEL.ycolscaling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.pls.PLSMODEL.yloadings">
+<span class="sig-name descname"><span class="pre">yloadings</span></span><a class="headerlink" href="#libscientific.pls.PLSMODEL.yloadings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.pls.PLSMODEL.yscores">
+<span class="sig-name descname"><span class="pre">yscores</span></span><a class="headerlink" href="#libscientific.pls.PLSMODEL.yscores" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.pls.PLSMODEL.yscrambling">
+<span class="sig-name descname"><span class="pre">yscrambling</span></span><a class="headerlink" href="#libscientific.pls.PLSMODEL.yscrambling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.pls.del_pls_model">
+<span class="sig-prename descclassname"><span class="pre">libscientific.pls.</span></span><span class="sig-name descname"><span class="pre">del_pls_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mpls</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pls.del_pls_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>del_pls_model: Delete an allocated libscientific PLS model</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.pls.new_pls_model">
+<span class="sig-prename descclassname"><span class="pre">libscientific.pls.</span></span><span class="sig-name descname"><span class="pre">new_pls_model</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pls.new_pls_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>new_pls_model: Allocate in memory an empty libscientific PLS model</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.pls.pls_algorithm">
+<span class="sig-prename descclassname"><span class="pre">libscientific.pls.</span></span><span class="sig-name descname"><span class="pre">pls_algorithm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nlv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_scaling</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_scaling</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mpls</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pls.pls_algorithm" title="Permalink to this definition">¶</a></dt>
+<dd><p>PLS: Calculate the PLS model using a matrix x and a matrix y according to the NIPALS algorithm</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.pls.pls_beta_coefficients">
+<span class="sig-prename descclassname"><span class="pre">libscientific.pls.</span></span><span class="sig-name descname"><span class="pre">pls_beta_coefficients</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mpls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nlv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bcoeff</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pls.pls_beta_coefficients" title="Permalink to this definition">¶</a></dt>
+<dd><p>PLSBetasCoeff calculation</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.pls.pls_score_predictor">
+<span class="sig-prename descclassname"><span class="pre">libscientific.pls.</span></span><span class="sig-name descname"><span class="pre">pls_score_predictor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mpls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nlv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_scores</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pls.pls_score_predictor" title="Permalink to this definition">¶</a></dt>
+<dd><p>PLSScorePredictor: Predict scores for a matrix m in the computed PLS modes</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.pls.pls_y_predictor">
+<span class="sig-prename descclassname"><span class="pre">libscientific.pls.</span></span><span class="sig-name descname"><span class="pre">pls_y_predictor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_scores</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mpls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nlv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predicted_y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pls.pls_y_predictor" title="Permalink to this definition">¶</a></dt>
+<dd><p>PLSYPredictor: Predict the Y according the predicted scores and the calculated pls model.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.pls.pls_y_predictor_all_lv">
+<span class="sig-prename descclassname"><span class="pre">libscientific.pls.</span></span><span class="sig-name descname"><span class="pre">pls_y_predictor_all_lv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mpls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predicted_scores</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predicted_y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pls.pls_y_predictor_all_lv" title="Permalink to this definition">¶</a></dt>
+<dd><p>PLSYPredictorAllLV: Predict the Y according the original feature matrix and the calculated pls model.
+This function is NOT dependent on PLSScorePredictor.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.pls.print_pls">
+<span class="sig-prename descclassname"><span class="pre">libscientific.pls.</span></span><span class="sig-name descname"><span class="pre">print_pls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mpls</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pls.print_pls" title="Permalink to this definition">¶</a></dt>
+<dd><p>PrintPLS: Print to video the PLS Model</p>
+</dd></dl>
+
+</section>
+<section id="module-libscientific">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-libscientific" title="Permalink to this heading">¶</a></h2>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Pyhton API Reference</a><ul>
+<li><a class="reference internal" href="#module-libscientific.matrix">libscientific.matrix module</a><ul>
+<li><a class="reference internal" href="#libscientific.matrix.MATRIX"><code class="docutils literal notranslate"><span class="pre">MATRIX</span></code></a><ul>
+<li><a class="reference internal" href="#libscientific.matrix.MATRIX.col"><code class="docutils literal notranslate"><span class="pre">MATRIX.col</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.MATRIX.data"><code class="docutils literal notranslate"><span class="pre">MATRIX.data</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.MATRIX.row"><code class="docutils literal notranslate"><span class="pre">MATRIX.row</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#libscientific.matrix.Matrix"><code class="docutils literal notranslate"><span class="pre">Matrix</span></code></a><ul>
+<li><a class="reference internal" href="#libscientific.matrix.Matrix.appendcol"><code class="docutils literal notranslate"><span class="pre">Matrix.appendcol()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.Matrix.appendrow"><code class="docutils literal notranslate"><span class="pre">Matrix.appendrow()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.Matrix.data_ptr"><code class="docutils literal notranslate"><span class="pre">Matrix.data_ptr()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.Matrix.debug"><code class="docutils literal notranslate"><span class="pre">Matrix.debug()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.Matrix.fromlist"><code class="docutils literal notranslate"><span class="pre">Matrix.fromlist()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.Matrix.fromnumpy"><code class="docutils literal notranslate"><span class="pre">Matrix.fromnumpy()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.Matrix.get_evect_evals"><code class="docutils literal notranslate"><span class="pre">Matrix.get_evect_evals()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.Matrix.ncol"><code class="docutils literal notranslate"><span class="pre">Matrix.ncol()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.Matrix.nrow"><code class="docutils literal notranslate"><span class="pre">Matrix.nrow()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.Matrix.svd"><code class="docutils literal notranslate"><span class="pre">Matrix.svd()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.Matrix.tolist"><code class="docutils literal notranslate"><span class="pre">Matrix.tolist()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.Matrix.transpose"><code class="docutils literal notranslate"><span class="pre">Matrix.transpose()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#libscientific.matrix.del_matrix"><code class="docutils literal notranslate"><span class="pre">del_matrix()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.dvector_matrix_dot_product"><code class="docutils literal notranslate"><span class="pre">dvector_matrix_dot_product()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.dvector_transposed_dvector_dot_product"><code class="docutils literal notranslate"><span class="pre">dvector_transposed_dvector_dot_product()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.dvector_transposed_matrix_division"><code class="docutils literal notranslate"><span class="pre">dvector_transposed_matrix_division()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.evect_eval"><code class="docutils literal notranslate"><span class="pre">evect_eval()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.get_matrix_column"><code class="docutils literal notranslate"><span class="pre">get_matrix_column()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.get_matrix_row"><code class="docutils literal notranslate"><span class="pre">get_matrix_row()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.get_matrix_value"><code class="docutils literal notranslate"><span class="pre">get_matrix_value()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.init_matrix"><code class="docutils literal notranslate"><span class="pre">init_matrix()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.matrix_append_col"><code class="docutils literal notranslate"><span class="pre">matrix_append_col()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.matrix_append_row"><code class="docutils literal notranslate"><span class="pre">matrix_append_row()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.matrix_check"><code class="docutils literal notranslate"><span class="pre">matrix_check()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.matrix_copy"><code class="docutils literal notranslate"><span class="pre">matrix_copy()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.matrix_dot_product"><code class="docutils literal notranslate"><span class="pre">matrix_dot_product()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.matrix_dvector_dot_product"><code class="docutils literal notranslate"><span class="pre">matrix_dvector_dot_product()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.matrix_from_numpy"><code class="docutils literal notranslate"><span class="pre">matrix_from_numpy()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.matrix_inversion"><code class="docutils literal notranslate"><span class="pre">matrix_inversion()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.matrix_set"><code class="docutils literal notranslate"><span class="pre">matrix_set()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.matrix_to_list"><code class="docutils literal notranslate"><span class="pre">matrix_to_list()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.matrix_transpose"><code class="docutils literal notranslate"><span class="pre">matrix_transpose()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.mt_dvector_matrix_dot_product"><code class="docutils literal notranslate"><span class="pre">mt_dvector_matrix_dot_product()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.mt_matrix_dvector_dot_product"><code class="docutils literal notranslate"><span class="pre">mt_matrix_dvector_dot_product()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.new_matrix"><code class="docutils literal notranslate"><span class="pre">new_matrix()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.new_matrix_from_csv"><code class="docutils literal notranslate"><span class="pre">new_matrix_from_csv()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.new_matrix_from_list"><code class="docutils literal notranslate"><span class="pre">new_matrix_from_list()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.print_matrix"><code class="docutils literal notranslate"><span class="pre">print_matrix()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.resize_matrix"><code class="docutils literal notranslate"><span class="pre">resize_matrix()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.row_col_outer_product"><code class="docutils literal notranslate"><span class="pre">row_col_outer_product()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.set_matrix_value"><code class="docutils literal notranslate"><span class="pre">set_matrix_value()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.set_missing_matrix_value"><code class="docutils literal notranslate"><span class="pre">set_missing_matrix_value()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.svd"><code class="docutils literal notranslate"><span class="pre">svd()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.svd_lapack"><code class="docutils literal notranslate"><span class="pre">svd_lapack()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.matrix.val_in_matrix"><code class="docutils literal notranslate"><span class="pre">val_in_matrix()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-libscientific.tensor">libscientific.tensor module</a><ul>
+<li><a class="reference internal" href="#libscientific.tensor.TENSOR"><code class="docutils literal notranslate"><span class="pre">TENSOR</span></code></a><ul>
+<li><a class="reference internal" href="#libscientific.tensor.TENSOR.m"><code class="docutils literal notranslate"><span class="pre">TENSOR.m</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.tensor.TENSOR.order"><code class="docutils literal notranslate"><span class="pre">TENSOR.order</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#libscientific.tensor.Tensor"><code class="docutils literal notranslate"><span class="pre">Tensor</span></code></a><ul>
+<li><a class="reference internal" href="#libscientific.tensor.Tensor.data_ptr"><code class="docutils literal notranslate"><span class="pre">Tensor.data_ptr()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.tensor.Tensor.debug"><code class="docutils literal notranslate"><span class="pre">Tensor.debug()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.tensor.Tensor.fromlist"><code class="docutils literal notranslate"><span class="pre">Tensor.fromlist()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.tensor.Tensor.fromnumpy"><code class="docutils literal notranslate"><span class="pre">Tensor.fromnumpy()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.tensor.Tensor.ncol"><code class="docutils literal notranslate"><span class="pre">Tensor.ncol()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.tensor.Tensor.nrow"><code class="docutils literal notranslate"><span class="pre">Tensor.nrow()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.tensor.Tensor.order"><code class="docutils literal notranslate"><span class="pre">Tensor.order()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.tensor.Tensor.tolist"><code class="docutils literal notranslate"><span class="pre">Tensor.tolist()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#libscientific.tensor.add_tensor_matrix"><code class="docutils literal notranslate"><span class="pre">add_tensor_matrix()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.tensor.del_tensor"><code class="docutils literal notranslate"><span class="pre">del_tensor()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.tensor.init_tensor"><code class="docutils literal notranslate"><span class="pre">init_tensor()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.tensor.new_tensor"><code class="docutils literal notranslate"><span class="pre">new_tensor()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.tensor.new_tensor_matrix"><code class="docutils literal notranslate"><span class="pre">new_tensor_matrix()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.tensor.print_tensor"><code class="docutils literal notranslate"><span class="pre">print_tensor()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.tensor.set_tensor_value"><code class="docutils literal notranslate"><span class="pre">set_tensor_value()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.tensor.tensor_append_column"><code class="docutils literal notranslate"><span class="pre">tensor_append_column()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.tensor.tensor_append_row"><code class="docutils literal notranslate"><span class="pre">tensor_append_row()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.tensor.tensor_copy"><code class="docutils literal notranslate"><span class="pre">tensor_copy()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.tensor.tensor_set"><code class="docutils literal notranslate"><span class="pre">tensor_set()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.tensor.tensor_tolist"><code class="docutils literal notranslate"><span class="pre">tensor_tolist()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-libscientific.vectlist">libscientific.vectlist module</a><ul>
+<li><a class="reference internal" href="#libscientific.vectlist.DVECTLIST"><code class="docutils literal notranslate"><span class="pre">DVECTLIST</span></code></a><ul>
+<li><a class="reference internal" href="#libscientific.vectlist.DVECTLIST.dvector"><code class="docutils literal notranslate"><span class="pre">DVECTLIST.dvector</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vectlist.DVECTLIST.size"><code class="docutils literal notranslate"><span class="pre">DVECTLIST.size</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#libscientific.vectlist.DVectorList"><code class="docutils literal notranslate"><span class="pre">DVectorList</span></code></a><ul>
+<li><a class="reference internal" href="#libscientific.vectlist.DVectorList.append"><code class="docutils literal notranslate"><span class="pre">DVectorList.append()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vectlist.DVectorList.data_ptr"><code class="docutils literal notranslate"><span class="pre">DVectorList.data_ptr()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vectlist.DVectorList.debug"><code class="docutils literal notranslate"><span class="pre">DVectorList.debug()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vectlist.DVectorList.fromlist"><code class="docutils literal notranslate"><span class="pre">DVectorList.fromlist()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vectlist.DVectorList.size"><code class="docutils literal notranslate"><span class="pre">DVectorList.size()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vectlist.DVectorList.tolist"><code class="docutils literal notranslate"><span class="pre">DVectorList.tolist()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#libscientific.vectlist.del_dvector_list"><code class="docutils literal notranslate"><span class="pre">del_dvector_list()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vectlist.dvector_list_append"><code class="docutils literal notranslate"><span class="pre">dvector_list_append()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vectlist.dvector_list_tolist"><code class="docutils literal notranslate"><span class="pre">dvector_list_tolist()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vectlist.init_dvector_list"><code class="docutils literal notranslate"><span class="pre">init_dvector_list()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vectlist.new_dvector_list"><code class="docutils literal notranslate"><span class="pre">new_dvector_list()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-libscientific.vector">libscientific.vector module</a><ul>
+<li><a class="reference internal" href="#libscientific.vector.DVECTOR"><code class="docutils literal notranslate"><span class="pre">DVECTOR</span></code></a><ul>
+<li><a class="reference internal" href="#libscientific.vector.DVECTOR.data"><code class="docutils literal notranslate"><span class="pre">DVECTOR.data</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.DVECTOR.size"><code class="docutils literal notranslate"><span class="pre">DVECTOR.size</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#libscientific.vector.DVector"><code class="docutils literal notranslate"><span class="pre">DVector</span></code></a><ul>
+<li><a class="reference internal" href="#libscientific.vector.DVector.append"><code class="docutils literal notranslate"><span class="pre">DVector.append()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.DVector.data_ptr"><code class="docutils literal notranslate"><span class="pre">DVector.data_ptr()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.DVector.debug"><code class="docutils literal notranslate"><span class="pre">DVector.debug()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.DVector.extend"><code class="docutils literal notranslate"><span class="pre">DVector.extend()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.DVector.fromlist"><code class="docutils literal notranslate"><span class="pre">DVector.fromlist()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.DVector.size"><code class="docutils literal notranslate"><span class="pre">DVector.size()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.DVector.tolist"><code class="docutils literal notranslate"><span class="pre">DVector.tolist()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#libscientific.vector.IVECTOR"><code class="docutils literal notranslate"><span class="pre">IVECTOR</span></code></a><ul>
+<li><a class="reference internal" href="#libscientific.vector.IVECTOR.data"><code class="docutils literal notranslate"><span class="pre">IVECTOR.data</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.IVECTOR.size"><code class="docutils literal notranslate"><span class="pre">IVECTOR.size</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#libscientific.vector.STRVECTOR"><code class="docutils literal notranslate"><span class="pre">STRVECTOR</span></code></a><ul>
+<li><a class="reference internal" href="#libscientific.vector.STRVECTOR.data"><code class="docutils literal notranslate"><span class="pre">STRVECTOR.data</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.STRVECTOR.size"><code class="docutils literal notranslate"><span class="pre">STRVECTOR.size</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#libscientific.vector.UIVECTOR"><code class="docutils literal notranslate"><span class="pre">UIVECTOR</span></code></a><ul>
+<li><a class="reference internal" href="#libscientific.vector.UIVECTOR.data"><code class="docutils literal notranslate"><span class="pre">UIVECTOR.data</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.UIVECTOR.size"><code class="docutils literal notranslate"><span class="pre">UIVECTOR.size</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#libscientific.vector.UIVector"><code class="docutils literal notranslate"><span class="pre">UIVector</span></code></a><ul>
+<li><a class="reference internal" href="#libscientific.vector.UIVector.append"><code class="docutils literal notranslate"><span class="pre">UIVector.append()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.UIVector.data_ptr"><code class="docutils literal notranslate"><span class="pre">UIVector.data_ptr()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.UIVector.debug"><code class="docutils literal notranslate"><span class="pre">UIVector.debug()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.UIVector.extend"><code class="docutils literal notranslate"><span class="pre">UIVector.extend()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.UIVector.fromlist"><code class="docutils literal notranslate"><span class="pre">UIVector.fromlist()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.UIVector.size"><code class="docutils literal notranslate"><span class="pre">UIVector.size()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.UIVector.tolist"><code class="docutils literal notranslate"><span class="pre">UIVector.tolist()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#libscientific.vector.del_dvector"><code class="docutils literal notranslate"><span class="pre">del_dvector()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.del_ivector"><code class="docutils literal notranslate"><span class="pre">del_ivector()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.del_uivector"><code class="docutils literal notranslate"><span class="pre">del_uivector()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.dvector_append"><code class="docutils literal notranslate"><span class="pre">dvector_append()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.dvector_copy"><code class="docutils literal notranslate"><span class="pre">dvector_copy()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.dvector_has_value"><code class="docutils literal notranslate"><span class="pre">dvector_has_value()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.dvector_remove_at"><code class="docutils literal notranslate"><span class="pre">dvector_remove_at()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.dvector_resize"><code class="docutils literal notranslate"><span class="pre">dvector_resize()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.dvector_set"><code class="docutils literal notranslate"><span class="pre">dvector_set()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.dvector_tolist"><code class="docutils literal notranslate"><span class="pre">dvector_tolist()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.get_dvector_value"><code class="docutils literal notranslate"><span class="pre">get_dvector_value()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.get_ivector_value"><code class="docutils literal notranslate"><span class="pre">get_ivector_value()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.get_uivector_value"><code class="docutils literal notranslate"><span class="pre">get_uivector_value()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.init_dvector"><code class="docutils literal notranslate"><span class="pre">init_dvector()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.init_ivector"><code class="docutils literal notranslate"><span class="pre">init_ivector()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.init_uivector"><code class="docutils literal notranslate"><span class="pre">init_uivector()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.ivector_append"><code class="docutils literal notranslate"><span class="pre">ivector_append()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.ivector_remove_at"><code class="docutils literal notranslate"><span class="pre">ivector_remove_at()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.ivector_tolist"><code class="docutils literal notranslate"><span class="pre">ivector_tolist()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.new_dvector"><code class="docutils literal notranslate"><span class="pre">new_dvector()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.new_ivector"><code class="docutils literal notranslate"><span class="pre">new_ivector()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.new_uivector"><code class="docutils literal notranslate"><span class="pre">new_uivector()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.print_dvector"><code class="docutils literal notranslate"><span class="pre">print_dvector()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.print_uivector"><code class="docutils literal notranslate"><span class="pre">print_uivector()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.set_dvector_value"><code class="docutils literal notranslate"><span class="pre">set_dvector_value()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.set_ivector_value"><code class="docutils literal notranslate"><span class="pre">set_ivector_value()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.set_uivector_value"><code class="docutils literal notranslate"><span class="pre">set_uivector_value()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.uivector_append"><code class="docutils literal notranslate"><span class="pre">uivector_append()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.uivector_remove_at"><code class="docutils literal notranslate"><span class="pre">uivector_remove_at()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.uivector_resize"><code class="docutils literal notranslate"><span class="pre">uivector_resize()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.uivector_tolist"><code class="docutils literal notranslate"><span class="pre">uivector_tolist()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.vector.xvector_tolist"><code class="docutils literal notranslate"><span class="pre">xvector_tolist()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-libscientific.clustering">libscientific.clustering module</a><ul>
+<li><a class="reference internal" href="#libscientific.clustering.k_means_plus_plus"><code class="docutils literal notranslate"><span class="pre">k_means_plus_plus()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.clustering.max_dissimilarity_selection"><code class="docutils literal notranslate"><span class="pre">max_dissimilarity_selection()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.clustering.most_descriptive_compound"><code class="docutils literal notranslate"><span class="pre">most_descriptive_compound()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-libscientific.cpca">libscientific.cpca module</a><ul>
+<li><a class="reference internal" href="#libscientific.cpca.CPCA"><code class="docutils literal notranslate"><span class="pre">CPCA</span></code></a><ul>
+<li><a class="reference internal" href="#libscientific.cpca.CPCA.fit"><code class="docutils literal notranslate"><span class="pre">CPCA.fit()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.cpca.CPCA.get_block_expvar"><code class="docutils literal notranslate"><span class="pre">CPCA.get_block_expvar()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.cpca.CPCA.get_block_loadings"><code class="docutils literal notranslate"><span class="pre">CPCA.get_block_loadings()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.cpca.CPCA.get_block_scores"><code class="docutils literal notranslate"><span class="pre">CPCA.get_block_scores()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.cpca.CPCA.get_super_scores"><code class="docutils literal notranslate"><span class="pre">CPCA.get_super_scores()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.cpca.CPCA.get_super_weights"><code class="docutils literal notranslate"><span class="pre">CPCA.get_super_weights()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.cpca.CPCA.get_total_exp_variance"><code class="docutils literal notranslate"><span class="pre">CPCA.get_total_exp_variance()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.cpca.CPCA.predict"><code class="docutils literal notranslate"><span class="pre">CPCA.predict()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#libscientific.cpca.CPCAMODEL"><code class="docutils literal notranslate"><span class="pre">CPCAMODEL</span></code></a><ul>
+<li><a class="reference internal" href="#libscientific.cpca.CPCAMODEL.block_expvar"><code class="docutils literal notranslate"><span class="pre">CPCAMODEL.block_expvar</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.cpca.CPCAMODEL.block_loadings"><code class="docutils literal notranslate"><span class="pre">CPCAMODEL.block_loadings</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.cpca.CPCAMODEL.block_scores"><code class="docutils literal notranslate"><span class="pre">CPCAMODEL.block_scores</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.cpca.CPCAMODEL.colaverage"><code class="docutils literal notranslate"><span class="pre">CPCAMODEL.colaverage</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.cpca.CPCAMODEL.colscaling"><code class="docutils literal notranslate"><span class="pre">CPCAMODEL.colscaling</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.cpca.CPCAMODEL.scaling_factor"><code class="docutils literal notranslate"><span class="pre">CPCAMODEL.scaling_factor</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.cpca.CPCAMODEL.super_scores"><code class="docutils literal notranslate"><span class="pre">CPCAMODEL.super_scores</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.cpca.CPCAMODEL.super_weights"><code class="docutils literal notranslate"><span class="pre">CPCAMODEL.super_weights</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.cpca.CPCAMODEL.total_expvar"><code class="docutils literal notranslate"><span class="pre">CPCAMODEL.total_expvar</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#libscientific.cpca.cpca_algorithm"><code class="docutils literal notranslate"><span class="pre">cpca_algorithm()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.cpca.cpca_score_predictor"><code class="docutils literal notranslate"><span class="pre">cpca_score_predictor()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.cpca.del_cpca_model"><code class="docutils literal notranslate"><span class="pre">del_cpca_model()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.cpca.new_cpca_model"><code class="docutils literal notranslate"><span class="pre">new_cpca_model()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.cpca.print_cpca"><code class="docutils literal notranslate"><span class="pre">print_cpca()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-libscientific.interpolate">libscientific.interpolate module</a><ul>
+<li><a class="reference internal" href="#libscientific.interpolate.cubic_spline_interpolation"><code class="docutils literal notranslate"><span class="pre">cubic_spline_interpolation()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.interpolate.cubic_spline_predict"><code class="docutils literal notranslate"><span class="pre">cubic_spline_predict()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-libscientific.loadlibrary">libscientific.loadlibrary module</a><ul>
+<li><a class="reference internal" href="#libscientific.loadlibrary.get_posix_library"><code class="docutils literal notranslate"><span class="pre">get_posix_library()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.loadlibrary.load_libscientific_library"><code class="docutils literal notranslate"><span class="pre">load_libscientific_library()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-libscientific.misc">libscientific.misc module</a><ul>
+<li><a class="reference internal" href="#libscientific.misc.missing_value"><code class="docutils literal notranslate"><span class="pre">missing_value()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-libscientific.pca">libscientific.pca module</a><ul>
+<li><a class="reference internal" href="#libscientific.pca.PCA"><code class="docutils literal notranslate"><span class="pre">PCA</span></code></a><ul>
+<li><a class="reference internal" href="#libscientific.pca.PCA.fit"><code class="docutils literal notranslate"><span class="pre">PCA.fit()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pca.PCA.get_exp_variance"><code class="docutils literal notranslate"><span class="pre">PCA.get_exp_variance()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pca.PCA.get_loadings"><code class="docutils literal notranslate"><span class="pre">PCA.get_loadings()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pca.PCA.get_scores"><code class="docutils literal notranslate"><span class="pre">PCA.get_scores()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pca.PCA.predict"><code class="docutils literal notranslate"><span class="pre">PCA.predict()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pca.PCA.reconstruct_original_matrix"><code class="docutils literal notranslate"><span class="pre">PCA.reconstruct_original_matrix()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#libscientific.pca.PCAMODEL"><code class="docutils literal notranslate"><span class="pre">PCAMODEL</span></code></a><ul>
+<li><a class="reference internal" href="#libscientific.pca.PCAMODEL.colaverage"><code class="docutils literal notranslate"><span class="pre">PCAMODEL.colaverage</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pca.PCAMODEL.colscaling"><code class="docutils literal notranslate"><span class="pre">PCAMODEL.colscaling</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pca.PCAMODEL.dmodx"><code class="docutils literal notranslate"><span class="pre">PCAMODEL.dmodx</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pca.PCAMODEL.loadings"><code class="docutils literal notranslate"><span class="pre">PCAMODEL.loadings</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pca.PCAMODEL.scores"><code class="docutils literal notranslate"><span class="pre">PCAMODEL.scores</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pca.PCAMODEL.varexp"><code class="docutils literal notranslate"><span class="pre">PCAMODEL.varexp</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#libscientific.pca.del_pca_model"><code class="docutils literal notranslate"><span class="pre">del_pca_model()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pca.new_pca_model"><code class="docutils literal notranslate"><span class="pre">new_pca_model()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pca.pca_algorithm"><code class="docutils literal notranslate"><span class="pre">pca_algorithm()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pca.pca_ind_var_predictor"><code class="docutils literal notranslate"><span class="pre">pca_ind_var_predictor()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pca.pca_score_predictor"><code class="docutils literal notranslate"><span class="pre">pca_score_predictor()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pca.print_pca"><code class="docutils literal notranslate"><span class="pre">print_pca()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-libscientific.pls">libscientific.pls module</a><ul>
+<li><a class="reference internal" href="#libscientific.pls.PLS"><code class="docutils literal notranslate"><span class="pre">PLS</span></code></a><ul>
+<li><a class="reference internal" href="#libscientific.pls.PLS.fit"><code class="docutils literal notranslate"><span class="pre">PLS.fit()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.PLS.get_beta_coefficients"><code class="docutils literal notranslate"><span class="pre">PLS.get_beta_coefficients()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.PLS.get_exp_variance"><code class="docutils literal notranslate"><span class="pre">PLS.get_exp_variance()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.PLS.get_ploadings"><code class="docutils literal notranslate"><span class="pre">PLS.get_ploadings()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.PLS.get_qloadings"><code class="docutils literal notranslate"><span class="pre">PLS.get_qloadings()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.PLS.get_tscores"><code class="docutils literal notranslate"><span class="pre">PLS.get_tscores()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.PLS.get_uscores"><code class="docutils literal notranslate"><span class="pre">PLS.get_uscores()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.PLS.get_weights"><code class="docutils literal notranslate"><span class="pre">PLS.get_weights()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.PLS.get_x_averages"><code class="docutils literal notranslate"><span class="pre">PLS.get_x_averages()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.PLS.get_x_column_scaling"><code class="docutils literal notranslate"><span class="pre">PLS.get_x_column_scaling()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.PLS.get_y_averages"><code class="docutils literal notranslate"><span class="pre">PLS.get_y_averages()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.PLS.get_y_column_scaling"><code class="docutils literal notranslate"><span class="pre">PLS.get_y_column_scaling()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.PLS.predict"><code class="docutils literal notranslate"><span class="pre">PLS.predict()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#libscientific.pls.PLSMODEL"><code class="docutils literal notranslate"><span class="pre">PLSMODEL</span></code></a><ul>
+<li><a class="reference internal" href="#libscientific.pls.PLSMODEL.b"><code class="docutils literal notranslate"><span class="pre">PLSMODEL.b</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.PLSMODEL.bias"><code class="docutils literal notranslate"><span class="pre">PLSMODEL.bias</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.PLSMODEL.precision_recall_ap_recalculated"><code class="docutils literal notranslate"><span class="pre">PLSMODEL.precision_recall_ap_recalculated</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.PLSMODEL.precision_recall_ap_validation"><code class="docutils literal notranslate"><span class="pre">PLSMODEL.precision_recall_ap_validation</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.PLSMODEL.precision_recall_recalculated"><code class="docutils literal notranslate"><span class="pre">PLSMODEL.precision_recall_recalculated</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.PLSMODEL.precision_recall_validation"><code class="docutils literal notranslate"><span class="pre">PLSMODEL.precision_recall_validation</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.PLSMODEL.pred_residuals"><code class="docutils literal notranslate"><span class="pre">PLSMODEL.pred_residuals</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.PLSMODEL.predicted_y"><code class="docutils literal notranslate"><span class="pre">PLSMODEL.predicted_y</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.PLSMODEL.q2y"><code class="docutils literal notranslate"><span class="pre">PLSMODEL.q2y</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.PLSMODEL.r2y_recalculated"><code class="docutils literal notranslate"><span class="pre">PLSMODEL.r2y_recalculated</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.PLSMODEL.r2y_validation"><code class="docutils literal notranslate"><span class="pre">PLSMODEL.r2y_validation</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.PLSMODEL.recalc_residuals"><code class="docutils literal notranslate"><span class="pre">PLSMODEL.recalc_residuals</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.PLSMODEL.recalculated_y"><code class="docutils literal notranslate"><span class="pre">PLSMODEL.recalculated_y</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.PLSMODEL.roc_auc_recalculated"><code class="docutils literal notranslate"><span class="pre">PLSMODEL.roc_auc_recalculated</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.PLSMODEL.roc_auc_validation"><code class="docutils literal notranslate"><span class="pre">PLSMODEL.roc_auc_validation</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.PLSMODEL.roc_recalculated"><code class="docutils literal notranslate"><span class="pre">PLSMODEL.roc_recalculated</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.PLSMODEL.roc_validation"><code class="docutils literal notranslate"><span class="pre">PLSMODEL.roc_validation</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.PLSMODEL.sdec"><code class="docutils literal notranslate"><span class="pre">PLSMODEL.sdec</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.PLSMODEL.sdep"><code class="docutils literal notranslate"><span class="pre">PLSMODEL.sdep</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.PLSMODEL.xcolaverage"><code class="docutils literal notranslate"><span class="pre">PLSMODEL.xcolaverage</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.PLSMODEL.xcolscaling"><code class="docutils literal notranslate"><span class="pre">PLSMODEL.xcolscaling</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.PLSMODEL.xloadings"><code class="docutils literal notranslate"><span class="pre">PLSMODEL.xloadings</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.PLSMODEL.xscores"><code class="docutils literal notranslate"><span class="pre">PLSMODEL.xscores</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.PLSMODEL.xvarexp"><code class="docutils literal notranslate"><span class="pre">PLSMODEL.xvarexp</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.PLSMODEL.xweights"><code class="docutils literal notranslate"><span class="pre">PLSMODEL.xweights</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.PLSMODEL.ycolaverage"><code class="docutils literal notranslate"><span class="pre">PLSMODEL.ycolaverage</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.PLSMODEL.ycolscaling"><code class="docutils literal notranslate"><span class="pre">PLSMODEL.ycolscaling</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.PLSMODEL.yloadings"><code class="docutils literal notranslate"><span class="pre">PLSMODEL.yloadings</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.PLSMODEL.yscores"><code class="docutils literal notranslate"><span class="pre">PLSMODEL.yscores</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.PLSMODEL.yscrambling"><code class="docutils literal notranslate"><span class="pre">PLSMODEL.yscrambling</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#libscientific.pls.del_pls_model"><code class="docutils literal notranslate"><span class="pre">del_pls_model()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.new_pls_model"><code class="docutils literal notranslate"><span class="pre">new_pls_model()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.pls_algorithm"><code class="docutils literal notranslate"><span class="pre">pls_algorithm()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.pls_beta_coefficients"><code class="docutils literal notranslate"><span class="pre">pls_beta_coefficients()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.pls_score_predictor"><code class="docutils literal notranslate"><span class="pre">pls_score_predictor()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.pls_y_predictor"><code class="docutils literal notranslate"><span class="pre">pls_y_predictor()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.pls_y_predictor_all_lv"><code class="docutils literal notranslate"><span class="pre">pls_y_predictor_all_lv()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.print_pls"><code class="docutils literal notranslate"><span class="pre">print_pls()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-libscientific">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="C-API.html"
+                          title="previous chapter">C API Reference</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/Python-API.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="C-API.html" title="C API Reference"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">libscientific 1.5.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Pyhton API Reference</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2011, Giuseppe Marco Randazzo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    </div>
+  </body>
+</html>

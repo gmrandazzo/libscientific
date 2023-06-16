@@ -1,0 +1,253 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>tensor.h &#8212; libscientific 1.5.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.5.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">tensor.h</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for tensor.h</h1><div class="highlight"><pre>
+<span></span><span class="cm">/* tensor.h</span>
+<span class="cm">*</span>
+<span class="cm">* Copyright (C) &lt;2016&gt;  Giuseppe Marco Randazzo</span>
+<span class="cm">*</span>
+<span class="cm">* This program is free software: you can redistribute it and/or modify</span>
+<span class="cm">* it under the terms of the GNU General Public License as published by</span>
+<span class="cm">* the Free Software Foundation, either version 3 of the License, or</span>
+<span class="cm">* (at your option) any later version.</span>
+<span class="cm">*</span>
+<span class="cm">* This program is distributed in the hope that it will be useful,</span>
+<span class="cm">* but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="cm">* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="cm">* GNU General Public License for more details.</span>
+<span class="cm">*</span>
+<span class="cm">* You should have received a copy of the GNU General Public License</span>
+<span class="cm">* along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="cm">*/</span>
+
+<span class="cp">#ifndef TENSOR_H</span>
+<div class="viewcode-block" id="c.TENSOR_H"><span class="cp">#define TENSOR_H</span></div>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdlib.h&gt;</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;matrix.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;vector.h&quot;</span>
+
+<span class="cm">/*  Giuseppe Marco Randazzo</span>
+<span class="cm"> *  Sun Dec 25 20:54:11 CET 2011</span>
+<span class="cm"> */</span>
+
+<div class="viewcode-block" id="c.tensor"><a class="viewcode-back" href="../C-API.html#c.tensor">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Tensor data structure </span>
+<span class="cm"> *</span>
+<span class="cm"> * - **m** list of matrix</span>
+<span class="cm"> * - **order** number of matrix layers</span>
+<span class="cm"> */</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="p">{</span>
+<div class="viewcode-block" id="c.tensor.m"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">**</span><span class="n">m</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.tensor.order"><span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">order</span><span class="p">;</span></div>
+<span class="p">}</span><span class="n">tensor</span><span class="p">;</span></div>
+
+<div class="viewcode-block" id="c.initTensor"><a class="viewcode-back" href="../C-API.html#c.initTensor">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Initialize an empty tensor</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">initTensor</span><span class="p">(</span><span class="n">tensor</span><span class="w"> </span><span class="o">**</span><span class="n">t</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.NewTensor"><a class="viewcode-back" href="../C-API.html#c.NewTensor">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Create a new empty tensor with a predefined order.</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">NewTensor</span><span class="p">(</span><span class="n">tensor</span><span class="o">**</span><span class="w"> </span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">order_</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.NewTensorMatrix"><a class="viewcode-back" href="../C-API.html#c.NewTensorMatrix">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Create into an empty tensor a matrix of &quot;row x col&quot; at position &quot;order&quot;</span>
+<span class="cm"> * </span>
+<span class="cm"> * @param [in] t input tensor </span>
+<span class="cm"> * @param [in] order point where to add the matrix</span>
+<span class="cm"> * @param [in] row number of rows of the matrix</span>
+<span class="cm"> * @param [in] col number of columns of the matrix</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">NewTensorMatrix</span><span class="p">(</span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">order</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">col</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.AddTensorMatrix"><a class="viewcode-back" href="../C-API.html#c.AddTensorMatrix">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Append to a tensor a matrix at the end of it.</span>
+<span class="cm"> * </span>
+<span class="cm"> * @param [in] t input tensor </span>
+<span class="cm"> * @param [in] row number of rows of the matrix</span>
+<span class="cm"> * @param [in] col number of columns of the matrix</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">AddTensorMatrix</span><span class="p">(</span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">col</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.DelTensor"><a class="viewcode-back" href="../C-API.html#c.DelTensor">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Delete a tensor and free up the memory.</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">DelTensor</span><span class="p">(</span><span class="n">tensor</span><span class="o">**</span><span class="n">t</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.PrintTensor"><a class="viewcode-back" href="../C-API.html#c.PrintTensor">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Print to video the tensor.</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">PrintTensor</span><span class="p">(</span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">t</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.setTensorValue"><span class="cm">/**</span>
+<span class="cm"> * Set a value into a tensor </span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">setTensorValue</span><span class="p">(</span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">order</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">col</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">val</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.getTensorValue"><span class="cm">/**</span>
+<span class="cm"> * Get a value from a tensor</span>
+<span class="cm"> */</span>
+<span class="kt">double</span><span class="w"> </span><span class="nf">getTensorValue</span><span class="p">(</span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">order</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">col</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.TensorAppendMatrix"><span class="cm">/**</span>
+<span class="cm"> * Append a matrix to a tensor at the end of it.</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">TensorAppendMatrix</span><span class="p">(</span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">tdst</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">msrc</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.TensorAppendMatrixAt"><span class="cm">/**</span>
+<span class="cm"> * Append a matrix to a tensor in a specific position of it;</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">TensorAppendMatrixAt</span><span class="p">(</span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">tdst</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">order</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">msrc</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.TensorAppendColumn"><span class="cm">/**</span>
+<span class="cm"> * Append a column vector into the matrix of a tensor at position &quot;order&quot;</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">TensorAppendColumn</span><span class="p">(</span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">order</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="o">*</span><span class="w"> </span><span class="n">column</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.TensorAppendRow"><span class="cm">/**</span>
+<span class="cm"> * Append a row vector into the matrix of a tensor at position &quot;order&quot;</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">TensorAppendRow</span><span class="p">(</span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">order</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="o">*</span><span class="w"> </span><span class="n">row</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.TensorSet"><span class="cm">/**</span>
+<span class="cm"> * Set all the values of a tensor to a specific value &quot;val&quot;</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">TensorSet</span><span class="p">(</span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">val</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.TensorCopy"><span class="cm">/**</span>
+<span class="cm"> * Copy a tensor from a source into a destination</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">TensorCopy</span><span class="p">(</span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">asrc</span><span class="p">,</span><span class="w"> </span><span class="n">tensor</span><span class="w"> </span><span class="o">**</span><span class="n">adst</span><span class="p">);</span></div>
+
+
+<div class="viewcode-block" id="c.MeanCenteredTensor"><span class="cm">/**</span>
+<span class="cm"> * Calculate the mean centered tensor</span>
+<span class="cm"> *</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">MeanCenteredTensor</span><span class="p">(</span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">tc</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.TensorColAverage"><span class="cm">/**</span>
+<span class="cm"> * Calculate column average of each matrix in a tensor</span>
+<span class="cm"> *</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">TensorColAverage</span><span class="p">(</span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">colaverage</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.TensorColSDEV"><span class="cm">/**</span>
+<span class="cm"> * Calculate column standard deviation of each matrix in a tensor</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">TensorColSDEV</span><span class="p">(</span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">colsdev</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.TensorTranspose"><span class="cm">/**</span>
+<span class="cm"> * Transpose a tensor</span>
+<span class="cm"> * </span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">TensorTranspose</span><span class="p">(</span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">t1</span><span class="p">,</span><span class="w"> </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">t2</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.TransposedTensorDVectorProduct"><span class="cm">/**</span>
+<span class="cm"> * Calculate the transposed tensor x vector product.</span>
+<span class="cm"> * The result is a matrix.</span>
+<span class="cm"> * </span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">TransposedTensorDVectorProduct</span><span class="p">(</span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">p</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.DvectorTensorDotProduct"><span class="cm">/**</span>
+<span class="cm"> * Calculate the vector x tensor product.</span>
+<span class="cm"> * The result is a matrix.</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">DvectorTensorDotProduct</span><span class="p">(</span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.TensorMatrixDotProduct"><span class="cm">/**</span>
+<span class="cm"> * Calculate the tensor-matrix product</span>
+<span class="cm"> * The result is a matrix.</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">TensorMatrixDotProduct</span><span class="p">(</span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">v</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.KronekerProductVectorMatrix"><span class="cm">/**</span>
+<span class="cm"> * Calculate the Kroneker dot product between a vector and a matrix.</span>
+<span class="cm"> * The result is a tensor.</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">KronekerProductVectorMatrix</span><span class="p">(</span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">t</span><span class="p">);</span></div>
+
+<span class="cp">#endif</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.5.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">tensor.h</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2011, Giuseppe Marco Randazzo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    </div>
+  </body>
+</html>

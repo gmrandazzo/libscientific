@@ -1,0 +1,276 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>What is libscientific? &#8212; libscientific 1.5.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Install" href="Install.html" />
+    <link rel="prev" title="The libscientific documentation" href="index.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Install.html" title="Install"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="The libscientific documentation"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">libscientific 1.5.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">What is libscientific?</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="what-is-libscientific">
+<h1>What is libscientific?<a class="headerlink" href="#what-is-libscientific" title="Permalink to this heading">¶</a></h1>
+<p>Libscientific aims to do numerical/multivariate and statistical analysis.
+The library is written in C language for almost all the computations except
+for a few methods such as the singular value decomposition (SVD) and
+the eigenvector/eigenvalue transformation from a third-party library, the Lapack library.
+It requires two dependencies: CMake and a c/fortran compiler
+and supports Windows, Linux, macOS, and embedded systems.
+Python bindings are available using ctypes to avoid dependencies.
+The library is distributed under GPLv3 license allowing it
+to be used for public and commercial purposes.</p>
+<p>The significant advantage of libscientific is that it does not require dependencies
+unless a c/fortran compiler and CMake. Moreover, the size of the library is under 1.5MB.
+Libscientific also has been tested with old computers.</p>
+<section id="what-can-i-do-with-libscientific">
+<h2>What can I do with libscientific?<a class="headerlink" href="#what-can-i-do-with-libscientific" title="Permalink to this heading">¶</a></h2>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Multivariate analysis:</dt><dd><ul>
+<li><p>Principal Component Analysis using the NIPALS algorithm</p></li>
+<li><p>Partial Least Squares (PLS) using the NIPALS algorithm (Regression and Classification)</p></li>
+<li><p>Multiple Linear Regression (MLR) using the Ordinary Least Squares algorithm</p></li>
+<li><p>Linear Discriminant Analysis (LDA) using the Fisher algorithm</p></li>
+<li><p>Multi-waw unfolding PCA (UPCA) using the S. Wold, P. Geladi and K. Esbensen algorithm</p></li>
+<li><p>Multi-way unfolding PLS (UPLS) using the S. Wold, P. Geladi and K. Esbensen algorithm</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Matrix/Vector/Tensor computations:</dt><dd><ul>
+<li><p>Matrix/Vector and Vector/Matrix dot product</p></li>
+<li><p>Matrix/Matrix dot product</p></li>
+<li><p>Vector/Vector dot product</p></li>
+<li><p>Matrix inversion using the Gauss-Jordan algorithm or the LU decomposition</p></li>
+<li><p>Matrix pseudo inversion using the Moore-Penrose formula</p></li>
+<li><p>Matrix transpose</p></li>
+<li><p>Tensor/Tensor dot product</p></li>
+<li><p>Vector/Matrix Kronecker product</p></li>
+<li><p>Tensor/Matrix dot product</p></li>
+<li><p>Tensor transpose</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Statistical analysis:</dt><dd><ul>
+<li><p>Descriptive statistics of a matrix</p></li>
+<li><p>R squared (R^2)</p></li>
+<li><p>Mean absolute error (MAE)</p></li>
+<li><p>Mean squared error (MSE)</p></li>
+<li><p>Root mean squared error (RMSE)</p></li>
+<li><p>Bias estimation (BIAS)</p></li>
+<li><p>Sensitivity binary classification test</p></li>
+<li><p>Positive predicted values binary classification test</p></li>
+<li><p>Receiver operating characteristic curve (ROC)</p></li>
+<li><p>Precision-Recal curve (PR)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Design of experiment:</dt><dd><ul>
+<li><p>Bifactorial matrix expansion used in design of experiments (DOE)</p></li>
+<li><p>Yates analysis to assess the variable effects in a DOE</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Clustering:</dt><dd><ul>
+<li><p>K-Means with different initialization (Random, ++ and so on) for divisive clustering</p></li>
+<li><p>Hierarchical clustering for aglomerative clustering</p></li>
+<li><p>Hyper grid map which create clusters dividing the hyperspace into a hyper grid and abundance score plot</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Instance/Object selection:</dt><dd><ul>
+<li><p>Most descriptive compound selection</p></li>
+<li><p>Maximum dissimilarity selection</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Optimization:</dt><dd><ul>
+<li><p>Downhill optimization using the Nelder–Mead method aka Simplex method</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Interpolation:</dt><dd><ul>
+<li><p>Natural cubic spline interpolation</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Similarity analysis:</dt><dd><ul>
+<li><p>Euclidean distance analysis</p></li>
+<li><p>Manhattan distance analysis</p></li>
+<li><p>Cosine distance analysis</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Model validation:</dt><dd><ul>
+<li><p>Leave-One-Out</p></li>
+<li><p>K-Fold cross validation</p></li>
+<li><p>Repeated K-Fold cross validation</p></li>
+<li><p>Train/Test split</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Variable selection:</dt><dd><ul>
+<li><p>Genetic agorithm variable selection for PLS only</p></li>
+<li><p>Particle Swarm Optimization variable selection for PLS only</p></li>
+<li><p>Spearman Ranking variable selection for PLS only</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</section>
+<section id="history">
+<h2>History<a class="headerlink" href="#history" title="Permalink to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>2009: Developed and used during my PhD thesis at the Laboratory of chemometrics and cheminformatics at the University of Perugia</p></li>
+<li><p>2016: Open-source the code release under GPLv3. The development still continue under open-source licence</p></li>
+</ul>
+</section>
+<section id="integration-with-other-open-source-projects">
+<h2>Integration with other open-source projects<a class="headerlink" href="#integration-with-other-open-source-projects" title="Permalink to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Libscientific is the engine of <a class="reference external" href="https://github.com/gmrandazzo/QStudioMetrics">QStudioMetrics</a>, a software to develop easy multivariate analysis</p></li>
+<li><p><a class="reference external" href="https://github.com/gmrandazzo/MolecularFramework">MolecularFramework</a> a c/c++ cheminformatic library to analyze 3D molecules and develop process 3D information for model development</p></li>
+</ul>
+</section>
+<section id="licensing">
+<h2>Licensing<a class="headerlink" href="#licensing" title="Permalink to this heading">¶</a></h2>
+<p>This documentation is copiright (C) 2011-2020 by Giuseppe Marco Randazzo</p>
+<p>This work is licensed under the Creative Commons Attribution-ShareAlike 4.0 License. To view a copy of this license, visit <a class="reference external" href="http://creativecommons.org/licenses/by-sa/4.0/">http://creativecommons.org/licenses/by-sa/4.0/</a> or send a letter to Creative Commons, 543 Howard Street, 5th Floor, San Francisco, California, 94105, USA.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">What is libscientific?</a><ul>
+<li><a class="reference internal" href="#what-can-i-do-with-libscientific">What can I do with libscientific?</a></li>
+<li><a class="reference internal" href="#history">History</a></li>
+<li><a class="reference internal" href="#integration-with-other-open-source-projects">Integration with other open-source projects</a></li>
+<li><a class="reference internal" href="#licensing">Licensing</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="index.html"
+                          title="previous chapter">The libscientific documentation</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="Install.html"
+                          title="next chapter">Install</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/Overview.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Install.html" title="Install"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="The libscientific documentation"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">libscientific 1.5.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">What is libscientific?</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2011, Giuseppe Marco Randazzo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    </div>
+  </body>
+</html>

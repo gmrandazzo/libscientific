@@ -1,0 +1,199 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cpca.h &#8212; libscientific 1.5.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.5.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">cpca.h</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for cpca.h</h1><div class="highlight"><pre>
+<span></span><span class="cm">/* cpca.h</span>
+<span class="cm">*</span>
+<span class="cm">* Copyright (C) &lt;2016&gt;  Giuseppe Marco Randazzo</span>
+<span class="cm">*</span>
+<span class="cm">* This program is free software: you can redistribute it and/or modify</span>
+<span class="cm">* it under the terms of the GNU General Public License as published by</span>
+<span class="cm">* the Free Software Foundation, either version 3 of the License, or</span>
+<span class="cm">* (at your option) any later version.</span>
+<span class="cm">*</span>
+<span class="cm">* This program is distributed in the hope that it will be useful,</span>
+<span class="cm">* but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="cm">* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="cm">* GNU General Public License for more details.</span>
+<span class="cm">*</span>
+<span class="cm">* You should have received a copy of the GNU General Public License</span>
+<span class="cm">* along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="cm">*/</span>
+
+<span class="cp">#ifndef CPCA_H</span>
+<div class="viewcode-block" id="c.CPCA_H"><span class="cp">#define CPCA_H</span></div>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;tensor.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;list.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;matrix.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;vector.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;scientificinfo.h&quot;</span>
+
+<div class="viewcode-block" id="c.CPCACONVERGENCE"><span class="cp">#define CPCACONVERGENCE 1e-18</span></div>
+
+<div class="viewcode-block" id="c.CPCAMODEL"><a class="viewcode-back" href="../C-API.html#c.CPCAMODEL">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * CPCA model data structure.</span>
+<span class="cm"> * </span>
+<span class="cm"> * - **block_scores** matrix of scores</span>
+<span class="cm"> * - **block_loadings** matrix of loadings</span>
+<span class="cm"> * - **super_scores** matrix of super scores</span>
+<span class="cm"> * - **super_weights** matrix of super weigths</span>
+<span class="cm"> * - **scaling_factor** dvector of scaling factors</span>
+<span class="cm"> * - **total_expvar** dvector of total explained variance</span>
+<span class="cm"> * - **block_expvar** dvector list of block explained variance</span>
+<span class="cm"> * - **colaverage** dvector list of column average</span>
+<span class="cm"> * - **colaverage** dvector list of column scaling</span>
+<span class="cm"> */</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+<div class="viewcode-block" id="c.CPCAMODEL.block_scores"><span class="w">  </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">block_scores</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.CPCAMODEL.block_loadings"><span class="w">  </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">block_loadings</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.CPCAMODEL.super_scores"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">super_scores</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.CPCAMODEL.super_weights"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">super_weights</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.CPCAMODEL.scaling_factor"><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">scaling_factor</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.CPCAMODEL.total_expvar"><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">total_expvar</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.CPCAMODEL.block_expvar"><span class="w">  </span><span class="n">dvectorlist</span><span class="w"> </span><span class="o">*</span><span class="n">block_expvar</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.CPCAMODEL.colaverage"><span class="w">  </span><span class="n">dvectorlist</span><span class="w"> </span><span class="o">*</span><span class="n">colaverage</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.CPCAMODEL.colscaling"><span class="w">  </span><span class="n">dvectorlist</span><span class="w"> </span><span class="o">*</span><span class="n">colscaling</span><span class="p">;</span></div>
+<span class="p">}</span><span class="w"> </span><span class="n">CPCAMODEL</span><span class="p">;</span></div>
+
+<div class="viewcode-block" id="c.NewCPCAModel"><a class="viewcode-back" href="../C-API.html#c.NewCPCAModel">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Inizialize a new CPCA Model</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">NewCPCAModel</span><span class="p">(</span><span class="n">CPCAMODEL</span><span class="w"> </span><span class="o">**</span><span class="n">m</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.DelCPCAModel"><a class="viewcode-back" href="../C-API.html#c.DelCPCAModel">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Delete a new CPCA Model</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">DelCPCAModel</span><span class="p">(</span><span class="n">CPCAMODEL</span><span class="w"> </span><span class="o">**</span><span class="n">m</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.CPCA"><a class="viewcode-back" href="../C-API.html#c.CPCA">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Consensus Principal Component Analysis</span>
+<span class="cm"> * </span>
+<span class="cm"> * @param [in] x libscientific tensor data input</span>
+<span class="cm"> * @param [in] scaling scaling type expressed as unsigned int type</span>
+<span class="cm"> * @param [in] npc number of desired principal components</span>
+<span class="cm"> * @param [out] model initialized model using NewCPCAModel(...). The datastructure will be populated with results</span>
+<span class="cm"> * </span>
+<span class="cm"> * </span>
+<span class="cm"> * Available scalings:</span>
+<span class="cm"> *</span>
+<span class="cm"> * - 0: No scaling. Only mean centering</span>
+<span class="cm"> *</span>
+<span class="cm"> * - 1: Mean centering and STDEV scaling</span>
+<span class="cm"> *</span>
+<span class="cm"> * - 2: Mean centering and Root-Mean-Square column scaling</span>
+<span class="cm"> *</span>
+<span class="cm"> * - 3: Mean centering and Pareto scaling</span>
+<span class="cm"> *</span>
+<span class="cm"> * - 4: Mean centering and min-max range scaling</span>
+<span class="cm"> *</span>
+<span class="cm"> * - 5: Mean centering and level scaling</span>
+<span class="cm"> *</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">CPCA</span><span class="p">(</span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">scaling</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">npc</span><span class="p">,</span><span class="w"> </span><span class="n">CPCAMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">model</span><span class="p">);</span></div>
+
+
+<div class="viewcode-block" id="c.CPCAScorePredictor"><a class="viewcode-back" href="../C-API.html#c.CPCAScorePredictor">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Project objects in a CPCA model.</span>
+<span class="cm"> * </span>
+<span class="cm"> * @param [in] x libscientific tensor data input</span>
+<span class="cm"> * @param [in] model CPCA model</span>
+<span class="cm"> * @param [in] npc number of desired principal components</span>
+<span class="cm"> * @param [out] p_super_scores predicted super scores</span>
+<span class="cm"> * @param [out] p_block_scores predicted block of scores</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">CPCAScorePredictor</span><span class="p">(</span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">x</span><span class="p">,</span>
+<span class="w">                        </span><span class="n">CPCAMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">model</span><span class="p">,</span>
+<span class="w">                        </span><span class="kt">size_t</span><span class="w"> </span><span class="n">npc</span><span class="p">,</span>
+<span class="w">                        </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">p_super_scores</span><span class="p">,</span>
+<span class="w">                        </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">p_block_scores</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.PrintCPCA"><a class="viewcode-back" href="../C-API.html#c.PrintCPCA">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * @brief Print CPCAMODEL to video.</span>
+<span class="cm"> *</span>
+<span class="cm"> * @param [in] m computed cpca model</span>
+<span class="cm"> *</span>
+<span class="cm"> * @par Returns</span>
+<span class="cm"> *    Nothing.</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">PrintCPCA</span><span class="p">(</span><span class="n">CPCAMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">);</span></div>
+
+<span class="cp">#endif</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.5.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">cpca.h</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2011, Giuseppe Marco Randazzo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    </div>
+  </body>
+</html>

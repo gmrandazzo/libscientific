@@ -1,0 +1,1164 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>C API Reference &#8212; libscientific 1.5.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Pyhton API Reference" href="Python-API.html" />
+    <link rel="prev" title="Licensing" href="Licensing.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Python-API.html" title="Pyhton API Reference"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Licensing.html" title="Licensing"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">libscientific 1.5.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">C API Reference</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="c-api-reference">
+<h1>C API Reference<a class="headerlink" href="#c-api-reference" title="Permalink to this heading">¶</a></h1>
+<section id="double-vector-functions">
+<h2>Double Vector Functions<a class="headerlink" href="#double-vector-functions" title="Permalink to this heading">¶</a></h2>
+<dl class="c struct">
+<dt class="sig sig-object c" id="c.dvector">
+<span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dvector</span></span></span><a class="headerlink" href="#c.dvector" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/vector.h.html#c.dvector"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>A dynamic array of doubles.
+The dvector struct is a dynamic array of double represented
+by a pointer to a double and its size (size_t size).</p>
+<ul class="simple">
+<li><p><strong>data</strong> A pointer to a double type.</p></li>
+<li><p><strong>size</strong> The size of the array of strings.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.NewDVector">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NewDVector</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.dvector" title="dvector"><span class="n"><span class="pre">dvector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">d</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n"><span class="pre">size</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.NewDVector" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/vector.h.html#c.NewDVector"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Allocate a dvector with a specific size</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.DelDVector">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DelDVector</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.dvector" title="dvector"><span class="n"><span class="pre">dvector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">d</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.DelDVector" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/vector.h.html#c.DelDVector"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Delete a dvector</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.initDVector">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">initDVector</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.dvector" title="dvector"><span class="n"><span class="pre">dvector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">d</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.initDVector" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/vector.h.html#c.initDVector"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>initialize an empty dvector</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.DVectorAppend">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DVectorAppend</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.dvector" title="dvector"><span class="n"><span class="pre">dvector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">d</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n"><span class="pre">val</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.DVectorAppend" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/vector.h.html#c.DVectorAppend"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Append a value to a dvector</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.DVectorRemoveAt">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DVectorRemoveAt</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.dvector" title="dvector"><span class="n"><span class="pre">dvector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">d</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n"><span class="pre">indx</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.DVectorRemoveAt" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/vector.h.html#c.DVectorRemoveAt"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Remove a value to a dvector</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.PrintDVector">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PrintDVector</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.dvector" title="dvector"><span class="n"><span class="pre">dvector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">v</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.PrintDVector" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/vector.h.html#c.PrintDVector"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Print a dvector to video</p>
+</dd></dl>
+
+</section>
+<section id="unsigned-int-vector-functions">
+<h2>Unsigned int Vector Functions<a class="headerlink" href="#unsigned-int-vector-functions" title="Permalink to this heading">¶</a></h2>
+<dl class="c struct">
+<dt class="sig sig-object c" id="c.uivector">
+<span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">uivector</span></span></span><a class="headerlink" href="#c.uivector" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/vector.h.html#c.uivector"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>A dynamic array of unsigned integers.
+The dvector struct is a dynamic array of unsigned integers represented
+by a pointer to a unsigned integers and its size (size_t size).</p>
+<ul class="simple">
+<li><p><strong>data</strong> A pointer to unsigned integer type.</p></li>
+<li><p><strong>size</strong> The size of the array of strings.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.NewUIVector">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NewUIVector</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.uivector" title="uivector"><span class="n"><span class="pre">uivector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">d</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n"><span class="pre">size</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.NewUIVector" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/vector.h.html#c.NewUIVector"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Allocate a uivector with a specific size</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.DelUIVector">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DelUIVector</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.uivector" title="uivector"><span class="n"><span class="pre">uivector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">d</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.DelUIVector" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/vector.h.html#c.DelUIVector"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Delete a uivector</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.initUIVector">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">initUIVector</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.uivector" title="uivector"><span class="n"><span class="pre">uivector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">d</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.initUIVector" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/vector.h.html#c.initUIVector"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Initialize an empty uivector</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.UIVectorAppend">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UIVectorAppend</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.uivector" title="uivector"><span class="n"><span class="pre">uivector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">d</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n"><span class="pre">val</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.UIVectorAppend" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/vector.h.html#c.UIVectorAppend"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Append a value to an uivector</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.UIVectorRemoveAt">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UIVectorRemoveAt</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.uivector" title="uivector"><span class="n"><span class="pre">uivector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">d</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n"><span class="pre">indx</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.UIVectorRemoveAt" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/vector.h.html#c.UIVectorRemoveAt"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Remove a value to an uivector</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.PrintUIVector">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PrintUIVector</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.uivector" title="uivector"><span class="n"><span class="pre">uivector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">v</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.PrintUIVector" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/vector.h.html#c.PrintUIVector"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Print an uivector</p>
+</dd></dl>
+
+</section>
+<section id="int-vector-functions">
+<h2>Int Vector Functions<a class="headerlink" href="#int-vector-functions" title="Permalink to this heading">¶</a></h2>
+<dl class="c struct">
+<dt class="sig sig-object c" id="c.ivector">
+<span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ivector</span></span></span><a class="headerlink" href="#c.ivector" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/vector.h.html#c.ivector"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>A dynamic array of integers.
+The dvector struct is a dynamic array of integers represented
+by a pointer to a integers and its size (size_t size).</p>
+<ul class="simple">
+<li><p><strong>data</strong> A pointer to a double type.</p></li>
+<li><p><strong>size</strong> The size of the array of strings.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.NewIVector">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NewIVector</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.ivector" title="ivector"><span class="n"><span class="pre">ivector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">d</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n"><span class="pre">size</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.NewIVector" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/vector.h.html#c.NewIVector"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Allocate a ivector with a specific size</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.DelIVector">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DelIVector</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.ivector" title="ivector"><span class="n"><span class="pre">ivector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">d</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.DelIVector" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/vector.h.html#c.DelIVector"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Delete a ivector</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.initIVector">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">initIVector</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.ivector" title="ivector"><span class="n"><span class="pre">ivector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">d</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.initIVector" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/vector.h.html#c.initIVector"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Initialize an ivector</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.IVectorAppend">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IVectorAppend</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.ivector" title="ivector"><span class="n"><span class="pre">ivector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">d</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n"><span class="pre">val</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.IVectorAppend" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/vector.h.html#c.IVectorAppend"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Append a value to an ivector</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.IVectorRemoveAt">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IVectorRemoveAt</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.ivector" title="ivector"><span class="n"><span class="pre">ivector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">d</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n"><span class="pre">indx</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.IVectorRemoveAt" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/vector.h.html#c.IVectorRemoveAt"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Remove a value to a ivector</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.PrintIVector">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PrintIVector</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.ivector" title="ivector"><span class="n"><span class="pre">ivector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">v</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.PrintIVector" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/vector.h.html#c.PrintIVector"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Print to video an ivector</p>
+</dd></dl>
+
+</section>
+<section id="string-vector-functions">
+<h2>String Vector Functions<a class="headerlink" href="#string-vector-functions" title="Permalink to this heading">¶</a></h2>
+<dl class="c struct">
+<dt class="sig sig-object c" id="c.strvector">
+<span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">strvector</span></span></span><a class="headerlink" href="#c.strvector" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/vector.h.html#c.strvector"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>A dynamic array of strings.
+The strvector struct is a dynamic array of strings represented
+by a pointer to a character pointer (char data) and its size (size_t size).</p>
+<ul class="simple">
+<li><p><strong>data</strong> A pointer to a character pointer representing the array of strings.</p></li>
+<li><p><strong>size</strong> The size of the array of strings.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.NewStrVector">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NewStrVector</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.strvector" title="strvector"><span class="n"><span class="pre">strvector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">s</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n"><span class="pre">size</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.NewStrVector" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/vector.h.html#c.NewStrVector"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Allocate a strvector with a specific size</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.DelStrVector">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DelStrVector</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.strvector" title="strvector"><span class="n"><span class="pre">strvector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.DelStrVector" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/vector.h.html#c.DelStrVector"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Delete a strvector</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.initStrVector">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">initStrVector</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.strvector" title="strvector"><span class="n"><span class="pre">strvector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.initStrVector" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/vector.h.html#c.initStrVector"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>initialize an empty strvector</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.StrVectorAppend">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">StrVectorAppend</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.strvector" title="strvector"><span class="n"><span class="pre">strvector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">s</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">str</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.StrVectorAppend" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/vector.h.html#c.StrVectorAppend"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Append a string value to a strvector</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.PrintStrVector">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PrintStrVector</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.strvector" title="strvector"><span class="n"><span class="pre">strvector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.PrintStrVector" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/vector.h.html#c.PrintStrVector"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Print to video a strvector</p>
+</dd></dl>
+
+</section>
+<section id="matrix-functions">
+<h2>Matrix Functions<a class="headerlink" href="#matrix-functions" title="Permalink to this heading">¶</a></h2>
+<dl class="c struct">
+<dt class="sig sig-object c" id="c.matrix">
+<span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">matrix</span></span></span><a class="headerlink" href="#c.matrix" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/matrix.h.html#c.matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Matrix data structure</p>
+<ul class="simple">
+<li><p><strong>data</strong> two dimensional array of double</p></li>
+<li><p><strong>row</strong> number of rows</p></li>
+<li><p><strong>col</strong> number of columns</p></li>
+</ul>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.NewMatrix">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NewMatrix</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">m</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n"><span class="pre">row_</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n"><span class="pre">col_</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.NewMatrix" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/matrix.h.html#c.NewMatrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Allocate a matrix in memory with dimension “row” and “col”</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> – matrix data structure</p></li>
+<li><p><strong>row</strong> – number of rows</p></li>
+<li><p><strong>col</strong> – number of columns</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.DelMatrix">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DelMatrix</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.DelMatrix" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/matrix.h.html#c.DelMatrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Destroy a matrix allocation</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.initMatrix">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">initMatrix</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">m</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.initMatrix" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/matrix.h.html#c.initMatrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Description:
+Allocate a matrix in memory without a dimension.</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.MatrixAppendRow">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MatrixAppendRow</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">m</span></span>, <a class="reference internal" href="#c.dvector" title="dvector"><span class="n"><span class="pre">dvector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">row</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.MatrixAppendRow" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/matrix.h.html#c.MatrixAppendRow"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Append double vector uivector as row.</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.MatrixAppendCol">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MatrixAppendCol</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">m</span></span>, <a class="reference internal" href="#c.dvector" title="dvector"><span class="n"><span class="pre">dvector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">col</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.MatrixAppendCol" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/matrix.h.html#c.MatrixAppendCol"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Append double vector uivector as column.</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.MatrixDeleteRowAt">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MatrixDeleteRowAt</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">m</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n"><span class="pre">row</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.MatrixDeleteRowAt" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/matrix.h.html#c.MatrixDeleteRowAt"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Delete a specific row in a matrix</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.MatrixDeleteColAt">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MatrixDeleteColAt</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">m</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n"><span class="pre">col</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.MatrixDeleteColAt" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/matrix.h.html#c.MatrixDeleteColAt"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Delete a specific column in a matrix</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.PrintMatrix">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PrintMatrix</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">m</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.PrintMatrix" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/matrix.h.html#c.PrintMatrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Print a matrix to cmdout</p>
+</dd></dl>
+
+</section>
+<section id="tensor-functions">
+<h2>Tensor Functions<a class="headerlink" href="#tensor-functions" title="Permalink to this heading">¶</a></h2>
+<dl class="c struct">
+<dt class="sig sig-object c" id="c.tensor">
+<span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">tensor</span></span></span><a class="headerlink" href="#c.tensor" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/tensor.h.html#c.tensor"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Tensor data structure</p>
+<ul class="simple">
+<li><p><strong>m</strong> list of matrix</p></li>
+<li><p><strong>order</strong> number of matrix layers</p></li>
+</ul>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.NewTensor">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NewTensor</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.tensor" title="tensor"><span class="n"><span class="pre">tensor</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">t</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n"><span class="pre">order_</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.NewTensor" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/tensor.h.html#c.NewTensor"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Create a new empty tensor with a predefined order.</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.NewTensorMatrix">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NewTensorMatrix</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.tensor" title="tensor"><span class="n"><span class="pre">tensor</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">t</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n"><span class="pre">order</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n"><span class="pre">row</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n"><span class="pre">col</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.NewTensorMatrix" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/tensor.h.html#c.NewTensorMatrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Create into an empty tensor a matrix of “row x col” at position “order”</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>t</strong> – input tensor</p></li>
+<li><p><strong>order</strong> – point where to add the matrix</p></li>
+<li><p><strong>row</strong> – number of rows of the matrix</p></li>
+<li><p><strong>col</strong> – number of columns of the matrix</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.AddTensorMatrix">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AddTensorMatrix</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.tensor" title="tensor"><span class="n"><span class="pre">tensor</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">t</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n"><span class="pre">row</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n"><span class="pre">col</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.AddTensorMatrix" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/tensor.h.html#c.AddTensorMatrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Append to a tensor a matrix at the end of it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>t</strong> – input tensor</p></li>
+<li><p><strong>row</strong> – number of rows of the matrix</p></li>
+<li><p><strong>col</strong> – number of columns of the matrix</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.DelTensor">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DelTensor</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.tensor" title="tensor"><span class="n"><span class="pre">tensor</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">t</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.DelTensor" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/tensor.h.html#c.DelTensor"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Delete a tensor and free up the memory.</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.initTensor">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">initTensor</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.tensor" title="tensor"><span class="n"><span class="pre">tensor</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">t</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.initTensor" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/tensor.h.html#c.initTensor"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Initialize an empty tensor</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.PrintTensor">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PrintTensor</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.tensor" title="tensor"><span class="n"><span class="pre">tensor</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">t</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.PrintTensor" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/tensor.h.html#c.PrintTensor"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Print to video the tensor.</p>
+</dd></dl>
+
+</section>
+<section id="pca-functions">
+<h2>PCA Functions<a class="headerlink" href="#pca-functions" title="Permalink to this heading">¶</a></h2>
+<dl class="c struct">
+<dt class="sig sig-object c" id="c.PCAMODEL">
+<span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PCAMODEL</span></span></span><a class="headerlink" href="#c.PCAMODEL" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/pca.h.html#c.PCAMODEL"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>PCA model data structure.</p>
+<ul class="simple">
+<li><p><strong>scores</strong> matrix of scores</p></li>
+<li><p><strong>loadings</strong> matrix of loadings</p></li>
+<li><p><strong>varexp</strong> vector of explained variance by every component</p></li>
+<li><p><strong>colaverage</strong> input matrix column average</p></li>
+<li><p><strong>colaverage</strong> input matrix column scaling</p></li>
+</ul>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.NewPCAModel">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NewPCAModel</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.PCAMODEL" title="PCAMODEL"><span class="n"><span class="pre">PCAMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">m</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.NewPCAModel" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/pca.h.html#c.NewPCAModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Initialize an empty PCAMODEL</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.DelPCAModel">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DelPCAModel</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.PCAMODEL" title="PCAMODEL"><span class="n"><span class="pre">PCAMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">m</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.DelPCAModel" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/pca.h.html#c.DelPCAModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Delete a PCAMODEL</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.PCA">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PCA</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">mx</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n"><span class="pre">scaling</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n"><span class="pre">npc</span></span>, <a class="reference internal" href="#c.PCAMODEL" title="PCAMODEL"><span class="n"><span class="pre">PCAMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">model</span></span>, <span class="n"><span class="pre">ssignal</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.PCA" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/pca.h.html#c.PCA"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Calculate a principal component analysis using the NIPALS algorithm.</p>
+<p>Available scalings:</p>
+<ul class="simple">
+<li><p>0: No scaling. Only mean centering</p></li>
+<li><p>1: Mean centering and STDEV scaling</p></li>
+<li><p>2: Mean centering and Root-Mean-Square column scaling</p></li>
+<li><p>3: Mean centering and Pareto scaling</p></li>
+<li><p>4: Mean centering and min-max range scaling</p></li>
+<li><p>5: Mean centering and level scaling</p></li>
+</ul>
+<p>Returns    Nothing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mx</strong> – libscientific matrix data input</p></li>
+<li><p><strong>scaling</strong> – scaling type expressed as unsigned int type</p></li>
+<li><p><strong>npc</strong> – number of desired principal components</p></li>
+<li><p><strong>PCAMODEL</strong> – initialized model using NewPCAModel(…). The datastructure will be populated with results</p></li>
+<li><p><strong>ssignal</strong> – libscientific signal. Default value is NULL</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.PCAScorePredictor">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PCAScorePredictor</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">mx</span></span>, <a class="reference internal" href="#c.PCAMODEL" title="PCAMODEL"><span class="n"><span class="pre">PCAMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">model</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n"><span class="pre">npc</span></span>, <a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">pscores</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.PCAScorePredictor" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/pca.h.html#c.PCAScorePredictor"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Predict scores given a principal component analysis and a matrix as input.</p>
+<p>Returns    Nothing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mx</strong> – libscientific matrix data input</p></li>
+<li><p><strong>npc</strong> – number of desired principal components</p></li>
+<li><p><strong>pscores</strong> – predicted scores</p></li>
+<li><p><strong>PCAMODEL</strong> – pca model input</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.PCAIndVarPredictor">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PCAIndVarPredictor</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">t</span></span>, <a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">p</span></span>, <a class="reference internal" href="#c.dvector" title="dvector"><span class="n"><span class="pre">dvector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">colaverage</span></span>, <a class="reference internal" href="#c.dvector" title="dvector"><span class="n"><span class="pre">dvector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">colscaling</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n"><span class="pre">npc</span></span>, <a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">mx</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.PCAIndVarPredictor" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/pca.h.html#c.PCAIndVarPredictor"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Reconstruct the original input matrix from PCA model using scores and loadings.</p>
+<p>Returns    Nothing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>t</strong> – pca scores with size #objects x npc</p></li>
+<li><p><strong>p</strong> – pca loadings with size npc x #features</p></li>
+<li><p><strong>colaverage</strong> – input column average with size #features</p></li>
+<li><p><strong>colscaling</strong> – input column scaling with size #features</p></li>
+<li><p><strong>npc</strong> – desired principal components to use for the matrix reconstruction</p></li>
+<li><p><strong>mx</strong> – ouptut reconstructed matrix</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.GetResidualMatrix">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetResidualMatrix</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">mx</span></span>, <a class="reference internal" href="#c.PCAMODEL" title="PCAMODEL"><span class="n"><span class="pre">PCAMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">model</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n"><span class="pre">pc</span></span>, <a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">rmx</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.GetResidualMatrix" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/pca.h.html#c.GetResidualMatrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Compute the residual matrix for a specific number of component.</p>
+<p>Returns    Nothing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mx</strong> – original input matrix</p></li>
+<li><p><strong>model</strong> – computed pca model</p></li>
+<li><p><strong>pc</strong> – max component to extract the residual matrix</p></li>
+<li><p><strong>rmx</strong> – residual matrix of output</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.PrintPCA">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PrintPCA</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.PCAMODEL" title="PCAMODEL"><span class="n"><span class="pre">PCAMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">m</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.PrintPCA" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/pca.h.html#c.PrintPCA"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Print PCAMODEL to video.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> – computed pca model</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="cpca-functions">
+<h2>CPCA Functions<a class="headerlink" href="#cpca-functions" title="Permalink to this heading">¶</a></h2>
+<dl class="c struct">
+<dt class="sig sig-object c" id="c.CPCAMODEL">
+<span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CPCAMODEL</span></span></span><a class="headerlink" href="#c.CPCAMODEL" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/cpca.h.html#c.CPCAMODEL"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>CPCA model data structure.</p>
+<ul class="simple">
+<li><p><strong>block_scores</strong> matrix of scores</p></li>
+<li><p><strong>block_loadings</strong> matrix of loadings</p></li>
+<li><p><strong>super_scores</strong> matrix of super scores</p></li>
+<li><p><strong>super_weights</strong> matrix of super weigths</p></li>
+<li><p><strong>scaling_factor</strong> dvector of scaling factors</p></li>
+<li><p><strong>total_expvar</strong> dvector of total explained variance</p></li>
+<li><p><strong>block_expvar</strong> dvector list of block explained variance</p></li>
+<li><p><strong>colaverage</strong> dvector list of column average</p></li>
+<li><p><strong>colaverage</strong> dvector list of column scaling</p></li>
+</ul>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.NewCPCAModel">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NewCPCAModel</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.CPCAMODEL" title="CPCAMODEL"><span class="n"><span class="pre">CPCAMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">m</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.NewCPCAModel" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/cpca.h.html#c.NewCPCAModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Inizialize a new CPCA Model</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.DelCPCAModel">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DelCPCAModel</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.CPCAMODEL" title="CPCAMODEL"><span class="n"><span class="pre">CPCAMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">m</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.DelCPCAModel" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/cpca.h.html#c.DelCPCAModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Delete a new CPCA Model</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.CPCA">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CPCA</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.tensor" title="tensor"><span class="n"><span class="pre">tensor</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">x</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n"><span class="pre">scaling</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n"><span class="pre">npc</span></span>, <a class="reference internal" href="#c.CPCAMODEL" title="CPCAMODEL"><span class="n"><span class="pre">CPCAMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">model</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.CPCA" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/cpca.h.html#c.CPCA"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Consensus Principal Component Analysis</p>
+<p>Available scalings:</p>
+<ul class="simple">
+<li><p>0: No scaling. Only mean centering</p></li>
+<li><p>1: Mean centering and STDEV scaling</p></li>
+<li><p>2: Mean centering and Root-Mean-Square column scaling</p></li>
+<li><p>3: Mean centering and Pareto scaling</p></li>
+<li><p>4: Mean centering and min-max range scaling</p></li>
+<li><p>5: Mean centering and level scaling</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – libscientific tensor data input</p></li>
+<li><p><strong>scaling</strong> – scaling type expressed as unsigned int type</p></li>
+<li><p><strong>npc</strong> – number of desired principal components</p></li>
+<li><p><strong>model</strong> – initialized model using NewCPCAModel(…). The datastructure will be populated with results</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.CPCAScorePredictor">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CPCAScorePredictor</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.tensor" title="tensor"><span class="n"><span class="pre">tensor</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">x</span></span>, <a class="reference internal" href="#c.CPCAMODEL" title="CPCAMODEL"><span class="n"><span class="pre">CPCAMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">model</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n"><span class="pre">npc</span></span>, <a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">p_super_scores</span></span>, <a class="reference internal" href="#c.tensor" title="tensor"><span class="n"><span class="pre">tensor</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">p_block_scores</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.CPCAScorePredictor" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/cpca.h.html#c.CPCAScorePredictor"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Project objects in a CPCA model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – libscientific tensor data input</p></li>
+<li><p><strong>model</strong> – CPCA model</p></li>
+<li><p><strong>npc</strong> – number of desired principal components</p></li>
+<li><p><strong>p_super_scores</strong> – predicted super scores</p></li>
+<li><p><strong>p_block_scores</strong> – predicted block of scores</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.PrintCPCA">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PrintCPCA</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.CPCAMODEL" title="CPCAMODEL"><span class="n"><span class="pre">CPCAMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">m</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.PrintCPCA" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/cpca.h.html#c.PrintCPCA"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Print CPCAMODEL to video.</p>
+<p>Returns    Nothing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> – computed cpca model</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="pls-functions">
+<h2>PLS Functions<a class="headerlink" href="#pls-functions" title="Permalink to this heading">¶</a></h2>
+<dl class="c struct">
+<dt class="sig sig-object c" id="c.PLSMODEL">
+<span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PLSMODEL</span></span></span><a class="headerlink" href="#c.PLSMODEL" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/pls.h.html#c.PLSMODEL"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>PLS model data structure</p>
+<ul class="simple">
+<li><p><strong>xscores</strong> x space scores</p></li>
+<li><p><strong>xloadings</strong> x space loadings</p></li>
+<li><p><strong>xweights</strong> x space weights</p></li>
+<li><p><strong>yscores</strong> y space scores</p></li>
+<li><p><strong>yloadings</strong> y space loadings</p></li>
+<li><p><strong>b</strong> pls regression coefficients</p></li>
+<li><p><strong>xvarexp</strong> variance explained in the x space</p></li>
+<li><p><strong>xcolaverage</strong> x independent variable column average</p></li>
+<li><p><strong>xcolscaling</strong> x independent variable column scaling</p></li>
+<li><p><strong>ycolaverage</strong> y independent variable column average</p></li>
+<li><p><strong>ycolscaling</strong> y independent variable column scaling</p></li>
+<li><p><strong>recalculated_y</strong> y recalculated</p></li>
+<li><p><strong>recalc_residuals</strong> y recalculated residuals</p></li>
+<li><p><strong>predicted_y</strong> y predicted</p></li>
+<li><p><strong>pred_residuals</strong> y predicted residuals</p></li>
+<li><p><strong>r2y_recalculated</strong> r squared using y recalculated values</p></li>
+<li><p><strong>r2y_validation</strong></p></li>
+<li><p><strong>q2y</strong> q squared using y predicted values</p></li>
+<li><p><strong>sdep</strong> standard deviation over prediction using y predictions</p></li>
+<li><p><strong>sdec</strong> standard deviation over recalculation using y recalculated</p></li>
+<li><p><strong>bias</strong> bias</p></li>
+<li><p><strong>roc_recalculated</strong> receiver operating characteristic using y recalculated</p></li>
+<li><p><strong>roc_validation</strong> receiver operating characteristic using y predicted</p></li>
+<li><p><strong>roc_auc_recalculated</strong> receiver operating characteristic area under the curve using y recalculated</p></li>
+<li><p><strong>roc_auc_validation</strong> eceiver operating characteristic area under the curve using y predicted</p></li>
+<li><p><strong>precision_recall_recalculated</strong> precision-recall curve using y recalculated</p></li>
+<li><p><strong>precision_recall_validation</strong> precision-recall curve using y predicted</p></li>
+<li><p><strong>precision_recall_ap_recalculated</strong> precision-recall aread under the curve using y recalculated</p></li>
+<li><p><strong>precision_recall_ap_validation</strong> precision-recall aread under the curve using y predicted</p></li>
+<li><p><strong>yscrambling</strong> y-scrambling r-squared and q-squared</p></li>
+</ul>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.NewPLSModel">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NewPLSModel</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.PLSMODEL" title="PLSMODEL"><span class="n"><span class="pre">PLSMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">m</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.NewPLSModel" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/pls.h.html#c.NewPLSModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Create a new PLSMODEL</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.DelPLSModel">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DelPLSModel</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.PLSMODEL" title="PLSMODEL"><span class="n"><span class="pre">PLSMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">m</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.DelPLSModel" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/pls.h.html#c.DelPLSModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Delete a PLSMODEL</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.PLS">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PLS</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">mx</span></span>, <a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">my</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n"><span class="pre">nlv</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n"><span class="pre">xautoscaling</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n"><span class="pre">yautoscaling</span></span>, <a class="reference internal" href="#c.PLSMODEL" title="PLSMODEL"><span class="n"><span class="pre">PLSMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">model</span></span>, <span class="n"><span class="pre">ssignal</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.PLS" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/pls.h.html#c.PLS"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Calculate a partial least squares model using the NIPALS algorithm.</p>
+<p>Available scalings:</p>
+<ul class="simple">
+<li><p>0: No scaling. Only mean centering</p></li>
+<li><p>1: Mean centering and STDEV scaling</p></li>
+<li><p>2: Mean centering and Root-Mean-Square column scaling</p></li>
+<li><p>3: Mean centering and Pareto scaling</p></li>
+<li><p>4: Mean centering and min-max range scaling</p></li>
+<li><p>5: Mean centering and level scaling</p></li>
+</ul>
+<p>Returns    Nothing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mx</strong> – libscientific matrix data input: x independent variables</p></li>
+<li><p><strong>my</strong> – libscientific matrix data input: y dependent variables</p></li>
+<li><p><strong>nlv</strong> – number of desired latent variables</p></li>
+<li><p><strong>xautoscaling</strong> – scaling typeon the x independent variables expressed as unsigned int type</p></li>
+<li><p><strong>yautoscaling</strong> – scaling typeon the y dependent variables expressed as unsigned int type</p></li>
+<li><p><strong>PLSMODEL</strong> – output -initialized model using NewPLSAModel(…). The datastructure will be populated with results</p></li>
+<li><p><strong>ssignal</strong> – libscientific signal. Default value is NULL.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.PLSBetasCoeff">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PLSBetasCoeff</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.PLSMODEL" title="PLSMODEL"><span class="n"><span class="pre">PLSMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">model</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n"><span class="pre">nlv</span></span>, <a class="reference internal" href="#c.dvector" title="dvector"><span class="n"><span class="pre">dvector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">betas</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.PLSBetasCoeff" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/pls.h.html#c.PLSBetasCoeff"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Calculate betas coefficients from a pls model at specific nlv latent variables</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – libscientific matrix data input: x independent variables</p></li>
+<li><p><strong>nlv</strong> – number of desired latent variables</p></li>
+<li><p><strong>betas</strong> – output - initialized libscientific dvector</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.PLSScorePredictor">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PLSScorePredictor</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">mx</span></span>, <a class="reference internal" href="#c.PLSMODEL" title="PLSMODEL"><span class="n"><span class="pre">PLSMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">model</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n"><span class="pre">nlv</span></span>, <a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">xscores</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.PLSScorePredictor" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/pls.h.html#c.PLSScorePredictor"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Project a matrix and predict the scores into the new space. This function is used before predict the Y values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mx</strong> – libscientific matrix data input: x independent variables</p></li>
+<li><p><strong>model</strong> – PLSMODEL</p></li>
+<li><p><strong>nlv</strong> – number of desired latent variables</p></li>
+<li><p><strong>xscores</strong> – output - initialized libscientific matrix</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.PLSYPredictor">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PLSYPredictor</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">tscore</span></span>, <a class="reference internal" href="#c.PLSMODEL" title="PLSMODEL"><span class="n"><span class="pre">PLSMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">model</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n"><span class="pre">nlv</span></span>, <a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">y</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.PLSYPredictor" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/pls.h.html#c.PLSYPredictor"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Calculate the Y values at a specific lv number (nlv).</p>
+<p>N.B.: The output of y will be: [y-&gt;row][y-col]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tscore</strong> – input matrix of scores calculated using PLSScorePredictor</p></li>
+<li><p><strong>model</strong> – PLSMODEL</p></li>
+<li><p><strong>nlv</strong> – number of desired latent variables</p></li>
+<li><p><strong>y</strong> – output - initialized libscientific matrix</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.PLSYPredictorAllLV">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PLSYPredictorAllLV</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">mx</span></span>, <a class="reference internal" href="#c.PLSMODEL" title="PLSMODEL"><span class="n"><span class="pre">PLSMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">model</span></span>, <a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">tscores</span></span>, <a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">y</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.PLSYPredictorAllLV" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/pls.h.html#c.PLSYPredictorAllLV"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Calculate the Y values at all the lv.</p>
+<p>N.B.: The output of y will be: [y-&gt;row][y-&gt;col*nlv]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mx</strong> – input matrix of scores calculated using PLSScorePredictor</p></li>
+<li><p><strong>model</strong> – PLSMODEL</p></li>
+<li><p><strong>tscores</strong> – output - predicted scores</p></li>
+<li><p><strong>y</strong> – output - y predicted</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.PLSRegressionStatistics">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PLSRegressionStatistics</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">my_true</span></span>, <a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">my_pred</span></span>, <a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">ccoeff</span></span>, <a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">rmse</span></span>, <a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">bias</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.PLSRegressionStatistics" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/pls.h.html#c.PLSRegressionStatistics"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Calculate the correlation coefficient (ccoeff), the root mean square error of the prediction (rmse), the bias of the prediction (bias) in a regression model. mx and my could be the training or the test datasets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>my_true</strong> – input matrix of y true values</p></li>
+<li><p><strong>my_pred</strong> – input matrix of y predicted or recalculated values</p></li>
+<li><p><strong>ccoeff</strong> – output - correlation coefficients q-squared or r-squared if my_pred is respectivelly predicted or recalculated</p></li>
+<li><p><strong>rmse</strong> – output - root mean square error</p></li>
+<li><p><strong>bias</strong> – output - bias defined as how distant are we from the diagonal</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.PLSDiscriminantAnalysisStatistics">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PLSDiscriminantAnalysisStatistics</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">my_true</span></span>, <a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">my_score</span></span>, <a class="reference internal" href="#c.tensor" title="tensor"><span class="n"><span class="pre">tensor</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">roc</span></span>, <a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">roc_auc</span></span>, <a class="reference internal" href="#c.tensor" title="tensor"><span class="n"><span class="pre">tensor</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">precision_recall</span></span>, <a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">precision_recall_ap</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.PLSDiscriminantAnalysisStatistics" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/pls.h.html#c.PLSDiscriminantAnalysisStatistics"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Calculate the roc curve, the auc, the precision recall curve, the precision_recall_auc of a classification model. mx and my could be the training or the test datasets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>my_true</strong> – input matrix of y true values</p></li>
+<li><p><strong>roc</strong> – output - roc curves</p></li>
+<li><p><strong>roc_auc</strong> – output - roc AUCs</p></li>
+<li><p><strong>precision_recall</strong> – output - precision-recall curves</p></li>
+<li><p><strong>precision_recall_ap</strong> – output - precision-recall AUCs</p></li>
+<li><p><strong>my_scores</strong> – input matrix of y predicted or recalculated class scores/probabilities</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.GetLVCCutoff">
+<span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetLVCCutoff</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">coeff</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.GetLVCCutoff" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/pls.h.html#c.GetLVCCutoff"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Get the Cutoff based on the grow of r2, q2 in case of regression
+or auc in case of classification.</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.PrintPLSModel">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PrintPLSModel</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.PLSMODEL" title="PLSMODEL"><span class="n"><span class="pre">PLSMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">model</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.PrintPLSModel" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/pls.h.html#c.PrintPLSModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Print to video a PLSMODEL</p>
+</dd></dl>
+
+</section>
+<section id="mlr-functions">
+<h2>MLR Functions<a class="headerlink" href="#mlr-functions" title="Permalink to this heading">¶</a></h2>
+<dl class="c struct">
+<dt class="sig sig-object c" id="c.MLRMODEL">
+<span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MLRMODEL</span></span></span><a class="headerlink" href="#c.MLRMODEL" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/mlr.h.html#c.MLRMODEL"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Multiple Linear Regression data structure</p>
+<ul class="simple">
+<li><p><strong>b</strong> beta coefficients</p></li>
+<li><p><strong>recalculated_y</strong> y recalculated</p></li>
+<li><p><strong>predicted_y</strong> y predicted</p></li>
+<li><p><strong>recalc_residuals</strong> residuals using recalculated values</p></li>
+<li><p><strong>pred_residuals</strong> residuals using predicted values</p></li>
+<li><p><strong>ymean</strong> y averages</p></li>
+<li><p><strong>r2y_model</strong> model r-squared using y recalculated</p></li>
+<li><p><strong>q2y</strong> model q-squared using y predicted</p></li>
+<li><p><strong>sdep</strong> standard deviation over prediction</p></li>
+<li><p><strong>sdec</strong> standard deviation over recalculation</p></li>
+<li><p><strong>bias</strong> model bias</p></li>
+<li><p><strong>r2q2scrambling</strong> y scrambling results</p></li>
+</ul>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.NewMLRModel">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NewMLRModel</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.MLRMODEL" title="MLRMODEL"><span class="n"><span class="pre">MLRMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">m</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.NewMLRModel" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/mlr.h.html#c.NewMLRModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Initialize an MLR model</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.DelMLRModel">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DelMLRModel</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.MLRMODEL" title="MLRMODEL"><span class="n"><span class="pre">MLRMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">m</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.DelMLRModel" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/mlr.h.html#c.DelMLRModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Delete a MLR model</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.MLR">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MLR</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">mx</span></span>, <a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">my</span></span>, <a class="reference internal" href="#c.MLRMODEL" title="MLRMODEL"><span class="n"><span class="pre">MLRMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">model</span></span>, <span class="n"><span class="pre">ssignal</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.MLR" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/mlr.h.html#c.MLR"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Calculate a MLR model using OLS algorithm</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mx</strong> – x independent variables input</p></li>
+<li><p><strong>my</strong> – y dependent variables input</p></li>
+<li><p><strong>model</strong> – initialized model using NewMLRModel(…). The datastructure will be populated with results</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.MLRPredictY">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MLRPredictY</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">mx</span></span>, <a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">my</span></span>, <a class="reference internal" href="#c.MLRMODEL" title="MLRMODEL"><span class="n"><span class="pre">MLRMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">model</span></span>, <a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">predicted_y</span></span>, <a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">predicted_residuals</span></span>, <a class="reference internal" href="#c.dvector" title="dvector"><span class="n"><span class="pre">dvector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">r2y</span></span>, <a class="reference internal" href="#c.dvector" title="dvector"><span class="n"><span class="pre">dvector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">sdep</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.MLRPredictY" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/mlr.h.html#c.MLRPredictY"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Predict Y targets using a MLR model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mx</strong> – x independent variables input</p></li>
+<li><p><strong>my</strong> – y dependent variables input (if known)</p></li>
+<li><p><strong>model</strong> – computed MLRMODEL</p></li>
+<li><p><strong>predicted_y</strong> – y predicted</p></li>
+<li><p><strong>predicted_residuals</strong> – residuals using y predicted</p></li>
+<li><p><strong>r2y</strong> – r-squared of the prediction if my known</p></li>
+<li><p><strong>sdep</strong> – standard deviation over prediction if my known</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.MLRRegressionStatistics">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MLRRegressionStatistics</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">my_true</span></span>, <a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">my_pred</span></span>, <a class="reference internal" href="#c.dvector" title="dvector"><span class="n"><span class="pre">dvector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">ccoeff</span></span>, <a class="reference internal" href="#c.dvector" title="dvector"><span class="n"><span class="pre">dvector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">rmse</span></span>, <a class="reference internal" href="#c.dvector" title="dvector"><span class="n"><span class="pre">dvector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">bias</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.MLRRegressionStatistics" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/mlr.h.html#c.MLRRegressionStatistics"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Calculate the correlation coefficient (ccoeff), the standard deviation of the prediction (stdev), the bias of the prediction (bias) in a regression model. mx and my could be the training or the test datasets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>my_true</strong> – input matrix of y true values</p></li>
+<li><p><strong>my_pred</strong> – input matrix of y predicted or recalculated values</p></li>
+<li><p><strong>ccoeff</strong> – output - correlation coefficients q-squared or r-squared if my_pred is respectivelly predicted or recalculated</p></li>
+<li><p><strong>rmse</strong> – output - root mean square error</p></li>
+<li><p><strong>bias</strong> – output - bias defined as how distant are we from the diagonal</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.PrintMLR">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PrintMLR</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.MLRMODEL" title="MLRMODEL"><span class="n"><span class="pre">MLRMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">m</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.PrintMLR" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/mlr.h.html#c.PrintMLR"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Print MRLMODEL to video.</p>
+<p>Returns    Nothing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> – computed mlr model</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="lda-functions">
+<h2>LDA Functions<a class="headerlink" href="#lda-functions" title="Permalink to this heading">¶</a></h2>
+<dl class="c struct">
+<dt class="sig sig-object c" id="c.LDAMODEL">
+<span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LDAMODEL</span></span></span><a class="headerlink" href="#c.LDAMODEL" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/lda.h.html#c.LDAMODEL"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.NewLDAModel">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NewLDAModel</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.LDAMODEL" title="LDAMODEL"><span class="n"><span class="pre">LDAMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">m</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.NewLDAModel" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/lda.h.html#c.NewLDAModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Initialize and LDAMODEL</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.DelLDAModel">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DelLDAModel</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.LDAMODEL" title="LDAMODEL"><span class="n"><span class="pre">LDAMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">m</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.DelLDAModel" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/lda.h.html#c.DelLDAModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Delete and LDAMODEL</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.LDA">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LDA</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">mx</span></span>, <a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">my</span></span>, <a class="reference internal" href="#c.LDAMODEL" title="LDAMODEL"><span class="n"><span class="pre">LDAMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">lda</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.LDA" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/lda.h.html#c.LDA"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Calculate and LDA Fisher discriminant analyisis model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mx</strong> – input matrix of independent variables</p></li>
+<li><p><strong>my</strong> – input matrix of classes</p></li>
+<li><p><strong>lda</strong> – initialized model using NewLDAModel(…). The datastructure will be populated with results</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.LDAPrediction">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LDAPrediction</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">mx</span></span>, <a class="reference internal" href="#c.LDAMODEL" title="LDAMODEL"><span class="n"><span class="pre">LDAMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">lda</span></span>, <a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">pfeatures</span></span>, <a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">probability</span></span>, <a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">mnpdf</span></span>, <a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">prediction</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.LDAPrediction" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/lda.h.html#c.LDAPrediction"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Predict classes using an LDA fisher discriminant analysis model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mx</strong> – input matrix of independent variables</p></li>
+<li><p><strong>lda</strong> – computed LDAMODEL</p></li>
+<li><p><strong>pfeatures</strong> – predicted features</p></li>
+<li><p><strong>probabilities</strong> – </p></li>
+<li><p><strong>multivariate</strong> – normal probability distribution of features</p></li>
+<li><p><strong>predicted</strong> – classes</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.LDAStatistics">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LDAStatistics</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.dvector" title="dvector"><span class="n"><span class="pre">dvector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">y_true</span></span>, <a class="reference internal" href="#c.dvector" title="dvector"><span class="n"><span class="pre">dvector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">y_pred</span></span>, <a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">roc</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">roc_auc</span></span>, <a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">precision_recal</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">pr_auc</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.LDAStatistics" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/lda.h.html#c.LDAStatistics"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Binary statistics</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.LDAMulticlassStatistics">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LDAMulticlassStatistics</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">y_true</span></span>, <a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">y_pred</span></span>, <a class="reference internal" href="#c.tensor" title="tensor"><span class="n"><span class="pre">tensor</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">roc</span></span>, <a class="reference internal" href="#c.dvector" title="dvector"><span class="n"><span class="pre">dvector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">roc_aucs</span></span>, <a class="reference internal" href="#c.tensor" title="tensor"><span class="n"><span class="pre">tensor</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">precision_recals</span></span>, <a class="reference internal" href="#c.dvector" title="dvector"><span class="n"><span class="pre">dvector</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">pr_aucs</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.LDAMulticlassStatistics" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/lda.h.html#c.LDAMulticlassStatistics"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Multiclass statistics</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.PrintLDAModel">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PrintLDAModel</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.LDAMODEL" title="LDAMODEL"><span class="n"><span class="pre">LDAMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">m</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.PrintLDAModel" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/lda.h.html#c.PrintLDAModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Print LDAMODEL to video.</p>
+<p>Returns    Nothing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> – computed lda model</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="upca-functions">
+<h2>UPCA Functions<a class="headerlink" href="#upca-functions" title="Permalink to this heading">¶</a></h2>
+<dl class="c struct">
+<dt class="sig sig-object c" id="c.UPCAMODEL">
+<span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UPCAMODEL</span></span></span><a class="headerlink" href="#c.UPCAMODEL" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/upca.h.html#c.UPCAMODEL"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>UPCA model data structure.</p>
+<ul class="simple">
+<li><p><strong>scores</strong> matrix of scores</p></li>
+<li><p><strong>loadings</strong> tesnor of loadings</p></li>
+<li><p><strong>varexp</strong> vector of explained variance by every component</p></li>
+<li><p><strong>colaverage</strong> vector list of column average</p></li>
+<li><p><strong>colaverage</strong> vector list of column scaling</p></li>
+</ul>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.NewUPCAModel">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NewUPCAModel</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.UPCAMODEL" title="UPCAMODEL"><span class="n"><span class="pre">UPCAMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">m</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.NewUPCAModel" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/upca.h.html#c.NewUPCAModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Initialize an empty UPCAMODEL</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.DelUPCAModel">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DelUPCAModel</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.UPCAMODEL" title="UPCAMODEL"><span class="n"><span class="pre">UPCAMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">m</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.DelUPCAModel" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/upca.h.html#c.DelUPCAModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Delete an UPCAMODEL</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.UPCA">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UPCA</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.tensor" title="tensor"><span class="n"><span class="pre">tensor</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">X</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n"><span class="pre">npc</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n"><span class="pre">autoscaling</span></span>, <a class="reference internal" href="#c.UPCAMODEL" title="UPCAMODEL"><span class="n"><span class="pre">UPCAMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">m</span></span>, <span class="n"><span class="pre">ssignal</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.UPCA" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/upca.h.html#c.UPCA"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Unfolded Principal Component Analysis</p>
+<p>Available scalings:</p>
+<ul class="simple">
+<li><p>0: No scaling. Only mean centering</p></li>
+<li><p>1: Mean centering and STDEV scaling</p></li>
+<li><p>2: Mean centering and Root-Mean-Square column scaling</p></li>
+<li><p>3: Mean centering and Pareto scaling</p></li>
+<li><p>4: Mean centering and min-max range scaling</p></li>
+<li><p>5: Mean centering and level scaling</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> – input tensor</p></li>
+<li><p><strong>npc</strong> – number of desired principal components</p></li>
+<li><p><strong>autoscaling</strong> – </p></li>
+<li><p><strong>m</strong> – initialized model using NewUPCAModel(…). The datastructure will be populated with results</p></li>
+<li><p><strong>ssignal</strong> – libscientific signal. Default value is NULL</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.UPCAScorePredictor">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UPCAScorePredictor</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.tensor" title="tensor"><span class="n"><span class="pre">tensor</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">X</span></span>, <a class="reference internal" href="#c.UPCAMODEL" title="UPCAMODEL"><span class="n"><span class="pre">UPCAMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">model</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n"><span class="pre">npc</span></span>, <a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">pscores</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.UPCAScorePredictor" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/upca.h.html#c.UPCAScorePredictor"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Predict scores given an unfolded principal component analysis and a tensor as input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> – input tensor</p></li>
+<li><p><strong>model</strong> – computed UPCAMODEL</p></li>
+<li><p><strong>npc</strong> – number of desired principal components</p></li>
+<li><p><strong>pscores</strong> – predicted scores</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.UPCAIndVarPredictor">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UPCAIndVarPredictor</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.matrix" title="matrix"><span class="n"><span class="pre">matrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">T</span></span>, <a class="reference internal" href="#c.tensor" title="tensor"><span class="n"><span class="pre">tensor</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">P</span></span>, <span class="n"><span class="pre">dvectorlist</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">colaverage</span></span>, <span class="n"><span class="pre">dvectorlist</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">colscaling</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n"><span class="pre">npc</span></span>, <a class="reference internal" href="#c.tensor" title="tensor"><span class="n"><span class="pre">tensor</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">X</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.UPCAIndVarPredictor" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/upca.h.html#c.UPCAIndVarPredictor"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Reconstruct the original input tensor from UPCA model using scores and loadings.</p>
+<p>Returns    Nothing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>colaverage</strong> – input list of column average with size #features</p></li>
+<li><p><strong>colscaling</strong> – input list of column scaling with size #features</p></li>
+<li><p><strong>npc</strong> – desired principal components to use for the tensor reconstruction</p></li>
+<li><p><strong>X</strong> – ouptut reconstructed tensor</p></li>
+<li><p><strong>t</strong> – upca scores with size #objects x npc</p></li>
+<li><p><strong>p</strong> – upca loadings with size order x npc x #features</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.PrintUPCAModel">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PrintUPCAModel</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.UPCAMODEL" title="UPCAMODEL"><span class="n"><span class="pre">UPCAMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">m</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.PrintUPCAModel" title="Permalink to this definition">¶</a><br /><a class="reference internal" href="_modules/upca.h.html#c.PrintUPCAModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Print UPCAMODEL to video.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> – computed upca model</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="object-selection-functions">
+<h2>Object Selection Functions<a class="headerlink" href="#object-selection-functions" title="Permalink to this heading">¶</a></h2>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">C API Reference</a><ul>
+<li><a class="reference internal" href="#double-vector-functions">Double Vector Functions</a></li>
+<li><a class="reference internal" href="#unsigned-int-vector-functions">Unsigned int Vector Functions</a></li>
+<li><a class="reference internal" href="#int-vector-functions">Int Vector Functions</a></li>
+<li><a class="reference internal" href="#string-vector-functions">String Vector Functions</a></li>
+<li><a class="reference internal" href="#matrix-functions">Matrix Functions</a></li>
+<li><a class="reference internal" href="#tensor-functions">Tensor Functions</a></li>
+<li><a class="reference internal" href="#pca-functions">PCA Functions</a></li>
+<li><a class="reference internal" href="#cpca-functions">CPCA Functions</a></li>
+<li><a class="reference internal" href="#pls-functions">PLS Functions</a></li>
+<li><a class="reference internal" href="#mlr-functions">MLR Functions</a></li>
+<li><a class="reference internal" href="#lda-functions">LDA Functions</a></li>
+<li><a class="reference internal" href="#upca-functions">UPCA Functions</a></li>
+<li><a class="reference internal" href="#object-selection-functions">Object Selection Functions</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="Licensing.html"
+                          title="previous chapter">Licensing</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="Python-API.html"
+                          title="next chapter">Pyhton API Reference</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/C-API.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Python-API.html" title="Pyhton API Reference"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Licensing.html" title="Licensing"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">libscientific 1.5.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">C API Reference</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2011, Giuseppe Marco Randazzo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    </div>
+  </body>
+</html>

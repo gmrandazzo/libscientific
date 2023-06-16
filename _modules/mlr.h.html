@@ -1,0 +1,210 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mlr.h &#8212; libscientific 1.5.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.5.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">mlr.h</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for mlr.h</h1><div class="highlight"><pre>
+<span></span><span class="cm">/* mlr.h</span>
+<span class="cm">*</span>
+<span class="cm">* Copyright (C) &lt;2016&gt;  Giuseppe Marco Randazzo</span>
+<span class="cm">*</span>
+<span class="cm">* This program is free software: you can redistribute it and/or modify</span>
+<span class="cm">* it under the terms of the GNU General Public License as published by</span>
+<span class="cm">* the Free Software Foundation, either version 3 of the License, or</span>
+<span class="cm">* (at your option) any later version.</span>
+<span class="cm">*</span>
+<span class="cm">* This program is distributed in the hope that it will be useful,</span>
+<span class="cm">* but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="cm">* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="cm">* GNU General Public License for more details.</span>
+<span class="cm">*</span>
+<span class="cm">* You should have received a copy of the GNU General Public License</span>
+<span class="cm">* along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="cm">*/</span>
+
+<span class="cp">#ifndef MLR_H</span>
+<div class="viewcode-block" id="c.MLR_H"><span class="cp">#define MLR_H</span></div>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;matrix.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;scientificinfo.h&quot;</span>
+
+<div class="viewcode-block" id="c.MLRMODEL"><a class="viewcode-back" href="../C-API.html#c.MLRMODEL">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Multiple Linear Regression data structure</span>
+<span class="cm"> * </span>
+<span class="cm"> * - **b** beta coefficients</span>
+<span class="cm"> * - **recalculated_y** y recalculated</span>
+<span class="cm"> * - **predicted_y** y predicted</span>
+<span class="cm"> * - **recalc_residuals** residuals using recalculated values</span>
+<span class="cm"> * - **pred_residuals** residuals using predicted values</span>
+<span class="cm"> * - **ymean** y averages</span>
+<span class="cm"> * - **r2y_model** model r-squared using y recalculated </span>
+<span class="cm"> * - **q2y** model q-squared using y predicted</span>
+<span class="cm"> * - **sdep** standard deviation over prediction</span>
+<span class="cm"> * - **sdec** standard deviation over recalculation</span>
+<span class="cm"> * - **bias** model bias</span>
+<span class="cm"> * - **r2q2scrambling** y scrambling results</span>
+<span class="cm"> */</span>
+
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="p">{</span>
+<div class="viewcode-block" id="c.MLRMODEL.b"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">b</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.MLRMODEL.recalculated_y"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">recalculated_y</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.MLRMODEL.predicted_y"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">predicted_y</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.MLRMODEL.recalc_residuals"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">recalc_residuals</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.MLRMODEL.pred_residuals"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">pred_residuals</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.MLRMODEL.ymean"><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">ymean</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.MLRMODEL.r2y_model"><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">r2y_model</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.MLRMODEL.q2y"><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">q2y</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.MLRMODEL.sdep"><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">sdep</span><span class="p">;</span><span class="cm">/* Standard Deviation over Prediction */</span></div>
+<div class="viewcode-block" id="c.MLRMODEL.sdec"><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">sdec</span><span class="p">;</span><span class="w"> </span><span class="cm">/* Standard Deviation over Recalculating */</span></div>
+<div class="viewcode-block" id="c.MLRMODEL.bias"><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">bias</span><span class="p">;</span><span class="w"> </span><span class="cm">/* model bias */</span></div>
+<div class="viewcode-block" id="c.MLRMODEL.r2q2scrambling"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">r2q2scrambling</span><span class="p">;</span></div>
+<span class="p">}</span><span class="w"> </span><span class="n">MLRMODEL</span><span class="p">;</span></div>
+
+<div class="viewcode-block" id="c.NewMLRModel"><a class="viewcode-back" href="../C-API.html#c.NewMLRModel">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Initialize an MLR model</span>
+<span class="cm">*/</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">NewMLRModel</span><span class="p">(</span><span class="n">MLRMODEL</span><span class="w"> </span><span class="o">**</span><span class="n">m</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.DelMLRModel"><a class="viewcode-back" href="../C-API.html#c.DelMLRModel">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Delete a MLR model </span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">DelMLRModel</span><span class="p">(</span><span class="n">MLRMODEL</span><span class="w"> </span><span class="o">**</span><span class="n">m</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.MLR"><a class="viewcode-back" href="../C-API.html#c.MLR">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Calculate a MLR model using OLS algorithm</span>
+<span class="cm"> * </span>
+<span class="cm"> * @param [in] mx x independent variables input</span>
+<span class="cm"> * @param [in] my y dependent variables input </span>
+<span class="cm"> * @param [out] model initialized model using NewMLRModel(...). The datastructure will be populated with results</span>
+<span class="cm"> * </span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">MLR</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">mx</span><span class="p">,</span>
+<span class="w">         </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">my</span><span class="p">,</span>
+<span class="w">         </span><span class="n">MLRMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">model</span><span class="p">,</span>
+<span class="w">         </span><span class="n">ssignal</span><span class="w"> </span><span class="o">*</span><span class="n">s</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.MLRPredictY"><a class="viewcode-back" href="../C-API.html#c.MLRPredictY">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Predict Y targets using a MLR model</span>
+<span class="cm"> * </span>
+<span class="cm"> * @param [in] mx x independent variables input</span>
+<span class="cm"> * @param [in] my y dependent variables input (if known)</span>
+<span class="cm"> * @param [in] model computed MLRMODEL</span>
+<span class="cm"> * @param [out] predicted_y y predicted</span>
+<span class="cm"> * @param [out] predicted_residuals residuals using y predicted</span>
+<span class="cm"> * @param [out] r2y r-squared of the prediction if my known</span>
+<span class="cm"> * @param [out] sdep standard deviation over prediction if my known</span>
+<span class="cm"> * </span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">MLRPredictY</span><span class="p">(</span><span class="n">matrix</span><span class="o">*</span><span class="w"> </span><span class="n">mx</span><span class="p">,</span>
+<span class="w">                 </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">my</span><span class="p">,</span>
+<span class="w">                 </span><span class="n">MLRMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">model</span><span class="p">,</span>
+<span class="w">                 </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">predicted_y</span><span class="p">,</span>
+<span class="w">                 </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">predicted_residuals</span><span class="p">,</span>
+<span class="w">                 </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">r2y</span><span class="p">,</span>
+<span class="w">                 </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">sdep</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.MLRRegressionStatistics"><a class="viewcode-back" href="../C-API.html#c.MLRRegressionStatistics">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Calculate the correlation coefficient (ccoeff),</span>
+<span class="cm"> * the standard deviation of the prediction (stdev),</span>
+<span class="cm"> * the bias of the prediction (bias) in a regression model.</span>
+<span class="cm"> * mx and my could be the training or the test datasets.</span>
+<span class="cm"> * </span>
+<span class="cm"> * @param [in] my_true input matrix of y true values</span>
+<span class="cm"> * @param [in] my_pred input matrix of y predicted or recalculated values</span>
+<span class="cm"> * @param [out] ccoeff output - correlation coefficients q-squared or r-squared if my_pred is respectivelly predicted or recalculated </span>
+<span class="cm"> * @param [out] rmse output - root mean square error</span>
+<span class="cm"> * @param [out] bias output - bias defined as how distant are we from the diagonal</span>
+<span class="cm"> */</span>
+<span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">MLRRegressionStatistics</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">my_true</span><span class="p">,</span>
+<span class="w">                              </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">my_pred</span><span class="p">,</span>
+<span class="w">                              </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">ccoeff</span><span class="p">,</span>
+<span class="w">                              </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">rmse</span><span class="p">,</span>
+<span class="w">                              </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">bias</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.PrintMLR"><a class="viewcode-back" href="../C-API.html#c.PrintMLR">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * @brief Print MRLMODEL to video.</span>
+<span class="cm"> *</span>
+<span class="cm"> * @param [in] m computed mlr model</span>
+<span class="cm"> *</span>
+<span class="cm"> * @par Returns</span>
+<span class="cm"> *    Nothing.</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">PrintMLR</span><span class="p">(</span><span class="n">MLRMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">);</span></div>
+
+<span class="cp">#endif</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.5.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">mlr.h</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2011, Giuseppe Marco Randazzo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    </div>
+  </body>
+</html>
