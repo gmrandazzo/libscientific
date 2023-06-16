@@ -36,7 +36,7 @@ jobs:
           cd docs/
           python -m sphinx -T -E -b html -d _build/doctrees -D language=en . html/
       - name: Deploy documentation
-        uses: gmrandazzo/github-pages-deploy-action@v4
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: html/
           branch: gh-pages
