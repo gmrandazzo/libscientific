@@ -28,7 +28,7 @@ First you need to install the C library following these instructions:
    cd libscientific
    mkdir build
    cd build
-   cmake -DCMAKE_INSTALL_PREFIX=/usr/local/ ..
+   cmake -DCMAKE_INSTALL_PREFIX=/usr/ ..
    make -j5
    sudo make install
 
@@ -42,6 +42,16 @@ Then, if you want to use the library in python, you have also to install the pyt
    or 
 
    pip3 install libscientific
+
+
+If you have installed the library in a non-standard path and you want to use the python bindings
+please export the LIBSCIENTIFIC_LIB_DIR variable pointing to the libscientific.so installation path.
+
+For example, if the library is installed in /home/<user>/mylocalenv, then you need to export the 
+following variable
+
+.. coide-block::
+    export LISCIENTIFIC_LIB_DIR=/home/<user>/mylocalenv
 
 
 Packages
