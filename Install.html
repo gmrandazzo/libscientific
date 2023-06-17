@@ -66,7 +66,7 @@
 <span class="n">cd</span> <span class="n">libscientific</span>
 <span class="n">mkdir</span> <span class="n">build</span>
 <span class="n">cd</span> <span class="n">build</span>
-<span class="n">cmake</span> <span class="o">-</span><span class="n">DCMAKE_INSTALL_PREFIX</span><span class="o">=/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span> <span class="o">..</span>
+<span class="n">cmake</span> <span class="o">-</span><span class="n">DCMAKE_INSTALL_PREFIX</span><span class="o">=/</span><span class="n">usr</span><span class="o">/</span> <span class="o">..</span>
 <span class="n">make</span> <span class="o">-</span><span class="n">j5</span>
 <span class="n">sudo</span> <span class="n">make</span> <span class="n">install</span>
 </pre></div>
@@ -80,6 +80,10 @@
 <span class="n">pip3</span> <span class="n">install</span> <span class="n">libscientific</span>
 </pre></div>
 </div>
+<p>If you have installed the library in a non-standard path and you want to use the python bindings
+please export the LIBSCIENTIFIC_LIB_DIR variable pointing to the libscientific.so installation path.</p>
+<p>For example, if the library is installed in /home/&lt;user&gt;/mylocalenv, then you need to export the
+following variable</p>
 </section>
 <section id="packages">
 <h2>Packages<a class="headerlink" href="#packages" title="Permalink to this heading">¶</a></h2>
