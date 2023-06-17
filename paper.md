@@ -70,10 +70,30 @@ In addition to PCA and PLS, libscientific provides implementations of Consensus 
 
 All multivariate algorithms admit missing values since the core linear algebra functions are coded to skip missing values, according to Martens et al (page 381)[@Martens2001].
 
+
 # Other algorithms
 
 The library also provides compound selection algorithms such as Most Descriptive Compounds [@Hudson96] or Most Dissimilar Compound [@Holliday1996] selections, allowing one to analyze scores plots or original data matrices and select samples based on the object/sample diversity.
 Moreover, multi-thread cross-validation methodologies such as "Bootstrap k-fold" Leave-One-Out (LOO), and Y-Scrambling tests are implemented to facilitate the scientist in testing model prediction abilities.
+
+# Algorithm stability
+
+Since we are dealing with numerical analysis, unit tests are crucial to ensure correctness, stability, and reproducibility.
+Libcientific tests range from simple matrix-vector multiplication to the correctness of complex algorithms using ad-hoc torture toy examples.
+Every algorithm is then tested to answer the following questions:
+
+1. Is the algorithm able to work in fit and prediction correctly?
+2. Is the algorithm able to work with large data?
+3. Is the algorithm showing any memory leak?
+
+# Speed and Memory Comparison
+<WORK HERE>
+for PCA, PLS, CPCA, UPCA, UPLS, MaxDis, MostDesc, LDA
+Calculation time v.s n istances  v.s. n column v.s. memory in use
+
+# Usage
+
+For the usage in C or either Python we invite reading the official documentation located at the following link: [https://libscientific.readthedocs.io/en/latest/](https://libscientific.readthedocs.io/en/latest)
 
 # Conclusions
 
