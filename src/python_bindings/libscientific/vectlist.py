@@ -1,19 +1,20 @@
-# vector libscientific python binding
-#
-# Copyright (C) <2019>  Giuseppe Marco Randazzo
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-# 
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""vectlist.py libscientific python binding
+
+Copyright (C) <2023>  Giuseppe Marco Randazzo
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
 
 import ctypes
 from libscientific import vector as vect
@@ -138,10 +139,10 @@ class DVectorList():
         """
         Append a value to the dvector
         """
-        if isinstance(lst, vect.DVECTOR):
+        if isinstance(v_lst, vect.DVECTOR):
             dvector_list_append(self.dvl, v_lst)
         else:
-            dv_lst = vect.new_dvector(lst)
+            dv_lst = vect.new_dvector(v_lst)
             dvector_list_append(self.dvl, dv_lst)
             vect.del_dvector(dv_lst)
             del dv_lst
@@ -167,25 +168,3 @@ class DVectorList():
         """
         for i in range(self.dvl[0].size):
             vect.print_dvector(self.dvl[0].dvector[i].contents)
-
-
-if __name__ in "__main__":
-    from random import random
-    a = [[random() for j in range(10)] for i in range(3)]
-    d = DVectorList(a)
-    d.debug()
-    print("get value")
-    vect.print_dvector(d[1])
-    print("set list")
-    d[1] = [8, 8, 8, 8, 8, 8, 8, 8, 8, 8]
-    dlst = d.tolist()
-    print("print the list converted")
-    for item in dlst:
-        print(item)
-
-    print("Append a list - high level")
-    lst = [9, 8, 7, 6]
-    d.append(lst)
-    print("Reappend ppend a list - low level")
-    dvector_list_append(d.dvl, lst)
-    d.debug()

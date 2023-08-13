@@ -1138,7 +1138,7 @@ int main(void)
   TestPLS8();
   TestPLS9();
   //TestPLS10();
-  TestPLS11();
+  TestPLS11(); // SLOW
   TestPLS12();
   TestPLS13();
   TestPLS14();

@@ -1,19 +1,20 @@
-# pca libscientific python binding
-#
-# Copyright (C) <2019>  Giuseppe Marco Randazzo
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-# 
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""pca.py libscientific python binding
+
+Copyright (C) <2023>  Giuseppe Marco Randazzo
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
 
 import ctypes
 import libscientific.matrix as mx
@@ -108,11 +109,8 @@ lsci.PCAIndVarPredictor.argtypes = [ctypes.POINTER(mx.MATRIX),
                                     ctypes.POINTER(mx.MATRIX)]
 lsci.PCAIndVarPredictor.restype = None
 
-
 def pca_ind_var_predictor(scores_input,
-                          loadings_input,
-                          colaverage,
-                          colscaling,
+                          pca_model,
                           npc,
                           ind_vars_out):
     """
@@ -120,12 +118,11 @@ def pca_ind_var_predictor(scores_input,
                            from PCA model using scores and loadings
     """
     lsci.PCAIndVarPredictor(scores_input,
-                            loadings_input,
-                            colaverage,
-                            colscaling,
+                            pca_model.contents.loadings,
+                            pca_model.contents.colaverage,
+                            pca_model.contents.colscaling,
                             npc,
                             ind_vars_out)
-
 
 lsci.PrintPCA.argtypes = [ctypes.POINTER(PCAMODEL)]
 lsci.PrintPCA.restype = None
@@ -222,50 +219,10 @@ class PCA():
 
         ind_vars = mx.init_matrix()
         pca_ind_var_predictor(scores_,
-                              self.mpca.contents.loadings,
-                              self.mpca.contents.colaverage,
-                              self.mpca.contents.colscaling,
+                              self.mpca,
                               npc_,
                               ind_vars)
         omx = mx.matrix_to_list(ind_vars)
         mx.del_matrix(ind_vars)
         del ind_vars
         return omx
-
-
-if __name__ == '__main__':
-    def mx_to_video(m_input, decimals=5):
-        """
-        print a matrix to video
-        """
-        for row in m_input:
-            print("\t".join([str(round(x, decimals)) for x in row]))
-    import random
-    random.seed(123456)
-    a = [[random.random() for j in range(4)] for i in range(10)]
-    m = mx.Matrix(a)
-    print("Original Matrix")
-    mx_to_video(a)
-    print("Computing PCA ...")
-    model = PCA(1, 2)
-    model.fit(a)
-    model2 = PCA(1, 2)
-    model2.fit(m)
-    print("Showing the PCA scores")
-    scores = model.get_scores()
-    mx_to_video(scores, 3)
-    print("Showing the PCA scores")
-    scores2 = model2.get_scores()
-    mx_to_video(scores2, 3)
-    print("Showing the PCA loadings")
-    loadings = model.get_loadings()
-    mx_to_video(loadings, 3)
-    print(model.get_exp_variance())
-    print("Reconstruct the original PCA matrix using the PCA Model")
-    ra = model.reconstruct_original_matrix()
-    mx_to_video(ra)
-    pred_scores = model.predict(a)
-    for i, row1 in enumerate(pred_scores):
-        row2 = scores[i]
-        print(row1, row2)
-    

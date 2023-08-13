@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=42", "wheel", "cython ~= 0.29.0"]
+build-backend = "setuptools.build_meta"
+[project]
+name = "libscientific"
+authors = [{name = "Giuseppe Marco Randazzo", email= "gmrandazzo@gmail.com"}]
+description = "Libscientific python foreign function interface"
+readme = "README.md"
+requires-python = ">=3.6"
+license = {text = "GPLv3"}
+classifiers = ["Programming Language :: Python :: 3"]
+dependencies = []
+dynamic = ["version"]
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["libscientific*"]
+exclude = []
+namespaces = false
+[tool.setuptools.dynamic]
+version = {attr = "libscientific.__version__"}

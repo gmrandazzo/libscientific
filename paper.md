@@ -22,14 +22,20 @@ bibliography: paper.bib
 Multivariate analysis is a powerful technique that allows researchers to analyze and interpret data with multiple variables.
 In today's data-driven world, multivariate analysis has become essential for the exploration of complex data sets.
 Libscientific is a powerful library written in C that provides a comprehensive set of multivariate analysis tools.
-The library includes several multivariate analysis algorithms, such as principal component analysis (PCA), partial least squares regression (PLS), consensus principal component analysis (CPCA), multiblock principal component analysis, and multiblock partial least squares (UPLS). Libscientific also includes several other tools to analyze data, such as cluster analysis using KMeans Hierarchical clustering and other methods to run linear algebra calculations. The library also provides a python foreign function to be used inside python scripts.
+The library includes several multivariate analysis algorithms, such as principal component analysis (PCA), 
+partial least squares regression (PLS), consensus principal component analysis (CPCA), multiblock principal component analysis,
+and multiblock partial least squares (UPLS). Libscientific also includes several other tools to analyze data, such as
+cluster analysis using KMeans Hierarchical clustering and other methods to run linear algebra calculations.
+The library also provides a python foreign function to be used inside python scripts.
 
 
 
 # Statement of need
 
-The library is designed to be easy to use and can be integrated into any C or C++ project. Additionally, libscientific comes with a foreign function Python bindings, making it accessible within Python scripts and easier to perform data analysis tasks.
-One of the main advantages of libscientific is its performance. Because the library is written in C, it is highly optimized for performance. This means that large data sets can be analyzed quickly and efficiently, making it an ideal choice for applications where speed is critical.
+The library is designed to be easy to use and can be integrated into any C or C++ project.
+Additionally, libscientific comes with a foreign function Python bindings, making it accessible within Python scripts and easier to perform data analysis tasks.
+One of the main advantages of libscientific is its performance. Because the library is written in C, it is highly optimized for performance.
+This means that large data sets can be analyzed quickly and efficiently, making it an ideal choice for applications where speed is critical.
 The library depends only on lapack for SVD and eigenvalues decomposition and can be easily integrated into embedded systems.
 The current library version is 1.4.1, and here is a list of the current library features:
 

@@ -1,9 +1,12 @@
 libscientific
 =============
-
 [![status](https://joss.theoj.org/papers/afc8dfc4cdd496f6f51813dbaa5ad310/status.svg)](https://joss.theoj.org/papers/afc8dfc4cdd496f6f51813dbaa5ad310)
 [![Licence: GPL v3](https://img.shields.io/github/license/gmrandazzo/libscientific)](https://github.com/gmrandazzo/libscientific/blob/master/LICENSE)
+[![Pylint](https://github.com/gmrandazzo/libscientific/actions/workflows/pylint.yml/badge.svg)](https://github.com/gmrandazzo/libscientific/actions/workflows/pylint.yml)
+[![Pytest](https://github.com/gmrandazzo/libscientific/actions/workflows/pytest.yml/badge.svg)](https://github.com/gmrandazzo/libscientific/actions/workflows/pytest.yml)
+[![Coverage](https://sonarqube.gmrandazzo.com/api/project_badges/measure?project=libscientific&metric=coverage&token=sqb_426f9a683b14ac981c8e32a1782672fc11c1a789)](https://sonarqube.gmrandazzo.com/dashboard?id=libscientific)
 [![Maintainability Rating](https://sonarqube.gmrandazzo.com/api/project_badges/measure?project=libscientific&metric=sqale_rating&token=sqb_426f9a683b14ac981c8e32a1782672fc11c1a789)](https://sonarqube.gmrandazzo.com/dashboard?id=libscientific)
+[![Reliability Rating](https://sonarqube.gmrandazzo.com/api/project_badges/measure?project=libscientific&metric=reliability_rating&token=sqb_426f9a683b14ac981c8e32a1782672fc11c1a789)](https://sonarqube.gmrandazzo.com/dashboard?id=libscientific)
 [![Security Rating](https://sonarqube.gmrandazzo.com/api/project_badges/measure?project=libscientific&metric=security_rating&token=sqb_426f9a683b14ac981c8e32a1782672fc11c1a789)](https://sonarqube.gmrandazzo.com/dashboard?id=libscientific)
 [![Bugs](https://sonarqube.gmrandazzo.com/api/project_badges/measure?project=libscientific&metric=bugs&token=sqb_426f9a683b14ac981c8e32a1782672fc11c1a789)](https://sonarqube.gmrandazzo.com/dashboard?id=libscientific)
 [![Security Hotspots](https://sonarqube.gmrandazzo.com/api/project_badges/measure?project=libscientific&metric=security_hotspots&token=sqb_426f9a683b14ac981c8e32a1782672fc11c1a789)](https://sonarqube.gmrandazzo.com/dashboard?id=libscientific)

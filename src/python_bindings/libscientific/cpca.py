@@ -1,19 +1,20 @@
-# cpca libscientific python binding
-#
-# Copyright (C) <2022>  Giuseppe Marco Randazzo
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-# 
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""cpca.py libscientific python binding
+
+Copyright (C) <2023>  Giuseppe Marco Randazzo
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
 
 import ctypes
 import libscientific.vectlist as vlst
@@ -204,50 +205,3 @@ class CPCA():
         tns.del_tensor(t_input_)
         del t_input_
         return p_super_scores, p_block_scores
-
-
-if __name__ == '__main__':
-    def mx_to_video(m_input, decimals=5):
-        """
-        print a matrix to video
-        """
-        for row in m_input:
-            print("\t".join([str(round(x, decimals)) for x in row]))
-
-    def t_to_video(t_input):
-        """
-        print a tensor to video
-        """
-        i = 1
-        for mx_input in t_input:
-            print(f"Block: {i}")
-            mx_to_video(mx_input, 3)
-            i+=1
-
-    import random
-    random.seed(123456)
-    a = [[[random.random() for j in range(4)] for i in range(10)] for k in range(4)]
-    t = tns.Tensor(a)
-    print("Original Tensor")
-    t_to_video(a)
-    print("Computing CPCA ...")
-    cpca = CPCA(1, 2)
-    cpca.fit(a)
-    cpca2 = CPCA(1, 2)
-    cpca2.fit(t)
-    print("Showing the CPCA super scores")
-    sscores = cpca.get_super_scores()
-    mx_to_video(sscores, 3)
-    print("Showing the CPCA super weights")
-    sweights = cpca.get_super_weights()
-    mx_to_video(sweights, 3)
-    print("Showing the CPCA block scores")
-    block_scores = cpca.get_block_scores()
-    t_to_video(block_scores)
-    print("Showing the CPCA block loadings")
-    block_loadings = cpca.get_block_loadings()
-    t_to_video(block_loadings)
-
-    print(cpca.get_total_exp_variance())
-    p_ss, p_bs = cpca.predict(a)
-    mx_to_video(p_ss, 3)

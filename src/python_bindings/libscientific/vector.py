@@ -1,20 +1,20 @@
-# vector libscientific python binding
-#
-# Copyright (C) <2019>  Giuseppe Marco Randazzo
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-# 
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""vector.py libscientific python binding
 
+Copyright (C) <2023>  Giuseppe Marco Randazzo
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
 import ctypes
 from libscientific.loadlibrary import load_libscientific_library
 from libscientific import misc
@@ -623,80 +623,3 @@ class UIVector():
         Debug the iuvector
         """
         print_uivector(self.uivect)
-
-
-if __name__ in "__main__":
-    from random import random
-    a = [random() for j in range(10)]
-    d = DVector(a)
-    d.debug()
-    print("get value")
-    print(d[1])
-    print("set value")
-    d[1] = -2
-    dlst = d.tolist()
-    print("print the list converted from the double vector")
-    for item in dlst:
-        print(item)
-
-    print("Add at the end the value -123")
-    dvector_append(d.dvect, -123)
-    d.debug()
-
-    print("Append in a different way -123 at the end")
-    d.append(-123)
-    d.debug()
-
-    print("remove at index 1, then value -2")
-    dvector_remove_at(d.dvect, 1)
-    d.debug()
-
-    print("Extend d with b")
-    print("b:")
-    b = [random() for j in range(4)]
-    print(b)
-    d.extend(b)
-    print("d extended:")
-    d.debug()
-
-    print("Create a copy of d.d in q")
-    q = dvector_copy(d.dvect)
-    print_dvector(q)
-    del_dvector(q)
-
-    print("Check if the double vector d have the value -123")
-    print(dvector_has_value(d.dvect, -13.0000))
-    del d
-
-    print("Start test on uivector")
-    a = [0,1,2,3,4,5,6]
-    u = UIVector(a)
-    u.debug()
-    print("get value")
-    print(u[1])
-    print("set value 2 in poistion 1")
-    u[1] = 2
-    lst = u.tolist()
-    print("print the list converted from the unsigned int vector")
-    for item in lst:
-        print(item)
-
-    print("Add at the end the value 123")
-    uivector_append(u.uivect, 123)
-    u.debug()
-
-    print("Append 123 at the end in a different way ")
-    u.append(123)
-    u.debug()
-
-    print("remove at index 1")
-    uivector_remove_at(u.uivect, 1)
-    u.debug()
-
-    print("Extend d with b")
-    print("b:")
-    b = [7, 8, 9, 10]
-    print(b)
-    u.extend(b)
-    print("u extended:")
-    u.debug()

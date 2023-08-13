@@ -1,20 +1,20 @@
-# pls libscientific python binding
-#
-# Copyright (C) <2019>  Giuseppe Marco Randazzo
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-# 
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""pls.py libscientific python binding
 
+Copyright (C) <2023>  Giuseppe Marco Randazzo
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
 import ctypes
 import libscientific.matrix as mx
 import libscientific.vector as vect
@@ -64,7 +64,7 @@ class PLSMODEL(ctypes.Structure):
         return self.__class__.__name__
 
     def __str__(self):
-        return self.__class__.__nam
+        return self.__class__.__name__
 
 
 lsci.NewPLSModel.argtypes = [ctypes.POINTER(ctypes.POINTER(PLSMODEL))]
@@ -101,10 +101,16 @@ lsci.PLS.argtypes = [ctypes.POINTER(mx.MATRIX),
 lsci.PLS.restype = None
 
 
-def pls_algorithm(x_input, y_input, nlv, x_scaling, y_scaling, mpls):
+def pls_algorithm(x_input,
+                  y_input,
+                  mpls,
+                  **kwargs):
     """
     PLS: Calculate the PLS model using a matrix x and a matrix y according to the NIPALS algorithm
     """
+    nlv = kwargs["nlv"]
+    x_scaling = kwargs["x_scaling"]
+    y_scaling = kwargs["y_scaling"]
     ssignal = ctypes.c_int(0)
     lsci.PLS(x_input,
              y_input,
@@ -162,8 +168,6 @@ def pls_y_predictor(x_scores, mpls, nlv, predicted_y):
                        ctypes.pointer(ctypes.pointer(predicted_y)))
 
 
-# void PLSYPredictorAllLV(matrix *mx, PLSMODEL *model, matrix **tscores, matrix **y);
-
 lsci.PLSYPredictorAllLV.argtypes = [ctypes.POINTER(mx.MATRIX),
                                     ctypes.POINTER(PLSMODEL),
                                     ctypes.POINTER(mx.MATRIX),
@@ -171,9 +175,13 @@ lsci.PLSYPredictorAllLV.argtypes = [ctypes.POINTER(mx.MATRIX),
 lsci.PLSYPredictorAllLV.restype = None
 
 
-def pls_y_predictor_all_lv(x_input, mpls, predicted_scores, predicted_y):
+def pls_y_predictor_all_lv(x_input,
+                           mpls,
+                           predicted_scores,
+                           predicted_y):
     """
-    PLSYPredictorAllLV: Predict the Y according the original feature matrix and the calculated pls model. 
+    PLSYPredictorAllLV: Predict the Y according the original feature 
+    matrix and the calculated pls model. 
     This function is NOT dependent on PLSScorePredictor.
     """
     lsci.PLSYPredictorAllLV(x_input,
@@ -192,6 +200,81 @@ def print_pls(mpls):
     PrintPLS: Print to video the PLS Model
     """
     lsci.PrintPLSModel(mpls)
+
+def apply_scaling(x_input, x_avg, x_scal):
+    """Apply scaling to a matrix"""
+    x_scaled = []
+    for _, x_row in enumerate(x_input):
+        x_scaled.append([])
+        for j, x_val in enumerate(x_row):
+            x_scaled[-1].append(((x_val - x_avg[j])/x_scal[j]))
+    return x_scaled
+
+def revert_scaling(x_input, x_avg, x_scal):
+    """Revert scaling to a matrix"""
+    x_revert = []
+    for _, x_row in enumerate(x_input):
+        x_rever_row = []
+        if isinstance(x_row, list):
+            for j, x_val in enumerate(x_row):
+                x_rever_row.append(x_val*x_scal[j]+x_avg[j])
+        else:
+            x_rever_row.append(x_row*x_scal[0]+x_avg[0])
+        x_revert.append(x_rever_row)
+    return x_revert
+
+def pls_beta_inference(x_input,
+                       **kwargs):
+    """Predict using PLS beta coefficients and not the whole PLS model
+
+    Parameters
+    ----------
+    x_input (list):
+        input matrix to predict
+    x_averages (list):
+        column averages coming from the training x matrix
+    x_scaling (list)
+        column scaling coming from the training x matrix 
+    y_averages (list):
+        column averages coming from the training y matrix
+    y_scaling (list)
+        column scaling coming from the training y matrix 
+    beta_coeff (list):
+        pls beta coefficients extracted from the trained pls model
+
+    Returns
+    -------
+    predicted_y (list):
+        Predicted values
+
+    Examples
+    --------
+    >>> model = PLS(nlv=2, xscaling=1, yscaling=0)
+    >>> model.fit(x, y)
+    >>> pby = pls_beta_inference(xp,
+                                 x_averages=model.get_x_averages(),
+                                 x_scaling=model.get_x_column_scaling(),
+                                 y_averages=model.get_y_averages(),
+                                 y_scaling=model.get_y_column_scaling(),
+                                 beta_coeff=model.get_beta_coefficients(2))
+    """
+
+    # Predict using beta coefficients
+    x_avg = kwargs["x_averages"]
+    x_scal = kwargs["x_scaling"]
+    y_avg = kwargs["y_averages"]
+    y_scal = kwargs["y_scaling"]
+    b_coeff = kwargs["beta_coeff"]
+    x_ps = mx.new_matrix(apply_scaling(x_input, x_avg, x_scal))
+    pby_ = vect.new_dvector([0 for i in range(len(x_input))])
+    b_coeff_ = vect.new_dvector(b_coeff)
+    mx.matrix_dvector_dot_product(x_ps, b_coeff_, pby_)
+    pby = vect.dvector_tolist(pby_)
+    vect.del_dvector(pby_)
+    vect.del_dvector(b_coeff_)
+    mx.del_matrix(x_ps)
+    return revert_scaling(pby, y_avg, y_scal)
+
 
 
 class PLS():
@@ -245,10 +328,10 @@ class PLS():
 
         pls_algorithm(x_input_,
                       y_input_,
-                      self.nlv,
-                      self.xscaling,
-                      self.yscaling,
-                      self.mpls)
+                      self.mpls,
+                      nlv=self.nlv,
+                      x_scaling = self.xscaling,
+                      y_scaling =self.yscaling)
 
         if xalloc is True:
             mx.del_matrix(x_input_)
@@ -292,12 +375,12 @@ class PLS():
         """
         Get the Beta Coefficients for fast predictions
         """
-        b = vect.init_dvector()
-        pls_beta_coefficients(self.mpls, nlv, b)
-        r = vect.dvector_tolist(b)
-        vect.del_dvector(b)
-        return r
-    
+        beta_coeff = vect.init_dvector()
+        pls_beta_coefficients(self.mpls, nlv, beta_coeff)
+        beta_coeff_lst = vect.dvector_tolist(beta_coeff)
+        vect.del_dvector(beta_coeff)
+        return beta_coeff_lst
+
     def get_exp_variance(self):
         """
         Get the explained variance
@@ -352,84 +435,3 @@ class PLS():
         mx.del_matrix(p_y_)
         del p_y_
         return p_y, p_scores
-
-
-if __name__ == '__main__':
-    def mx_to_video(m_input, decimals=5):
-        for row in m_input:
-            print("\t".join([str(round(x, decimals)) for x in row]))
-    import random
-    random.seed(123456)
-    x = [[random.random() for j in range(4)] for i in range(10)]
-    y = [[random.random() for j in range(1)] for i in range(10)]
-    xp = [[random.random() for j in range(4)] for i in range(10)]
-    
-    print("Original Matrix")
-    print("X")
-    mx_to_video(x)
-    print("Y")
-    mx_to_video(y)
-    print("XP")
-    mx_to_video(xp)
-    print("Computing PLS ...")
-    model = PLS(nlv=2, xscaling=1, yscaling=0)
-    model.fit(x, y)
-    vect.print_dvector(model.mpls.contents.xcolscaling)
-
-    xm = mx.Matrix(x)
-    ym = mx.Matrix(y)
-    model2 = PLS(nlv=2, xscaling=1, yscaling=0)
-    model2.fit(xm, ym)
-
-    print("Showing the PLS T scores")
-    tscores = model.get_tscores()
-    mx_to_video(tscores, 3)
-
-    print("Showing the PLS U scores")
-    uscores = model.get_uscores()
-    mx_to_video(uscores, 3)
-
-    print("Showing the PLS P loadings")
-    ploadings = model.get_ploadings()
-    mx_to_video(ploadings, 3)
-
-    print("Showing the X Variance")
-    print(model.get_exp_variance())
-
-    print("Beta Coefficients")
-    b = model.get_beta_coefficients(2)
-    print(b)
-    
-    print("Predict XP")
-    py, pscores = model.predict(xp)
-    print("Predicted Y for all LVs")
-    mx_to_video(py, 3)
-    print("Predicted Scores")
-    mx_to_video(pscores, 3)
-
-    print("Predict using beta coefficients")
-    xa = model.get_x_averages()
-    xs = model.get_x_column_scaling()
-    ya = model.get_y_averages()
-    ys = model.get_y_column_scaling()
-    print(len(xs))
-    print(xa)
-    vect.print_dvector(model.mpls.contents.xcolscaling)
-    print(len(xp[0]))
-    xps = []
-    for i in range(len(xp)):
-        xps.append(list())
-        for j in range(len(xp[i])):
-            xps[-1].append(((xp[i][j] - xa[j])/xs[j]))
-    xps_ = mx.new_matrix(xps)
-    pby_ = vect.new_dvector([0 for i in range(len(xps))])
-    b_ = vect.new_dvector(b)
-    mx.matrix_dvector_dot_product(xps_, b_, pby_)
-    pby = vect.dvector_tolist(pby_)
-    vect.del_dvector(pby_)
-    vect.del_dvector(b_)
-    mx.del_matrix(xps_)
-    for i in range(len(pby)):
-        pby[i] = pby[i]*ys[0]+ya[0]
-        print(f'{pby[i]} == {py[i][-1]}')
-    

@@ -1,5 +1,5 @@
-project(libscientific LANGUAGES C)
 cmake_minimum_required(VERSION 3.18)
+project(libscientific LANGUAGES C)
 set(AUTHOR "Giuseppe Marco Randazzo")
 set(VERSION_MAJOR 1)
 set(VERSION_MINOR 5)
@@ -62,9 +62,11 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
 
 message(STATUS "Build Type: ${CMAKE_BUILD_TYPE}")
 
-INCLUDE(Dart)
-
-enable_testing()
+if(cmake_build_type_tolower STREQUAL "debug")
+  include(Dart)
+  # cmake_policy(SET CMP0145 OLD)
+  enable_testing()
+endif()
 
 include(GNUInstallDirs)
 include_directories(${PROJECT_BINARY_DIR})

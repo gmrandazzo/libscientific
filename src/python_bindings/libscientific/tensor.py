@@ -1,20 +1,20 @@
-# tensor libscientific python binding
-#
-# Copyright (C) <2019>  Giuseppe Marco Randazzo
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-# 
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""tensor.py libscientific python binding
 
+Copyright (C) <2023>  Giuseppe Marco Randazzo
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
 import ctypes
 from libscientific.loadlibrary import load_libscientific_library
 from libscientific import misc
@@ -272,41 +272,3 @@ class Tensor():
         Debug to video the tensor
         """
         print_tensor(self.tns)
-
-
-
-if __name__ in "__main__":
-    print("Tensort Test")
-    a = [[[1,2,3],[1,2,3]],[[4,5,6],[4,5,6]]]
-    t = new_tensor(a)
-    print_tensor(t)
-    lst = tensor_tolist(t)
-    print(lst)
-    add_tensor_matrix(t, 5, 6)
-    print_tensor(t)
-    b = init_tensor()
-    tensor_copy(t, b)
-    print_tensor(b)
-    del_tensor(t)
-    del_tensor(b)
-
-    t = init_tensor()
-    add_tensor_matrix(t, 3, 2)
-    print_tensor(t)
-    del_tensor(t)
-
-    t = Tensor(a)
-    print(type(t))
-    print(t.order())
-    print(t.nrow(0))
-    print(t.ncol(0))
-    print(t.tolist())
-    a[0][0][0] = -9876
-    t.fromlist(a)
-    t.debug()
-
-    import numpy as np
-    a = np.array(a)
-    a[0][1][1] = 765
-    t.fromnumpy(a)
-    t.debug()

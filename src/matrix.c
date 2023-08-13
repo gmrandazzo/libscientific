@@ -53,7 +53,7 @@ void NewMatrix(matrix **m, size_t row_ , size_t col_)
   }
 }
 
-void ResizeMatrix(matrix *m, size_t row_, size_t col_)
+void  ResizeMatrix(matrix *m, size_t row_, size_t col_)
 {
   size_t i;
   size_t j;
@@ -81,7 +81,8 @@ void ResizeMatrix(matrix *m, size_t row_, size_t col_)
     }
   }
   else{
-    NewMatrix(&m, row_, col_);
+    fprintf(stdout,"Error: Unable to resize matrix! The matrix is not allocated with initMatrix.\n");
+    fflush(stdout);
   }
 }
 
@@ -246,7 +247,6 @@ void setMatrixValue(matrix *m, size_t row, size_t col, double val)
   else{
     fprintf(stdout,"setMatrixValue Error: row to set: %u row max: %u; column to set %u; column max: %u out of range.\n", (unsigned int)row, (unsigned int)m->row-1, (unsigned int)col, (unsigned int)m->col-1);
     fflush(stdout);
-//     abort();
   }
 }
 
@@ -258,7 +258,6 @@ double getMatrixValue(matrix *m, size_t row, size_t col)
   else{
     fprintf(stdout,"getMatrixValue Error: row to get: %u row max: %u; column to get %u; column max: %u out of range.\n", (unsigned int)row, (unsigned int)m->row-1, (unsigned int)col, (unsigned int)m->col-1);
     fflush(stdout);
-//     abort();
     return NAN;
   }
 }

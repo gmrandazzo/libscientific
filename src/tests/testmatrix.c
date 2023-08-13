@@ -29,6 +29,27 @@
 /*
 MISSING TEST! Matrix2IntFactorsMatrix
 */
+
+void Test62()
+{
+  puts("Test 62: setMatrixValue/getMatrixValue");
+  matrix *m;
+  NewMatrix(&m, 2,2);
+  MatrixSet(m, 1);
+  setMatrixValue(m, 0, 0, 0.0/0.0);
+  setMatrixValue(m, 1, 1, 1.0/0.0);
+  setMatrixValue(m, 3,3, 1); // Error
+  getMatrixValue(m, 3,3); // Error
+  if(!FLOAT_EQ(m->data[0][0], MISSING, 1e-1) ||
+     !FLOAT_EQ(m->data[1][1], MISSING, 1e-1)){
+    abort();
+  }
+  else{
+    puts("setMatrixValue: OK");
+  }
+  DelMatrix(&m);
+}
+
 void Test61()
 {
   /*Large matrix*/
@@ -1662,7 +1683,6 @@ void Test8()
 
   puts("Resized Matrix");
   PrintMatrix(m);
-
   DelMatrix(&m);
 }
 
@@ -1980,7 +2000,7 @@ int main(void)
   Test3();
   Test4();
   Test5();
-  Test5_bis();
+  Test5_bis(); // SLOW
   Test6();
   Test7();
   Test8();
@@ -2003,8 +2023,8 @@ int main(void)
   Test25();
   Test26();
   Test26_bis();
-  //Test26_tris();
-  Test27();
+  // Test26_tris();
+  Test27(); // SLOW
   Test28();
   Test29();
   Test30();
@@ -2039,5 +2059,6 @@ int main(void)
   Test59();
   Test60();
   Test61();
+  Test62();
   return 0;
 }
