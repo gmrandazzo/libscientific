@@ -1811,16 +1811,16 @@ along with this program.  If not, see &lt;<a class="reference external" href="ht
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<p>&gt;&gt;&gt;&gt; model = PLS(nlv=2, xscaling=1, yscaling=0)
-&gt;&gt;&gt;&gt; model.fit(x, y)
-&gt;&gt;&gt;&gt; pby = pls_beta_inference(xp,</p>
-<blockquote>
-<div><p>x_averages=model.get_x_averages(),
-x_scaling=model.get_x_column_scaling(),
-y_averages=model.get_y_averages(),
-y_scaling=model.get_y_column_scaling(),
-beta_coeff=model.get_beta_coefficients(2))</p>
-</div></blockquote>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">PLS</span><span class="p">(</span><span class="n">nlv</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">xscaling</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">yscaling</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pby</span> <span class="o">=</span> <span class="n">pls_beta_inference</span><span class="p">(</span><span class="n">xp</span><span class="p">,</span>
+<span class="go">                             x_averages=model.get_x_averages(),</span>
+<span class="go">                             x_scaling=model.get_x_column_scaling(),</span>
+<span class="go">                             y_averages=model.get_y_averages(),</span>
+<span class="go">                             y_scaling=model.get_y_column_scaling(),</span>
+<span class="go">                             beta_coeff=model.get_beta_coefficients(2))</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
