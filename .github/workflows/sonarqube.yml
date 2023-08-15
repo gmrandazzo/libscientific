@@ -33,7 +33,9 @@ jobs:
       - name: Install tox and dependencies
         run: sudo apt-get install tox
       - name: Run tox
-        run: tox -e py
+        run: |
+          cd src/python_bindings
+          tox -e py
       - name: Download and install the SonarScanner
         env:
           SONAR_SCANNER_VERSION: 4.6.2.2472
@@ -44,7 +46,7 @@ jobs:
           echo "$HOME/.sonar/sonar-scanner-${{ env.SONAR_SCANNER_VERSION }}-linux/bin" >> $GITHUB_PATH
       - name: SonarQube Scan
         run: |
-          sonar-scanner --define sonar.cfamily.compile-commands=build/compile_commands.json --define sonar.cfamily.gcov.reportsPath=build/Testing/CoverageInfo/ --define sonar.python.coverage.reportPaths=coverage.xml --define sonar.verbose=true
+          sonar-scanner --define sonar.cfamily.compile-commands=build/compile_commands.json --define sonar.cfamily.gcov.reportsPath=build/Testing/CoverageInfo/ --define sonar.python.coverage.reportPaths=src/python_bindings/coverage.xml --define sonar.verbose=true
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
