@@ -89,11 +89,6 @@ void MatrixCode(matrix *inmx, matrix *outmx);
 
 void BifactorialMatrixExpansion(matrix* inmx, matrix* outmx);
 
-/*
- * This function study the variable effect through the yates algorithm
- */
-void YatesVarEffect(matrix *mx, dvector *veff);
-
 /* Description: calculate the ROC curve giving an y_true and an y_score */
 void ROC(dvector *y_true,
          dvector *y_score,

@@ -102,6 +102,9 @@ double RMSE(dvector *ytrue, dvector *ypred)
   return sqrt(MSE(ytrue, ypred));
 }
 
+/*
+ * bias = 1 - slope(ypred,ytrue)
+ */
 double BIAS(dvector *ytrue, dvector *ypred)
 {
   size_t i, ny;
@@ -133,6 +136,7 @@ double BIAS(dvector *ytrue, dvector *ypred)
   /*sum_yi/sum_xi = m */
   return fabs(1 - sum_yi/sum_xi);
 }
+
 /*k = Y-(X*b);*/
 /*
  * TP = True PositivePredictedValue
@@ -355,11 +359,6 @@ void BifactorialMatrixExpansion(matrix* inmx, matrix* outmx)
       }
     }
   }
-
-}
-
-void YatesVarEffect(matrix* mx, dvector* veff)
-{
 
 }
 
