@@ -36,6 +36,7 @@ jobs:
         run: |
           cd src/python_bindings
           tox -e py
+          sed -i -e 's/<source>libscientific<\/source>/<source>src\/python_bindings\/libscientific<\/source>/' coverage.xml
       - name: Download and install the SonarScanner
         env:
           SONAR_SCANNER_VERSION: 4.6.2.2472
