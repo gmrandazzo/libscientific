@@ -24,6 +24,39 @@
 #include "datasets.h"
 #include "scientificinfo.h"
 
+void test10(){
+  printf("Test PCA 10 - Check PCAIndVarPredictor : ");
+  size_t i, j;
+  matrix *m, *_, *rm;
+  PCAMODEL *model;
+
+  initMatrix(&m);
+  initMatrix(&_);
+  iris(m, _);
+
+  NewPCAModel(&model);
+  PCA(m, 1, 4, model, NULL);
+  
+  initMatrix(&rm);
+  PCAIndVarPredictor(model->scores, model->loadings, model->colaverage, model->colscaling, 4, rm);
+  
+  for(i = 0; i < m->row; i++){
+    for(j = 0; j < m->col; j++){
+      if(FLOAT_EQ(m->data[i][j], rm->data[i][j], 1E-6)){
+        continue;
+      }
+      else{
+        abort();
+      }
+    }
+  }
+  printf("OK.\n");
+  DelPCAModel(&model);
+  DelMatrix(&rm);
+  DelMatrix(&m);
+  DelMatrix(&_);
+}
+
 void test9()
 {
   printf("Test PCA 9 - Check algorithm consistency: ");
@@ -312,5 +345,6 @@ int main(void)
   test7();
   test8();
   test9();
+  test10();
   return 0;
 }
