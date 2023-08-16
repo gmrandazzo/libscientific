@@ -21,6 +21,164 @@
 #include <time.h>
 #include "tensor.h"
 #include "vector.h"
+#include "numeric.h"
+
+
+void test9()
+{
+  puts("Test 9 - Test TensorColAverage, TensorColSDEV");
+  size_t i, j;
+  tensor *t1;
+  matrix *m; 
+  matrix *r;
+  NewMatrix(&m, 3, 3);
+  m->data[0][0] = 1; m->data[0][1] = 1; m->data[0][2] = 1;
+  m->data[1][0] = 2; m->data[1][1] = 2; m->data[1][2] = 2;
+  m->data[2][0] = 3; m->data[2][1] = 3; m->data[2][2] = 3;
+
+  initTensor(&t1);
+  for(i = 0; i < 2; i++){
+    TensorAppendMatrix(t1, m);
+  }
+
+  initMatrix(&r);
+  TensorColAverage(t1, r);
+  for(i = 0; i < r->row; i++){
+    for(j = 0; j < r->col; j++){
+      if(FLOAT_EQ(r->data[i][j], 2., 1e-3)){
+        continue;;
+      }
+      else{
+        puts("TensorColAverage ERROR!");
+        abort();
+      }  
+    }
+  }
+  DelMatrix(&r);
+  initMatrix(&r);
+  TensorColSDEV(t1, r);
+  for(i = 0; i < r->row; i++){
+    for(j = 0; j < r->col; j++){
+      if(FLOAT_EQ(r->data[i][j], 1., 1e-3)){
+        continue;;
+      }
+      else{
+        puts("TensorColAverage ERROR!");
+        abort();
+      }  
+    }
+  }
+  DelMatrix(&r);
+  
+  puts("Test 9: OK.");
+  DelMatrix(&m);
+  DelTensor(&t1);
+}
+void test8()
+{
+  puts("Test 8 - Test MeanCenteredTensor");
+  size_t i, j, k;
+  tensor *t1, *tc;
+  matrix *m; 
+  NewMatrix(&m, 3, 3);
+  m->data[0][0] = 1; m->data[0][1] = 1; m->data[0][2] = 1;
+  m->data[1][0] = 2; m->data[1][1] = 2; m->data[1][2] = 2;
+  m->data[2][0] = 3; m->data[2][1] = 3; m->data[2][2] = 3;
+
+  initTensor(&t1);
+  for(i = 0; i < 2; i++){
+    TensorAppendMatrix(t1, m);
+  }
+  NewTensor(&tc, 2);
+  NewTensorMatrix(tc, 0, 3, 3);
+  NewTensorMatrix(tc, 1, 3, 3);
+  MeanCenteredTensor(t1, tc);
+  for(k = 0; k < tc->order; k++){
+    for(i = 0; i < tc->m[k]->row; i++){
+      for(j = 0; j < tc->m[k]->col; j++){
+        if(FLOAT_EQ(tc->m[k]->data[i][j], t1->m[k]->data[i][j]-2, 1e-3)){
+          continue;;
+        }
+        else{
+          puts("MeanCenteredTensor ERROR!");
+          abort();
+        }  
+      }
+    }
+  }
+  puts("Test 8: OK.");
+  DelMatrix(&m);
+  DelTensor(&tc);
+  DelTensor(&t1);
+}
+
+void test7()
+{
+  puts("Test 7 - Testing varius tensor get/set methods");
+  tensor *t1, *t2;
+  dvector *row;
+  dvector *col;
+  size_t i, j, k;
+  NewTensor(&t1, 2);
+  NewTensorMatrix(t1, 0, 1, 3);  /* i = 1 j = 3 */
+  NewTensorMatrix(t1, 1, 1, 3);
+  TensorSet(t1, 1.23456789);
+
+  NewDVector(&row, 3);
+  NewDVector(&col, 2);
+  DVectorSet(row, 1.23456789);
+  DVectorSet(col, 1.23456789);
+  /* We add a new row to each matrix in the tensor t1 so now the size will be 2x3*/
+  for(k = 0; k < t1->order; k++){
+    TensorAppendRow(t1, k, row);
+  }
+
+  /* We add a new column to each matrix in the tensor t1 so now the size will be 2x4*/
+  for(k = 0; k < t1->order; k++){
+    TensorAppendColumn(t1, k, col);
+  }
+
+  DelDVector(&col);
+  DelDVector(&row);
+
+  /*Make a copy of tensor  t1 to t2*/
+  initTensor(&t2);
+  TensorCopy(t1, &t2);
+
+  /*Check t1, t2, tensor set on t1 and the copy ot t1 over t2*/
+  for(k = 0; k < t1->order; k++){
+    for(i = 0; i < t1->m[k]->row; i++){
+      for(j = 0; j < t1->m[k]->col; j++){
+        if(FLOAT_EQ(getTensorValue(t1, k, i, j), 1.23456789, 1e-8) &&
+          FLOAT_EQ(getTensorValue(t2, k, i, j), 1.23456789, 1e-8)){
+          continue;;
+        }
+        else{
+          puts("TensorSet ERROR!");
+          abort();
+        }  
+      }
+    }
+  }
+
+  /*Check get error functions */
+  if(!_isnan_(getTensorValue(t1, 2, 0, 0))){
+    puts("getTensorValue ERROR!");
+    abort();
+  }
+
+  if(!_isnan_(getTensorValue(t1, 0, 3, 0))){
+    puts("getTensorValue ERROR!");
+    abort();
+  }
+  if(!_isnan_(getTensorValue(t1, 0, 0, 5))){
+    puts("getTensorValue ERROR!");
+    abort();
+  }
+  puts("Test 7: OK.");
+  DelTensor(&t2);
+  DelTensor(&t1);
+}
 
 void test6()
 {
@@ -300,5 +458,8 @@ int main(void)
   test4();
   test5();
   test6();
+  test7();
+  test8();
+  test9();
   return 0;
 }

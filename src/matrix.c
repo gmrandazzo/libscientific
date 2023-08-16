@@ -405,7 +405,7 @@ void MatrixAppendCol(matrix* m, dvector *col)
   }
   else{
     if(rowsize > m->row){
-      for(i = 0; i < rowsize; i++ ){
+      for(i = 0; i < rowsize; i++){
         m->data[i][lastcol] = col->data[i];
       }
 

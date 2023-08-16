@@ -69,15 +69,9 @@ void NewTensorMatrix(tensor *t, size_t order, size_t row, size_t col)
 void AddTensorMatrix(tensor *t, size_t row, size_t col)
 {
    if(t->order > 0){
-    /*if((*t)->m[(*t)->order-1]->row != row){
-      fprintf(stderr, "Error while appending matrix to tensor! Object size differ: matrix: %u;  tensor: %u", (unsigned int)row, (unsigned int)(*t)->m[(*t)->order-1]->row);
-      abort();
-    }
-    else{*/
-      t->order += 1;
-      t->m = xrealloc(t->m, sizeof(matrix*)*t->order);
-      NewMatrix(&t->m[t->order-1], row, col);
-/*     }*/
+    t->order += 1;
+    t->m = xrealloc(t->m, sizeof(matrix*)*t->order);
+    NewMatrix(&t->m[t->order-1], row, col);
   }
   else{
     t->order = 1;
@@ -190,11 +184,6 @@ void TensorAppendMatrixAt(tensor *tdst, size_t order, matrix *msrc)
     fprintf(stderr, "Module not developed. Work in progress...\n");
     fflush(stderr);
     abort();
-    /*tensor *tmp;
-    initTensor(&tmp);
-
-
-    DelTensor(&tmp);*/
   }
   else{
     TensorAppendMatrix(tdst, msrc);
@@ -210,16 +199,6 @@ void TensorAppendColumn(tensor *t, size_t order, dvector* column)
 {
   if(order < t->order){
     MatrixAppendCol(t->m[order], column);
-    /*
-    if(column->size == (*t)->m[n]->row){
-      MatrixAppendCol(&(*t)->m[n], column);
-    }
-    else{
-      fprintf(stderr, "Error! The objects number differ %u != %u\n", (unsigned int)column->size, (unsigned int)(*t)->m[n]->row);
-      fflush(stderr);
-      abort();
-    }
-    */
   }
   else{
     if(order > t->order){
@@ -241,11 +220,11 @@ void TensorAppendColumn(tensor *t, size_t order, dvector* column)
 void TensorAppendRow(tensor *t, size_t order, dvector* row)
 {
   if(order < t->order){
-    if(row->size != t->m[order]->col){
+    if(row->size != t->m[order]->row){
       MatrixAppendRow(t->m[order], row);
     }
     else{
-      fprintf(stderr, "Error! The column number differ %zu != %zu\n", row->size, t->m[order]->col);
+      fprintf(stderr, "Error! The column number differ %zu != %zu\n", row->size, t->m[order]->row);
       fflush(stderr);
       abort();
     }
@@ -310,7 +289,6 @@ void TensorCopy(tensor* asrc, tensor** adst)
 
 }
 
-
 /*
  * t is the input data tensor
  * tc is the output tensor meancentered. This must be created with NewTensor()
@@ -355,7 +333,6 @@ void TensorTranspose(tensor* t1, tensor* t2)
   }
 }
 
-
 /*
  * k = order
  * i = row
@@ -384,7 +361,6 @@ void TransposedTensorDVectorProduct(tensor *t, dvector *v, matrix *p)
     }
   }
 }
-
 
 /* the output "m" is size of:
  *   column = t->order;
@@ -451,7 +427,6 @@ void TensorMatrixDotProduct(tensor *t, matrix *m, dvector *v)
     }
   }
 }
-
 
 /*
  * i = row
