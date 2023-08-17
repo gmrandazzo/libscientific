@@ -1059,19 +1059,77 @@ along with this program.  If not, see &lt;<a class="reference external" href="ht
 <dl class="py function">
 <dt class="sig sig-object py" id="libscientific.clustering.k_means_plus_plus">
 <span class="sig-prename descclassname"><span class="pre">libscientific.clustering.</span></span><span class="sig-name descname"><span class="pre">k_means_plus_plus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_clusters</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.clustering.k_means_plus_plus" title="Permalink to this definition">¶</a></dt>
-<dd><p>K-Means++ clustering using david arthur initialization</p>
+<dd><p>K-Means++ clustering (kmeans + David Arthur initialization)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_input</strong> (<em>List</em><em>[</em><em>List</em><em>]</em>) – Input matrix</p></li>
+<li><p><strong>nobjects</strong> (<em>int</em>) – Number of object select</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>A list of selected objects/row id.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">12345</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">clusters</span> <span class="o">=</span> <span class="n">libscientific</span><span class="o">.</span><span class="n">clustering</span><span class="o">.</span><span class="n">k_means_plus_plus</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">clusters</span> <span class="o">=</span> <span class="n">libscientific</span><span class="o">.</span><span class="n">clustering</span><span class="o">.</span><span class="n">k_means_plus_plus</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">clusters</span>
+<span class="go">[1, 2, 0, 0, 0, 0, 2, 2, 0, 0, 0, 1, ..., 0, 1, 1, 2, 2]</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="libscientific.clustering.max_dissimilarity_selection">
 <span class="sig-prename descclassname"><span class="pre">libscientific.clustering.</span></span><span class="sig-name descname"><span class="pre">max_dissimilarity_selection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nobjects</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.clustering.max_dissimilarity_selection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Max dissimilarity compound selection algorithm</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_input</strong> (<em>List</em><em>[</em><em>List</em><em>]</em>) – Input matrix</p></li>
+<li><p><strong>nobjects</strong> (<em>int</em>) – Number of object select</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>A list of selected objects/row id.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">12345</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mdis_ids</span> <span class="o">=</span> <span class="n">libscientific</span><span class="o">.</span><span class="n">clustering</span><span class="o">.</span><span class="n">max_dissimilarity_selection</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mdis_ids</span>
+<span class="go">[57, 89, 88, 6, 23, 94, 56, 61, 39, 24]</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="libscientific.clustering.most_descriptive_compound">
 <span class="sig-prename descclassname"><span class="pre">libscientific.clustering.</span></span><span class="sig-name descname"><span class="pre">most_descriptive_compound</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nobjects</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.clustering.most_descriptive_compound" title="Permalink to this definition">¶</a></dt>
-<dd><p>Most Descriptive Compound algorithm</p>
+<dd><p>Most Descriptive Compound selection algorithm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_input</strong> (<em>List</em><em>[</em><em>List</em><em>]</em>) – Input matrix</p></li>
+<li><p><strong>nobjects</strong> (<em>int</em>) – Number of object select</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>A list of selected objects/row id.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">12345</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mdc_ids</span> <span class="o">=</span> <span class="n">libscientific</span><span class="o">.</span><span class="n">clustering</span><span class="o">.</span><span class="n">most_descriptive_compound</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mdc_ids</span>
+<span class="go">[74, 97, 95, 7, 35, 25, 50, 10, 32, 59]</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </section>
@@ -1093,53 +1151,130 @@ along with this program.  If not, see &lt;<a class="reference external" href="ht
 <dt class="sig sig-object py" id="libscientific.cpca.CPCA">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.cpca.</span></span><span class="sig-name descname"><span class="pre">CPCA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scaling</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npc</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.cpca.CPCA" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>CPCA model class</p>
+<p>Consesus Principal Component Analysis</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">12345</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">clusters</span> <span class="o">=</span> <span class="n">libscientific</span><span class="o">.</span><span class="n">clustering</span><span class="o">.</span><span class="n">k_means_plus_plus</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">clusters</span> <span class="o">=</span> <span class="n">libscientific</span><span class="o">.</span><span class="n">clustering</span><span class="o">.</span><span class="n">k_means_plus_plus</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">clusters</span>
+<span class="go">[1, 2, 0, 0, 0, 0, 2, 2, 0, 0, 0, 1, ..., 0, 1, 1, 2, 2]</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="libscientific.cpca.CPCA.fit">
 <span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t_input</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.cpca.CPCA.fit" title="Permalink to this definition">¶</a></dt>
-<dd><p>fit a cpca model using an input tensor</p>
+<dd><p>Fit the consensus pca</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>t_input</strong> (<em>tensor</em>) – libscientific tensor</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>The fitted CPCA model class</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="libscientific.cpca.CPCA.get_block_expvar">
 <span class="sig-name descname"><span class="pre">get_block_expvar</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.cpca.CPCA.get_block_expvar" title="Permalink to this definition">¶</a></dt>
-<dd><p>get the cpca block variance explained</p>
+<dd><p>Get the CPCA block explained variance</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>block_exp_var</strong> – CPCA block explained variance</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[List[List]]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="libscientific.cpca.CPCA.get_block_loadings">
 <span class="sig-name descname"><span class="pre">get_block_loadings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.cpca.CPCA.get_block_loadings" title="Permalink to this definition">¶</a></dt>
-<dd><p>get the cpca block loadings</p>
+<dd><p>Get the CPCA block loadings</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>block_loadings</strong> – CPCA block loadings</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[List[List]]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="libscientific.cpca.CPCA.get_block_scores">
 <span class="sig-name descname"><span class="pre">get_block_scores</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.cpca.CPCA.get_block_scores" title="Permalink to this definition">¶</a></dt>
-<dd><p>get the cpca block scores</p>
+<dd><p>Get the CPCA block scores</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>block_scores</strong> – CPCA block scores</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[List[List]]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="libscientific.cpca.CPCA.get_super_scores">
 <span class="sig-name descname"><span class="pre">get_super_scores</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.cpca.CPCA.get_super_scores" title="Permalink to this definition">¶</a></dt>
-<dd><p>get the cpca super scores</p>
+<dd><p>Get the CPCA super scores</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>super_scores</strong> – CPCA super scores</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[List]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="libscientific.cpca.CPCA.get_super_weights">
 <span class="sig-name descname"><span class="pre">get_super_weights</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.cpca.CPCA.get_super_weights" title="Permalink to this definition">¶</a></dt>
-<dd><p>get the cpca super weights</p>
+<dd><p>Get the CPCA super weights</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>super_weights</strong> – CPCA super weights</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[List]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="libscientific.cpca.CPCA.get_total_exp_variance">
 <span class="sig-name descname"><span class="pre">get_total_exp_variance</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.cpca.CPCA.get_total_exp_variance" title="Permalink to this definition">¶</a></dt>
-<dd><p>get the cpca total variance explained</p>
+<dd><p>Get the CPCA total explained variance</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>exp_var</strong> – CPCA total explained variance</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[List[List]]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="libscientific.cpca.CPCA.predict">
 <span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t_input</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.cpca.CPCA.predict" title="Permalink to this definition">¶</a></dt>
-<dd><p>get the cpca block variance explained</p>
+<dd><p>Predict super scores and block scores using the CPCA model</p>
+<blockquote>
+<div><p>Parameters</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><strong>p_super_scores</strong> (<em>List[List]</em>) – CPCA predicted super scores</p></li>
+<li><p><strong>p_block_scores</strong> (<em>List[List[List]]</em>) – CPCA predicted block scores</p></li>
+</ul>
+</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
