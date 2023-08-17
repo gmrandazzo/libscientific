@@ -33,8 +33,26 @@ lsci.MDC.argtypes = [ctypes.POINTER(mx.MATRIX),
 lsci.MDC.restype = None
 
 def most_descriptive_compound(x_input, nobjects):
-    """
-    Most Descriptive Compound algorithm
+    """Most Descriptive Compound selection algorithm.
+
+    Parameters
+    ----------
+    x_input: List[List]
+        Input matrix
+    nobjects: int
+        Number of object select
+
+    Returns
+    -------
+    A list of selected objects/row id.
+
+    Examples
+    --------
+    >>> np.random.seed(12345)
+    >>> x = np.random.rand(100,2)
+    >>> mdc_ids = libscientific.clustering.most_descriptive_compound(x, 10)
+    >>> mdc_ids
+    [74, 97, 95, 7, 35, 25, 50, 10, 32, 59]
     """
     if "Matrix" not in str(type(x_input)):
         x_input_ = mx.new_matrix(x_input)
@@ -65,8 +83,26 @@ lsci.MaxDis_Fast.restype = None
 
 
 def max_dissimilarity_selection(x_input, nobjects):
-    """
-    Max dissimilarity compound selection algorithm
+    """Max dissimilarity compound selection algorithm
+
+    Parameters
+    ----------
+    x_input: List[List]
+        Input matrix
+    nobjects: int
+        Number of object select
+
+    Returns
+    -------
+    A list of selected objects/row id.
+
+    Examples
+    --------
+    >>> np.random.seed(12345)
+    >>> x = np.random.rand(100,2)
+    >>> mdis_ids = libscientific.clustering.max_dissimilarity_selection(x, 10)
+    >>> mdis_ids
+    [57, 89, 88, 6, 23, 94, 56, 61, 39, 24]
     """
     if "Matrix" not in str(type(x_input)):
         x_input_ = mx.new_matrix(x_input)
@@ -98,8 +134,27 @@ lsci.KMeans.restype = None
 
 
 def k_means_plus_plus(x_input, n_clusters):
-    """
-    K-Means++ clustering using david arthur initialization
+    """K-Means++ clustering (kmeans + David Arthur initialization)
+
+    Parameters
+    ----------
+    x_input: List[List]
+        Input matrix
+    nobjects: int
+        Number of object select
+
+    Returns
+    -------
+    A list of selected objects/row id.
+
+    Examples
+    --------
+    >>> np.random.seed(12345)
+    >>> x = np.random.rand(100,2)
+    >>> clusters = libscientific.clustering.k_means_plus_plus(x, 3)
+    >>> clusters = libscientific.clustering.k_means_plus_plus(x, 3)
+    >>> clusters
+    [1, 2, 0, 0, 0, 0, 2, 2, 0, 0, 0, 1, ..., 0, 1, 1, 2, 2]
     """
     if "Matrix" not in str(type(x_input)):
         x_input_ = mx.new_matrix(x_input)

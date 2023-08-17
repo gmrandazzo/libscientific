@@ -87,7 +87,7 @@ Matrix is a user-defined data type that contains:
 
 The data array is selected explicitly as a double type to work with an extensive range of numbers.
 
-.. literalinclude:: ../../src/matrix.h
+.. literalinclude:: ../src/matrix.h
    :language: c
    :lines: 30-33
 
@@ -178,7 +178,7 @@ Tensor is a user-defined data type that contains:
 
 The data array is selected explicitly as a double type to work with an extensive range of numbers.
 
-.. literalinclude:: ../../src/tensor.h
+.. literalinclude:: ../src/tensor.h
    :language: c
    :lines: 33-36
 

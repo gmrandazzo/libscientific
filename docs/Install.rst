@@ -50,7 +50,8 @@ please export the LIBSCIENTIFIC_LIB_DIR variable pointing to the libscientific.s
 For example, if the library is installed in /home/<user>/mylocalenv, then you need to export the 
 following variable
 
-.. coide-block::
+.. code-block::
+
     export LISCIENTIFIC_LIB_DIR=/home/<user>/mylocalenv
 
 

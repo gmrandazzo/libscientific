@@ -120,9 +120,36 @@ def print_cpca(mpca):
 
 class CPCA():
     """
-    CPCA model class
+    Consesus Principal Component Analysis
+
+    Examples
+    --------
+    >>> np.random.seed(12345)
+    >>> x = np.random.rand(100,2)
+    >>> clusters = libscientific.clustering.k_means_plus_plus(x, 3)
+    >>> clusters = libscientific.clustering.k_means_plus_plus(x, 3)
+    >>> clusters
+    [1, 2, 0, 0, 0, 0, 2, 2, 0, 0, 0, 1, ..., 0, 1, 1, 2, 2]
+
     """
     def __init__(self, scaling, npc):
+        """Init method
+
+        Parameters
+        ----------
+        scaling: int
+            scaling type to apply. Available scalings:
+                0: No scaling. Only mean centering
+                1: Mean centering and STDEV scaling
+                2: Mean centering and Root-Mean-Square column scaling
+                3: Mean centering and Pareto scaling
+                4: Mean centering and min-max range scaling
+                5: Mean centering and level scaling
+
+        npc: int
+            Number of principal components
+
+        """
         self.model = new_cpca_model()
         self.scaling = scaling
         self.npc = npc
@@ -134,8 +161,16 @@ class CPCA():
         self.model = None
 
     def fit(self, t_input):
-        """
-        fit a cpca model using an input tensor
+        """Fit the consensus pca
+
+        Parameters
+        ----------
+        t_input: tensor
+            libscientific tensor
+
+        Returns
+        -------
+        The fitted CPCA model class
         """
         if "Tensor" in str(type(t_input)):
             cpca_algorithm(t_input.tns, self.scaling, self.npc, self.model)
@@ -146,44 +181,80 @@ class CPCA():
             del t_input_
 
     def get_super_scores(self):
-        """
-        get the cpca super scores
+        """Get the CPCA super scores
+
+        Returns
+        -------
+        super_scores: List[List]
+            CPCA super scores
         """
         return mx.matrix_to_list(self.model.contents.super_scores)
 
     def get_super_weights(self):
-        """
-        get the cpca super weights
+        """Get the CPCA super weights
+
+        Returns
+        -------
+        super_weights: List[List]
+            CPCA super weights
         """
         return mx.matrix_to_list(self.model.contents.super_weights)
 
     def get_block_scores(self):
-        """
-        get the cpca block scores
+        """Get the CPCA block scores
+
+        Returns
+        -------
+        block_scores: List[List[List]]
+            CPCA block scores
         """
         return tns.tensor_tolist(self.model.contents.block_scores)
 
     def get_block_loadings(self):
-        """
-        get the cpca block loadings
+        """Get the CPCA block loadings
+
+        Returns
+        -------
+        block_loadings: List[List[List]]
+            CPCA block loadings
         """
         return tns.tensor_tolist(self.model.contents.block_loadings)
 
     def get_block_expvar(self):
-        """
-        get the cpca block variance explained
+        """Get the CPCA block explained variance
+
+        Returns
+        -------
+        block_exp_var: List[List[List]]
+            CPCA block explained variance
         """
         return vlst.dvector_list_tolist(self.model.contents.block_expvar)
 
     def get_total_exp_variance(self):
-        """
-        get the cpca total variance explained
+        """Get the CPCA total explained variance
+
+        Returns
+        -------
+        exp_var: List[List[List]]
+            CPCA total explained variance
         """
         return vect.dvector_tolist(self.model.contents.total_expvar)
 
     def predict(self, t_input):
-        """
-        get the cpca block variance explained
+        """Predict super scores and block scores using the CPCA model
+
+         Parameters
+        ----------
+        t_input: tensor
+            libscientific tensor
+    
+        Returns
+        -------
+        p_super_scores: List[List]
+            CPCA predicted super scores
+
+        p_block_scores: List[List[List]]
+            CPCA predicted block scores
         """
         t_input_ = tns.new_tensor(t_input)
         p_super_scores_ = mx.init_matrix()
