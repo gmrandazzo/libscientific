@@ -3,7 +3,7 @@ project(libscientific LANGUAGES C)
 set(AUTHOR "Giuseppe Marco Randazzo")
 set(VERSION_MAJOR 1)
 set(VERSION_MINOR 5)
-set(VERSION_PATCH 1)
+set(VERSION_PATCH 2)
 configure_file(src/scientificconfig.h.in scientificconfig.h)
 
 if(NOT CMAKE_BUILD_TYPE)
