@@ -152,14 +152,19 @@ The required dependencies to use libscientific are:
 Install
 =======
 
-Compile from source
+Manual Installation
 -------------------
 
 ```
-  cmake -DCMAKE_INSTALL_PREFIX=/usr/local/ ..
+  mkdir build
+  cd build
+  cmake -DCMAKE_INSTALL_PREFIX=/usr/ ..
   make -j5
-  mate test
+  make test # optional
   sudo make install
+  cd ../src/python_bindings/
+  sudo pip install -e .
+  pytest # optional
 ```
 
 
@@ -212,7 +217,9 @@ How to write a unit test?
 
 Please first read the cmake documentation about [testing with cmake and ctest](https://cmake.org/cmake/help/book/mastering-cmake/chapter/Testing%20With%20CMake%20and%20CTest.html)
 
-Then write a test for the algorithm you propose and save it in "src/tests" directory.
+Then write a test for the proposed algorithm and save it in "src/tests" directory.
+Please write a test in src/python_bindings/tests for the python binding. The test should work using pytest.
+
 Run and submit the resulting output in the pull request specifying:
 - What the algorithm does
 - What the unit tests represent and what they prove.

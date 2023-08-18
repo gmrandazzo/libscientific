@@ -34,10 +34,10 @@ The library also provides a python foreign function to be used inside python scr
 
 The library is designed to be easy to use and can be integrated into any C or C++ project.
 Additionally, libscientific comes with a foreign function Python bindings, making it accessible within Python scripts and easier to perform data analysis tasks.
-One of the main advantages of libscientific is its performance. Because the library is written in C, it is highly optimized for performance.
+One of the main advantages of libscientific is its performance and scalability. 
 This means that large data sets can be analyzed quickly and efficiently, making it an ideal choice for applications where speed is critical.
 The library depends only on lapack for SVD and eigenvalues decomposition and can be easily integrated into embedded systems.
-The current library version is 1.4.1, and here is a list of the current library features:
+The current library version is 1.5.2, and here is a list of the current library features:
 
 * Principal Component Analysis (PCA)
 * Consensus Principal Component Analysis (CPCA)
@@ -62,8 +62,7 @@ The current library version is 1.4.1, and here is a list of the current library 
 * Nelder-Mead Simplex Optimization
 * Cross validation methods: Bootstrap k-fold, Leave-One-Out, Y-Scrambling
 
-Libscientific was designed to analyze multivariate chemical data in the general cheminformatic and -omic fields.
-It has already been used indirectly by researchers in scientific publications [@Randazzo16;@Randazzo171;@Randazzo172;@Randazzo20;@Kwon21;@Kwon22], and it is also used in student courses on general multivariate analysis.
+Libscientific was designed to analyze any kind of multivariate tabular data and to be applied in any scientific field.
 
 
 # Multivariate analyisis algorithms specs
@@ -86,24 +85,37 @@ Moreover, multi-thread cross-validation methodologies such as "Bootstrap k-fold"
 
 Since we are dealing with numerical analysis, unit tests are crucial to ensure correctness, stability, and reproducibility.
 Libcientific tests range from simple matrix-vector multiplication to the correctness of complex algorithms using ad-hoc torture toy examples.
-Every algorithm is then tested to answer the following questions:
-
-1. Is the algorithm able to work in fit and prediction correctly?
-2. Is the algorithm able to work with large data?
-3. Is the algorithm showing any memory leak?
 
 # Speed and Memory Comparison
-<WORK HERE>
-for PCA, PLS, CPCA, UPCA, UPLS, MaxDis, MostDesc, LDA
-Calculation time v.s n istances  v.s. n column v.s. memory in use
+
+Several simulations of every algorithm in libscientific with data of different sizes (input size) against CPU speed were performed to address the algorithm's performance.
+Looking at the plots for PCA, CPCA, and PLS, we observe a linear trend, which indicates that the algorithm's time complexity is linear, denoted as O(n).
+Instead, MLR shows an O(n³) behavior as expected from the OLS algorithm, which uses a matrix direct inverse approach.
+
+This means that as the input size (often termed "problem size") increases by a constant factor, the execution time also increases proportionally (linear algorithms). 
+Linear algorithms have notable characteristics:
+
+* Linear Time Complexity (O(n)): Execution time grows linearly with input size.
+* Constant Work per Input Element: In linear algorithms, each input element is processed continuously. 
+* Stable Performance Impact: Doubling input size roughly doubles execution time, facilitating performance estimation.
+* Optimal Scaling: Linear-time solutions efficiently handle larger inputs.
+  
+|   |   |
+|---|---|
+| PCA | CPCA |
+| ![PCA](performance/pca_input_vs_cputime.png){ width=40% } | ![CPCA](performance/cpca_input_vs_cputime.png){ width=40% } |
+| PLS | MLR |
+| ![PLS](performance/pls_input_vs_cputime.png){ width=40% } | ![MLR](performance/mlr_input_vs_cputime.png){ width=40% } |
 
 # Usage
 
-For the usage in C or either Python we invite reading the official documentation located at the following link: [https://libscientific.readthedocs.io/en/latest/](https://libscientific.readthedocs.io/en/latest)
+For the usage in C or either Python we invite reading the official documentation located at the following link: [ http://gmrandazzo.github.io/libscientific/]( http://gmrandazzo.github.io/libscientific/)
 
 # Conclusions
 
-Libscientific is a powerful library that provides a comprehensive set of multivariate analysis tools for researchers and analysts. Whether a scientists work on research or data analytics, libscientific can help gain deeper insights into the data. Its C-based implementation and Python bindings offer high performance and ease of use, making it an ideal choice for data-driven applications.
+Libscientific offers a potent suite of multivariate analysis tools that greatly enhance the ability of researchers and analysts to extract valuable insights from diverse tabular data. With its robust C-based implementation and seamless Python bindings, the library balances high performance and user-friendliness, making it an optimal solution for swiftly executing data-driven applications.
+
+Incorporating Libscientific into analytical workflows may empower professionals to leverage various multivariate techniques to crack complex relationships and patterns within datasets. By offering tools for data reduction, predictive modeling, quality control, and more, as already demonstrated in previous works in -omics science and predictive modeling[@Randazzo16;@Randazzo171;@Randazzo172;@Randazzo20;@Kwon21;@Kwon22], the library can be an indispensable asset for tackling intricate challenges across various disciplines.
 
 
 # Acknowledgements
