@@ -27,22 +27,47 @@ lsci.GetScientificVersion.restype = ctypes.c_char_p
 
 class Scientific():
     """
-    Libscientific info
+    Libscientific Information
+
+    This class provides methods to retrieve and print information
+    about the libscientific library.
+
+    Attributes:
+        __version__ (str): The version of the libscientific library.
+
+    Methods:
+        print_version(): Prints the libscientific version to the console.
+        version(): Returns the libscientific version as a string.
+
+    Examples:
+    >>> sci = Scientific()
+    >>> sci.print_version()
+    1.0.0
+    >>> ver = sci.version()
+    >>> print(ver)
+    1.0.0
     """
     def __init__(self):
+        """
+        Initialize the Scientific class and retrieve the libscientific version.
+        """
         self.__version__ = str(lsci.GetScientificVersion().decode('UTF-8'))
 
     def print_version(self):
         """
-        Print to video libscientific version
+        Print the libscientific version to the console.
         """
         print(self.__version__)
 
     def version(self):
         """
-        Get libscientific version as string
+        Get the libscientific version as a string.
+
+        Returns:
+            str: The libscientific version.
         """
         return self.__version__
+
 
 if __name__ == '__main__':
     libscientific = Scientific()

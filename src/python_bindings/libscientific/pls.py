@@ -225,27 +225,25 @@ def revert_scaling(x_input, x_avg, x_scal):
 
 def pls_beta_inference(x_input,
                        **kwargs):
-    """Predict using PLS beta coefficients and not the whole PLS model
+    """
+    Predict using PLS beta coefficients and not the whole PLS model.
 
     Parameters
     ----------
-    x_input (list):
-        input matrix to predict
-    x_averages (list):
-        column averages coming from the training x matrix
-    x_scaling (list)
-        column scaling coming from the training x matrix 
-    y_averages (list):
-        column averages coming from the training y matrix
-    y_scaling (list)
-        column scaling coming from the training y matrix 
-    beta_coeff (list):
-        pls beta coefficients extracted from the trained pls model
+    x_input : list
+        Input matrix to predict.
+    **kwargs : dict
+        Additional keyword arguments:
+        - x_averages (list): Column averages from the training x matrix.
+        - x_scaling (list): Column scaling from the training x matrix.
+        - y_averages (list): Column averages from the training y matrix.
+        - y_scaling (list): Column scaling from the training y matrix.
+        - beta_coeff (list): PLS beta coefficients extracted from the trained PLS model.
 
     Returns
     -------
-    predicted_y (list):
-        Predicted values
+    predicted_y : list
+        Predicted values.
 
     Examples
     --------
@@ -258,8 +256,6 @@ def pls_beta_inference(x_input,
                                  y_scaling=model.get_y_column_scaling(),
                                  beta_coeff=model.get_beta_coefficients(2))
     """
-
-    # Predict using beta coefficients
     x_avg = kwargs["x_averages"]
     x_scal = kwargs["x_scaling"]
     y_avg = kwargs["y_averages"]
@@ -279,28 +275,71 @@ def pls_beta_inference(x_input,
 
 class PLS():
     """
-    Partial least squares
+    Partial Least Squares (PLS) Model
+
+    This class provides methods for creating and utilizing a PLS model for regression analysis.
 
     Parameters
     ----------
-        nlv (int) : number of latent variable
-        xscaling (int) : scaling type for x matrix
-        yscaling (int) : scaling type for y matrix
-        N.B.: xscaling and yscaling can be:
-            0 -> No scaling
-            1 -> Standard deviation scaling
-            2 -> Root mean squared scaling
-            3 -> Pareto scaling
-            4 -> Range scaling
-            5 -> Level scaling
+    nlv (int) : Number of latent variables.
+    xscaling (int) : Scaling type for x matrix. Default is 1.
+    yscaling (int) : Scaling type for y matrix. Default is 0.
+
+    Note
+    ----
+    Scaling options:
+    - 0: No scaling
+    - 1: Standard deviation scaling
+    - 2: Root mean squared scaling
+    - 3: Pareto scaling
+    - 4: Range scaling
+    - 5: Level scaling
+
+    Attributes
+    ----------
+    mpls (CDataType) : The PLS model data.
+    nlv (int) : Number of latent variables.
+    xscaling (int) : Scaling type for x matrix.
+    yscaling (int) : Scaling type for y matrix.
+
+    Methods
+    -------
+    __init__(self, nlv, xscaling=1, yscaling=0)
+    __del__(self)
+    fit(self, x_input, y_input)
+    get_tscores(self)
+    get_uscores(self)
+    get_ploadings(self)
+    get_qloadings(self)
+    get_weights(self)
+    get_beta_coefficients(self, nlv : int=1)
+    get_exp_variance(self)
+    get_x_column_scaling(self)
+    get_x_averages(self)
+    get_y_column_scaling(self)
+    get_y_averages(self)
+    predict(self, x_input, nlv_=None)
     """
+
     def __init__(self, nlv, xscaling=1, yscaling=0):
+        """
+        Initialize a PLS instance.
+
+        Parameters
+        ----------
+        nlv (int) : Number of latent variables.
+        xscaling (int) : Scaling type for x matrix. Default is 1.
+        yscaling (int) : Scaling type for y matrix. Default is 0.
+        """
         self.mpls = new_pls_model()
         self.nlv = nlv
         self.xscaling = xscaling
         self.yscaling = yscaling
 
     def __del__(self):
+        """
+        Clean up resources associated with the PLS instance.
+        """
         if self.mpls is not None:
             del_pls_model(self.mpls)
             del self.mpls
@@ -308,7 +347,14 @@ class PLS():
 
     def fit(self, x_input, y_input):
         """
-        Fit a pls model giving x matrix and y matrix
+        Fit a PLS model using x and y matrices.
+
+        Parameters
+        ----------
+        x_input : Matrix or List[List]
+            Input x matrix for fitting the PLS model.
+        y_input : Matrix or List[List]
+            Input y matrix for fitting the PLS model.
         """
         x_input_ = None
         xalloc = False
@@ -330,8 +376,8 @@ class PLS():
                       y_input_,
                       self.mpls,
                       nlv=self.nlv,
-                      x_scaling = self.xscaling,
-                      y_scaling =self.yscaling)
+                      x_scaling=self.xscaling,
+                      y_scaling=self.yscaling)
 
         if xalloc is True:
             mx.del_matrix(x_input_)
@@ -343,37 +389,72 @@ class PLS():
 
     def get_tscores(self):
         """
-        Get the T-Scores
+        Get the T-Scores.
+
+        Returns
+        -------
+        List[List[float]]
+            The T-Scores.
         """
         return mx.matrix_to_list(self.mpls.contents.xscores)
 
     def get_uscores(self):
         """
-        Get the U-Scores
+        Get the U-Scores.
+
+        Returns
+        -------
+        List[List[float]]
+            The U-Scores.
         """
         return mx.matrix_to_list(self.mpls.contents.yscores)
 
     def get_ploadings(self):
         """
-        Get the P-Loadings
+        Get the P-Loadings.
+
+        Returns
+        -------
+        List[List[float]]
+            The P-Loadings.
         """
         return mx.matrix_to_list(self.mpls.contents.xloadings)
 
     def get_qloadings(self):
         """
-        Get the Q-Loadings
+        Get the Q-Loadings.
+
+        Returns
+        -------
+        List[List[float]]
+            The Q-Loadings.
         """
         return mx.matrix_to_list(self.mpls.contents.yloadings)
 
     def get_weights(self):
         """
-        Get the W-weigths
+        Get the W-Weights.
+
+        Returns
+        -------
+        List[List[float]]
+            The W-Weights.
         """
         return mx.matrix_to_list(self.mpls.contents.xweights)
 
-    def get_beta_coefficients(self, nlv : int=1):
+    def get_beta_coefficients(self, nlv: int = 1):
         """
-        Get the Beta Coefficients for fast predictions
+        Get the Beta Coefficients for fast predictions.
+
+        Parameters
+        ----------
+        nlv : int, optional
+            Number of latent variables. Default is 1.
+
+        Returns
+        -------
+        List[float]
+            The Beta Coefficients.
         """
         beta_coeff = vect.init_dvector()
         pls_beta_coefficients(self.mpls, nlv, beta_coeff)
@@ -383,38 +464,74 @@ class PLS():
 
     def get_exp_variance(self):
         """
-        Get the explained variance
+        Get the explained variance.
+
+        Returns
+        -------
+        List[float]
+            The explained variance.
         """
         return vect.dvector_tolist(self.mpls.contents.xvarexp)
 
     def get_x_column_scaling(self):
         """
-        Get the model column scaling
+        Get the model column scaling for x.
+
+        Returns
+        -------
+        List[float]
+            The model column scaling for x.
         """
         return vect.dvector_tolist(self.mpls.contents.xcolscaling)
 
     def get_x_averages(self):
         """
-        Get the feature averages
+        Get the feature averages for x.
+
+        Returns
+        -------
+        List[float]
+            The feature averages for x.
         """
         return vect.dvector_tolist(self.mpls.contents.xcolaverage)
 
-
     def get_y_column_scaling(self):
         """
-        Get the model column scaling
+        Get the model column scaling for y.
+
+        Returns
+        -------
+        List[float]
+            The model column scaling for y.
         """
         return vect.dvector_tolist(self.mpls.contents.ycolscaling)
 
     def get_y_averages(self):
         """
-        Get the feature averages
+        Get the feature averages for y.
+
+        Returns
+        -------
+        List[float]
+            The feature averages for y.
         """
         return vect.dvector_tolist(self.mpls.contents.ycolaverage)
 
     def predict(self, x_input, nlv_=None):
         """
-        Predict the y giving an x matrix
+        Predict the y values given an x matrix.
+
+        Parameters
+        ----------
+        x_input : Matrix or List[List]
+            Input x matrix for prediction.
+        nlv_ : int, optional
+            Number of latent variables for prediction. Default is None.
+
+        Returns
+        -------
+        List[List[float]], List[List[float]]
+            The predicted y values and T-Scores.
         """
         x_input_ = mx.new_matrix(x_input)
         p_scores_ = mx.init_matrix()

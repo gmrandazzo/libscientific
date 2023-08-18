@@ -1,4 +1,7 @@
-"""init.py
+"""
+init.py
+
+Library Initialization for LibScientific
 
 Copyright (C) <2023>  Giuseppe Marco Randazzo
 
@@ -14,6 +17,39 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+Submodules
+----------
+- info : Module providing information about the LibScientific library.
+- vector : Module for handling vector-related operations.
+- matrix : Module for handling matrix-related operations.
+- tensor : Module for handling tensor-related operations.
+- pca : Module for Principal Component Analysis (PCA).
+- pls : Module for Partial Least Squares (PLS).
+- vectlist : Module for handling lists of double vectors.
+- clustering : Module for clustering algorithms.
+
+Attributes
+----------
+__version__ : str
+    The version of the LibScientific library.
+
+Examples
+--------
+The following example demonstrates how to import and use the LibScientific library:
+
+>>> import libscientific
+>>> print(libscientific.__version__)
+'1.5.1'
+>>> x = [[1.0, 2.0], [3.0, 4.0]]
+>>> vec = libscientific.vector.new_dvector(x)
+>>> print(libscientific.vector.dvector_tolist(vec))
+[[1.0, 2.0], [3.0, 4.0]]
+
+Note
+----
+This module serves as the main entry point for using the LibScientific library.
+Users can import submodules and access various functionalities provided by the library.
 """
 
 from . import info

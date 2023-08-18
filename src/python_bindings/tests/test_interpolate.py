@@ -5,7 +5,7 @@ from utils import(matrix_sum,
                   raw_vector_sum)
 
 
-def test_interpolate():
+def test_interpolate1():
     xy = [[-1.82,0.63],
            [-0.73,0.19],
            [-0.17,0.01],
@@ -28,3 +28,20 @@ def test_interpolate():
     mx.del_matrix(S)
     vect.del_dvector(yp)
     mx.del_matrix(xy)
+
+
+def test_interpolate2():
+    xy = [[-1.82,0.63],
+           [-0.73,0.19],
+           [-0.17,0.01],
+           [-0.09,0.00],
+           [0.15,0.01],
+           [0.39,0.06],
+           [0.86,0.24],
+           [1.44,0.49]]
+    x = [-1.82, -0.73, -0.17, -0.09, 0.15, 0.39, 0.86, 1.44]
+    csi = CubicSplineInterpolation()
+    csi.fit(xy)
+    yp = csi.predict(x)
+    check_value_1 = 1.6300000000000001
+    assert abs(sum(yp)-check_value_1) <= 1e-14

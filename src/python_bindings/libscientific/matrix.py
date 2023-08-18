@@ -463,54 +463,118 @@ def svd_lapack(mtx, u_mtx, s_mtx, vt_mtx):
 
 class Matrix():
     """
-    Translate a list of list into a libscientific matrix
+    A class for working with libscientific matrices.
+
+    This class provides methods to perform various operations on matrices,
+    including creating, accessing, modifying, and transforming matrices using 
+    the libscientific library.
+
+    Attributes:
+        mtx (CDataType): The underlying libscientific matrix data.
+
+    Methods:
+        __init__(self, mx_=None)
+        __del__(self)
+        __getitem__(self, keys)
+        __setitem__(self, keys, value)
+        nrow(self)
+        ncol(self)
+        data_ptr(self)
+        tolist(self)
+        fromlist(self, mtx_)
+        fromnumpy(self, npmx)
+        appendrow(self, row_lst_)
+        appendcol(self, col_lst_)
+        transpose(self)
+        get_evect_evals(self)
+        svd(self)
     """
-    def __init__(self, mx_ = None):
+    def __init__(self, mx_=None):
+        """
+        Initialize a Matrix instance.
+
+        Args:
+            mx_ (list[list]): A list of lists representing the initial matrix data. Default is None.
+        """
         if mx_ is None:
             self.mtx = init_matrix()
         else:
             self.mtx = new_matrix(mx_)
 
     def __del__(self):
+        """
+        Clean up resources associated with the Matrix instance.
+        """
         del_matrix(self.mtx)
         del self.mtx
         self.mtx = None
 
     def __getitem__(self, keys):
+        """
+        Get a value from the matrix using row and column indices.
+
+        Args:
+            keys (tuple): A tuple containing two integers representing the row and column indices.
+
+        Returns:
+            float: The value at the specified row and column in the matrix.
+        """
         i, j = keys
         return self.data_ptr()[i][j]
 
     def __setitem__(self, keys, value):
+        """
+        Set a value in the matrix using row and column indices.
+
+        Args:
+            keys (tuple): A tuple containing two integers representing the row and column indices.
+            value (float): The value to be set at the specified row and column in the matrix.
+        """
         i, j = keys
         set_matrix_value(self.mtx, i, j, value)
 
     def nrow(self):
         """
-        Return the number of rows of the matrix
+        Get the number of rows in the matrix.
+
+        Returns:
+            int: The number of rows in the matrix.
         """
         return self.mtx[0].row
 
     def ncol(self):
         """
-        Return the number of columns of the matrix
+        Get the number of columns in the matrix.
+
+        Returns:
+            int: The number of columns in the matrix.
         """
         return self.mtx[0].col
 
     def data_ptr(self):
         """
-        Return the matrix data pointer
+        Get the data pointer of the matrix.
+
+        Returns:
+            CDataType: The data pointer of the matrix.
         """
         return self.mtx[0].data
 
     def tolist(self):
         """
-        Return the matrix into a list form
+        Convert the matrix to a list of lists.
+
+        Returns:
+            list[list]: A list of lists representing the matrix.
         """
         return matrix_to_list(self.mtx)
 
     def fromlist(self, mtx_):
         """
-        Set the matrix from a list
+        Set the matrix data from a list of lists.
+
+        Args:
+            mtx_ (list[list]): A list of lists representing the new matrix data.
         """
         del_matrix(self.mtx)
         del self.mtx
@@ -518,7 +582,10 @@ class Matrix():
 
     def fromnumpy(self, npmx):
         """
-        Set the matrix from a numpy array
+        Set the matrix data from a NumPy array.
+
+        Args:
+            npmx (numpy.ndarray): A NumPy array representing the new matrix data.
         """
         del_matrix(self.mtx)
         del self.mtx
@@ -526,24 +593,29 @@ class Matrix():
 
     def appendrow(self, row_lst_):
         """
-        Append a row to the matrix
+        Append a row to the matrix.
+
+        Args:
+            row_lst_ (list): A list representing the row to be appended.
         """
         row_lst = vector.DVector(row_lst_)
         matrix_append_row(self.mtx, row_lst)
         del row_lst
 
-
     def appendcol(self, col_lst_):
         """
-        Append a columnt vector to the matrix
+        Append a column vector to the matrix.
+
+        Args:
+            col_lst_ (list): A list representing the column vector to be appended.
         """
         col_lst = vector.DVector(col_lst_)
         matrix_append_col(self.mtx, col_lst)
         del col_lst
 
-    def transpose(self,):
+    def transpose(self):
         """
-        Transpose the matrix
+        Transpose the matrix in-place.
         """
         mtx_t = init_matrix()
         resize_matrix(mtx_t, self.mtx[0].col, self.mtx[0].row)
@@ -554,20 +626,26 @@ class Matrix():
 
     def get_evect_evals(self):
         """
-        Return the eigenvectors and eigenvalues of the matrix
+        Get the eigenvectors and eigenvalues of the matrix.
+
+        Returns:
+            tuple: A tuple containing two lists - eigenvectors and eigenvalues.
         """
         mtx_e_vect_ = vector.init_dvector()
         mtx_e_vals_ = init_matrix()
         evect_eval(self.mtx,  mtx_e_vect_, mtx_e_vals_)
-        mtx_e_vect = vector.dvector_tolist( mtx_e_vect_)
-        mtx_e_vals = matrix_to_list( mtx_e_vals_)
-        del_matrix( mtx_e_vals_)
-        vector.del_dvector( mtx_e_vect_)
-        return  mtx_e_vect,  mtx_e_vals
+        mtx_e_vect = vector.dvector_tolist(mtx_e_vect_)
+        mtx_e_vals = matrix_to_list(mtx_e_vals_)
+        del_matrix(mtx_e_vals_)
+        vector.del_dvector(mtx_e_vect_)
+        return mtx_e_vect, mtx_e_vals
 
     def svd(self):
         """
-        Return the SVD U,S and VT of the matrix
+        Perform Singular Value Decomposition (SVD) on the matrix.
+
+        Returns:
+            tuple: A tuple containing three lists - U, S, and VT matrices.
         """
         mtx_u = init_matrix()
         mtx_s = init_matrix()

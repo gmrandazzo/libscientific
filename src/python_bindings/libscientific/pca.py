@@ -137,14 +137,43 @@ def print_pca(mpca):
 
 class PCA():
     """
-    PCA model class
+    Principal Component Analysis (PCA) Model
+
+    This class provides methods for creating and utilizing a PCA model for dimensionality reduction
+    and feature extraction.
+
+    Attributes:
+        mpca (CDataType): The PCA model data.
+        scaling (int): Scaling option for PCA.
+        npc (int): Number of principal components.
+
+    Methods:
+        __init__(self, scaling, npc)
+        __del__(self)
+        fit(self, m_input)
+        get_scores(self)
+        get_loadings(self)
+        get_exp_variance(self)
+        predict(self, m_input)
+        reconstruct_original_matrix(self, npc_input=None, scores_input=None)
     """
+
     def __init__(self, scaling, npc):
+        """
+        Initialize a PCA instance.
+
+        Args:
+            scaling (int): Scaling option for PCA.
+            npc (int): Number of principal components.
+        """
         self.mpca = new_pca_model()
         self.scaling = scaling
         self.npc = npc
 
     def __del__(self):
+        """
+        Clean up resources associated with the PCA instance.
+        """
         if self.mpca is not None:
             del_pca_model(self.mpca)
             del self.mpca
@@ -152,7 +181,10 @@ class PCA():
 
     def fit(self, m_input):
         """
-        fit a PCA model using an input matrix
+        Fit the PCA model using an input matrix.
+
+        Args:
+            m_input (Matrix or List[List]): Input matrix for fitting the PCA model.
         """
         if "Matrix" in str(type(m_input)):
             pca_algorithm(m_input.mtx, self.scaling, self.npc, self.mpca)
@@ -164,25 +196,40 @@ class PCA():
 
     def get_scores(self):
         """
-        get the PCA scores
+        Get the PCA scores.
+
+        Returns:
+            List[List[float]]: The PCA scores.
         """
         return mx.matrix_to_list(self.mpca.contents.scores)
 
     def get_loadings(self):
         """
-        get the PCA loadings
+        Get the PCA loadings.
+
+        Returns:
+            List[List[float]]: The PCA loadings.
         """
         return mx.matrix_to_list(self.mpca.contents.loadings)
 
     def get_exp_variance(self):
         """
-        get the PCA explained variance
+        Get the explained variance of each principal component.
+
+        Returns:
+            List[float]: The explained variance of each principal component.
         """
         return vect.dvector_tolist(self.mpca.contents.varexp)
 
     def predict(self, m_input):
         """
-        Project an input matrix into the PCA model
+        Project an input matrix into the PCA model.
+
+        Args:
+            m_input (Matrix or List[List]): Input matrix for projecting into the PCA model.
+
+        Returns:
+            List[List[float]]: Projected scores using the PCA model.
         """
         pscores_ = mx.init_matrix()
         if "Matrix" in str(type(m_input)):
@@ -198,12 +245,16 @@ class PCA():
         del pscores_
         return pscores
 
-    def reconstruct_original_matrix(self,
-                                    npc_input=None,
-                                    scores_input=None):
+    def reconstruct_original_matrix(self, npc_input=None, scores_input=None):
         """
-        Reconstruct the original input matrix giving a
-        number of principal components to be used from scores and loadings
+        Reconstruct the original input matrix using a specified number of principal components.
+
+        Args:
+            npc_input (int): Number of principal components to be used. Default is None.
+            scores_input (CDataType): Scores used for reconstruction. Default is None.
+
+        Returns:
+            List[List[float]]: Reconstructed matrix using the specified principal components.
         """
         npc_ = None
         if npc_input is None:

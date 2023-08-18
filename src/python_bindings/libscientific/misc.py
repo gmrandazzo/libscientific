@@ -28,8 +28,14 @@ lsci.missing_value.restype = ctypes.c_double
 
 def missing_value():
     """
-    missing_value: return the standard missing value in
-    libscientific. T^his variable is useful to
-    compute PCA or PLS with missing values.
+    Get the standard missing value in libscientific.
+
+    This function returns the standard missing value used in libscientific.
+    This value is particularly useful when performing PCA or PLS with missing values.
+
+    Returns
+    -------
+    float
+        The standard missing value used in libscientific.
     """
     return lsci.missing_value()

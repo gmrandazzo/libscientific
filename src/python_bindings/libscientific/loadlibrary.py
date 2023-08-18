@@ -23,7 +23,12 @@ from ctypes.util import find_library
 
 
 def get_posix_library():
-    """Get libscientific posix library location
+    """Find the path to the libscientific POSIX library.
+    
+    Returns
+    -------
+    str or None
+        The path to the libscientific library file if found, or None if not found.
     """
     paths = ["/usr/lib/libscientific.so",
              "/usr/lib64/libscientific.so",
@@ -36,7 +41,17 @@ def get_posix_library():
 
 
 def load_libscientific_library():
-    """Load the libscientific library
+    """Load the libscientific library dynamically.
+    
+    Returns
+    -------
+    CDLL
+        A ctypes dynamic link library object representing the loaded libscientific library.
+    
+    Raises
+    ------
+    RuntimeError
+        If the library cannot be loaded or the platform is not supported.
     """
     lsci_lib_dir = os.environ.get("LIBSCIENTIFIC_LIB_DIR")
     lsci = None
@@ -76,7 +91,3 @@ def load_libscientific_library():
     else:
         raise RuntimeError(f"Don't know how to load library on {os.name}")
     return lsci
-
-
-if __name__ == '__main__':
-    a = load_libscientific_library()

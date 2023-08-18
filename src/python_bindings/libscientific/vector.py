@@ -496,60 +496,132 @@ def ivector_remove_at(ivect, indx):
     return lsci.IVectorRemoveAt(ivect, indx)
 
 
-class DVector():
+class DVector:
     """
-    Translate a list  into a libscientific double vector
+    DVector Class
+
+    This class provides methods for creating and manipulating a libscientific double vector.
+
+    Attributes:
+        dvect (DVECTOR): The double vector.
+
+    Methods:
+        __init__(self, dvect_)
+        __del__(self)
+        __getitem__(self, key)
+        __setitem__(self, key, value)
+        size(self)
+        data_ptr(self)
+        append(self, value)
+        extend(self, v_lst)
+        tolist(self)
+        fromlist(self, vlst_)
+        debug(self)
     """
+
     def __init__(self, dvect_ = None):
+        """
+        Initialize a DVector instance.
+
+        Args:
+            dvect_ : list or None
+                The initial values for the double vector. If None, initializes an empty vector.
+        """
         if dvect_ is None:
             self.dvect = init_dvector()
         else:
             self.dvect = new_dvector(dvect_)
 
     def __del__(self):
+        """
+        Clean up resources associated with the DVector instance.
+        """
         del_dvector(self.dvect)
         del self.dvect
 
     def __getitem__(self, key):
+        """
+        Get the value at the specified index in the vector.
+
+        Args:
+            key : int
+                Index of the value in the vector.
+
+        Returns:
+            float : The value at the specified index.
+        """
         return self.data_ptr()[key]
 
     def __setitem__(self, key, value):
+        """
+        Set the value at the specified index in the vector.
+
+        Args:
+            key : int
+                Index of the value in the vector.
+            value : float
+                The value to set at the specified index.
+        """
         set_dvector_value(self.dvect, key, value)
 
     def size(self):
         """
-        return the size of the dvector
+        Get the size of the double vector.
+
+        Returns:
+            int : Size of the double vector.
         """
         return self.dvect[0].size
 
     def data_ptr(self):
         """
-        return the pointer to data
+        Get the pointer to the data.
+
+        Returns:
+            DVECTOR : The pointer to the data.
         """
         return self.dvect[0].data
 
     def append(self, value):
         """
-        Append a value to the dvector
+        Append a value to the double vector.
+
+        Args:
+            value : float
+                The value to append to the double vector.
+
+        Returns:
+            int : Status code (0 on success).
         """
         return dvector_append(self.dvect, value)
 
     def extend(self, v_lst):
         """
-        Extend the dvector by adding a list
+        Extend the double vector by adding a list of values.
+
+        Args:
+            v_lst : list
+                List of values to extend the double vector with.
         """
         for val in v_lst:
             dvector_append(self.dvect, val)
 
     def tolist(self):
         """
-        Convert the dvector to a list
+        Convert the double vector to a Python list.
+
+        Returns:
+            list : The double vector as a Python list.
         """
         return xvector_tolist(self.dvect)
 
     def fromlist(self, vlst_):
         """
-        Convert a list to a dvector
+        Initialize the double vector from a list of values.
+
+        Args:
+            vlst_ : list
+                List of values to initialize the double vector with.
         """
         del_dvector(self.dvect)
         del self.dvect
@@ -557,69 +629,141 @@ class DVector():
 
     def debug(self):
         """
-        Debug the dvector
+        Print the double vector for debugging purposes.
         """
         print_dvector(self.dvect)
 
 
-class UIVector():
+class UIVector:
     """
-    Translate a list  into a libscientific unsigned int vector
+    UIVector Class
+
+    This class provides methods for creating and manipulating a libscientific unsigned int vector.
+
+    Attributes:
+        uivect (UIVECTOR): The unsigned int vector.
+
+    Methods:
+        __init__(self, uivect_)
+        __del__(self)
+        __getitem__(self, key)
+        __setitem__(self, key, value)
+        size(self)
+        data_ptr(self)
+        append(self, value)
+        extend(self, v_lst)
+        tolist(self)
+        fromlist(self, vlst_)
+        debug(self)
     """
+
     def __init__(self, uivect_):
+        """
+        Initialize a UIVector instance.
+
+        Args:
+            uivect_ : list
+                The initial values for the unsigned int vector.
+        """
         self.uivect = new_uivector(uivect_)
 
     def __del__(self):
+        """
+        Clean up resources associated with the UIVector instance.
+        """
         del_uivector(self.uivect)
         del self.uivect
 
     def __getitem__(self, key):
+        """
+        Get the value at the specified index in the vector.
+
+        Args:
+            key : int
+                Index of the value in the vector.
+
+        Returns:
+            int : The value at the specified index.
+        """
         return self.data_ptr()[key]
 
     def __setitem__(self, key, value):
+        """
+        Set the value at the specified index in the vector.
+
+        Args:
+            key : int
+                Index of the value in the vector.
+            value : int
+                The value to set at the specified index.
+        """
         set_uivector_value(self.uivect, key, value)
 
     def size(self):
         """
-        return the size of the uivector
+        Get the size of the unsigned int vector.
+
+        Returns:
+            int : Size of the unsigned int vector.
         """
         return self.uivect[0].size
 
     def data_ptr(self):
         """
-        return the pointer to data
+        Get the pointer to the data.
+
+        Returns:
+            UIVECTOR : The pointer to the data.
         """
         return self.uivect[0].data
 
     def append(self, value):
         """
-        Append a value to the uivector
+        Append a value to the unsigned int vector.
+
+        Args:
+            value : int
+                The value to append to the unsigned int vector.
+
+        Returns:
+            int : Status code (0 on success).
         """
         return uivector_append(self.uivect, value)
 
     def extend(self, v_lst):
         """
-        Extend the dvector by adding a list
+        Extend the unsigned int vector by adding a list of values.
+
+        Args:
+            v_lst : list
+                List of values to extend the unsigned int vector with.
         """
         for val in v_lst:
             uivector_append(self.uivect, val)
 
     def tolist(self):
         """
-        Convert the dvector to a list
+        Convert the unsigned int vector to a Python list.
+
+        Returns:
+            list : The unsigned int vector as a Python list.
         """
         return xvector_tolist(self.uivect)
 
     def fromlist(self, vlst_):
         """
-        Convert a list to a dvector
+        Initialize the unsigned int vector from a list of values.
+
+        Args:
+            vlst_ : list
+                List of values to initialize the unsigned int vector with.
         """
         del_uivector(self.uivect)
         del self.uivect
-        self.uivect = new_dvector(vlst_)
+        self.uivect = new_uivector(vlst_)
 
     def debug(self):
         """
-        Debug the iuvector
+        Print the unsigned int vector for debugging purposes.
         """
         print_uivector(self.uivect)

@@ -33,44 +33,44 @@ lsci.MDC.argtypes = [ctypes.POINTER(mx.MATRIX),
 lsci.MDC.restype = None
 
 def most_descriptive_compound(x_input, nobjects):
-    """Most Descriptive Compound selection algorithm.
+    """
+    Most Descriptive Compound Selection Algorithm.
 
-    Parameters
-    ----------
-    x_input: List[List]
-        Input matrix
-    nobjects: int
-        Number of object select
+    This function selects the most descriptive compounds/rows from 
+    an input matrix based on the specified number of objects to select.
 
-    Returns
-    -------
-    A list of selected objects/row id.
+    Parameters:
+        x_input : List[List]
+            Input matrix.
+        nobjects : int
+            Number of objects to select.
 
-    Examples
-    --------
+    Returns:
+        List[int] : A list of selected object/row IDs.
+
+    Examples:
     >>> np.random.seed(12345)
-    >>> x = np.random.rand(100,2)
-    >>> mdc_ids = libscientific.clustering.most_descriptive_compound(x, 10)
+    >>> x = np.random.rand(100, 2)
+    >>> mdc_ids = most_descriptive_compound(x, 10)
     >>> mdc_ids
     [74, 97, 95, 7, 35, 25, 50, 10, 32, 59]
     """
+    mdcxalloc = False
     if "Matrix" not in str(type(x_input)):
         x_input_ = mx.new_matrix(x_input)
-        xalloc = True
+        mdcxalloc = True
     else:
         x_input_ = x_input
 
     obj_sel = vect.init_uivector()
-    lsci.MDC(x_input_,
-             nobjects,
-             0,
-             obj_sel,
-             os.cpu_count())
+    lsci.MDC(x_input_, nobjects, 0, obj_sel, os.cpu_count())
     obj_sel_lst = vect.uivector_tolist(obj_sel)
     vect.del_uivector(obj_sel)
-    if xalloc is True:
+
+    if mdcxalloc is True:
         mx.del_matrix(x_input_)
         del x_input_
+
     return obj_sel_lst
 
 
@@ -83,45 +83,47 @@ lsci.MaxDis_Fast.restype = None
 
 
 def max_dissimilarity_selection(x_input, nobjects):
-    """Max dissimilarity compound selection algorithm
+    """
+    Max Dissimilarity Compound Selection Algorithm.
 
-    Parameters
-    ----------
-    x_input: List[List]
-        Input matrix
-    nobjects: int
-        Number of object select
+    This function selects compounds/rows from an input matrix in 
+    a way that maximizes their dissimilarity based on the specified 
+    number of objects to select.
 
-    Returns
-    -------
-    A list of selected objects/row id.
+    Parameters:
+        x_input : List[List]
+            Input matrix.
+        nobjects : int
+            Number of objects to select.
 
-    Examples
-    --------
+    Returns:
+        List[int] : A list of selected object/row IDs.
+
+    Examples:
     >>> np.random.seed(12345)
-    >>> x = np.random.rand(100,2)
-    >>> mdis_ids = libscientific.clustering.max_dissimilarity_selection(x, 10)
+    >>> x = np.random.rand(100, 2)
+    >>> mdis_ids = max_dissimilarity_selection(x, 10)
     >>> mdis_ids
     [57, 89, 88, 6, 23, 94, 56, 61, 39, 24]
     """
+    mdisxalloc = False
     if "Matrix" not in str(type(x_input)):
         x_input_ = mx.new_matrix(x_input)
-        xalloc = True
+        mdisxalloc = True
     else:
         x_input_ = x_input
 
     obj_sel = vect.init_uivector()
-    lsci.MaxDis_Fast(x_input_,
-                     nobjects,
-                     0,
-                     obj_sel,
-                     os.cpu_count())
+    lsci.MaxDis_Fast(x_input_, nobjects, 0, obj_sel, os.cpu_count())
     obj_sel_lst = vect.uivector_tolist(obj_sel)
     vect.del_uivector(obj_sel)
-    if xalloc is True:
+
+    if mdisxalloc is True:
         mx.del_matrix(x_input_)
         del x_input_
+
     return obj_sel_lst
+
 
 
 lsci.KMeans.argtypes = [ctypes.POINTER(mx.MATRIX),
@@ -134,31 +136,32 @@ lsci.KMeans.restype = None
 
 
 def k_means_plus_plus(x_input, n_clusters):
-    """K-Means++ clustering (kmeans + David Arthur initialization)
+    """
+    K-Means++ Clustering Algorithm (kmeans + David Arthur initialization).
 
-    Parameters
-    ----------
-    x_input: List[List]
-        Input matrix
-    nobjects: int
-        Number of object select
+    This function performs K-Means++ clustering on the given input matrix 
+    to create the specified number of clusters.
 
-    Returns
-    -------
-    A list of selected objects/row id.
+    Parameters:
+        x_input : List[List]
+            Input matrix.
+        n_clusters : int
+            Number of clusters.
 
-    Examples
-    --------
+    Returns:
+        List[int] : A list containing the cluster assignments for each input point.
+
+    Examples:
     >>> np.random.seed(12345)
-    >>> x = np.random.rand(100,2)
-    >>> clusters = libscientific.clustering.k_means_plus_plus(x, 3)
-    >>> clusters = libscientific.clustering.k_means_plus_plus(x, 3)
+    >>> x = np.random.rand(100, 2)
+    >>> clusters = k_means_plus_plus(x, 3)
     >>> clusters
     [1, 2, 0, 0, 0, 0, 2, 2, 0, 0, 0, 1, ..., 0, 1, 1, 2, 2]
     """
+    kmppxalloc = False
     if "Matrix" not in str(type(x_input)):
         x_input_ = mx.new_matrix(x_input)
-        xalloc = True
+        kmppxalloc = True
     else:
         x_input_ = x_input
 
@@ -171,7 +174,7 @@ def k_means_plus_plus(x_input, n_clusters):
                 os.cpu_count())
     labels_lst = vect.uivector_tolist(labels)
     vect.del_uivector(labels)
-    if xalloc is True:
+    if kmppxalloc is True:
         mx.del_matrix(x_input_)
         del x_input_
     return labels_lst

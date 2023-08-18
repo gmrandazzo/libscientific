@@ -196,63 +196,138 @@ def tensor_tolist(tns):
     return tns_lst
 
 
-class Tensor():
+class Tensor:
     """
-    Translate a list of list of list into a libscientific tensor
+    Tensor Class
+
+    This class provides methods for creating and manipulating tensors using libscientific.
+
+    Attributes:
+        tns (CDataType): The tensor data.
+
+    Methods:
+        __init__(self, tns_)
+        __del__(self)
+        __getitem__(self, keys)
+        __setitem__(self, keys, value)
+        order(self)
+        nrow(self, k)
+        ncol(self, k)
+        data_ptr(self)
+        tolist(self)
+        fromlist(self, tns_)
+        fromnumpy(self, npt)
+        debug(self)
     """
+
     def __init__(self, tns_):
+        """
+        Initialize a Tensor instance.
+
+        Args:
+            tns_ : list of list of list or None
+                The tensor data. If None, initializes an empty tensor.
+        """
         if tns_ is None:
             self.tns = init_tensor()
         else:
             self.tns = new_tensor(tns_)
 
     def __del__(self):
+        """
+        Clean up resources associated with the Tensor instance.
+        """
         del_tensor(self.tns)
         del self.tns
         self.tns = None
 
     def __getitem__(self, keys):
+        """
+        Get the value at the specified indices in the tensor.
+
+        Args:
+            keys : tuple
+                Tuple of indices (k, i, j).
+
+        Returns:
+            float : The value at the specified indices.
+        """
         k, i, j = keys
         return self.data_ptr().m[k].contents.data[i][j]
 
     def __setitem__(self, keys, value):
+        """
+        Set the value at the specified indices in the tensor.
+
+        Args:
+            keys : tuple
+                Tuple of indices (k, i, j).
+            value : float
+                The value to set at the specified indices.
+        """
         k, i, j = keys
         self.data_ptr().m[k].contents.data[i][j] = value
 
     def order(self):
         """
-        Return the order of the tensor aka the number of matrix
-        constituting the tensor
+        Get the order of the tensor, i.e., the number of matrices constituting the tensor.
+
+        Returns:
+            int : The order of the tensor.
         """
         return self.data_ptr().order
 
     def nrow(self, k):
         """
-        Return the number of rows of the matrix k of the tensor
+        Get the number of rows in the specified matrix (k) of the tensor.
+
+        Args:
+            k : int
+                Index of the matrix in the tensor.
+
+        Returns:
+            int : Number of rows in the specified matrix.
         """
         return self.data_ptr().m[k].contents.row
 
     def ncol(self, k):
         """
-        Return the number of column of the matrix k of the tensor
+        Get the number of columns in the specified matrix (k) of the tensor.
+
+        Args:
+            k : int
+                Index of the matrix in the tensor.
+
+        Returns:
+            int : Number of columns in the specified matrix.
         """
         return self.data_ptr().m[k].contents.col
 
     def data_ptr(self):
         """
-        Return the tensor data pointer
+        Get the tensor data pointer.
+
+        Returns:
+            CDataType : The tensor data pointer.
         """
         return self.tns.contents
 
     def tolist(self):
         """
-        Return the tensor as list
+        Convert the tensor to a nested list.
+
+        Returns:
+            list : The tensor as a nested list.
         """
         return tensor_tolist(self.tns)
 
     def fromlist(self, tns_):
         """
-        Get a tensor fro list
+        Initialize the tensor from a nested list.
+
+        Args:
+            tns_ : list of list of list
+                The tensor data as a nested list.
         """
         del_tensor(self.tns)
         del self.tns
@@ -260,7 +335,11 @@ class Tensor():
 
     def fromnumpy(self, npt):
         """
-        Get a tensor from numpy
+        Initialize the tensor from a NumPy array.
+
+        Args:
+            npt : numpy.ndarray
+                The NumPy array to initialize the tensor from.
         """
         tns_ = npt.tolist()
         del_tensor(self.tns)
@@ -269,6 +348,6 @@ class Tensor():
 
     def debug(self):
         """
-        Debug to video the tensor
+        Print the tensor for debugging purposes.
         """
         print_tensor(self.tns)

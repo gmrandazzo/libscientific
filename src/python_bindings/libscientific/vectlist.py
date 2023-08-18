@@ -101,21 +101,69 @@ def dvector_list_tolist(dvl):
     return lsts
 
 
-class DVectorList():
+class DVectorList:
     """
-    Translate a list  into a libscientific double vector
+    DVectorList Class
+
+    This class provides methods for creating and manipulating 
+    a list of libscientific double vectors.
+
+    Attributes:
+        dvl (DVECTORLIST): The double vector list.
+
+    Methods:
+        __init__(self, dvl_)
+        __del__(self)
+        __getitem__(self, key)
+        __setitem__(self, key, v_lst)
+        size(self)
+        data_ptr(self)
+        append(self, v_lst)
+        tolist(self)
+        fromlist(self, v_lists)
+        debug(self)
     """
+
     def __init__(self, dvl_):
+        """
+        Initialize a DVectorList instance.
+
+        Args:
+            dvl_ : list of DVECTOR or None
+                The initial double vector list. If None, initializes an empty list.
+        """
         self.dvl = new_dvector_list(dvl_)
 
     def __del__(self):
+        """
+        Clean up resources associated with the DVectorList instance.
+        """
         del_dvector_list(self.dvl)
         del self.dvl
 
     def __getitem__(self, key):
+        """
+        Get the DVECTOR at the specified index in the list.
+
+        Args:
+            key : int
+                Index of the DVECTOR in the list.
+
+        Returns:
+            DVECTOR : The DVECTOR at the specified index.
+        """
         return self.data_ptr()[key].contents
 
     def __setitem__(self, key, v_lst):
+        """
+        Set values in the DVECTOR at the specified index in the list.
+
+        Args:
+            key : int
+                Index of the DVECTOR in the list.
+            v_lst : list
+                List of values to set in the DVECTOR.
+        """
         for i, val in enumerate(v_lst):
             if i < self.data_ptr()[key].contents.size:
                 self.data_ptr()[key].contents.data[i] = val
@@ -125,19 +173,29 @@ class DVectorList():
 
     def size(self):
         """
-        return the size of the divector
+        Get the size of the double vector list.
+
+        Returns:
+            int : Size of the double vector list.
         """
         return self.dvl[0].size
 
     def data_ptr(self):
         """
-        return the pointer to data
+        Get the pointer to the data.
+
+        Returns:
+            DVECTORLIST : The pointer to the data.
         """
         return self.dvl[0].dvector
 
     def append(self, v_lst):
         """
-        Append a value to the dvector
+        Append a value to the double vector list.
+
+        Args:
+            v_lst : DVECTOR or list
+                DVECTOR or list of values to append to the double vector list.
         """
         if isinstance(v_lst, vect.DVECTOR):
             dvector_list_append(self.dvl, v_lst)
@@ -150,13 +208,20 @@ class DVectorList():
 
     def tolist(self):
         """
-        Convert the dvector list to a list of list
+        Convert the double vector list to a list of lists.
+
+        Returns:
+            list : The double vector list as a list of lists.
         """
         return dvector_list_tolist(self.dvl)
 
     def fromlist(self, v_lists):
         """
-        Convert a list of list to a dvector list
+        Convert a list of lists to a double vector list.
+
+        Args:
+            v_lists : list of lists
+                List of lists to convert to a double vector list.
         """
         for v_lst in v_lists:
             dvector_list_append(self.dvl, v_lst)
@@ -164,7 +229,7 @@ class DVectorList():
 
     def debug(self):
         """
-        Debug the double list vector
+        Print the double vector list for debugging purposes.
         """
         for i in range(self.dvl[0].size):
             vect.print_dvector(self.dvl[0].dvector[i].contents)
