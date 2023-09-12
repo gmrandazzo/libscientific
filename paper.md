@@ -101,7 +101,10 @@ Linear algorithms have notable characteristics:
 * Constant Work per Input Element: In linear algorithms, each input element is processed continuously. 
 * Stable Performance Impact: Doubling input size roughly doubles execution time, facilitating performance estimation.
 * Optimal Scaling: Linear-time solutions efficiently handle larger inputs.
-  
+
+
+
+
 |   |   |
 |---|---|
 | PCA | CPCA |
