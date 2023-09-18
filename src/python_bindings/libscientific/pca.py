@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import ctypes
 import libscientific.matrix as mx
 import libscientific.vector as vect
+import libscientific.io as lsciio
 from libscientific.loadlibrary import load_libscientific_library
 
 lsci = load_libscientific_library()
@@ -277,3 +278,15 @@ class PCA():
         mx.del_matrix(ind_vars)
         del ind_vars
         return omx
+    
+    def save(self, dbpath):
+       """
+       Save PCA model to a sqlite3 file
+       """
+       lsciio.write_pca(dbpath, self.mpca)
+
+    def load(self, dbpath):
+       """
+       Load PCA model from a sqlite3 file
+       """
+       lsciio.read_pca(dbpath, self.mpca)

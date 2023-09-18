@@ -158,7 +158,8 @@ static void write_vector_into_sqltable(sqlite3 *db, char *tabname, dvector *vect
         if (rc != SQLITE_OK) {
             fprintf(stderr, "SQL error: %s\n", sqlite3_errmsg(db));
             sqlite3_close(db);
-            return;
+            free(sql);
+            abort();
         }
         sqlite3_bind_double(stmt, 1, vect->data[i]);
         rc = sqlite3_step(stmt);
@@ -188,7 +189,8 @@ static void read_vector(sqlite3 *db, char *tabname, dvector *vect)
     if (rc != SQLITE_OK){
         fprintf(stderr, "SQL error: %s\n", sqlite3_errmsg(db));
         sqlite3_close(db);
-        return;
+        free(sql);
+        abort();
     }
 
     /* Fetch and store the data in the dynamic array */
@@ -201,8 +203,8 @@ static void read_vector(sqlite3 *db, char *tabname, dvector *vect)
         fprintf(stderr, "SQL error: %s\n", sqlite3_errmsg(db));
         sqlite3_finalize(stmt);
         sqlite3_close(db);
-        return;
     }
+    free(sql);
 }
 
 static void OpenDB(char *dbpath, sqlite3 **db)
