@@ -38,7 +38,7 @@
  * - **total_expvar** dvector of total explained variance
  * - **block_expvar** dvector list of block explained variance
  * - **colaverage** dvector list of column average
- * - **colaverage** dvector list of column scaling
+ * - **colscaling** dvector list of column scaling
  */
 typedef struct {
   tensor *block_scores;

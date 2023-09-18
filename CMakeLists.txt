@@ -17,6 +17,7 @@ endif()
 string(TOLOWER "${CMAKE_BUILD_TYPE}" cmake_build_type_tolower)
 
 find_package(LAPACK)
+find_package(SQLite3 REQUIRED)
 
 if(LAPACK_FOUND)
   message(STATUS "Build libscientific using system lapack library")
@@ -69,7 +70,7 @@ if(cmake_build_type_tolower STREQUAL "debug")
 endif()
 
 include(GNUInstallDirs)
-include_directories(${PROJECT_BINARY_DIR})
+include_directories(${PROJECT_BINARY_DIR} ${SQLite3_INCLUDE_DIRS})
 
 add_subdirectory(src)
 add_subdirectory(src/tests)

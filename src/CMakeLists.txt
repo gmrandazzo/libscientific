@@ -23,7 +23,8 @@ set(Scientific_C_SRCS memwrapper.c
                    clustering.c
                    mlr.c
                    datasets.c
-                   modelvalidation.c)
+                   modelvalidation.c
+                   io.c)
 
 set(Scientific_C_H
                 scientificinfo.h
@@ -50,7 +51,8 @@ set(Scientific_C_H
                 clustering.h
                 mlr.h
                 datasets.h
-                modelvalidation.h)
+                modelvalidation.h
+                io.h)
 
 if(WIN32)
   message(STATUS "Set mingw options")
@@ -62,7 +64,7 @@ endif()
 add_library(libscientific SHARED ${Scientific_C_SRCS} ${Scientific_C_H})
 set_target_properties(libscientific PROPERTIES VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH} SOVERSION ${VERSION_MAJOR} )
 set_target_properties(libscientific PROPERTIES OUTPUT_NAME "scientific")
-target_link_libraries(libscientific m pthread ${LAPACK_LIBRARIES})
+target_link_libraries(libscientific m pthread ${LAPACK_LIBRARIES} ${SQLite3_LIBRARIES})
 
 
 if(WIN32)

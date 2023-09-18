@@ -31,7 +31,7 @@
  * - **loadings** matrix of loadings
  * - **varexp** vector of explained variance by every component 
  * - **colaverage** input matrix column average
- * - **colaverage** input matrix column scaling
+ * - **colscaling** input matrix column scaling
  */
 typedef struct{
   matrix *scores;
