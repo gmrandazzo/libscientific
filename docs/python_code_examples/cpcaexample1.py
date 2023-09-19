@@ -58,3 +58,10 @@ print("Showing the predicted super scores")
 mx_to_video(p_ss, 3)
 print("Showing the predicted block scores")
 t_to_video(p_bs)
+
+# Save model
+model.save("mymodel.sqlite3")
+
+# Load model
+model2 = CPCA()
+model2.load("mymodel.sqlite3")

@@ -41,3 +41,10 @@ mx_to_video(p_scores)
 print("Reconstruct the original PCA matrix using the PCA Model")
 ra = model.reconstruct_original_matrix()
 mx_to_video(ra)
+
+# Save model
+model.save("mymodel.sqlite3")
+
+# Load model
+model2 = PCA()
+model2.load("mymodel.sqlite3")

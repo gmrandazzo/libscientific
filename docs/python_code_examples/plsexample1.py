@@ -44,3 +44,10 @@ print("Predicted Y for all LVs")
 mx_to_video(py, 3)
 print("Predicted Scores")
 mx_to_video(pscores, 3)
+
+# Save model
+model.save("mymodel.sqlite3")
+
+# Load model
+model2 = PLS()
+model2.load("mymodel.sqlite3")
