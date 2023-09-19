@@ -117,6 +117,58 @@ def print_cpca(mpca):
     """
     lsci.PrintCPCA(mpca)
 
+lsci.WriteCPCA.argtypes = [
+    ctypes.POINTER(ctypes.c_char),
+    ctypes.POINTER(CPCAMODEL)
+]
+lsci.WriteCPCA.restype = None
+
+def write_cpca(dbpath: str, cpca: CPCAMODEL):
+    """
+    write_pca(dbpath, cpca):
+    
+    Writes a CPCA (Consensus Principal Component Analysis) model to
+    a SQLite database.
+
+    Parameters:
+        dbpath (str): The path to the SQLite database file where the CPCA 
+            model will be stored.
+        cpca (CPCAMODEL): The libscientific data structure representing the CPCA 
+            model.
+
+    Returns:
+        None
+    """
+    encoded_string = dbpath.encode('utf-8')
+    ctypes_string = ctypes.c_char_p(encoded_string)
+    lsci.WriteCPCA(ctypes_string, cpca)
+
+
+lsci.ReadCPCA.argtypes = [
+    ctypes.POINTER(ctypes.c_char),
+    ctypes.POINTER(CPCAMODEL)
+]
+lsci.ReadCPCA.restype = None
+
+def read_cpca(dbpath: str, cpca: CPCAMODEL):
+    """
+    read_cpca(dbpath, cpca):
+    
+    Reads a CPCA (Consensus Principal Component Analysis) model from
+    a SQLite database.
+
+    Parameters:
+        dbpath (str): The path to the SQLite database file from which the CPCA
+            model will be read.
+        cpca (CPCAMODEL): The libscientific data structure where the CPCA
+            model will be loaded.
+
+    Returns:
+        None
+    """
+    encoded_string = dbpath.encode('utf-8')
+    ctypes_string = ctypes.c_char_p(encoded_string)
+    lsci.ReadCPCA(ctypes_string, cpca)
 
 class CPCA:
     """
@@ -152,7 +204,7 @@ class CPCA:
         predict(self, t_input)
     """
 
-    def __init__(self, scaling, npc):
+    def __init__(self, scaling=1, npc=2):
         """
         Initialize a CPCA instance.
 
@@ -282,3 +334,26 @@ class CPCA:
         tns.del_tensor(t_input_)
         del t_input_
         return p_super_scores, p_block_scores
+
+    def save(self, dbpath):
+        """
+        Save CPCA model to a sqlite3 file
+
+        Parameters
+        ----------
+        dbpath (str): The path to the SQLite database file where the CPCA 
+            model will be stored.
+        """
+        write_cpca(dbpath, self.model)
+
+    def load(self, dbpath):
+        """
+        Load CPCA model from a sqlite3 file
+
+        Parameters
+        ----------
+        dbpath (str): The path to the SQLite database file where the CPCA 
+            model will be stored.
+        """
+        read_cpca(dbpath, self.model)
+        self.npc = self.model.contents.super_scores[0].col

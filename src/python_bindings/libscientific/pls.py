@@ -272,6 +272,57 @@ def pls_beta_inference(x_input,
     return revert_scaling(pby, y_avg, y_scal)
 
 
+lsci.WritePLS.argtypes = [
+    ctypes.POINTER(ctypes.c_char),
+    ctypes.POINTER(PLSMODEL)
+]
+lsci.WritePLS.restype = None
+
+def write_pls(dbpath: str, pls: PLSMODEL):
+    """
+    write_pls(dbpath, pls):
+    
+    Writes a PLS (Partial Least Squares) model to
+    a SQLite database.
+
+    Parameters:
+        dbpath (str): The path to the SQLite database file where the PLS 
+            model will be stored.
+        pls (PLSMODEL): The libscientific data structure representing the PLS 
+            model.
+
+    Returns:
+        None
+    """
+    encoded_string = dbpath.encode('utf-8')
+    ctypes_string = ctypes.c_char_p(encoded_string)
+    lsci.WritePLS(ctypes_string, pls)
+
+
+lsci.ReadPLS.argtypes = [
+    ctypes.POINTER(ctypes.c_char),
+    ctypes.POINTER(PLSMODEL)
+]
+lsci.ReadPLS.restype = None
+
+def read_pls(dbpath: str, pls: PLSMODEL):
+    """
+    read_pls(dbpath, pls):
+    
+    Reads a PLS (Partial Least Squares) model from a SQLite database.
+
+    Parameters:
+        dbpath (str): The path to the SQLite database file from which the PLS
+            model will be read.
+        pls (PLSMODEL): The libscientific data structure where the PLS
+            model will be loaded.
+
+    Returns:
+        None
+    """
+    encoded_string = dbpath.encode('utf-8')
+    ctypes_string = ctypes.c_char_p(encoded_string)
+    lsci.ReadPLS(ctypes_string, pls)
 
 class PLS():
     """
@@ -321,7 +372,7 @@ class PLS():
     predict(self, x_input, nlv_=None)
     """
 
-    def __init__(self, nlv, xscaling=1, yscaling=0):
+    def __init__(self, nlv=2, xscaling=1, yscaling=0):
         """
         Initialize a PLS instance.
 
@@ -331,7 +382,7 @@ class PLS():
         xscaling (int) : Scaling type for x matrix. Default is 1.
         yscaling (int) : Scaling type for y matrix. Default is 0.
         """
-        self.mpls = new_pls_model()
+        self.model = new_pls_model()
         self.nlv = nlv
         self.xscaling = xscaling
         self.yscaling = yscaling
@@ -340,10 +391,10 @@ class PLS():
         """
         Clean up resources associated with the PLS instance.
         """
-        if self.mpls is not None:
-            del_pls_model(self.mpls)
-            del self.mpls
-        self.mpls = None
+        if self.model is not None:
+            del_pls_model(self.model)
+            del self.model
+        self.model = None
 
     def fit(self, x_input, y_input):
         """
@@ -374,7 +425,7 @@ class PLS():
 
         pls_algorithm(x_input_,
                       y_input_,
-                      self.mpls,
+                      self.model,
                       nlv=self.nlv,
                       x_scaling=self.xscaling,
                       y_scaling=self.yscaling)
@@ -396,7 +447,7 @@ class PLS():
         List[List[float]]
             The T-Scores.
         """
-        return mx.matrix_to_list(self.mpls.contents.xscores)
+        return mx.matrix_to_list(self.model.contents.xscores)
 
     def get_uscores(self):
         """
@@ -407,7 +458,7 @@ class PLS():
         List[List[float]]
             The U-Scores.
         """
-        return mx.matrix_to_list(self.mpls.contents.yscores)
+        return mx.matrix_to_list(self.model.contents.yscores)
 
     def get_ploadings(self):
         """
@@ -418,7 +469,7 @@ class PLS():
         List[List[float]]
             The P-Loadings.
         """
-        return mx.matrix_to_list(self.mpls.contents.xloadings)
+        return mx.matrix_to_list(self.model.contents.xloadings)
 
     def get_qloadings(self):
         """
@@ -429,7 +480,7 @@ class PLS():
         List[List[float]]
             The Q-Loadings.
         """
-        return mx.matrix_to_list(self.mpls.contents.yloadings)
+        return mx.matrix_to_list(self.model.contents.yloadings)
 
     def get_weights(self):
         """
@@ -440,7 +491,7 @@ class PLS():
         List[List[float]]
             The W-Weights.
         """
-        return mx.matrix_to_list(self.mpls.contents.xweights)
+        return mx.matrix_to_list(self.model.contents.xweights)
 
     def get_beta_coefficients(self, nlv: int = 1):
         """
@@ -457,7 +508,7 @@ class PLS():
             The Beta Coefficients.
         """
         beta_coeff = vect.init_dvector()
-        pls_beta_coefficients(self.mpls, nlv, beta_coeff)
+        pls_beta_coefficients(self.model, nlv, beta_coeff)
         beta_coeff_lst = vect.dvector_tolist(beta_coeff)
         vect.del_dvector(beta_coeff)
         return beta_coeff_lst
@@ -471,7 +522,7 @@ class PLS():
         List[float]
             The explained variance.
         """
-        return vect.dvector_tolist(self.mpls.contents.xvarexp)
+        return vect.dvector_tolist(self.model.contents.xvarexp)
 
     def get_x_column_scaling(self):
         """
@@ -482,7 +533,7 @@ class PLS():
         List[float]
             The model column scaling for x.
         """
-        return vect.dvector_tolist(self.mpls.contents.xcolscaling)
+        return vect.dvector_tolist(self.model.contents.xcolscaling)
 
     def get_x_averages(self):
         """
@@ -493,7 +544,7 @@ class PLS():
         List[float]
             The feature averages for x.
         """
-        return vect.dvector_tolist(self.mpls.contents.xcolaverage)
+        return vect.dvector_tolist(self.model.contents.xcolaverage)
 
     def get_y_column_scaling(self):
         """
@@ -504,7 +555,7 @@ class PLS():
         List[float]
             The model column scaling for y.
         """
-        return vect.dvector_tolist(self.mpls.contents.ycolscaling)
+        return vect.dvector_tolist(self.model.contents.ycolscaling)
 
     def get_y_averages(self):
         """
@@ -515,7 +566,7 @@ class PLS():
         List[float]
             The feature averages for y.
         """
-        return vect.dvector_tolist(self.mpls.contents.ycolaverage)
+        return vect.dvector_tolist(self.model.contents.ycolaverage)
 
     def predict(self, x_input, nlv_=None):
         """
@@ -537,7 +588,7 @@ class PLS():
         p_scores_ = mx.init_matrix()
         p_y_ = mx.init_matrix()
 
-        pls_y_predictor_all_lv(x_input_, self.mpls, p_scores_, p_y_)
+        pls_y_predictor_all_lv(x_input_, self.model, p_scores_, p_y_)
         p_scores = mx.matrix_to_list(p_scores_)
 
         p_y = None
@@ -552,3 +603,26 @@ class PLS():
         mx.del_matrix(p_y_)
         del p_y_
         return p_y, p_scores
+
+    def save(self, dbpath):
+        """
+        Save PLS model to a sqlite3 file
+
+        Parameters
+        ----------
+        dbpath (str): The path to the SQLite database file where the PLS 
+            model will be stored.
+        """
+        write_pls(dbpath, self.model)
+
+    def load(self, dbpath):
+        """
+        Load PLS model from a sqlite3 file
+
+        Parameters
+        ----------
+        dbpath (str): The path to the SQLite database file where the PLS 
+            model will be stored.
+        """
+        read_pls(dbpath, self.model)
+        self.nlv = self.model.contents.xscores[0].col

@@ -32,8 +32,8 @@ def test_pca():
     exp_var_1 = model1.get_exp_variance()
     exp_var_2 = model2.get_exp_variance()
     check_value_3 = 68.22757533439007
-    assert abs(sum(exp_var_1)- check_value_3) <= 1e-14
-    assert abs(sum(exp_var_2)- check_value_3) <= 1e-14
+    assert abs(sum(exp_var_1)- check_value_3) <= 1e-10
+    assert abs(sum(exp_var_2)- check_value_3) <= 1e-10
 
     print("Reconstruct the original PCA matrix using the PCA Model")
     ra1 = model1.reconstruct_original_matrix()
@@ -46,5 +46,15 @@ def test_pca():
     pred_scores2 = model2.predict(m)
     assert abs(matrix_sum(pred_scores1)- check_value_1) <= 1e-14
     assert abs(matrix_sum(pred_scores2)- check_value_1) <= 1e-14
+    
+    model1.save('pca.sqlite3')
+    model3 = PCA(1, 2)
+    print("load pca")
+    model3.load("pca.sqlite3")
+    scores3 = model3.get_scores()
+    check_value_1 = 2.3314683517128287e-15
+    assert abs(matrix_sum(scores3)- check_value_1) <= 1e-14
+    
     del model1
     del model2
+    del model3

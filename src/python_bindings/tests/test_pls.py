@@ -14,7 +14,7 @@ def test_pls():
     model = PLS(nlv=2, xscaling=1, yscaling=0)
     model.fit(x, y)
     check_value_1 = 1.2140365662161021
-    assert abs(raw_vector_sum(model.mpls.contents.xcolscaling)-check_value_1) <=1e-14
+    assert abs(raw_vector_sum(model.model.contents.xcolscaling)-check_value_1) <=1e-14
 
     # fit from libscientific.matrix.Matrix x and y
     xm = mx.Matrix(x)
@@ -57,4 +57,12 @@ def test_pls():
                             beta_coeff=model.get_beta_coefficients(2))    
     for i, _ in enumerate(pby):
         assert  abs(pby[i][-1]-py[i][-1]) <=1e-14
-    
+
+    model.save('pls.sqlite3')
+    model3 = PLS()
+    model3.load("pls.sqlite3")
+    tscores3 = model3.get_tscores()
+    assert abs(matrix_sum(tscores3)-check_value_2) <= 1e-14
+    del model
+    del model2
+    del model3

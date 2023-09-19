@@ -19,7 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import ctypes
 import libscientific.matrix as mx
 import libscientific.vector as vect
-import libscientific.io as lsciio
 from libscientific.loadlibrary import load_libscientific_library
 
 lsci = load_libscientific_library()
@@ -135,6 +134,57 @@ def print_pca(mpca):
     """
     lsci.PrintPCA(mpca)
 
+lsci.WritePCA.argtypes = [
+    ctypes.c_char_p,
+    ctypes.POINTER(PCAMODEL)
+]
+lsci.WritePCA.restype = None
+
+
+def write_pca(dbpath: str, pca: PCAMODEL):
+    """
+    write_pca(dbpath, pca):
+    
+    Writes a PCA (Principal Component Analysis) model to a SQLite database.
+
+    Parameters:
+        dbpath (str): The path to the SQLite database file where the PCA 
+            model will be stored.
+        pca (PCAMODEL): The libscientific data structure representing the PCA 
+            model.
+
+    Returns:
+        None
+    """
+    encoded_string = dbpath.encode('utf-8')
+    ctypes_string = ctypes.c_char_p(encoded_string)
+    lsci.WritePCA(ctypes_string, pca)
+
+
+lsci.ReadPCA.argtypes = [
+    ctypes.c_char_p,
+    ctypes.POINTER(PCAMODEL)
+]
+lsci.ReadPCA.restype = None
+
+def read_pca(dbpath: str, pca: PCAMODEL):
+    """
+    read_pca(dbpath, pca):
+    
+    Reads a PCA (Principal Component Analysis) model from a SQLite database.
+
+    Parameters:
+        dbpath (str): The path to the SQLite database file from which the PCA
+            model will be read.
+        pca (PCAMODEL): The libscientific data structure where the PCA
+            model will be loaded.
+
+    Returns:
+        None
+    """
+    encoded_string = dbpath.encode('utf-8')
+    ctypes_string = ctypes.c_char_p(encoded_string)
+    lsci.ReadPCA(ctypes_string, pca)
 
 class PCA():
     """
@@ -159,7 +209,7 @@ class PCA():
         reconstruct_original_matrix(self, npc_input=None, scores_input=None)
     """
 
-    def __init__(self, scaling, npc):
+    def __init__(self, scaling=1, npc=2):
         """
         Initialize a PCA instance.
 
@@ -167,7 +217,7 @@ class PCA():
             scaling (int): Scaling option for PCA.
             npc (int): Number of principal components.
         """
-        self.mpca = new_pca_model()
+        self.model = new_pca_model()
         self.scaling = scaling
         self.npc = npc
 
@@ -175,10 +225,10 @@ class PCA():
         """
         Clean up resources associated with the PCA instance.
         """
-        if self.mpca is not None:
-            del_pca_model(self.mpca)
-            del self.mpca
-        self.mpca = None
+        if self.model is not None:
+            del_pca_model(self.model)
+            del self.model
+        self.model = None
 
     def fit(self, m_input):
         """
@@ -188,10 +238,10 @@ class PCA():
             m_input (Matrix or List[List]): Input matrix for fitting the PCA model.
         """
         if "Matrix" in str(type(m_input)):
-            pca_algorithm(m_input.mtx, self.scaling, self.npc, self.mpca)
+            pca_algorithm(m_input.mtx, self.scaling, self.npc, self.model)
         else:
             m_input_ = mx.new_matrix(m_input)
-            pca_algorithm(m_input_, self.scaling, self.npc, self.mpca)
+            pca_algorithm(m_input_, self.scaling, self.npc, self.model)
             mx.del_matrix(m_input_)
             del m_input_
 
@@ -202,7 +252,7 @@ class PCA():
         Returns:
             List[List[float]]: The PCA scores.
         """
-        return mx.matrix_to_list(self.mpca.contents.scores)
+        return mx.matrix_to_list(self.model.contents.scores)
 
     def get_loadings(self):
         """
@@ -211,7 +261,7 @@ class PCA():
         Returns:
             List[List[float]]: The PCA loadings.
         """
-        return mx.matrix_to_list(self.mpca.contents.loadings)
+        return mx.matrix_to_list(self.model.contents.loadings)
 
     def get_exp_variance(self):
         """
@@ -220,7 +270,7 @@ class PCA():
         Returns:
             List[float]: The explained variance of each principal component.
         """
-        return vect.dvector_tolist(self.mpca.contents.varexp)
+        return vect.dvector_tolist(self.model.contents.varexp)
 
     def predict(self, m_input):
         """
@@ -235,10 +285,10 @@ class PCA():
         pscores_ = mx.init_matrix()
         if "Matrix" in str(type(m_input)):
             m_input_ = m_input
-            pca_score_predictor(m_input.mtx, self.mpca, self.npc, pscores_)
+            pca_score_predictor(m_input.mtx, self.model, self.npc, pscores_)
         else:
             m_input_ = mx.new_matrix(m_input)
-            pca_score_predictor(m_input_, self.mpca, self.npc, pscores_)
+            pca_score_predictor(m_input_, self.model, self.npc, pscores_)
             mx.del_matrix(m_input_)
             del m_input_
         pscores = mx.matrix_to_list(pscores_)
@@ -265,28 +315,39 @@ class PCA():
 
         scores_ = None
         if scores_input is None:
-            scores_ = self.mpca.contents.scores
+            scores_ = self.model.contents.scores
         else:
             scores_ = scores_input
 
         ind_vars = mx.init_matrix()
         pca_ind_var_predictor(scores_,
-                              self.mpca,
+                              self.model,
                               npc_,
                               ind_vars)
         omx = mx.matrix_to_list(ind_vars)
         mx.del_matrix(ind_vars)
         del ind_vars
         return omx
-    
+
     def save(self, dbpath):
-       """
-       Save PCA model to a sqlite3 file
-       """
-       lsciio.write_pca(dbpath, self.mpca)
+        """
+        Save PCA model to a sqlite3 file
+
+        Parameters
+        ----------
+        dbpath (str): The path to the SQLite database file where the PCA 
+            model will be stored.
+        """
+        write_pca(dbpath, self.model)
 
     def load(self, dbpath):
-       """
-       Load PCA model from a sqlite3 file
-       """
-       lsciio.read_pca(dbpath, self.mpca)
+        """
+        Load PCA model from a sqlite3 file
+
+        Parameters
+        ----------
+        dbpath (str): The path to the SQLite database file where the PCA 
+            model will be stored.
+        """
+        read_pca(dbpath, self.model)
+        self.npc = self.model.contents.scores[0].col

@@ -53,5 +53,12 @@ def test_cpca():
     assert abs(tensor_sum(pred_bsscores1)- check_value_7) <= 1e-14
     assert abs(matrix_sum(pred_sscores2)- check_value_6) <= 1e-14
     assert abs(tensor_sum(pred_bsscores2)- check_value_7) <= 1e-14
+
+    cpca1.save('cpca.sqlite3')
+    cpca3 = CPCA()
+    cpca3.load("cpca.sqlite3")
+    sscores3 = cpca1.get_super_scores()
+    assert abs(matrix_sum(sscores3)- check_value_1) <= 1e-14
     del cpca1
     del cpca2
+    del cpca3
