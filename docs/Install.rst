@@ -13,6 +13,7 @@ Requirements
 
 * A development environment (On windows msys/msys2 or visual studio)
 * A c/fortran compiler
+* sqlite3 library
 * Cmake
 * python3 (if you whant to use the library in python)
 
@@ -23,7 +24,8 @@ Installation process
 First you need to install the C library following these instructions:
 
 .. code-block::
-   
+
+   sudo apt-get -y install liblapack-dev cmake libsqlite3-dev
    git clone https://github.com/gmrandazzo/libscientific.git
    cd libscientific
    mkdir build

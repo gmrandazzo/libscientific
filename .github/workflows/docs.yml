@@ -19,7 +19,7 @@ jobs:
         run: |
           sudo apt-get -y update
           sudo apt-get -y upgrade
-          sudo apt-get -y install liblapack-dev cmake python3-venv libclang-14-dev
+          sudo apt-get -y install liblapack-dev cmake python3-venv libclang-14-dev libsqlite3-dev
           mkdir build
           cd build
           cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release

@@ -33,7 +33,8 @@ def get_posix_library():
     paths = ["/usr/lib/libscientific.so",
              "/usr/lib64/libscientific.so",
              "/usr/local/lib/libscientific.so",
-             "/usr/local/lib64/libscientific.so"] 
+             "/usr/local/lib64/libscientific.so",
+             "/opt/homebrew/lib/libscientific.dylib"] 
     for path in paths:
         if pathlib.Path(path).is_file() is True:
             return path
