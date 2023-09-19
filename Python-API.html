@@ -1781,7 +1781,7 @@ GNU General Public License for more details.</p>
 along with this program.  If not, see &lt;<a class="reference external" href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>&gt;.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="libscientific.cpca.CPCA">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.cpca.</span></span><span class="sig-name descname"><span class="pre">CPCA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scaling</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npc</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.cpca.CPCA" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.cpca.</span></span><span class="sig-name descname"><span class="pre">CPCA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scaling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.cpca.CPCA" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>CPCA Class (Consensus Principal Component Analysis)</p>
 <p>This class provides methods for creating and manipulating
@@ -1966,6 +1966,17 @@ The input tensor.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="libscientific.cpca.CPCA.load">
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbpath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.cpca.CPCA.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load CPCA model from a sqlite3 file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>(</strong><strong>str</strong><strong>)</strong> (<em>dbpath</em>) – model will be stored.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="id46">
 <span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t_input</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id46" title="Permalink to this definition">¶</a></dt>
 <dd><p>Predict super scores and block scores using the CPCA model.</p>
@@ -1985,6 +1996,17 @@ The input tensor.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>p_super_scores</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.cpca.CPCA.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbpath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.cpca.CPCA.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save CPCA model to a sqlite3 file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>(</strong><strong>str</strong><strong>)</strong> (<em>dbpath</em>) – model will be stored.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2080,6 +2102,48 @@ The input tensor.</p>
 <dt class="sig sig-object py" id="libscientific.cpca.print_cpca">
 <span class="sig-prename descclassname"><span class="pre">libscientific.cpca.</span></span><span class="sig-name descname"><span class="pre">print_cpca</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mpca</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.cpca.print_cpca" title="Permalink to this definition">¶</a></dt>
 <dd><p>PrintCPCA: Print to video the CPCA Model</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.cpca.read_cpca">
+<span class="sig-prename descclassname"><span class="pre">libscientific.cpca.</span></span><span class="sig-name descname"><span class="pre">read_cpca</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cpca</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#libscientific.cpca.CPCAMODEL" title="libscientific.cpca.CPCAMODEL"><span class="pre">CPCAMODEL</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.cpca.read_cpca" title="Permalink to this definition">¶</a></dt>
+<dd><p>read_cpca(dbpath, cpca):</p>
+<p>Reads a CPCA (Consensus Principal Component Analysis) model from
+a SQLite database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dbpath</strong> (<em>str</em>) – The path to the SQLite database file from which the CPCA
+model will be read.</p></li>
+<li><p><strong>cpca</strong> (<a class="reference internal" href="#libscientific.cpca.CPCAMODEL" title="libscientific.cpca.CPCAMODEL"><em>CPCAMODEL</em></a>) – The libscientific data structure where the CPCA
+model will be loaded.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.cpca.write_cpca">
+<span class="sig-prename descclassname"><span class="pre">libscientific.cpca.</span></span><span class="sig-name descname"><span class="pre">write_cpca</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cpca</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#libscientific.cpca.CPCAMODEL" title="libscientific.cpca.CPCAMODEL"><span class="pre">CPCAMODEL</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.cpca.write_cpca" title="Permalink to this definition">¶</a></dt>
+<dd><p>write_pca(dbpath, cpca):</p>
+<p>Writes a CPCA (Consensus Principal Component Analysis) model to
+a SQLite database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dbpath</strong> (<em>str</em>) – The path to the SQLite database file where the CPCA
+model will be stored.</p></li>
+<li><p><strong>cpca</strong> (<a class="reference internal" href="#libscientific.cpca.CPCAMODEL" title="libscientific.cpca.CPCAMODEL"><em>CPCAMODEL</em></a>) – The libscientific data structure representing the CPCA
+model.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -2286,7 +2350,7 @@ GNU General Public License for more details.</p>
 along with this program.  If not, see &lt;<a class="reference external" href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>&gt;.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="libscientific.pca.PCA">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.pca.</span></span><span class="sig-name descname"><span class="pre">PCA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scaling</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npc</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pca.PCA" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.pca.</span></span><span class="sig-name descname"><span class="pre">PCA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scaling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pca.PCA" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Principal Component Analysis (PCA) Model</p>
 <p>This class provides methods for creating and utilizing a PCA model for dimensionality reduction
@@ -2418,6 +2482,17 @@ and feature extraction.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="libscientific.pca.PCA.load">
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbpath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pca.PCA.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load PCA model from a sqlite3 file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>(</strong><strong>str</strong><strong>)</strong> (<em>dbpath</em>) – model will be stored.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="id51">
 <span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m_input</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id51" title="Permalink to this definition">¶</a></dt>
 <dd><p>Project an input matrix into the PCA model.</p>
@@ -2450,6 +2525,17 @@ and feature extraction.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>List[List[float]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.pca.PCA.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbpath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pca.PCA.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save PCA model to a sqlite3 file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>(</strong><strong>str</strong><strong>)</strong> (<em>dbpath</em>) – model will be stored.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2538,6 +2624,46 @@ and feature extraction.</p>
 <dd><p>PrintPCA: Print to video the PCA Model</p>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.pca.read_pca">
+<span class="sig-prename descclassname"><span class="pre">libscientific.pca.</span></span><span class="sig-name descname"><span class="pre">read_pca</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pca</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#libscientific.pca.PCAMODEL" title="libscientific.pca.PCAMODEL"><span class="pre">PCAMODEL</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pca.read_pca" title="Permalink to this definition">¶</a></dt>
+<dd><p>read_pca(dbpath, pca):</p>
+<p>Reads a PCA (Principal Component Analysis) model from a SQLite database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dbpath</strong> (<em>str</em>) – The path to the SQLite database file from which the PCA
+model will be read.</p></li>
+<li><p><strong>pca</strong> (<a class="reference internal" href="#libscientific.pca.PCAMODEL" title="libscientific.pca.PCAMODEL"><em>PCAMODEL</em></a>) – The libscientific data structure where the PCA
+model will be loaded.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.pca.write_pca">
+<span class="sig-prename descclassname"><span class="pre">libscientific.pca.</span></span><span class="sig-name descname"><span class="pre">write_pca</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pca</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#libscientific.pca.PCAMODEL" title="libscientific.pca.PCAMODEL"><span class="pre">PCAMODEL</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pca.write_pca" title="Permalink to this definition">¶</a></dt>
+<dd><p>write_pca(dbpath, pca):</p>
+<p>Writes a PCA (Principal Component Analysis) model to a SQLite database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dbpath</strong> (<em>str</em>) – The path to the SQLite database file where the PCA
+model will be stored.</p></li>
+<li><p><strong>pca</strong> (<a class="reference internal" href="#libscientific.pca.PCAMODEL" title="libscientific.pca.PCAMODEL"><em>PCAMODEL</em></a>) – The libscientific data structure representing the PCA
+model.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <section id="module-libscientific.pls">
 <span id="libscientific-pls-module"></span><h2>libscientific.pls module<a class="headerlink" href="#module-libscientific.pls" title="Permalink to this heading">¶</a></h2>
@@ -2555,7 +2681,7 @@ GNU General Public License for more details.</p>
 along with this program.  If not, see &lt;<a class="reference external" href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>&gt;.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="libscientific.pls.PLS">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.pls.</span></span><span class="sig-name descname"><span class="pre">PLS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nlv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xscaling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yscaling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pls.PLS" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.pls.</span></span><span class="sig-name descname"><span class="pre">PLS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nlv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xscaling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yscaling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pls.PLS" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Partial Least Squares (PLS) Model</p>
 <p>This class provides methods for creating and utilizing a PLS model for regression analysis.</p>
@@ -2865,6 +2991,17 @@ along with this program.  If not, see &lt;<a class="reference external" href="ht
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="libscientific.pls.PLS.load">
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbpath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pls.PLS.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load PLS model from a sqlite3 file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>(</strong><strong>str</strong><strong>)</strong> (<em>dbpath</em>) – model will be stored.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="id65">
 <span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nlv_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id65" title="Permalink to this definition">¶</a></dt>
 <dd><p>Predict the y values given an x matrix.</p>
@@ -2880,6 +3017,17 @@ along with this program.  If not, see &lt;<a class="reference external" href="ht
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>List[List[float]], List[List[float]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.pls.PLS.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbpath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pls.PLS.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save PLS model to a sqlite3 file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>(</strong><strong>str</strong><strong>)</strong> (<em>dbpath</em>) – model will be stored.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -3166,9 +3314,50 @@ This function is NOT dependent on PLSScorePredictor.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="libscientific.pls.read_pls">
+<span class="sig-prename descclassname"><span class="pre">libscientific.pls.</span></span><span class="sig-name descname"><span class="pre">read_pls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#libscientific.pls.PLSMODEL" title="libscientific.pls.PLSMODEL"><span class="pre">PLSMODEL</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pls.read_pls" title="Permalink to this definition">¶</a></dt>
+<dd><p>read_pls(dbpath, pls):</p>
+<p>Reads a PLS (Partial Least Squares) model from a SQLite database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dbpath</strong> (<em>str</em>) – The path to the SQLite database file from which the PLS
+model will be read.</p></li>
+<li><p><strong>pls</strong> (<a class="reference internal" href="#libscientific.pls.PLSMODEL" title="libscientific.pls.PLSMODEL"><em>PLSMODEL</em></a>) – The libscientific data structure where the PLS
+model will be loaded.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="libscientific.pls.revert_scaling">
 <span class="sig-prename descclassname"><span class="pre">libscientific.pls.</span></span><span class="sig-name descname"><span class="pre">revert_scaling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_avg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_scal</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pls.revert_scaling" title="Permalink to this definition">¶</a></dt>
 <dd><p>Revert scaling to a matrix</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.pls.write_pls">
+<span class="sig-prename descclassname"><span class="pre">libscientific.pls.</span></span><span class="sig-name descname"><span class="pre">write_pls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#libscientific.pls.PLSMODEL" title="libscientific.pls.PLSMODEL"><span class="pre">PLSMODEL</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pls.write_pls" title="Permalink to this definition">¶</a></dt>
+<dd><p>write_pls(dbpath, pls):</p>
+<p>Writes a PLS (Partial Least Squares) model to
+a SQLite database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dbpath</strong> (<em>str</em>) – The path to the SQLite database file where the PLS
+model will be stored.</p></li>
+<li><p><strong>pls</strong> (<a class="reference internal" href="#libscientific.pls.PLSMODEL" title="libscientific.pls.PLSMODEL"><em>PLSMODEL</em></a>) – The libscientific data structure representing the PLS
+model.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -3518,7 +3707,9 @@ Users can import submodules and access various functionalities provided by the l
 <li><a class="reference internal" href="#id43"><code class="docutils literal notranslate"><span class="pre">CPCA.get_super_scores()</span></code></a></li>
 <li><a class="reference internal" href="#id44"><code class="docutils literal notranslate"><span class="pre">CPCA.get_super_weights()</span></code></a></li>
 <li><a class="reference internal" href="#id45"><code class="docutils literal notranslate"><span class="pre">CPCA.get_total_exp_variance()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.cpca.CPCA.load"><code class="docutils literal notranslate"><span class="pre">CPCA.load()</span></code></a></li>
 <li><a class="reference internal" href="#id46"><code class="docutils literal notranslate"><span class="pre">CPCA.predict()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.cpca.CPCA.save"><code class="docutils literal notranslate"><span class="pre">CPCA.save()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#libscientific.cpca.CPCAMODEL"><code class="docutils literal notranslate"><span class="pre">CPCAMODEL</span></code></a><ul>
@@ -3538,6 +3729,8 @@ Users can import submodules and access various functionalities provided by the l
 <li><a class="reference internal" href="#libscientific.cpca.del_cpca_model"><code class="docutils literal notranslate"><span class="pre">del_cpca_model()</span></code></a></li>
 <li><a class="reference internal" href="#libscientific.cpca.new_cpca_model"><code class="docutils literal notranslate"><span class="pre">new_cpca_model()</span></code></a></li>
 <li><a class="reference internal" href="#libscientific.cpca.print_cpca"><code class="docutils literal notranslate"><span class="pre">print_cpca()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.cpca.read_cpca"><code class="docutils literal notranslate"><span class="pre">read_cpca()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.cpca.write_cpca"><code class="docutils literal notranslate"><span class="pre">write_cpca()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-libscientific.interpolate">libscientific.interpolate module</a><ul>
@@ -3577,8 +3770,10 @@ Users can import submodules and access various functionalities provided by the l
 <li><a class="reference internal" href="#id48"><code class="docutils literal notranslate"><span class="pre">PCA.get_exp_variance()</span></code></a></li>
 <li><a class="reference internal" href="#id49"><code class="docutils literal notranslate"><span class="pre">PCA.get_loadings()</span></code></a></li>
 <li><a class="reference internal" href="#id50"><code class="docutils literal notranslate"><span class="pre">PCA.get_scores()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pca.PCA.load"><code class="docutils literal notranslate"><span class="pre">PCA.load()</span></code></a></li>
 <li><a class="reference internal" href="#id51"><code class="docutils literal notranslate"><span class="pre">PCA.predict()</span></code></a></li>
 <li><a class="reference internal" href="#id52"><code class="docutils literal notranslate"><span class="pre">PCA.reconstruct_original_matrix()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pca.PCA.save"><code class="docutils literal notranslate"><span class="pre">PCA.save()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#libscientific.pca.PCAMODEL"><code class="docutils literal notranslate"><span class="pre">PCAMODEL</span></code></a><ul>
@@ -3596,6 +3791,8 @@ Users can import submodules and access various functionalities provided by the l
 <li><a class="reference internal" href="#libscientific.pca.pca_ind_var_predictor"><code class="docutils literal notranslate"><span class="pre">pca_ind_var_predictor()</span></code></a></li>
 <li><a class="reference internal" href="#libscientific.pca.pca_score_predictor"><code class="docutils literal notranslate"><span class="pre">pca_score_predictor()</span></code></a></li>
 <li><a class="reference internal" href="#libscientific.pca.print_pca"><code class="docutils literal notranslate"><span class="pre">print_pca()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pca.read_pca"><code class="docutils literal notranslate"><span class="pre">read_pca()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pca.write_pca"><code class="docutils literal notranslate"><span class="pre">write_pca()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-libscientific.pls">libscientific.pls module</a><ul>
@@ -3631,7 +3828,9 @@ Users can import submodules and access various functionalities provided by the l
 <li><a class="reference internal" href="#id62"><code class="docutils literal notranslate"><span class="pre">PLS.get_x_column_scaling()</span></code></a></li>
 <li><a class="reference internal" href="#id63"><code class="docutils literal notranslate"><span class="pre">PLS.get_y_averages()</span></code></a></li>
 <li><a class="reference internal" href="#id64"><code class="docutils literal notranslate"><span class="pre">PLS.get_y_column_scaling()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.PLS.load"><code class="docutils literal notranslate"><span class="pre">PLS.load()</span></code></a></li>
 <li><a class="reference internal" href="#id65"><code class="docutils literal notranslate"><span class="pre">PLS.predict()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.PLS.save"><code class="docutils literal notranslate"><span class="pre">PLS.save()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#libscientific.pls.PLSMODEL"><code class="docutils literal notranslate"><span class="pre">PLSMODEL</span></code></a><ul>
@@ -3677,7 +3876,9 @@ Users can import submodules and access various functionalities provided by the l
 <li><a class="reference internal" href="#libscientific.pls.pls_y_predictor"><code class="docutils literal notranslate"><span class="pre">pls_y_predictor()</span></code></a></li>
 <li><a class="reference internal" href="#libscientific.pls.pls_y_predictor_all_lv"><code class="docutils literal notranslate"><span class="pre">pls_y_predictor_all_lv()</span></code></a></li>
 <li><a class="reference internal" href="#libscientific.pls.print_pls"><code class="docutils literal notranslate"><span class="pre">print_pls()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.read_pls"><code class="docutils literal notranslate"><span class="pre">read_pls()</span></code></a></li>
 <li><a class="reference internal" href="#libscientific.pls.revert_scaling"><code class="docutils literal notranslate"><span class="pre">revert_scaling()</span></code></a></li>
+<li><a class="reference internal" href="#libscientific.pls.write_pls"><code class="docutils literal notranslate"><span class="pre">write_pls()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-libscientific">Module contents</a><ul>
