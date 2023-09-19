@@ -61,4 +61,5 @@ from . import pls
 from . import vectlist
 from . import clustering
 
-__version__ = info.Scientific().__version__
+# __version__ = info.Scientific().__version__
+__version__ = "1.6.0"

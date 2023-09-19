@@ -6,7 +6,6 @@ name = "libscientific"
 authors = [{name = "Giuseppe Marco Randazzo", email= "gmrandazzo@gmail.com"}]
 description = "Libscientific python foreign function interface"
 readme = "README.md"
-version = "1.6.0"
 requires-python = ">=3.6"
 license = {text = "GPLv3"}
 classifiers = ["Programming Language :: Python :: 3"]
@@ -17,5 +16,5 @@ where = ["."]
 include = ["libscientific*"]
 exclude = []
 namespaces = false
-#[tool.setuptools.dynamic]
-#version = {attr = "libscientific.__version__"}
+[tool.setuptools.dynamic]
+version = {attr = "libscientific.__version__"}
