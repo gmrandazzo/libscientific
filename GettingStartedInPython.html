@@ -283,6 +283,13 @@ In particular, the algorithm described here is extracted from official libscient
 <span class="linenos">41</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Reconstruct the original PCA matrix using the PCA Model&quot;</span><span class="p">)</span>
 <span class="linenos">42</span><span class="n">ra</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">reconstruct_original_matrix</span><span class="p">()</span>
 <span class="linenos">43</span><span class="n">mx_to_video</span><span class="p">(</span><span class="n">ra</span><span class="p">)</span>
+<span class="linenos">44</span>
+<span class="linenos">45</span><span class="c1"># Save model</span>
+<span class="linenos">46</span><span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;mymodel.sqlite3&quot;</span><span class="p">)</span>
+<span class="linenos">47</span>
+<span class="linenos">48</span><span class="c1"># Load model</span>
+<span class="linenos">49</span><span class="n">model2</span> <span class="o">=</span> <span class="n">PCA</span><span class="p">()</span>
+<span class="linenos">50</span><span class="n">model2</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;mymodel.sqlite3&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -349,6 +356,13 @@ In particular, the algorithm described here is extracted from official libscient
 <span class="linenos">58</span><span class="n">mx_to_video</span><span class="p">(</span><span class="n">p_ss</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 <span class="linenos">59</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Showing the predicted block scores&quot;</span><span class="p">)</span>
 <span class="linenos">60</span><span class="n">t_to_video</span><span class="p">(</span><span class="n">p_bs</span><span class="p">)</span>
+<span class="linenos">61</span>
+<span class="linenos">62</span><span class="c1"># Save model</span>
+<span class="linenos">63</span><span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;mymodel.sqlite3&quot;</span><span class="p">)</span>
+<span class="linenos">64</span>
+<span class="linenos">65</span><span class="c1"># Load model</span>
+<span class="linenos">66</span><span class="n">model2</span> <span class="o">=</span> <span class="n">CPCA</span><span class="p">()</span>
+<span class="linenos">67</span><span class="n">model2</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;mymodel.sqlite3&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -402,6 +416,13 @@ In particular, the algorithm described here is extracted from official libscient
 <span class="linenos">44</span><span class="n">mx_to_video</span><span class="p">(</span><span class="n">py</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 <span class="linenos">45</span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Predicted Scores&quot;</span><span class="p">)</span>
 <span class="linenos">46</span><span class="n">mx_to_video</span><span class="p">(</span><span class="n">pscores</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="linenos">47</span>
+<span class="linenos">48</span><span class="c1"># Save model</span>
+<span class="linenos">49</span><span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;mymodel.sqlite3&quot;</span><span class="p">)</span>
+<span class="linenos">50</span>
+<span class="linenos">51</span><span class="c1"># Load model</span>
+<span class="linenos">52</span><span class="n">model2</span> <span class="o">=</span> <span class="n">PLS</span><span class="p">()</span>
+<span class="linenos">53</span><span class="n">model2</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;mymodel.sqlite3&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
