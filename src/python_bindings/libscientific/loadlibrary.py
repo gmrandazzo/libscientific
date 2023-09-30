@@ -80,7 +80,7 @@ def load_libscientific_library():
             lib_path = get_posix_library()
             if lib_path is None:
                 lib_path = find_library("scientific")
-            else:
+            if not lib_path:
                 msg = "Please install libscientific. Go to "
                 msg += "https://github.com/gmrandazzo/libscientific"
                 msg += "or if it is installed please "
