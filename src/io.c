@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <sqlite3.h>
 
+#include "memwrapper.h"
 #include "vector.h"
 #include "matrix.h"
 #include "pca.h"
@@ -90,10 +91,10 @@ static void serialize_dvectorlist(dvectorlist *dvlst, dvector *dlst_serialized)
 
 static void deserialize_dvectorlist(dvector *dlst_serialized, dvectorlist *dlst)
 {
-    size_t i, j, c = 0;
+    size_t j, c = 0;
     dvector *v;
-    for(i = 0; i < dlst_serialized->size; i++){
-        NewDVector(&v, (int)dlst_serialized->data[c++]);
+    while(c < dlst_serialized->size){
+        NewDVector(&v, (size_t)dlst_serialized->data[c++]);
         for(j = 0; j < v->size; j++){
             v->data[j] = dlst_serialized->data[c++];
         }
@@ -122,33 +123,33 @@ static void write_vector_into_sqltable(sqlite3 *db, char *tabname, dvector *vect
     size_t i;
     int rc;
     int lenght;
-    char *zErrMsg = 0;
+    char *err_msg = 0;
     char *sql;
 
     /* Create SQL statement */
     lenght = snprintf(NULL, 0, "CREATE TABLE IF NOT EXISTS %s (id INTEGER PRIMARY KEY AUTOINCREMENT, value REAL);", tabname);
-    sql = malloc(lenght+1);
+    sql = xmalloc(lenght+1);
     snprintf(sql, lenght+1, "CREATE TABLE IF NOT EXISTS %s (id INTEGER PRIMARY KEY AUTOINCREMENT, value REAL);", tabname);
     #ifdef DEBUG
     printf("%s\n", sql);
     #endif
 
     /* Execute SQL statement */
-    rc = sqlite3_exec(db, sql, callback, 0, &zErrMsg);
+    rc = sqlite3_exec(db, sql, callback, 0, &err_msg);
     if(rc != SQLITE_OK){
-        fprintf(stderr, "SQL error: %s\n", zErrMsg);
-        sqlite3_free(zErrMsg);
+        fprintf(stderr, "SQL error: %s\n", err_msg);
+        sqlite3_free(err_msg);
     }
     #ifdef DEBUG
     else{
         fprintf(stdout, "Table created successfully\n");
     }
     #endif
-    free(sql);
+    xfree(sql);
 
     for (i = 0; i < vect->size; i++){
         lenght = snprintf(NULL, 0, "INSERT INTO %s (value) VALUES (%.18f);", tabname, vect->data[i]);
-        sql = malloc(lenght+1);
+        sql = xmalloc(lenght+1);
         snprintf(sql, lenght+1, "INSERT INTO %s (value) VALUES (%.18f);", tabname, vect->data[i]);
         #ifdef DEBUG
         printf("%s\n", sql);
@@ -158,7 +159,7 @@ static void write_vector_into_sqltable(sqlite3 *db, char *tabname, dvector *vect
         if (rc != SQLITE_OK) {
             fprintf(stderr, "SQL error: %s\n", sqlite3_errmsg(db));
             sqlite3_close(db);
-            free(sql);
+            xfree(sql);
             abort();
         }
         sqlite3_bind_double(stmt, 1, vect->data[i]);
@@ -167,7 +168,7 @@ static void write_vector_into_sqltable(sqlite3 *db, char *tabname, dvector *vect
             fprintf(stderr, "SQL error: %s\n", sqlite3_errmsg(db));
         }
         sqlite3_finalize(stmt);
-        free(sql);
+        xfree(sql);
     }
 }
 
@@ -180,7 +181,7 @@ static void read_vector(sqlite3 *db, char *tabname, dvector *vect)
     sqlite3_stmt* stmt;
 
     lenght = snprintf(NULL, 0, "SELECT value FROM %s;", tabname);
-    sql = malloc(lenght+1);
+    sql = xmalloc(lenght+1);
     snprintf(sql, lenght+1, "SELECT value FROM %s;", tabname);
     #ifdef DEBUG
     printf("%s\n", sql);
@@ -189,7 +190,7 @@ static void read_vector(sqlite3 *db, char *tabname, dvector *vect)
     if (rc != SQLITE_OK){
         fprintf(stderr, "SQL error: %s\n", sqlite3_errmsg(db));
         sqlite3_close(db);
-        free(sql);
+        xfree(sql);
         abort();
     }
 
@@ -204,7 +205,7 @@ static void read_vector(sqlite3 *db, char *tabname, dvector *vect)
         sqlite3_finalize(stmt);
         sqlite3_close(db);
     }
-    free(sql);
+    xfree(sql);
 }
 
 static void OpenDB(char *dbpath, sqlite3 **db)
@@ -212,13 +213,32 @@ static void OpenDB(char *dbpath, sqlite3 **db)
     int rc;
     /* Open the SQLite database */
     rc = sqlite3_open(dbpath, db);
-    if (rc) {
+    if (rc != SQLITE_OK) {
         fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg((*db)));
+        sqlite3_close((*db));
         return;
     }
     #ifdef DEBUG
     else{
         fprintf(stdout, "Opened database successfully\n");
+    }
+    #endif
+}
+
+static void DropAllTables(sqlite3 *db)
+{
+    int rc;
+    char *err_msg = 0;
+    const char *dropAllObjectsSQL = "SELECT 'DROP TABLE IF EXISTS ' || name || ';' FROM sqlite_master WHERE type = 'table';";
+    /* Execute SQL statement */
+    rc = sqlite3_exec(db, dropAllObjectsSQL, 0, 0, &err_msg);
+    if(rc != SQLITE_OK){
+        fprintf(stderr, "SQL error: %s\n", err_msg);
+        sqlite3_free(err_msg);
+    }
+    #ifdef DEBUG
+    else{
+        fprintf(stdout, "Table created successfully\n");
     }
     #endif
 }
@@ -233,6 +253,7 @@ void WritePCA(char *dbpath, PCAMODEL *pca)
     dvector *serial_vect;
     sqlite3 *db = NULL;
     OpenDB(dbpath, &db);
+    DropAllTables(db);
     /**
      * PCA model data structure.
      * 
@@ -289,6 +310,8 @@ void WriteCPCA(char *dbpath, CPCAMODEL *cpca)
     dvector *serial_vect;
     sqlite3 *db = NULL;
     OpenDB(dbpath, &db);
+    DropAllTables(db);
+
     /*
      * CPCA model data structure.
      * 
@@ -397,7 +420,7 @@ void WritePLS(char *dbpath, PLSMODEL *pls)
     dvector *serial_vect;
     sqlite3 *db = NULL;
     OpenDB(dbpath, &db);
-
+    DropAllTables(db);
     /*
      * PLS model data structure to write
      * 

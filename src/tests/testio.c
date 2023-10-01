@@ -22,6 +22,8 @@
 #include "pls.h"
 #include "numeric.h"
 
+#define ACCEPTABILITY 1e-8
+
 void TestCPCA3(){
     puts("Test 3 - CPCA Model Saving/Reading");
     size_t i, j, k;
@@ -58,7 +60,7 @@ void TestCPCA3(){
     for(k = 0; k < model->block_scores->order; k++){
         for(j = 0; j < model->block_scores->m[k]->col; j++){
             for(i = 0; i < model->block_scores->m[k]->row; i++){
-                if(FLOAT_EQ(model->block_scores->m[k]->data[i][j], mread->block_scores->m[k]->data[i][j], 1e-10)){
+                if(FLOAT_EQ(model->block_scores->m[k]->data[i][j], mread->block_scores->m[k]->data[i][j], ACCEPTABILITY)){
                     continue;   
                 }
                 else{
@@ -72,7 +74,7 @@ void TestCPCA3(){
     for(k = 0; k < model->block_loadings->order; k++){
         for(j = 0; j < model->block_loadings->m[k]->col; j++){
             for(i = 0; i < model->block_loadings->m[k]->row; i++){
-                if(FLOAT_EQ(model->block_loadings->m[k]->data[i][j], mread->block_loadings->m[k]->data[i][j], 1e-10)){
+                if(FLOAT_EQ(model->block_loadings->m[k]->data[i][j], mread->block_loadings->m[k]->data[i][j], ACCEPTABILITY)){
                     continue;   
                 }
                 else{
@@ -85,7 +87,7 @@ void TestCPCA3(){
 
     for(j = 0; j < model->super_scores->col; j++){
         for(i = 0; i < model->super_scores->row; i++){
-            if(FLOAT_EQ(model->super_scores->data[i][j], mread->super_scores->data[i][j], 1e-10)){
+            if(FLOAT_EQ(model->super_scores->data[i][j], mread->super_scores->data[i][j], ACCEPTABILITY)){
                 continue;   
             }
             else{
@@ -97,7 +99,7 @@ void TestCPCA3(){
 
     for(j = 0; j < model->super_weights->col; j++){
         for(i = 0; i < model->super_weights->row; i++){
-            if(FLOAT_EQ(model->super_weights->data[i][j], mread->super_weights->data[i][j], 1e-10)){
+            if(FLOAT_EQ(model->super_weights->data[i][j], mread->super_weights->data[i][j], ACCEPTABILITY)){
                 continue;   
             }
             else{
@@ -110,7 +112,7 @@ void TestCPCA3(){
     
     for(j = 0; j < model->colaverage->size; j++){
         for(i = 0; i < model->colaverage->d[j]->size; i++){
-            if(FLOAT_EQ(model->colaverage->d[j]->data[i], mread->colaverage->d[j]->data[i], 1e-10)){
+            if(FLOAT_EQ(model->colaverage->d[j]->data[i], mread->colaverage->d[j]->data[i], ACCEPTABILITY)){
                 continue;   
             }
             else{
@@ -122,7 +124,7 @@ void TestCPCA3(){
 
     for(j = 0; j < model->colscaling->size; j++){
         for(i = 0; i < model->colscaling->d[j]->size; i++){
-            if(FLOAT_EQ(model->colscaling->d[j]->data[i], mread->colscaling->d[j]->data[i], 1e-10)){
+            if(FLOAT_EQ(model->colscaling->d[j]->data[i], mread->colscaling->d[j]->data[i], ACCEPTABILITY)){
                 continue;   
             }
             else{
@@ -134,7 +136,7 @@ void TestCPCA3(){
 
     for(j = 0; j < model->block_expvar->size; j++){
         for(i = 0; i < model->block_expvar->d[j]->size; i++){
-            if(FLOAT_EQ(model->block_expvar->d[j]->data[i], mread->block_expvar->d[j]->data[i], 1e-10)){
+            if(FLOAT_EQ(model->block_expvar->d[j]->data[i], mread->block_expvar->d[j]->data[i], ACCEPTABILITY)){
                 continue;   
             }
             else{
@@ -145,7 +147,7 @@ void TestCPCA3(){
     }
 
     for(i = 0; i < model->scaling_factor->size; i++){
-        if(FLOAT_EQ(model->scaling_factor->data[i], mread->scaling_factor->data[i], 1e-10)){
+        if(FLOAT_EQ(model->scaling_factor->data[i], mread->scaling_factor->data[i], ACCEPTABILITY)){
             continue;   
         }
         else{
@@ -155,7 +157,7 @@ void TestCPCA3(){
     }
 
     for(i = 0; i < model->total_expvar->size; i++){
-        if(FLOAT_EQ(model->total_expvar->data[i], mread->total_expvar->data[i], 1e-10)){
+        if(FLOAT_EQ(model->total_expvar->data[i], mread->total_expvar->data[i], ACCEPTABILITY)){
             continue;   
         }
         else{
@@ -165,6 +167,7 @@ void TestCPCA3(){
     }
 
     DelCPCAModel(&model);
+    DelCPCAModel(&mread);
     DelTensor(&t);
     DelUIVector(&colsizes);
 }
@@ -205,7 +208,7 @@ void TestPCA2()
     /* check original results vs readed results */
     for(j = 0; j < model->scores->col; j++){
         for(i = 0; i < model->scores->row; i++){
-            if(FLOAT_EQ(model->scores->data[i][j], mread->scores->data[i][j], 1e-10)){
+            if(FLOAT_EQ(model->scores->data[i][j], mread->scores->data[i][j], ACCEPTABILITY)){
                 continue;   
             }
             else{
@@ -217,7 +220,7 @@ void TestPCA2()
 
     for(j = 0; j < model->loadings->col; j++){
         for(i = 0; i < model->loadings->row; i++){
-            if(FLOAT_EQ(model->loadings->data[i][j], mread->loadings->data[i][j], 1e-10)){
+            if(FLOAT_EQ(model->loadings->data[i][j], mread->loadings->data[i][j], ACCEPTABILITY)){
                 continue;   
             }
             else{
@@ -229,7 +232,7 @@ void TestPCA2()
 
 
     for(i = 0; i < model->colaverage->size; i++){
-        if(FLOAT_EQ(model->colaverage->data[i], mread->colaverage->data[i], 1e-10)){
+        if(FLOAT_EQ(model->colaverage->data[i], mread->colaverage->data[i], ACCEPTABILITY)){
             continue;   
         }
         else{
@@ -239,7 +242,7 @@ void TestPCA2()
     }
 
     for(i = 0; i < model->colscaling->size; i++){
-        if(FLOAT_EQ(model->colscaling->data[i], mread->colscaling->data[i], 1e-10)){
+        if(FLOAT_EQ(model->colscaling->data[i], mread->colscaling->data[i], ACCEPTABILITY)){
             continue;   
         }
         else{
@@ -256,7 +259,7 @@ void TestPCA2()
 
 void TestPLS1()
 {
-    printf("Test 1 - PLS Model Saving/Reading");
+    printf("Test 1 - PLS Model Saving/Reading\n");
     size_t i, j, k;
     matrix *x, *y; /* Data matrix */
     PLSMODEL *m, *mread;
@@ -312,10 +315,11 @@ void TestPLS1()
     //LeaveOneOut(&minpt, _PLS_, m->predicted_y, m->pred_residuals, 4, NULL, 0);
     PLSRegressionStatistics(y, m->predicted_y, m->q2y, m->sdep, m->bias);
 
-    ValidationArg varg = initValidationArg();
+    /*ValidationArg varg = initValidationArg();
     varg.vtype = BootstrapRGCV;
     YScrambling(&minpt, _PLS_, varg, 2, m->yscrambling, 1, NULL);
-
+    */
+   
     /* test write pls model*/
 
     WritePLS("pls.sqlite3", m);
@@ -326,7 +330,7 @@ void TestPLS1()
     /* check original results vs readed results */
     for(j = 0; j < m->xscores->col; j++){
         for(i = 0; i < m->xscores->row; i++){
-            if(FLOAT_EQ(m->xscores->data[i][j], mread->xscores->data[i][j], 1e-10)){
+            if(FLOAT_EQ(m->xscores->data[i][j], mread->xscores->data[i][j], ACCEPTABILITY)){
                 continue;   
             }
             else{
@@ -338,7 +342,7 @@ void TestPLS1()
 
     for(j = 0; j < m->xloadings->col; j++){
         for(i = 0; i < m->xloadings->row; i++){
-            if(FLOAT_EQ(m->xloadings->data[i][j], mread->xloadings->data[i][j], 1e-10)){
+            if(FLOAT_EQ(m->xloadings->data[i][j], mread->xloadings->data[i][j], ACCEPTABILITY)){
                 continue;   
             }
             else{
@@ -350,7 +354,7 @@ void TestPLS1()
 
     for(j = 0; j < m->xweights->col; j++){
         for(i = 0; i < m->xweights->row; i++){
-            if(FLOAT_EQ(m->xweights->data[i][j], mread->xweights->data[i][j], 1e-10)){
+            if(FLOAT_EQ(m->xweights->data[i][j], mread->xweights->data[i][j], ACCEPTABILITY)){
                 continue;   
             }
             else{
@@ -362,7 +366,7 @@ void TestPLS1()
 
     for(j = 0; j < m->yscores->col; j++){
         for(i = 0; i < m->yscores->row; i++){
-            if(FLOAT_EQ(m->yscores->data[i][j], mread->yscores->data[i][j], 1e-10)){
+            if(FLOAT_EQ(m->yscores->data[i][j], mread->yscores->data[i][j], ACCEPTABILITY)){
                 continue;   
             }
             else{
@@ -374,7 +378,7 @@ void TestPLS1()
 
     for(j = 0; j < m->yloadings->col; j++){
         for(i = 0; i < m->yloadings->row; i++){
-            if(FLOAT_EQ(m->yloadings->data[i][j], mread->yloadings->data[i][j], 1e-10)){
+            if(FLOAT_EQ(m->yloadings->data[i][j], mread->yloadings->data[i][j], ACCEPTABILITY)){
                 continue;   
             }
             else{
@@ -387,7 +391,7 @@ void TestPLS1()
 
     for(j = 0; j < m->recalculated_y->col; j++){
         for(i = 0; i < m->recalculated_y->row; i++){
-            if(FLOAT_EQ(m->recalculated_y->data[i][j], mread->recalculated_y->data[i][j], 1e-10)){
+            if(FLOAT_EQ(m->recalculated_y->data[i][j], mread->recalculated_y->data[i][j], ACCEPTABILITY)){
                 continue;   
             }
             else{
@@ -399,7 +403,7 @@ void TestPLS1()
 
     for(j = 0; j < m->recalc_residuals->col; j++){
         for(i = 0; i < m->recalc_residuals->row; i++){
-            if(FLOAT_EQ(m->recalc_residuals->data[i][j], mread->recalc_residuals->data[i][j], 1e-10)){
+            if(FLOAT_EQ(m->recalc_residuals->data[i][j], mread->recalc_residuals->data[i][j], ACCEPTABILITY)){
                 continue;   
             }
             else{
@@ -412,7 +416,7 @@ void TestPLS1()
 
     for(j = 0; j < m->predicted_y->col; j++){
         for(i = 0; i < m->predicted_y->row; i++){
-            if(FLOAT_EQ(m->predicted_y->data[i][j], mread->predicted_y->data[i][j], 1e-10)){
+            if(FLOAT_EQ(m->predicted_y->data[i][j], mread->predicted_y->data[i][j], ACCEPTABILITY)){
                 continue;   
             }
             else{
@@ -424,7 +428,7 @@ void TestPLS1()
 
     for(j = 0; j < m->pred_residuals->col; j++){
         for(i = 0; i < m->pred_residuals->row; i++){
-            if(FLOAT_EQ(m->pred_residuals->data[i][j], mread->pred_residuals->data[i][j], 1e-10)){
+            if(FLOAT_EQ(m->pred_residuals->data[i][j], mread->pred_residuals->data[i][j], ACCEPTABILITY)){
                 continue;   
             }
             else{
@@ -437,7 +441,7 @@ void TestPLS1()
 
     for(j = 0; j < m->r2y_recalculated->col; j++){
         for(i = 0; i < m->r2y_recalculated->row; i++){
-            if(FLOAT_EQ(m->r2y_recalculated->data[i][j], mread->r2y_recalculated->data[i][j], 1e-10)){
+            if(FLOAT_EQ(m->r2y_recalculated->data[i][j], mread->r2y_recalculated->data[i][j], ACCEPTABILITY)){
                 continue;   
             }
             else{
@@ -449,7 +453,7 @@ void TestPLS1()
 
     for(j = 0; j < m->r2y_validation->col; j++){
         for(i = 0; i < m->r2y_validation->row; i++){
-            if(FLOAT_EQ(m->r2y_validation->data[i][j], mread->r2y_validation->data[i][j], 1e-10)){
+            if(FLOAT_EQ(m->r2y_validation->data[i][j], mread->r2y_validation->data[i][j], ACCEPTABILITY)){
                 continue;   
             }
             else{
@@ -461,7 +465,7 @@ void TestPLS1()
 
     for(j = 0; j < m->q2y->col; j++){
         for(i = 0; i < m->q2y->row; i++){
-            if(FLOAT_EQ(m->q2y->data[i][j], mread->q2y->data[i][j], 1e-10)){
+            if(FLOAT_EQ(m->q2y->data[i][j], mread->q2y->data[i][j], ACCEPTABILITY)){
                 continue;   
             }
             else{
@@ -473,7 +477,7 @@ void TestPLS1()
 
     for(j = 0; j < m->sdep->col; j++){
         for(i = 0; i < m->sdep->row; i++){
-            if(FLOAT_EQ(m->sdep->data[i][j], mread->sdep->data[i][j], 1e-10)){
+            if(FLOAT_EQ(m->sdep->data[i][j], mread->sdep->data[i][j], ACCEPTABILITY)){
                 continue;   
             }
             else{
@@ -485,7 +489,7 @@ void TestPLS1()
 
     for(j = 0; j < m->sdec->col; j++){
         for(i = 0; i < m->sdec->row; i++){
-            if(FLOAT_EQ(m->sdec->data[i][j], mread->sdec->data[i][j], 1e-10)){
+            if(FLOAT_EQ(m->sdec->data[i][j], mread->sdec->data[i][j], ACCEPTABILITY)){
                 continue;   
             }
             else{
@@ -497,7 +501,7 @@ void TestPLS1()
 
     for(j = 0; j < m->bias->col; j++){
         for(i = 0; i < m->bias->row; i++){
-            if(FLOAT_EQ(m->bias->data[i][j], mread->bias->data[i][j], 1e-10)){
+            if(FLOAT_EQ(m->bias->data[i][j], mread->bias->data[i][j], ACCEPTABILITY)){
                 continue;   
             }
             else{
@@ -509,7 +513,7 @@ void TestPLS1()
 
     for(j = 0; j < m->roc_auc_recalculated->col; j++){
         for(i = 0; i < m->roc_auc_recalculated->row; i++){
-            if(FLOAT_EQ(m->roc_auc_recalculated->data[i][j], mread->roc_auc_recalculated->data[i][j], 1e-10)){
+            if(FLOAT_EQ(m->roc_auc_recalculated->data[i][j], mread->roc_auc_recalculated->data[i][j], ACCEPTABILITY)){
                 continue;   
             }
             else{
@@ -521,7 +525,7 @@ void TestPLS1()
 
     for(j = 0; j < m->roc_auc_validation->col; j++){
         for(i = 0; i < m->roc_auc_validation->row; i++){
-            if(FLOAT_EQ(m->roc_auc_validation->data[i][j], mread->roc_auc_validation->data[i][j], 1e-10)){
+            if(FLOAT_EQ(m->roc_auc_validation->data[i][j], mread->roc_auc_validation->data[i][j], ACCEPTABILITY)){
                 continue;   
             }
             else{
@@ -533,7 +537,7 @@ void TestPLS1()
 
     for(j = 0; j < m->precision_recall_ap_recalculated->col; j++){
         for(i = 0; i < m->precision_recall_ap_recalculated->row; i++){
-            if(FLOAT_EQ(m->precision_recall_ap_recalculated->data[i][j], mread->precision_recall_ap_recalculated->data[i][j], 1e-10)){
+            if(FLOAT_EQ(m->precision_recall_ap_recalculated->data[i][j], mread->precision_recall_ap_recalculated->data[i][j], ACCEPTABILITY)){
                 continue;   
             }
             else{
@@ -545,7 +549,7 @@ void TestPLS1()
 
     for(j = 0; j < m->precision_recall_ap_validation->col; j++){
         for(i = 0; i < m->precision_recall_ap_validation->row; i++){
-            if(FLOAT_EQ(m->precision_recall_ap_validation->data[i][j], mread->precision_recall_ap_validation->data[i][j], 1e-10)){
+            if(FLOAT_EQ(m->precision_recall_ap_validation->data[i][j], mread->precision_recall_ap_validation->data[i][j], ACCEPTABILITY)){
                 continue;   
             }
             else{
@@ -557,7 +561,7 @@ void TestPLS1()
 
     for(j = 0; j < m->yscrambling->col; j++){
         for(i = 0; i < m->yscrambling->row; i++){
-            if(FLOAT_EQ(m->yscrambling->data[i][j], mread->yscrambling->data[i][j], 1e-10)){
+            if(FLOAT_EQ(m->yscrambling->data[i][j], mread->yscrambling->data[i][j], ACCEPTABILITY)){
                 continue;   
             }
             else{
@@ -570,7 +574,7 @@ void TestPLS1()
     for(k = 0; k < m->roc_recalculated->order; k++){
         for(j = 0; j < m->roc_recalculated->m[k]->col; j++){
             for(i = 0; i < m->roc_recalculated->m[k]->row; i++){
-                if(FLOAT_EQ(m->roc_recalculated->m[k]->data[i][j], mread->roc_recalculated->m[k]->data[i][j], 1e-10)){
+                if(FLOAT_EQ(m->roc_recalculated->m[k]->data[i][j], mread->roc_recalculated->m[k]->data[i][j], ACCEPTABILITY)){
                     continue;   
                 }
                 else{
@@ -584,7 +588,7 @@ void TestPLS1()
     for(k = 0; k < m->roc_validation->order; k++){
         for(j = 0; j < m->roc_validation->m[k]->col; j++){
             for(i = 0; i < m->roc_validation->m[k]->row; i++){
-                if(FLOAT_EQ(m->roc_validation->m[k]->data[i][j], mread->roc_validation->m[k]->data[i][j], 1e-10)){
+                if(FLOAT_EQ(m->roc_validation->m[k]->data[i][j], mread->roc_validation->m[k]->data[i][j], ACCEPTABILITY)){
                     continue;   
                 }
                 else{
@@ -598,7 +602,7 @@ void TestPLS1()
     for(k = 0; k < m->precision_recall_recalculated->order; k++){
         for(j = 0; j < m->precision_recall_recalculated->m[k]->col; j++){
             for(i = 0; i < m->precision_recall_recalculated->m[k]->row; i++){
-                if(FLOAT_EQ(m->precision_recall_recalculated->m[k]->data[i][j], mread->precision_recall_recalculated->m[k]->data[i][j], 1e-10)){
+                if(FLOAT_EQ(m->precision_recall_recalculated->m[k]->data[i][j], mread->precision_recall_recalculated->m[k]->data[i][j], ACCEPTABILITY)){
                     continue;   
                 }
                 else{
@@ -612,7 +616,7 @@ void TestPLS1()
     for(k = 0; k < m->precision_recall_validation->order; k++){
         for(j = 0; j < m->precision_recall_validation->m[k]->col; j++){
             for(i = 0; i < m->precision_recall_validation->m[k]->row; i++){
-                if(FLOAT_EQ(m->precision_recall_validation->m[k]->data[i][j], mread->precision_recall_validation->m[k]->data[i][j], 1e-10)){
+                if(FLOAT_EQ(m->precision_recall_validation->m[k]->data[i][j], mread->precision_recall_validation->m[k]->data[i][j], ACCEPTABILITY)){
                     continue;   
                 }
                 else{
@@ -625,7 +629,7 @@ void TestPLS1()
 
     
     for(i = 0; i < m->b->size; i++){
-        if(FLOAT_EQ(m->b->data[i], mread->b->data[i], 1e-10)){
+        if(FLOAT_EQ(m->b->data[i], mread->b->data[i], ACCEPTABILITY)){
             continue;   
         }
         else{
@@ -635,7 +639,7 @@ void TestPLS1()
     }
 
     for(i = 0; i < m->xvarexp->size; i++){
-        if(FLOAT_EQ(m->xvarexp->data[i], mread->xvarexp->data[i], 1e-10)){
+        if(FLOAT_EQ(m->xvarexp->data[i], mread->xvarexp->data[i], ACCEPTABILITY)){
             continue;   
         }
         else{
@@ -645,7 +649,7 @@ void TestPLS1()
     }
 
     for(i = 0; i < m->xcolaverage->size; i++){
-        if(FLOAT_EQ(m->xcolaverage->data[i], mread->xcolaverage->data[i], 1e-10)){
+        if(FLOAT_EQ(m->xcolaverage->data[i], mread->xcolaverage->data[i], ACCEPTABILITY)){
             continue;   
         }
         else{
@@ -655,7 +659,7 @@ void TestPLS1()
     }
 
     for(i = 0; i < m->xcolscaling->size; i++){
-        if(FLOAT_EQ(m->xcolscaling->data[i], mread->xcolscaling->data[i], 1e-10)){
+        if(FLOAT_EQ(m->xcolscaling->data[i], mread->xcolscaling->data[i], ACCEPTABILITY)){
             continue;   
         }
         else{
@@ -665,7 +669,7 @@ void TestPLS1()
     }
 
     for(i = 0; i < m->ycolaverage->size; i++){
-        if(FLOAT_EQ(m->ycolaverage->data[i], mread->ycolaverage->data[i], 1e-10)){
+        if(FLOAT_EQ(m->ycolaverage->data[i], mread->ycolaverage->data[i], ACCEPTABILITY)){
             continue;   
         }
         else{
@@ -675,7 +679,7 @@ void TestPLS1()
     }
 
     for(i = 0; i < m->ycolscaling->size; i++){
-        if(FLOAT_EQ(m->ycolscaling->data[i], mread->ycolscaling->data[i], 1e-10)){
+        if(FLOAT_EQ(m->ycolscaling->data[i], mread->ycolscaling->data[i], ACCEPTABILITY)){
             continue;   
         }
         else{

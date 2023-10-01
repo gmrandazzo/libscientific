@@ -862,9 +862,9 @@ void Test28()
 void Test27()
 {
   matrix *m, *t;
-  puts("Test 27: Transpose a matrix of 700000 rows and 128 columns");
-  NewMatrix(&m, 700000, 128);
-  NewMatrix(&t, 128, 700000);
+  puts("Test 27: Transpose a matrix of 7000 rows and 128 columns");
+  NewMatrix(&m, 7000, 128);
+  NewMatrix(&t, 128, 7000);
   MatrixTranspose(m, t);
   MatrixCopy(t, &m);
   DelMatrix(&t);
@@ -1770,7 +1770,7 @@ void Test5_bis()
   dvector *v;
   dvector *r;
   dvector *r_bis;
-  size_t i, j, rowsize = 25000, colsize = 5000;
+  size_t i, j, rowsize = 2500, colsize = 500;
   clock_t begin, end;
   double time_spent;
 

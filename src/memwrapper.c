@@ -33,7 +33,7 @@ void *xmalloc(size_t size)
   void *ptr = NULL;
   ptr = malloc(size);
   if(ptr == NULL){
-    fprintf(stderr, "Memory Exhausted!\n");
+    fprintf(stderr, "[Libscientific] Memory Exhausted!\n");
     abort();
   }
   return ptr;
@@ -43,7 +43,7 @@ void *xrealloc(void *ptr, size_t size)
 {
   register void *value = realloc (ptr, size);
   if (value == 0){
-    fprintf(stderr, "Memory Exhausted!\n");
+    fprintf(stderr, "[Libscientific] Memory Exhausted!\n");
     abort();
   }
   return value;
