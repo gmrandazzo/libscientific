@@ -168,6 +168,14 @@ Manual Installation
   pytest # optional
 ```
 
+Compile python platform specific whl
+
+```
+OSX: python3 setup.py bdist_wheel --plat-name  macosx-14-arm64 
+Linux: python3 setup.py bdist_wheel --plat-name  manylinux1_x86_64
+Win32: python3 setup.py bdist_wheel --plat-name  win_amd64
+```
+
 
 Homebrew OSX
 ------------
