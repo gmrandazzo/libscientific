@@ -19,8 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import os
 import pathlib
 import ctypes
-from ctypes.util import find_library
-
 
 def get_posix_library():
     """Find the path to the libscientific POSIX library.
@@ -58,10 +56,9 @@ def load_libscientific_library():
     lsci = None
     if os.name == "nt":
         if lsci_lib_dir:
-            lib_path = str(pathlib.Path(lsci_lib_dir))+'libscientific.dll'
+            lib_path = f'{pathlib.Path(lsci_lib_dir)}/libscientific.dll'
         else:
-            lib_path = find_library("scientific")
-
+            lib_path = f'{pathlib.Path(__file__).parent}/libscientific.dll'
         try:
             lsci = ctypes.CDLL(lib_path, winmode=0)
         except TypeError:
@@ -79,16 +76,20 @@ def load_libscientific_library():
         else:
             lib_path = get_posix_library()
             if lib_path is None:
-                lib_path = find_library("scientific")
-            if not lib_path:
-                msg = "Please install libscientific. Go to "
-                msg += "https://github.com/gmrandazzo/libscientific"
-                msg += "or if it is installed please "
-                msg += "check/specify the location in LD_LIBRARY_PATH "
-                msg += "or add this environment variable "
-                msg += "export LIBSCIENTIFIC_LIB_DIR=<path libscientific>"
-                raise RuntimeError(msg)
-        lsci = ctypes.cdll.LoadLibrary(lib_path)
+                lib_path = f'{pathlib.Path(__file__).parent}/{libname}'
+        try:
+            lsci = ctypes.cdll.LoadLibrary(lib_path)
+        except OSError as err:
+            msg = "Please install sqlite3 and lapack library "
+            msg += "if you want to use the binary library in this package.\n"
+            msg += "Alternativelly you can install the library directly "
+            msg += "from its source code from here "
+            msg += "https://github.com/gmrandazzo/libscientific"
+            msg += "\nIf the library is installed please "
+            msg += "check/specify the location in LD_LIBRARY_PATH "
+            msg += "or add this environment variable "
+            msg += "export LIBSCIENTIFIC_LIB_DIR=<path libscientific>"
+            raise RuntimeError(msg) from err
     else:
         raise RuntimeError(f"Don't know how to load library on {os.name}")
     return lsci

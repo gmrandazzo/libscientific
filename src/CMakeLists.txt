@@ -64,7 +64,7 @@ endif()
 add_library(libscientific SHARED ${Scientific_C_SRCS} ${Scientific_C_H})
 set_target_properties(libscientific PROPERTIES VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH} SOVERSION ${VERSION_MAJOR} )
 set_target_properties(libscientific PROPERTIES OUTPUT_NAME "scientific")
-target_link_libraries(libscientific pthread ${LAPACK_LIBRARIES} ${SQLite3_LIBRARIES})
+target_link_libraries(libscientific PUBLIC pthread ${LAPACK_LIBRARIES} ${SQLite3_LIBRARIES})
 
 if(WIN32)
   install(TARGETS libscientific ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib COMPONENT library)
@@ -91,6 +91,10 @@ add_custom_command(
         "${dst_dir}/${libname}${CMAKE_SHARED_LIBRARY_SUFFIX}"
     COMMENT "Copying ${libname} to ${dst_dir}"
 )
+
+if(EXISTS "${dst_dir}/${libname}${CMAKE_SHARED_LIBRARY_SUFFIX}")
+    file(REMOVE_RECURSE "${dst_dir}/${libname}${CMAKE_SHARED_LIBRARY_SUFFIX}")
+endif()
 
 # Optionally, create a custom target to trigger the copy as part of the build
 add_custom_target(copy_${libname}

@@ -18,8 +18,6 @@ string(TOLOWER "${CMAKE_BUILD_TYPE}" cmake_build_type_tolower)
 
 find_package(LAPACK REQUIRED)
 find_package(SQLite3 REQUIRED)
-set(BLA_STATIC ON)
-set(SQLITE3_STATIC ON)
 
 if(LAPACK_FOUND)
   message(STATUS "Build libscientific using system lapack library")
