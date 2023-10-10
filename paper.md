@@ -100,8 +100,11 @@ With this analysis, we confirm that as the input size (often termed "problem siz
 Linear algorithms have notable characteristics:
 
 * Most of the time, 'Linear Time Complexity (O(n))': Execution time grows linearly with input size.
+
 * Constant Work per Input Element: Each input element is processed continuously in linear algorithms.
+
 * Stable Performance Impact: Doubling input size roughly doubles execution time, facilitating performance estimation.
+
 * Optimal Scaling: Linear-time solutions efficiently handle larger inputs.
 
 |   |   |
