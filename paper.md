@@ -102,6 +102,7 @@ Linear algorithms have notable characteristics:
 * Stable Performance Impact: Doubling input size roughly doubles execution time, facilitating performance estimation.
 * Optimal Scaling: Linear-time solutions efficiently handle larger inputs.
 <br><br>
+
 |   |   |
 |---|---|
 | PCA | CPCA |
