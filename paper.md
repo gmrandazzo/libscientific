@@ -32,10 +32,10 @@ The library also provides a Python foreign function to be used inside Python scr
 
 The library is designed to be easy to use and can be integrated into any C or C++ project.
 Additionally, libscientific comes with a foreign function Python bindings, making it accessible within Python scripts and easier to perform data analysis tasks.
-One of the main advantages of libscientific is its performance and scalability. 
+One of the main advantages of libscientific is its performance and scalability.
 This means that large data sets can be analyzed quickly and efficiently, making it an ideal choice for applications where speed is critical.
 The library depends only on lapack for SVD and eigenvalues decomposition and can be easily integrated into embedded systems.
-The current library version is 1.5.2, and here is a list of the current library features:
+The current library version is 1.6.0, and here is a list of the current library features:
 
 * Principal Component Analysis (PCA)
 * Consensus Principal Component Analysis (CPCA)
@@ -91,7 +91,9 @@ Libcientific tests range from simple matrix-vector multiplication to the correct
 # Speed and Memory Comparison
 
 Several simulations of every algorithm in libscientific with data of different sizes (input size) against CPU speed were performed to address the algorithm's performance.
+
 Looking at the plots for PCA, CPCA, and PLS in Figure 1, we observe a linear trend, which suggests that the algorithm's time complexity also increases linearly. However, this does not tell the computational complexity of the algorithms. Indeed, since the NIPALS algorithm is similar to the power method for determining the eigenvectors and eigenvalues of a matrix [@Lorber87], we can assume that the computational complexity could be O(n²) or O(n³). Moreover it is important to point out that the calculation speed is mainly influenced by the number of samples, the number of iterations required for convergence, and the number of principal components/latent variables to calculate.
+
 Instead, MLR shows a polynomial correlation as expected from the OLS algorithm, which uses a matrix direct inverse approach with a computational complexity of O(n³).
 
 With this analysis, we confirm that as the input size (often termed "problem size") increases by a constant factor, the execution time also increases proportionally (linear algorithms).
@@ -101,7 +103,6 @@ Linear algorithms have notable characteristics:
 * Constant Work per Input Element: Each input element is processed continuously in linear algorithms.
 * Stable Performance Impact: Doubling input size roughly doubles execution time, facilitating performance estimation.
 * Optimal Scaling: Linear-time solutions efficiently handle larger inputs.
-
 
 |   |   |
 |---|---|
