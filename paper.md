@@ -98,17 +98,18 @@ With this analysis, we confirm that as the input size (often termed "problem siz
 Linear algorithms have notable characteristics:
 
 * Most of the time, 'Linear Time Complexity (O(n))': Execution time grows linearly with input size.
-* Constant Work per Input Element: Each input element is processed continuously in linear algorithms. 
+* Constant Work per Input Element: Each input element is processed continuously in linear algorithms.
 * Stable Performance Impact: Doubling input size roughly doubles execution time, facilitating performance estimation.
 * Optimal Scaling: Linear-time solutions efficiently handle larger inputs.
-
+<br><br>
 |   |   |
 |---|---|
 | PCA | CPCA |
 | ![PCA](performance/pca_input_vs_cputime.png){ width=40% } | ![CPCA](performance/cpca_input_vs_cputime.png){ width=40% } |
 | PLS | MLR |
 | ![PLS](performance/pls_input_vs_cputime.png){ width=40% } | ![MLR](performance/mlr_input_vs_cputime.png){ width=40% } |
-[Figure1: Speed performances of 4 different algorithms: Principal Component Analysis (PCA), Partial Least-Squares (PLS), Consensus Principal Component Analysis (CPCA), and Multiple Linear Regression (MLR). Simulations reveal linear trends for PCA, CPCA, and PLS, hinting at probable linear time complexity. However, the enigmatic NIPALS algorithm, influenced by sample size, iterations, and latent variables, boasts a reported O(n²) or O(n³) complexity. Meanwhile, MLR exhibits a polynomial correlation akin to the OLS matrix approach with O(n³) complexity.]
+
+<small>Figure1: Speed performances of 4 different algorithms: Principal Component Analysis (PCA), Partial Least-Squares (PLS), Consensus Principal Component Analysis (CPCA), and Multiple Linear Regression (MLR). Simulations reveal linear trends for PCA, CPCA, and PLS, hinting at probable linear time complexity. However, it is worth mentioning that the NIPALS algorithm, influenced by sample size, iterations, and latent variables, boasts a reported O(n²) or O(n³) complexity. Meanwhile, MLR exhibits a polynomial correlation akin to the OLS matrix approach with O(n³) complexity.</small>
 
 # Usage
 
