@@ -91,17 +91,16 @@ Libcientific tests range from simple matrix-vector multiplication to the correct
 # Speed and Memory Comparison
 
 Several simulations of every algorithm in libscientific with data of different sizes (input size) against CPU speed were performed to address the algorithm's performance.
-Looking at the plots for PCA, CPCA, and PLS, we observe a linear trend, which indicates that the algorithm's time complexity is linear, denoted as O(n).
-Instead, MLR shows an O(n³) behavior as expected from the OLS algorithm, which uses a matrix direct inverse approach.
+Looking at the plots for PCA, CPCA, and PLS in Figure 1, we observe a linear trend, which suggests that the algorithm's time complexity also increases linearly. However, this does not tell the computational complexity of the algorithms. Indeed, the NIPALS algorithm is reported to have a computational complexity of O(n²) or O(n³), and it is mainly influenced by the number of samples, the number of iterations required for convergence, and the number of principal components/latent variables to calculate.
+Instead, MLR shows a polynomial correlation as expected from the OLS algorithm, which uses a matrix direct inverse approach with a computational complexity of O(n³).
 
-This means that as the input size (often termed "problem size") increases by a constant factor, the execution time also increases proportionally (linear algorithms).
+With this analysis, we confirm that as the input size (often termed "problem size") increases by a constant factor, the execution time also increases proportionally (linear algorithms).
 Linear algorithms have notable characteristics:
 
-* Linear Time Complexity (O(n)): Execution time grows linearly with input size.
-* Constant Work per Input Element: In linear algorithms, each input element is processed continuously. 
+* Most of the time, 'Linear Time Complexity (O(n))': Execution time grows linearly with input size.
+* Constant Work per Input Element: Each input element is processed continuously in linear algorithms. 
 * Stable Performance Impact: Doubling input size roughly doubles execution time, facilitating performance estimation.
 * Optimal Scaling: Linear-time solutions efficiently handle larger inputs.
-
 
 |   |   |
 |---|---|
@@ -109,6 +108,7 @@ Linear algorithms have notable characteristics:
 | ![PCA](performance/pca_input_vs_cputime.png){ width=40% } | ![CPCA](performance/cpca_input_vs_cputime.png){ width=40% } |
 | PLS | MLR |
 | ![PLS](performance/pls_input_vs_cputime.png){ width=40% } | ![MLR](performance/mlr_input_vs_cputime.png){ width=40% } |
+[Figure1: Speed performances of 4 different algorithms: Principal Component Analysis (PCA), Partial Least-Squares (PLS), Consensus Principal Component Analysis (CPCA), and Multiple Linear Regression (MLR). Simulations reveal linear trends for PCA, CPCA, and PLS, hinting at probable linear time complexity. However, the enigmatic NIPALS algorithm, influenced by sample size, iterations, and latent variables, boasts a reported O(n²) or O(n³) complexity. Meanwhile, MLR exhibits a polynomial correlation akin to the OLS matrix approach with O(n³) complexity.]
 
 # Usage
 
