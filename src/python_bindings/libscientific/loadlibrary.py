@@ -76,7 +76,10 @@ def load_libscientific_library():
         else:
             lib_path = get_posix_library()
             if lib_path is None:
-                lib_path = f'{pathlib.Path(__file__).parent}/{libname}'
+                curr_path = str(pathlib.Path(__file__).parent.absolute())
+                os_path = os.environ.get('PATH', '')
+                os.environ['PATH'] = f"{os_path};{curr_path}"
+                lib_path = f'{curr_path}/{libname}'
         try:
             lsci = ctypes.cdll.LoadLibrary(lib_path)
         except OSError as err:
