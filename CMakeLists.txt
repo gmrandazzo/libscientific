@@ -19,6 +19,10 @@ string(TOLOWER "${CMAKE_BUILD_TYPE}" cmake_build_type_tolower)
 find_package(LAPACK REQUIRED)
 find_package(SQLite3 REQUIRED)
 
+if(PYTHONWHLALLIN)
+  message(STATUS "Add binary libraries to the python ffi package")
+endif()
+
 if(LAPACK_FOUND)
   message(STATUS "Build libscientific using system lapack library")
 else()

@@ -64,7 +64,7 @@ endif()
 add_library(libscientific SHARED ${Scientific_C_SRCS} ${Scientific_C_H})
 set_target_properties(libscientific PROPERTIES VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH} SOVERSION ${VERSION_MAJOR} )
 set_target_properties(libscientific PROPERTIES OUTPUT_NAME "scientific")
-target_link_libraries(libscientific PUBLIC pthread ${LAPACK_LIBRARIES} ${SQLite3_LIBRARIES})
+target_link_libraries(libscientific PUBLIC m pthread ${LAPACK_LIBRARIES} ${SQLite3_LIBRARIES})
 
 if(WIN32)
   install(TARGETS libscientific ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib COMPONENT library)
@@ -76,27 +76,25 @@ else()
   install(FILES scientific.h DESTINATION include)
 endif()
 
-# Copy the compiled library into the python_binding library
-# in order to create a python library with a static library inside.
-set(src_dir "${CMAKE_BINARY_DIR}/src")
-set(dst_dir "${CMAKE_SOURCE_DIR}/src/python_bindings/libscientific")
+if(PYTHONWHLALLIN)
+  # Copy the compiled library with the dependencies 
+  # into the python_binding library
+  function(copy_library TARGET_NAME DESTINATION_DIR LIBRARY_SRC)
+        get_filename_component(libname ${LIBRARY_SRC} NAME)
+        add_custom_command(
+            TARGET ${TARGET_NAME}
+            POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy
+                "${LIBRARY_SRC}"
+                "${DESTINATION_DIR}/${libname}"
+            COMMENT "Copying ${libname} to ${DESTINATION_DIR}"
+        )
+  endfunction()
 
-set(libname "libscientific")
-# Define the custom command to copy the library
-add_custom_command(
-    TARGET libscientific
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy
-        "${src_dir}/${libname}${CMAKE_SHARED_LIBRARY_SUFFIX}"
-        "${dst_dir}/${libname}${CMAKE_SHARED_LIBRARY_SUFFIX}"
-    COMMENT "Copying ${libname} to ${dst_dir}"
-)
-
-if(EXISTS "${dst_dir}/${libname}${CMAKE_SHARED_LIBRARY_SUFFIX}")
-    file(REMOVE_RECURSE "${dst_dir}/${libname}${CMAKE_SHARED_LIBRARY_SUFFIX}")
+  set(dst_dir "${CMAKE_SOURCE_DIR}/src/python_bindings/libscientific/")
+  copy_library(libscientific ${dst_dir} "${CMAKE_BINARY_DIR}/src/libscientific${CMAKE_SHARED_LIBRARY_SUFFIX}")
+  copy_library(libscientific ${dst_dir} ${LAPACK_LIBRARIES})
+  copy_library(libscientific ${dst_dir} ${BLAS_LIBRARIES})
+  get_filename_component(lib_path ${BLAS_LIBRARIES} DIRECTORY)
+  copy_library(libscientific ${dst_dir} "${lib_path}/libgfortran${CMAKE_SHARED_LIBRARY_SUFFIX}.5")
 endif()
-
-# Optionally, create a custom target to trigger the copy as part of the build
-add_custom_target(copy_${libname}
-    DEPENDS ${libname}
-)
