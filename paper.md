@@ -91,7 +91,7 @@ Libcientific tests range from simple matrix-vector multiplication to the correct
 # Speed and Memory Comparison
 
 Several simulations of every algorithm in libscientific with data of different sizes (input size) against CPU speed were performed to address the algorithm's performance.
-Looking at the plots for PCA, CPCA, and PLS in Figure 1, we observe a linear trend, which suggests that the algorithm's time complexity also increases linearly. However, this does not tell the computational complexity of the algorithms. Indeed, the NIPALS algorithm is reported to have a computational complexity of O(n²) or O(n³), and it is mainly influenced by the number of samples, the number of iterations required for convergence, and the number of principal components/latent variables to calculate.
+Looking at the plots for PCA, CPCA, and PLS in Figure 1, we observe a linear trend, which suggests that the algorithm's time complexity also increases linearly. However, this does not tell the computational complexity of the algorithms. Indeed, since the NIPALS algorithm is similar to the power method for determining the eigenvectors and eigenvalues of a matrix [@Lorber87], we can assume that the computational complexity could be O(n²) or O(n³). Moreover it is important to point out that the calculation speed is mainly influenced by the number of samples, the number of iterations required for convergence, and the number of principal components/latent variables to calculate.
 Instead, MLR shows a polynomial correlation as expected from the OLS algorithm, which uses a matrix direct inverse approach with a computational complexity of O(n³).
 
 With this analysis, we confirm that as the input size (often termed "problem size") increases by a constant factor, the execution time also increases proportionally (linear algorithms).
@@ -101,7 +101,7 @@ Linear algorithms have notable characteristics:
 * Constant Work per Input Element: Each input element is processed continuously in linear algorithms.
 * Stable Performance Impact: Doubling input size roughly doubles execution time, facilitating performance estimation.
 * Optimal Scaling: Linear-time solutions efficiently handle larger inputs.
-<br><br><br><br><br><br><br><br>
+
 
 |   |   |
 |---|---|
