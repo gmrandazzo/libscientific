@@ -110,7 +110,7 @@ Linear algorithms have notable characteristics:
 | PLS | MLR |
 | ![PLS](performance/pls_input_vs_cputime.png){ width=40% } | ![MLR](performance/mlr_input_vs_cputime.png){ width=40% } |
 
-<small>Figure1: Speed performances of 4 different algorithms: Principal Component Analysis (PCA), Partial Least-Squares (PLS), Consensus Principal Component Analysis (CPCA), and Multiple Linear Regression (MLR). Simulations reveal linear trends for PCA, CPCA, and PLS, hinting at probable linear time complexity. However, it is worth mentioning that the NIPALS algorithm, influenced by sample size, iterations, and latent variables, boasts a reported O(n²) or O(n³) complexity. Meanwhile, MLR exhibits a polynomial correlation akin to the OLS matrix approach with O(n³) complexity.</small>
+<small>Figure1: Speed performances of 4 different algorithms: Principal Component Analysis (PCA), Partial Least-Squares (PLS), Consensus Principal Component Analysis (CPCA), and Multiple Linear Regression (MLR). Simulations reveal linear trends for PCA, CPCA, and PLS, hinting at probable linear time complexity. However, it is worth mentioning that the NIPALS algorithm, influenced by sample size, iterations, latent variables, and similar to the power method for estimating eigenvectors/eigenvalues, may report O(n²) or O(n³) complexity. Meanwhile, MLR exhibits a polynomial correlation tipical of the OLS matrix approach with O(n³) complexity.</small>
 
 # Usage
 
