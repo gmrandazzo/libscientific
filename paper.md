@@ -87,6 +87,7 @@ Moreover, multi-thread cross-validation methodologies such as "Bootstrap k-fold"
 
 Since we are dealing with numerical analysis, unit tests are crucial to ensure correctness, stability, and reproducibility.
 Libcientific tests range from simple matrix-vector multiplication to the correctness of complex algorithms using ad-hoc torture toy examples.
+The code coverage is reported to be more than 75%, indicating that a larger portion of the code has been verified to work as expected, reducing the likelihood of undiscovered bugs. This is important since libscientific is a numeric algorithm that involves complex mathematical calculation, and correctness and accuracy are crucial in minimizing the risk of numerical errors in scientific, engineering, and data analysis applications.
 
 # Speed and Memory Comparison
 
