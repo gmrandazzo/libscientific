@@ -68,7 +68,7 @@ The primary objective of libscientific is to offer a library capable of performi
 Furthermore, the NIPALS algorithm conducts iterative computations of components and latent variables, leading to more efficient use of memory resources than alternative methods found in scikit-learn. Notably, it demonstrates superior computational efficiency, especially when researchers seek to analyze only a select few of the foremost principal components or latent variables.
 In summary, libscientific aims to provide a sophisticated solution for multivariate analysis, leveraging the NIPALS algorithm's strengths to surmount issues related to missing and noisy data, optimize component calculations, and enhance computational efficiency in scenarios where the analysis focuses on a limited number of critical principal components or latent variables.
 
-# Multivariate analyisis algorithms specs
+# Multivariate analysis algorithms specs
 
 Principal component analysis (PCA) is one of the most commonly used methods for multivariate analysis. PCA is an unsupervised method that compresses data into low-dimensional representations that capture the dominant variation in the data. libscientific provides a robust implementation of PCA using the NIPALS algorithm described in Geladi paper [@Geladi86]. libscientific implementation can handle data sets with many variables, few instances, and missing values.
 
@@ -87,7 +87,7 @@ Moreover, multi-thread cross-validation methodologies such as "Bootstrap k-fold"
 
 Since we are dealing with numerical analysis, unit tests are crucial to ensure correctness, stability, and reproducibility.
 Libcientific tests range from simple matrix-vector multiplication to the correctness of complex algorithms using ad-hoc torture toy examples.
-The code coverage is reported to be more than 75%, indicating that a larger portion of the code has been verified to work as expected, reducing the likelihood of undiscovered bugs. This is important since libscientific is a numeric algorithm that involves complex mathematical calculation, and correctness and accuracy are crucial in minimizing the risk of numerical errors in scientific, engineering, and data analysis applications.
+The code coverage is reported to be more than 75%, indicating that a larger portion of the code has been verified to work as expected, reducing the likelihood of undiscovered bugs. This is important since libscientific is a set of implementations of algorithms that involves complex mathematical calculation, and correctness and accuracy are crucial in minimizing the risk of numerical errors in scientific, engineering, and data analysis applications.
 
 # Speed and Memory Comparison
 
@@ -115,7 +115,7 @@ Linear algorithms have notable characteristics:
 | PLS | MLR |
 | ![PLS](performance/pls_input_vs_cputime.png){ width=40% } | ![MLR](performance/mlr_input_vs_cputime.png){ width=40% } |
 
-<small>Figure1: Speed performances of 4 different algorithms: Principal Component Analysis (PCA), Partial Least-Squares (PLS), Consensus Principal Component Analysis (CPCA), and Multiple Linear Regression (MLR). Simulations reveal linear trends for PCA, CPCA, and PLS, hinting at probable linear time complexity. However, it is worth mentioning that the NIPALS algorithm, influenced by sample size, iterations, latent variables, and similar to the power method for estimating eigenvectors/eigenvalues, may report O(n²) or O(n³) complexity. Meanwhile, MLR exhibits a polynomial correlation tipical of the OLS matrix approach with O(n³) complexity.</small>
+<small>Figure1: Speed performances of 4 different algorithms: Principal Component Analysis (PCA), Partial Least-Squares (PLS), Consensus Principal Component Analysis (CPCA), and Multiple Linear Regression (MLR). Simulations reveal linear trends for PCA, CPCA, and PLS, hinting at probable linear time complexity. However, it is worth mentioning that the NIPALS algorithm, influenced by sample size, iterations, latent variables, and similar to the power method for estimating eigenvectors/eigenvalues, may report O(n²) or O(n³) complexity. Meanwhile, MLR exhibits a polynomial correlation typical of the OLS matrix approach with O(n³) complexity.</small>
 
 # Usage
 
@@ -131,6 +131,5 @@ Incorporating libscientific into analytical workflows may empower professionals 
 
 Libcientific was born as an open-source project from the Ph.D. thesis of the author Giuseppe Marco Randazzo.
 The author acknowledges the support from the University of Perugia, the valuable code review made by the people from Freaknet Medialab, and the bug reports from the whole open-source community using this library.
-
 
 # References

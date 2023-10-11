@@ -30,6 +30,7 @@ def get_posix_library():
     """
     paths = ["/usr/lib/libscientific.so",
              "/usr/lib64/libscientific.so",
+             "/usr/lib/x86_64-linux-gnu/libscientific.so",
              "/usr/local/lib/libscientific.so",
              "/usr/local/lib64/libscientific.so",
              "/opt/homebrew/lib/libscientific.dylib"] 
