@@ -10,6 +10,8 @@ libscientific
 [![Security Rating](https://sonarqube.gmrandazzo.com/api/project_badges/measure?project=libscientific&metric=security_rating&token=sqb_426f9a683b14ac981c8e32a1782672fc11c1a789)](https://sonarqube.gmrandazzo.com/dashboard?id=libscientific)
 [![Bugs](https://sonarqube.gmrandazzo.com/api/project_badges/measure?project=libscientific&metric=bugs&token=sqb_426f9a683b14ac981c8e32a1782672fc11c1a789)](https://sonarqube.gmrandazzo.com/dashboard?id=libscientific)
 [![Security Hotspots](https://sonarqube.gmrandazzo.com/api/project_badges/measure?project=libscientific&metric=security_hotspots&token=sqb_426f9a683b14ac981c8e32a1782672fc11c1a789)](https://sonarqube.gmrandazzo.com/dashboard?id=libscientific)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8436823.svg)](https://doi.org/10.5281/zenodo.8436823)
+
 
 Libscientific is a C framework for multivariate and other statistical analysis
 written to be quasi-completely independent of common and well-established calculus libraries,
