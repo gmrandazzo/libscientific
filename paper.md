@@ -76,7 +76,7 @@ Partial least squares (PLS) is another commonly used method for multivariate ana
 
 In addition to PCA and PLS, libscientific provides implementations of Consensus PCA (CPCA) to analyze time series and multi-block data, algorithm described by @Westerhuis98, and other multi-block methods such as Unfold Principal Component Analysis (UPCA) and Unfold Partial Least Squares (UPLS) both implementation from @SWold87.
 
-All multivariate algorithms admit missing values since the core linear algebra functions are coded to skip missing values, according to Martens et al. [@Martens2001, p. 381].
+All multivariate algorithms admit missing values since the core linear algebra functions are coded to skip missing values, according to (@Martens2001, p. 381).
 
 # Other algorithms
 
