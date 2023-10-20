@@ -70,13 +70,13 @@ In summary, libscientific aims to provide a sophisticated solution for multivari
 
 # Multivariate analysis algorithms specs
 
-Principal component analysis (PCA) is one of the most commonly used methods for multivariate analysis. PCA is an unsupervised method that compresses data into low-dimensional representations that capture the dominant variation in the data. libscientific provides a robust implementation of PCA using the NIPALS algorithm described in Geladi paper [@Geladi86]. libscientific implementation can handle data sets with many variables, few instances, and missing values.
+Principal component analysis (PCA) is one of the most commonly used methods for multivariate analysis. PCA is an unsupervised method that compresses data into low-dimensional representations that capture the dominant variation in the data. libscientific provides a robust implementation of PCA using the NIPALS algorithm described in @Geladi86. libscientific implementation can handle data sets with many variables, few instances, and missing values.
 
-Partial least squares (PLS) is another commonly used method for multivariate analysis. PLS is a supervised method that captures the dominant covariation between the data matrix and the target/response. libscientific provides one version of PLS described by Geladi et al [@Geladi86]. This implementation works with single-task and multi-task regression problems.
+Partial least squares (PLS) is another commonly used method for multivariate analysis. PLS is a supervised method that captures the dominant covariation between the data matrix and the target/response. libscientific provides one version of PLS described by @Geladi86. This implementation works with single-task and multi-task regression problems.
 
-In addition to PCA and PLS, libscientific provides implementations of Consensus PCA (CPCA) to analyze time series and multi-block data, algorithm described in the Westerhuis paper [@Westerhuis98], and other multi-block methods such as Unfold Principal Component Analysis (UPCA) and Unfold Partial Least Squares (UPLS) both implementation from Wold et al [@SWold87].
+In addition to PCA and PLS, libscientific provides implementations of Consensus PCA (CPCA) to analyze time series and multi-block data, algorithm described by @Westerhuis98, and other multi-block methods such as Unfold Principal Component Analysis (UPCA) and Unfold Partial Least Squares (UPLS) both implementation from @SWold87.
 
-All multivariate algorithms admit missing values since the core linear algebra functions are coded to skip missing values, according to Martens et al (page 381) [@Martens2001].
+All multivariate algorithms admit missing values since the core linear algebra functions are coded to skip missing values, according to Martens et al. [@Martens2001, p. 381].
 
 # Other algorithms
 
@@ -86,7 +86,7 @@ Moreover, multi-thread cross-validation methodologies such as "Bootstrap k-fold"
 # Algorithm stability
 
 Since we are dealing with numerical analysis, unit tests are crucial to ensure correctness, stability, and reproducibility.
-Libcientific tests range from simple matrix-vector multiplication to the correctness of complex algorithms using ad-hoc torture toy examples.
+libscientific tests range from simple matrix-vector multiplication to the correctness of complex algorithms using ad-hoc torture toy examples.
 The code coverage is reported to be more than 75%, indicating that a larger portion of the code has been verified to work as expected, reducing the likelihood of undiscovered bugs. This is important since libscientific is a set of implementations of algorithms that involves complex mathematical calculation, and correctness and accuracy are crucial in minimizing the risk of numerical errors in scientific, engineering, and data analysis applications.
 
 # Speed and Memory Comparison
@@ -129,7 +129,7 @@ Incorporating libscientific into analytical workflows may empower professionals 
 
 # Acknowledgements
 
-Libcientific was born as an open-source project from the Ph.D. thesis of the author Giuseppe Marco Randazzo.
+libscientific was born as an open-source project from the Ph.D. thesis of the author Giuseppe Marco Randazzo.
 The author acknowledges the support from the University of Perugia, the valuable code review made by the people from Freaknet Medialab, and the bug reports from the whole open-source community using this library.
 
 # References
