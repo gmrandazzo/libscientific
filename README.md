@@ -1,6 +1,6 @@
 libscientific
 =============
-[![status](https://joss.theoj.org/papers/afc8dfc4cdd496f6f51813dbaa5ad310/status.svg)](https://joss.theoj.org/papers/afc8dfc4cdd496f6f51813dbaa5ad310)
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.05420/status.svg)](https://doi.org/10.21105/joss.05420)
 [![Licence: GPL v3](https://img.shields.io/github/license/gmrandazzo/libscientific)](https://github.com/gmrandazzo/libscientific/blob/master/LICENSE)
 [![Pylint](https://github.com/gmrandazzo/libscientific/actions/workflows/pylint.yml/badge.svg)](https://github.com/gmrandazzo/libscientific/actions/workflows/pylint.yml)
 [![Pytest](https://github.com/gmrandazzo/libscientific/actions/workflows/pytest.yml/badge.svg)](https://github.com/gmrandazzo/libscientific/actions/workflows/pytest.yml)
