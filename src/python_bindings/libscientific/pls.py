@@ -180,8 +180,8 @@ def pls_y_predictor_all_lv(x_input,
                            predicted_scores,
                            predicted_y):
     """
-    PLSYPredictorAllLV: Predict the Y according the original feature 
-    matrix and the calculated pls model. 
+    PLSYPredictorAllLV: Predict the Y according the original feature
+    matrix and the calculated pls model.
     This function is NOT dependent on PLSScorePredictor.
     """
     lsci.PLSYPredictorAllLV(x_input,
@@ -281,14 +281,14 @@ lsci.WritePLS.restype = None
 def write_pls(dbpath: str, pls: PLSMODEL):
     """
     write_pls(dbpath, pls):
-    
+
     Writes a PLS (Partial Least Squares) model to
     a SQLite database.
 
     Parameters:
-        dbpath (str): The path to the SQLite database file where the PLS 
+        dbpath (str): The path to the SQLite database file where the PLS
             model will be stored.
-        pls (PLSMODEL): The libscientific data structure representing the PLS 
+        pls (PLSMODEL): The libscientific data structure representing the PLS
             model.
 
     Returns:
@@ -308,7 +308,7 @@ lsci.ReadPLS.restype = None
 def read_pls(dbpath: str, pls: PLSMODEL):
     """
     read_pls(dbpath, pls):
-    
+
     Reads a PLS (Partial Least Squares) model from a SQLite database.
 
     Parameters:
@@ -610,7 +610,7 @@ class PLS():
 
         Parameters
         ----------
-        dbpath (str): The path to the SQLite database file where the PLS 
+        dbpath (str): The path to the SQLite database file where the PLS
             model will be stored.
         """
         write_pls(dbpath, self.model)
@@ -621,7 +621,7 @@ class PLS():
 
         Parameters
         ----------
-        dbpath (str): The path to the SQLite database file where the PLS 
+        dbpath (str): The path to the SQLite database file where the PLS
             model will be stored.
         """
         read_pls(dbpath, self.model)

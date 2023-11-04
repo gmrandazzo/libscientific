@@ -144,13 +144,13 @@ lsci.WritePCA.restype = None
 def write_pca(dbpath: str, pca: PCAMODEL):
     """
     write_pca(dbpath, pca):
-    
+
     Writes a PCA (Principal Component Analysis) model to a SQLite database.
 
     Parameters:
-        dbpath (str): The path to the SQLite database file where the PCA 
+        dbpath (str): The path to the SQLite database file where the PCA
             model will be stored.
-        pca (PCAMODEL): The libscientific data structure representing the PCA 
+        pca (PCAMODEL): The libscientific data structure representing the PCA
             model.
 
     Returns:
@@ -170,7 +170,7 @@ lsci.ReadPCA.restype = None
 def read_pca(dbpath: str, pca: PCAMODEL):
     """
     read_pca(dbpath, pca):
-    
+
     Reads a PCA (Principal Component Analysis) model from a SQLite database.
 
     Parameters:
@@ -335,7 +335,7 @@ class PCA():
 
         Parameters
         ----------
-        dbpath (str): The path to the SQLite database file where the PCA 
+        dbpath (str): The path to the SQLite database file where the PCA
             model will be stored.
         """
         write_pca(dbpath, self.model)
@@ -346,7 +346,7 @@ class PCA():
 
         Parameters
         ----------
-        dbpath (str): The path to the SQLite database file where the PCA 
+        dbpath (str): The path to the SQLite database file where the PCA
             model will be stored.
         """
         read_pca(dbpath, self.model)

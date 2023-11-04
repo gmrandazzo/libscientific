@@ -76,7 +76,7 @@ else()
   install(FILES scientific.h DESTINATION include)
 endif()
 
-if(PYTHONWHLALLIN)
+if(PORTABLE_PYTHON_PACKAGE)
   # Copy the compiled library with the dependencies 
   # into the python_binding library
   function(copy_library TARGET_NAME DESTINATION_DIR LIBRARY_SRC)
@@ -91,10 +91,53 @@ if(PYTHONWHLALLIN)
         )
   endfunction()
 
+  # Get so library path and return it in LIBRARY var
+  function(get_solib_path LIBNAME LIBRARY LIBPATHS)
+    foreach(lib_path ${LIBPATHS})
+      if(WIN32)
+        file(GLOB_RECURSE libfound ${lib_path}/${LIBNAME}.dll)
+      elseif(APPLE)
+      file(GLOB_RECURSE libfound ${lib_path}/${LIBNAME}.dylib)
+      else()
+        file(GLOB_RECURSE libfound ${lib_path}/${LIBNAME}.so.[0-9])
+      endif()
+      if(libfound)
+        set(${LIBRARY} ${libfound} PARENT_SCOPE)
+        break()
+      endif()
+    endforeach()
+  endfunction()  
+
   set(dst_dir "${CMAKE_SOURCE_DIR}/src/python_bindings/libscientific/")
   copy_library(libscientific ${dst_dir} "${CMAKE_BINARY_DIR}/src/libscientific${CMAKE_SHARED_LIBRARY_SUFFIX}")
-  copy_library(libscientific ${dst_dir} ${LAPACK_LIBRARIES})
-  copy_library(libscientific ${dst_dir} ${BLAS_LIBRARIES})
-  get_filename_component(lib_path ${BLAS_LIBRARIES} DIRECTORY)
-  copy_library(libscientific ${dst_dir} "${lib_path}/libgfortran${CMAKE_SHARED_LIBRARY_SUFFIX}.5")
+  if(WIN32)
+    set(lib_paths
+      /usr/lib
+      /usr/lib64
+    )  
+    message("PORTABLE_PYTHON_PACKAGE: Unsupported")
+  elseif(APPLE)
+    set(lib_paths
+      /opt/homebrew/lib
+      /usr/local/lib
+    )
+    message("PORTABLE_PYTHON_PACKAGE: Unsupported")
+  else()
+    set(lib_paths /lib
+      /lib64
+      /usr/lib
+      /usr/local/lib
+      /usr/lib64
+      /usr/local/lib64 
+      /usr/lib/x86_64-linux-gnu
+      /usr/lib/gcc/x86_64-linux-gnu
+      /usr/lib/gcc/x86_64-redhat-linux
+    )
+    copy_library(libscientific ${dst_dir} ${LAPACK_LIBRARIES})
+    copy_library(libscientific ${dst_dir} ${BLAS_LIBRARIES})
+    get_solib_path("libgfortran" GFORTRAN_LIBRARY ${lib_paths})
+    copy_library(libscientific ${dst_dir} ${GFORTRAN_LIBRARY})
+    get_solib_path("libquadmath" QUADMATH_LIBRARY ${lib_paths})
+    copy_library(libscientific ${dst_dir} ${QUADMATH_LIBRARY})
+  endif()
 endif()

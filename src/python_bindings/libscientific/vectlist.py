@@ -105,7 +105,7 @@ class DVectorList:
     """
     DVectorList Class
 
-    This class provides methods for creating and manipulating 
+    This class provides methods for creating and manipulating
     a list of libscientific double vectors.
 
     Attributes:

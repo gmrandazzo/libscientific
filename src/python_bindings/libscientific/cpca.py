@@ -126,14 +126,14 @@ lsci.WriteCPCA.restype = None
 def write_cpca(dbpath: str, cpca: CPCAMODEL):
     """
     write_pca(dbpath, cpca):
-    
+
     Writes a CPCA (Consensus Principal Component Analysis) model to
     a SQLite database.
 
     Parameters:
-        dbpath (str): The path to the SQLite database file where the CPCA 
+        dbpath (str): The path to the SQLite database file where the CPCA
             model will be stored.
-        cpca (CPCAMODEL): The libscientific data structure representing the CPCA 
+        cpca (CPCAMODEL): The libscientific data structure representing the CPCA
             model.
 
     Returns:
@@ -153,7 +153,7 @@ lsci.ReadCPCA.restype = None
 def read_cpca(dbpath: str, cpca: CPCAMODEL):
     """
     read_cpca(dbpath, cpca):
-    
+
     Reads a CPCA (Consensus Principal Component Analysis) model from
     a SQLite database.
 
@@ -174,7 +174,7 @@ class CPCA:
     """
     CPCA Class (Consensus Principal Component Analysis)
 
-    This class provides methods for creating and manipulating 
+    This class provides methods for creating and manipulating
     a Consensus Principal Component Analysis model.
 
     Attributes:
@@ -341,7 +341,7 @@ class CPCA:
 
         Parameters
         ----------
-        dbpath (str): The path to the SQLite database file where the CPCA 
+        dbpath (str): The path to the SQLite database file where the CPCA
             model will be stored.
         """
         write_cpca(dbpath, self.model)
@@ -352,7 +352,7 @@ class CPCA:
 
         Parameters
         ----------
-        dbpath (str): The path to the SQLite database file where the CPCA 
+        dbpath (str): The path to the SQLite database file where the CPCA
             model will be stored.
         """
         read_cpca(dbpath, self.model)

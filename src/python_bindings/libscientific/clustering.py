@@ -36,7 +36,7 @@ def most_descriptive_compound(x_input, nobjects):
     """
     Most Descriptive Compound Selection Algorithm.
 
-    This function selects the most descriptive compounds/rows from 
+    This function selects the most descriptive compounds/rows from
     an input matrix based on the specified number of objects to select.
 
     Parameters:
@@ -86,8 +86,8 @@ def max_dissimilarity_selection(x_input, nobjects):
     """
     Max Dissimilarity Compound Selection Algorithm.
 
-    This function selects compounds/rows from an input matrix in 
-    a way that maximizes their dissimilarity based on the specified 
+    This function selects compounds/rows from an input matrix in
+    a way that maximizes their dissimilarity based on the specified
     number of objects to select.
 
     Parameters:
@@ -139,7 +139,7 @@ def k_means_plus_plus(x_input, n_clusters):
     """
     K-Means++ Clustering Algorithm (kmeans + David Arthur initialization).
 
-    This function performs K-Means++ clustering on the given input matrix 
+    This function performs K-Means++ clustering on the given input matrix
     to create the specified number of clusters.
 
     Parameters:

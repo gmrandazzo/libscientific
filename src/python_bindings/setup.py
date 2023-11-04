@@ -2,11 +2,11 @@ from setuptools import setup
 import platform
 
 if platform.system() == 'Windows':
-    library = 'libscientific.dll'
+    library = '*.dll'
 elif platform.system() == 'Darwin':
-    library = 'libscientific.dylib'
+    library = '*.dylib'
 else:
-    library = 'libscientific.so'
+    library = '*.so*'
 
 arch = platform.machine()
 

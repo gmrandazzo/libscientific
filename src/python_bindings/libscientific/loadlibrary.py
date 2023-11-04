@@ -22,7 +22,7 @@ import ctypes
 
 def get_posix_library():
     """Find the path to the libscientific POSIX library.
-    
+
     Returns
     -------
     str or None
@@ -33,7 +33,7 @@ def get_posix_library():
              "/usr/lib/x86_64-linux-gnu/libscientific.so",
              "/usr/local/lib/libscientific.so",
              "/usr/local/lib64/libscientific.so",
-             "/opt/homebrew/lib/libscientific.dylib"] 
+             "/opt/homebrew/lib/libscientific.dylib"]
     for path in paths:
         if pathlib.Path(path).is_file() is True:
             return path
@@ -42,58 +42,54 @@ def get_posix_library():
 
 def load_libscientific_library():
     """Load the libscientific library dynamically.
-    
+
     Returns
     -------
     CDLL
         A ctypes dynamic link library object representing the loaded libscientific library.
-    
+
     Raises
     ------
     RuntimeError
         If the library cannot be loaded or the platform is not supported.
     """
-    lsci_lib_dir = os.environ.get("LIBSCIENTIFIC_LIB_DIR")
     lsci = None
     if os.name == "nt":
-        if lsci_lib_dir:
-            lib_path = f'{pathlib.Path(lsci_lib_dir)}/libscientific.dll'
-        else:
-            lib_path = f'{pathlib.Path(__file__).parent}/libscientific.dll'
+        lib_path = f'{pathlib.Path(__file__).parent}'
         try:
-            lsci = ctypes.CDLL(lib_path, winmode=0)
+            _ = ctypes.CDLL(f'{lib_path}/libgfortran.dll', winmode=0)
+            _ = ctypes.CDLL(f'{lib_path}/libquadmath.dll', winmode=0)
+            _ = ctypes.CDLL(f'{lib_path}/libblas.dll', winmode=0)
+            _ = ctypes.CDLL(f'{lib_path}/liblapack.dll', winmode=0)
+            lsci = ctypes.CDLL(f'{lib_path}/libscientific.dll', winmode=0)
         except TypeError:
-            lsci = ctypes.CDLL(lib_path)
+            lsci = ctypes.CDLL(f'{lib_path}/libscientific.dll', winmode=0)
 
     elif os.name == "posix":
-        libname = None
-        if os.uname()[0] == "Darwin":
-            libname = "libscientific.dylib"
-        else:
-            libname = "libscientific.so"
-
-        if lsci_lib_dir:
-            lib_path = str(pathlib.Path(lsci_lib_dir))+f'/{libname}'
-        else:
-            lib_path = get_posix_library()
-            if lib_path is None:
-                curr_path = str(pathlib.Path(__file__).parent.absolute())
-                os_path = os.environ.get('PATH', '')
-                os.environ['PATH'] = f"{os_path};{curr_path}"
-                lib_path = f'{curr_path}/{libname}'
-        try:
+        lib_path = get_posix_library()
+        if lib_path is not None:
             lsci = ctypes.cdll.LoadLibrary(lib_path)
-        except OSError as err:
-            msg = "Please install sqlite3 and lapack library "
-            msg += "if you want to use the binary library in this package.\n"
-            msg += "Alternativelly you can install the library directly "
-            msg += "from its source code from here "
-            msg += "https://github.com/gmrandazzo/libscientific"
-            msg += "\nIf the library is installed please "
-            msg += "check/specify the location in LD_LIBRARY_PATH "
-            msg += "or add this environment variable "
-            msg += "export LIBSCIENTIFIC_LIB_DIR=<path libscientific>"
-            raise RuntimeError(msg) from err
+        else:
+            try:
+                lib_path = str(pathlib.Path(__file__).parent.absolute())
+                if os.uname()[0] == "Darwin":
+                    lsci = ctypes.CDLL(f'{lib_path}/libscientific.dylib')
+                else:
+                    _ = ctypes.CDLL(f'{lib_path}/libgfortran.so.3')
+                    _ = ctypes.CDLL(f'{lib_path}/libquadmath.so.0')
+                    _ = ctypes.CDLL(f'{lib_path}/libblas.so.3')
+                    _ = ctypes.CDLL(f'{lib_path}/liblapack.so.3')
+                    lsci = ctypes.CDLL(f'{lib_path}/libscientific.so')
+            except OSError as err:
+                msg = "Please install sqlite3 and lapack library "
+                msg += "if you want to use the binary library in this package.\n"
+                msg += "Alternativelly you can install the library directly "
+                msg += "from its source code from here "
+                msg += "https://github.com/gmrandazzo/libscientific"
+                msg += "\nIf the library is installed please "
+                msg += "check/specify the location in LD_LIBRARY_PATH "
+                msg += "with export LD_LIBRARY_PATH=<path libscientific>"
+                raise RuntimeError(msg) from err
     else:
         raise RuntimeError(f"Don't know how to load library on {os.name}")
     return lsci

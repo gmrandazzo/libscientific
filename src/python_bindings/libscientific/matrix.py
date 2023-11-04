@@ -170,7 +170,7 @@ lsci.ValInMatrix.restype = ctypes.c_int
 
 def val_in_matrix(mtx, val):
     """
-    val_in_matrix: Check if a libscientific matrix contains an exact value "val" 
+    val_in_matrix: Check if a libscientific matrix contains an exact value "val"
     and return 1 or 0 respectivelly for yes or no.
     """
     return lsci.ValInMatrix(mtx, val)
@@ -466,7 +466,7 @@ class Matrix():
     A class for working with libscientific matrices.
 
     This class provides methods to perform various operations on matrices,
-    including creating, accessing, modifying, and transforming matrices using 
+    including creating, accessing, modifying, and transforming matrices using
     the libscientific library.
 
     Attributes:
