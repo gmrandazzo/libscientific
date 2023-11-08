@@ -58,7 +58,7 @@ void test3()
       continue;
     }
     else{
-      printf("ERROR: [%llu] %f\n", i,  v);
+      printf("ERROR: [%zu] %f\n", i,  v);
       abort();
     }
   }

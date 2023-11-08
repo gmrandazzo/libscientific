@@ -73,10 +73,13 @@ def load_libscientific_library():
                 if os.uname()[0] == "Darwin":
                     lsci = ctypes.CDLL(f'{lib_path}/libscientific.dylib')
                 else:
-                    _ = ctypes.CDLL(f'{lib_path}/libgfortran.so.3')
-                    _ = ctypes.CDLL(f'{lib_path}/libquadmath.so.0')
-                    _ = ctypes.CDLL(f'{lib_path}/libblas.so.3')
-                    _ = ctypes.CDLL(f'{lib_path}/liblapack.so.3')
+                    for i in range(3, 5):
+                        if pathlib.Path(f'{lib_path}/libgfortran.so.{i}').is_file():
+                            _ = ctypes.CDLL(f'{lib_path}/libgfortran.so.{i}')
+                            break
+                    _ = ctypes.CDLL(f'{lib_path}/libquadmath.so.0.0.0')
+                    _ = ctypes.CDLL(f'{lib_path}/libblas.so')
+                    _ = ctypes.CDLL(f'{lib_path}/liblapack.so')
                     lsci = ctypes.CDLL(f'{lib_path}/libscientific.so')
             except OSError as err:
                 msg = "Please install sqlite3 and lapack library "
