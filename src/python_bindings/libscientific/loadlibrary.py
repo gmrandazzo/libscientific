@@ -57,10 +57,8 @@ def load_libscientific_library():
     if os.name == "nt":
         lib_path = f'{pathlib.Path(__file__).parent}'
         try:
-            _ = ctypes.CDLL(f'{lib_path}/libgfortran.dll', winmode=0)
-            _ = ctypes.CDLL(f'{lib_path}/libquadmath.dll', winmode=0)
-            _ = ctypes.CDLL(f'{lib_path}/libblas.dll', winmode=0)
-            _ = ctypes.CDLL(f'{lib_path}/liblapack.dll', winmode=0)
+            _ = ctypes.CDLL(f'{lib_path}/libsqlite3-0.dll', winmode=0)
+            _ = ctypes.CDLL(f'{lib_path}/libwinpthread-1.dll', winmode=0)
             lsci = ctypes.CDLL(f'{lib_path}/libscientific.dll', winmode=0)
         except TypeError:
             lsci = ctypes.CDLL(f'{lib_path}/libscientific.dll', winmode=0)

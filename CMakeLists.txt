@@ -68,7 +68,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
 message(STATUS "Build Type: ${CMAKE_BUILD_TYPE}")
 
 if(cmake_build_type_tolower STREQUAL "debug")
-  include(Dart)
+  # include(Dart)
   # cmake_policy(SET CMP0145 OLD)
   enable_testing()
 endif()

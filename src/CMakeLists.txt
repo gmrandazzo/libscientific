@@ -94,35 +94,30 @@ if(PORTABLE_PYTHON_PACKAGE)
   # Get so library path and return it in LIBRARY var
   function(get_solib_path LIBNAME LIBRARY LIBPATHS)
     foreach(lib_path ${LIBPATHS})
-      if(WIN32)
-        file(GLOB_RECURSE libfound ${lib_path}/${LIBNAME}.dll)
-      elseif(APPLE)
-      file(GLOB_RECURSE libfound ${lib_path}/${LIBNAME}.dylib)
-      else()
-        file(GLOB_RECURSE libfound ${lib_path}/${LIBNAME}.so.[0-9])
-      endif()
-      if(libfound)
-        set(${LIBRARY} ${libfound} PARENT_SCOPE)
+      file(GLOB_RECURSE LIBFOUND ${lib_path}/${LIBNAME}.so.[0-9])
+      if(LIBFOUND)
+        set(${LIBRARY} ${LIBFOUND} PARENT_SCOPE)
         break()
       endif()
     endforeach()
-  endfunction()  
+  endfunction()
 
   set(dst_dir "${CMAKE_SOURCE_DIR}/src/python_bindings/libscientific/")
   copy_library(libscientific ${dst_dir} "${CMAKE_BINARY_DIR}/src/libscientific${CMAKE_SHARED_LIBRARY_SUFFIX}")
+  get_filename_component(COMPILER_DIRECTORY ${CMAKE_C_COMPILER} DIRECTORY)
+
   if(WIN32)
-    set(lib_paths
-      /usr/lib
-      /usr/lib64
-    )  
-    message("PORTABLE_PYTHON_PACKAGE: Unsupported")
+    message("PORTABLE_PYTHON_PACKAGE: Supported only with MinWG64")
+    find_file(LAPACKDLL NAMES "liblapack.dll" PATHS ${COMPILER_DIRECTORY} NO_DEFAULT_PATH REQUIRED)
+    copy_library(libscientific ${dst_dir} ${LAPACKDLL})
+    find_file(WINPTHREADDLL NAMES "libwinpthread-1.dll" PATHS ${COMPILER_DIRECTORY} NO_DEFAULT_PATH REQUIRED)
+    copy_library(libscientific ${dst_dir} ${WINPTHREADDLL})
+    find_file(SQLITE3DLL NAMES "libsqlite3-0.dll" PATHS ${COMPILER_DIRECTORY} NO_DEFAULT_PATH REQUIRED)
+    copy_library(libscientific ${dst_dir} ${SQLITE3DLL})
   elseif(APPLE)
-    set(lib_paths
-      /opt/homebrew/lib
-      /usr/local/lib
-    )
-    message("PORTABLE_PYTHON_PACKAGE: Unsupported")
+    message("PORTABLE_PYTHON_PACKAGE: Supported")
   else()
+    message("PORTABLE_PYTHON_PACKAGE: Supported")
     set(lib_paths /lib
       /lib64
       /usr/lib

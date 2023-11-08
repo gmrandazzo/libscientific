@@ -174,8 +174,10 @@ Compile python platform portable whl (no library installation required)
 ```
 mkdir build
 cd build
-cmake -DPORTABLE_PYTHON_PACKAGE=True ..
-make -j
+cmake -DPORTABLE_PYTHON_PACKAGE=True .. # Linux and OSX
+cmake -G "MinGW Makefiles" -DPORTABLE_PYTHON_PACKAGE=True .. # Windows MSYS2/MinGW64
+make -j # on Linux
+mingw32-make # on Windows
 cd ../src/python_bindings/
 
 OSX: python3 setup.py bdist_wheel --plat-name  macosx-14-arm64 

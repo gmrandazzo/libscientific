@@ -677,6 +677,7 @@ void *MatrixDVectorDotProductWorker(void *arg_){
     }
   }
   pthread_exit(NULL);
+  return NULL;
 }
 
 void MT_MatrixDVectorDotProduct(matrix *m, dvector *v, dvector *p)
@@ -791,6 +792,7 @@ void *DVectorMatrixDotProductWorker(void *arg_)
     }
   }
   pthread_exit(NULL);
+  return NULL;
 }
 
  /*
