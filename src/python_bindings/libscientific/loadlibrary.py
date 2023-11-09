@@ -26,6 +26,7 @@ def load_library_for_nt():
     try:
         lib_path = f'{pathlib.Path(__file__).parent}'
         _ = ctypes.CDLL(f'{lib_path}/libgcc_s_seh-1.dll', winmode=0)
+        _ = ctypes.CDLL(f'{lib_path}/libquadmath-0.dll', winmode=0)
         _ = ctypes.CDLL(f'{lib_path}/libgfortran-5.dll', winmode=0)
         _ = ctypes.CDLL(f'{lib_path}/libblas.dll', winmode=0)
         _ = ctypes.CDLL(f'{lib_path}/libsqlite3-0.dll', winmode=0)
