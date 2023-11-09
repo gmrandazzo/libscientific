@@ -180,7 +180,8 @@ make -j # on Linux
 mingw32-make # on Windows
 cd ../src/python_bindings/
 
-OSX: python3 setup.py bdist_wheel --plat-name  macosx-14-arm64 
+# pip3 debug --verbose to get the compatible tags
+OSX: python3 setup.py bdist_wheel --plat-name  macosx-14-0-arm64
 Linux: python3 setup.py bdist_wheel --plat-name  manylinux1_x86_64
 Win32: python3 setup.py bdist_wheel --plat-name  win_amd64
 ```

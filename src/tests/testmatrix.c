@@ -42,6 +42,7 @@ void Test62()
   getMatrixValue(m, 3,3); // Error
   if(!FLOAT_EQ(m->data[0][0], MISSING, 1e-1) ||
      !FLOAT_EQ(m->data[1][1], MISSING, 1e-1)){
+    puts("Error Test62");
     abort();
   }
   else{
@@ -85,6 +86,7 @@ void Test61()
         continue;
       }
       else{
+        puts("Error Test61");
         abort();
       }
     }
@@ -116,6 +118,7 @@ void Test60()
         continue;
       }
       else{
+        puts("Error Test60");
         abort();
       }
     }
@@ -141,6 +144,7 @@ void Test59()
       continue;
     }
     else{
+      puts("Error Test59");
       abort();
     }
   }
@@ -164,8 +168,10 @@ void Test58()
      !FLOAT_EQ(mv->data[1][0], 3, 1e-2) || 
      !FLOAT_EQ(mv->data[1][1], -2, 1e-2) ||
      !FLOAT_EQ(mv->data[2][0], 0.417, 1e-2) || 
-     !FLOAT_EQ(mv->data[2][1], 0.583, 1e-2))
-     abort();
+     !FLOAT_EQ(mv->data[2][1], 0.583, 1e-2)){
+    puts("Error Test58");
+    abort();
+  }
   puts("MatrixRowCenterScaling: OK");
   DelMatrix(&mv);
   DelMatrix(&m);
@@ -184,8 +190,10 @@ void Test57()
   MatrixRowAverage(m, v);
   if(!FLOAT_EQ(v->data[0], 0.5, 1e-2) || 
      !FLOAT_EQ(v->data[1], 0.5, 1e-2) ||
-     !FLOAT_EQ(v->data[2], 6, 1e-2))
-     abort();
+     !FLOAT_EQ(v->data[2], 6, 1e-2)){
+    puts("Error Test57");
+    abort();
+  }
   puts("MatrixRowAverage: OK");
   DelDVector(&v);
   DelMatrix(&m);
@@ -206,6 +214,7 @@ void Test56()
       continue;
     }
     else{
+      puts("Error Test56");
       abort();
     }
   }
@@ -229,8 +238,10 @@ void Test55()
      !FLOAT_EQ(mn->data[1][0], 0.313, 1e-2) || 
      !FLOAT_EQ(mn->data[1][1], -0.209, 1e-2) ||
      !FLOAT_EQ(mn->data[2][0], 0.521, 1e-2) || 
-     !FLOAT_EQ(mn->data[2][1], 0.730, 1e-2))
-     abort();
+     !FLOAT_EQ(mn->data[2][1], 0.730, 1e-2)){
+    puts("Error Test55");
+    abort();
+  }
   DelMatrix(&m);
   DelMatrix(&mn);
   puts("MatrixNorm: OK");
@@ -252,8 +263,10 @@ void Test54()
      !FLOAT_EQ(inv->data[0][2], 0.076, EPSILON) ||
      !FLOAT_EQ(inv->data[1][0], 0.077, EPSILON) ||
      !FLOAT_EQ(inv->data[1][1], -0.119, EPSILON) ||
-     !FLOAT_EQ(inv->data[1][2], 0.087, EPSILON))
-     abort();
+     !FLOAT_EQ(inv->data[1][2], 0.087, EPSILON)){
+    puts("Error Test54");
+    abort();
+  }
   DelMatrix(&m);
   DelMatrix(&inv);
   puts("MatrixMoorePenrosePseudoinverse: OK");
@@ -273,6 +286,7 @@ void Test53()
         continue;
       }
       else{
+        puts("Error Test53");
         abort();
       }
     }
@@ -296,6 +310,7 @@ void Test52()
         continue;
       }
       else{
+        puts("Error Test52");
         abort();
       }
     }
@@ -319,6 +334,7 @@ void Test51()
         continue;
       }
       else{
+        puts("Error Test51");
         abort();
       }
     }
@@ -343,6 +359,7 @@ void Test50()
         continue;
       }
       else{
+        puts("Error Test50");
         abort();
       }
     }
@@ -362,8 +379,10 @@ void Test49()
   MatrixCheck(m);
    if(!FLOAT_EQ(m->data[1][1], MISSING, 1e-1) ||
       !FLOAT_EQ(m->data[0][2], MISSING, 1e-1) ||
-      !FLOAT_EQ(m->data[2][1], MISSING, 1e-1))
+      !FLOAT_EQ(m->data[2][1], MISSING, 1e-1)){
+    puts("Error Test49");
     abort();
+  }
   DelMatrix(&m);
   puts("MatrixCheck: OK");
 }
@@ -383,6 +402,7 @@ void Test48()
       continue;
     }
     else{
+      puts("Error Test48");
       abort();
     }
   }
@@ -401,8 +421,10 @@ void Test47()
   MatrixSet(m, -1);
   for(i = 0; i < m->row; i++){
     for(j = 0; j < m->col; j++){
-      if(!FLOAT_EQ(m->data[i][j], -1.f, 1e-3))
+      if(!FLOAT_EQ(m->data[i][j], -1.f, 1e-3)){
+        puts("Error Test47");
         abort();
+      }
       else
         continue;
     }
@@ -424,16 +446,22 @@ void Test46()
   
   MatrixColumnMinMax(m, 0, &min, &max);
   if(!FLOAT_EQ(min, 1.f, 1e-4) ||
-     !FLOAT_EQ(max, 11.f, 1e-4))
+     !FLOAT_EQ(max, 11.f, 1e-4)){
+    puts("Error Test46");
     abort();
+  }
   MatrixColumnMinMax(m, 1, &min, &max);
   if(!FLOAT_EQ(min, 0.f, 1e-4) ||
-     !FLOAT_EQ(max, 12.f, 1e-4))
+     !FLOAT_EQ(max, 12.f, 1e-4)){
+    puts("Error Test46");
     abort();
+  }
   MatrixColumnMinMax(m, 1, &min, &max);
   if(!FLOAT_EQ(min, 0.f, 1e-4) ||
-     !FLOAT_EQ(max, 12.f, 1e-4))
+     !FLOAT_EQ(max, 12.f, 1e-4)){
+    puts("Error Test46");
     abort();
+  }
   DelMatrix(&m);
   puts("MatrixColumnMinMax: OK");
 }
@@ -451,8 +479,10 @@ void Test45()
   MatrixColVar(m, v);
   if(!FLOAT_EQ(v->data[0], 25.0000, 1e-4) ||
      !FLOAT_EQ(v->data[1], 36.3333, 1e-4) ||
-     !FLOAT_EQ(v->data[2], 2.3333, 1e-4))
-     abort();
+     !FLOAT_EQ(v->data[2], 2.3333, 1e-4)){
+    puts("Error Test45");
+    abort();
+  }
   DelMatrix(&m);
   DelDVector(&v);
   puts("MatrixColVar: OK");
@@ -471,8 +501,10 @@ void Test44()
   MatrixColSDEV(m, v);
   if(!FLOAT_EQ(v->data[0], 5.0000, 1e-4) ||
      !FLOAT_EQ(v->data[1], 6.0277, 1e-4) ||
-     !FLOAT_EQ(v->data[2], 1.5275, 1e-4))
-     abort();
+     !FLOAT_EQ(v->data[2], 1.5275, 1e-4)){
+    puts("Error Test44");
+    abort();
+    }
   DelMatrix(&m);
   DelDVector(&v);
   puts("MatrixColSDEV: OK");
@@ -491,8 +523,10 @@ void Test43()
   MatrixColRMS(m, v);
   if(!FLOAT_EQ(v->data[0], 7.2572, 1e-3) ||
      !FLOAT_EQ(v->data[1], 7.5056, 1e-3) ||
-     !FLOAT_EQ(v->data[2], 3.5590, 1e-3))
-     abort();
+     !FLOAT_EQ(v->data[2], 3.5590, 1e-3)){
+    puts("Error Test43");
+    abort();
+  }
   DelMatrix(&m);
   DelDVector(&v);
   puts("MatrixColRMS: OK");
@@ -516,6 +550,7 @@ void Test42()
       if(FLOAT_EQ(o->data[i][j], square(m->data[i][j]), 1e-1))
         continue;
       else{
+        puts("Error Test42");
         abort();
       }
     }
@@ -543,6 +578,7 @@ void Test41()
       if(FLOAT_EQ(o->data[i][j], sqrt(m->data[i][j]), 1e-1))
         continue;
       else{
+        puts("Error Test41");
         abort();
       }
     }
@@ -570,6 +606,7 @@ void Test40()
       if(FLOAT_EQ(o->data[i][j], log10(m->data[i][j]+1), 1e-1))
         continue;
       else{
+        puts("Error Test40");
         abort();
       }
     }
@@ -597,6 +634,7 @@ void Test39()
       if(FLOAT_EQ(o->data[i][j], fabs(m->data[i][j]), 1e-1))
         continue;
       else{
+        puts("Error Test39");
         abort();
       }
     }
@@ -620,6 +658,7 @@ void Test38()
           continue;
         }
         else{
+          puts("Error Test38");
           abort();
         }
       }
@@ -628,6 +667,7 @@ void Test38()
           continue;
         }
         else{
+          puts("Error Test38");
           abort();
         }
       }
@@ -670,6 +710,7 @@ void Test36()
         continue;
       }
       else{
+        puts("Error Test36");
         abort();
       }
     }
@@ -693,6 +734,7 @@ void Test35()
     puts("ValInMatrix: OK");
   }
   else{
+    puts("Error Test35");
     abort();
   }
   DelMatrix(&m);
@@ -706,8 +748,10 @@ void Test34()
   m->data[0][0] = 1; m->data[0][1] = 0; m->data[0][2] = 3;
   m->data[1][0] = 11; m->data[1][1] = 5; m->data[1][2] = 2;
   m->data[2][0] = 6; m->data[2][1] = 12; m->data[2][2] = -5;
-  if(!FLOAT_EQ(1., MatrixTrace(m), 1e-3))
+  if(!FLOAT_EQ(1., MatrixTrace(m), 1e-3)){
+    puts("Error Test34");
     abort();
+  }
   DelMatrix(&m);
   puts("Calculate MatrixTrace: OK.\n");
 }
@@ -720,8 +764,10 @@ void Test33()
   m->data[0][0] = -4; m->data[0][1] = -3; m->data[0][2] = -2;
   m->data[1][0] = -1; m->data[1][1] = 0; m->data[1][2] = 1;
   m->data[2][0] = 2; m->data[2][1] = 3; m->data[2][2] = 4;
-  if(!FLOAT_EQ(7.745966692414834, Matrixnorm(m), 1e-13))
+  if(!FLOAT_EQ(7.745966692414834, Matrixnorm(m), 1e-13)){
+    puts("Error Test33");
     abort();
+  }
   DelMatrix(&m);
   puts("Calculate Matrixnorm: OK.\n");
 }
@@ -765,6 +811,7 @@ void Test32()
       continue;
     }
     else{
+      puts("Error Test32");
       abort();
     }
   }
@@ -957,6 +1004,7 @@ void Test26_bis()
     puts("U"); PrintMatrix(Ur);
     puts("S"); PrintMatrix(Sr);
     puts("V_T"); PrintMatrix(V_T);
+    puts("Error Test26_bis");
   }
 
   DelMatrix(&Ur);
@@ -1022,6 +1070,8 @@ void Test26()
     puts("U"); PrintMatrix(Ur);
     puts("S"); PrintMatrix(Sr);
     puts("V_T"); PrintMatrix(V_T);
+    puts("Error Test26");
+    abort();
   }
 
   DelMatrix(&Ur);
@@ -1086,6 +1136,8 @@ void Test25()
     puts("U"); PrintMatrix(Ur);
     puts("S"); PrintMatrix(Sr);
     puts("V_T"); PrintMatrix(V_T);
+    puts("Error Test25");
+    abort();
   }
 
   DelMatrix(&Ur);
@@ -1151,6 +1203,8 @@ void Test24()
     puts("Correct answer");
     puts("eigenvalues"); PrintDVector(eval_answer);
     puts("eigenvectors"); PrintMatrix(evect_answer);
+    puts("Error Test24");
+    abort();
   }
 
   DelMatrix(&evect_answer);
@@ -1288,7 +1342,6 @@ void Test20()
 
   puts("m1bis"); PrintMatrix(m1bis);
 
-
   DelMatrix(&m1bis);
   DelMatrix(&R);
   DelMatrix(&Q);
@@ -1327,7 +1380,6 @@ void Test19()
 
   puts("Eigenvalues"); PrintDVector(eval);
   puts("Eigenvectors"); PrintMatrix(evect);
-
 
   DelMatrix(&mbis);
   DelMatrix(&Q);

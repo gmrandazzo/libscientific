@@ -12,7 +12,7 @@ arch = platform.machine()
 
 setup(
     name="libscientific",
-    version="1.6.0",
+    version="1.6.1",
     packages=["libscientific"],
     package_data={"": [library]},
     platforms=[arch],

@@ -4,6 +4,7 @@ build/*
 .kdev4
 .vscode
 .vscode/*
+.venv
 
 # Object files
 *.o
