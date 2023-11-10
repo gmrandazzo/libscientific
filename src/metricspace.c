@@ -22,11 +22,6 @@
 #include <math.h>
 #include <pthread.h>
 
-enum cmethod {EUCLIDEAN = 0,
-              SQUARE_EUCLIDEAN,
-              MANHATTAN,
-              COSINE}; 
-
 typedef struct{
   matrix *m1, *m2;
   matrix *distances;
@@ -96,9 +91,14 @@ void *CalcWorker(void *arg_)
   return 0;
 }
 
-void EuclideanDistance(matrix* m1, matrix* m2, matrix *distances, size_t nthreads)
+
+void CalculateDistance(matrix *m1, 
+                       matrix *m2,
+                       matrix *distances,
+                       size_t nthreads,
+                       enum cmethod distance_method)
 {
-  if(m1->col == m2->col){
+if(m1->col == m2->col){
     pthread_t *threads;
     dst_th_arg *args;
     size_t th;
@@ -117,7 +117,7 @@ void EuclideanDistance(matrix* m1, matrix* m2, matrix *distances, size_t nthread
       args[th].distances = distances;
       args[th].r_from = from;
       args[th].r_to = to;
-      args[th].method = EUCLIDEAN;
+      args[th].method = distance_method;
 
       from = to;
       if(from+step > m1->row){
@@ -137,7 +137,7 @@ void EuclideanDistance(matrix* m1, matrix* m2, matrix *distances, size_t nthread
     xfree(args);
   }
   else{
-    fprintf(stderr, "Unable to compute Euclidean Distance. The number of variables differ\n");
+    fprintf(stderr, "Unable to compute distance. The number of variables differ\n");
     fflush(stderr);
     abort();
   }
@@ -161,55 +161,6 @@ void EuclideanDistance_ST(matrix *m1, matrix *m2, matrix *distances)
   }
 }
 
-void SquaredEuclideanDistance(matrix *m1, matrix *m2, matrix *distances, size_t nthreads)
-{
-  if(m1->col == m2->col){
-    pthread_t *threads;
-    dst_th_arg *args;
-    size_t th;
-    /* each column is a distance that correspond to m1->row */
-    ResizeMatrix(distances, m2->row, m1->row);
-    threads = xmalloc(sizeof(pthread_t)*nthreads);
-    args = xmalloc(sizeof(dst_th_arg)*nthreads);
-
-    size_t step = (size_t)ceil((double)m1->row/(double)nthreads);
-    size_t from = 0;
-    size_t to = step;
-    for(th = 0; th < nthreads; th++){
-      args[th].m1 = m1;
-      args[th].m2 = m2;
-      args[th].distances = distances;
-      args[th].r_from = from;
-      args[th].r_to = to;
-      args[th].method = SQUARE_EUCLIDEAN;
-
-      pthread_create(&threads[th], NULL, CalcWorker, (void*) &args[th]);
-      from = to;
-      if(from+step > m1->row){
-        to = m1->row;
-      }
-      else{
-        to+=step;
-      }
-    }
-
-    /* Wait till threads are complete before main continues. Unless we  */
-    /* wait we run the risk of executing an exit which will terminate   */
-    /* the process and all threads before the threads have completed.   */
-    for(th = 0; th < nthreads; th++){
-      pthread_join(threads[th], NULL);
-    }
-
-    xfree(threads);
-    xfree(args);
-  }
-  else{
-    fprintf(stderr, "Unable to compute Euclidean Distance. The number of variables differ\n");
-    fflush(stderr);
-    abort();
-  }
-}
-
 void SquaredEuclideanDistance_ST(matrix *m1, matrix *m2, matrix *distances){
   size_t i, j, k;
   double dist;
@@ -224,55 +175,6 @@ void SquaredEuclideanDistance_ST(matrix *m1, matrix *m2, matrix *distances){
       }
       distances->data[k][i] = dist;
     }
-  }
-}
-
-void ManhattanDistance(matrix *m1, matrix *m2, matrix *distances, size_t nthreads)
-{
-  if(m1->col == m2->col){
-    pthread_t *threads;
-    dst_th_arg *args;
-    size_t th;
-    /* each column is a distance that correspond to m1->row */
-    ResizeMatrix(distances, m2->row, m1->row);
-    threads = xmalloc(sizeof(pthread_t)*nthreads);
-    args = xmalloc(sizeof(dst_th_arg)*nthreads);
-
-    size_t step = (size_t)ceil((double)m1->row/(double)nthreads);
-    size_t from = 0;
-    size_t to = step;
-    for(th = 0; th < nthreads; th++){
-      args[th].m1 = m1;
-      args[th].m2 = m2;
-      args[th].distances = distances;
-      args[th].r_from = from;
-      args[th].r_to = to;
-      args[th].method = MANHATTAN;
-
-      pthread_create(&threads[th], NULL, CalcWorker, (void*) &args[th]);
-      from = to;
-      if(from+step > m1->row){
-        to = m1->row;
-      }
-      else{
-        to+=step;
-      }
-    }
-
-    /* Wait till threads are complete before main continues. Unless we  */
-    /* wait we run the risk of executing an exit which will terminate   */
-    /* the process and all threads before the threads have completed.   */
-    for(th = 0; th < nthreads; th++){
-      pthread_join(threads[th], NULL);
-    }
-
-    xfree(threads);
-    xfree(args);
-  }
-  else{
-    fprintf(stderr, "Unable to compute Manhattan Distance. The number of variables differ\n");
-    fflush(stderr);
-    abort();
   }
 }
 
@@ -291,55 +193,6 @@ void ManhattanDistance_ST(matrix *m1, matrix *m2, matrix *distances)
       }
       distances->data[k][i] = dist;
     }
-  }
-}
-
-void CosineDistance(matrix *m1, matrix *m2, matrix *distances, size_t nthreads)
-{
-  if(m1->col == m2->col){
-    pthread_t *threads;
-    dst_th_arg *args;
-    size_t th;
-    /* each column is a distance that correspond to m1->row */
-    ResizeMatrix(distances, m2->row, m1->row);
-    threads = xmalloc(sizeof(pthread_t)*nthreads);
-    args = xmalloc(sizeof(dst_th_arg)*nthreads);
-
-    size_t step = (size_t)ceil((double)m1->row/(double)nthreads);
-    size_t from = 0;
-    size_t to = step;
-    for(th = 0; th < nthreads; th++){
-      args[th].m1 = m1;
-      args[th].m2 = m2;
-      args[th].distances = distances;
-      args[th].r_from = from;
-      args[th].r_to = to;
-      args[th].method = COSINE;
-
-      pthread_create(&threads[th], NULL, CalcWorker, (void*) &args[th]);
-      from = to;
-      if(from+step > m1->row){
-        to = m1->row;
-      }
-      else{
-        to+=step;
-      }
-    }
-
-    /* Wait till threads are complete before main continues. Unless we  */
-    /* wait we run the risk of executing an exit which will terminate   */
-    /* the process and all threads before the threads have completed.   */
-    for(th = 0; th < nthreads; th++){
-      pthread_join(threads[th], NULL);
-    }
-
-    xfree(threads);
-    xfree(args);
-  }
-  else{
-    fprintf(stderr, "Unable to compute Cosine Distance. The number of variables differ\n");
-    fflush(stderr);
-    abort();
   }
 }
 

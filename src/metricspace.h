@@ -22,20 +22,24 @@
 #include "matrix.h"
 #include "vector.h"
 
-/* Description: calculate the euclidean distance between two matrix with the same column number.
- *              Multi-thread implementation.
+/* Description: calculate a distance between two matrix with the same column
+ * number. Multi-thread implementation.
  */
+enum cmethod {EUCLIDEAN = 0,
+              SQUARE_EUCLIDEAN,
+              MANHATTAN,
+              COSINE}; 
 
-void EuclideanDistance(matrix* m1, matrix* m2, matrix *distances, size_t nthreads);
+void CalculateDistance(matrix *m1, 
+                       matrix *m2,
+                       matrix *distances,
+                       size_t nthreads,
+                       enum cmethod distance_method);
+
 /* Description: calculate the euclidean distance between two matrix with the same column number.
  *              Single thread implementation
  */
 void EuclideanDistance_ST(matrix *m1, matrix *m2, matrix *distances);
-
-/* Description: calculate the square euclidean distance between two matrix with the same column number.
- *              Multi-thread implementation.
- */
-void SquaredEuclideanDistance(matrix *m1, matrix *m2, matrix *distances, size_t nthreads);
 
 /* Description: calculate the square euclidean distance between two matrix with the same column number.
  *              Single thread implementation
@@ -43,19 +47,9 @@ void SquaredEuclideanDistance(matrix *m1, matrix *m2, matrix *distances, size_t 
 void SquaredEuclideanDistance_ST(matrix *m1, matrix *m2, matrix *distances);
 
 /* Description: calculate the manhattan distance between two matrix with the same column number.
- *              Multi-thread implementation.
- */
-void ManhattanDistance(matrix *m1, matrix *m2, matrix *distances, size_t nthreads);
-
-/* Description: calculate the manhattan distance between two matrix with the same column number.
  *              Single thread implementation
  */
 void ManhattanDistance_ST(matrix *m1, matrix *m2, matrix *distances);
-
-/* Description: calculate the cosine distance between two matrix with the same column number.
- *              Multi-thread implementation.
- */
-void CosineDistance(matrix *m1, matrix *m2, matrix *distances, size_t nthreads);
 
 /* Description: calculate the cosine distance between two matrix with the same column number.
  *              Single thread implementation

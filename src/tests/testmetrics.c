@@ -81,12 +81,16 @@ void test12()
   matrix *m;
   dvector *dist_condensed;
   matrix *dist_st;
+  matrix *dist_mt;
 
   NewMatrix(&m, 4, 3);
   m->data[0][0] = 1; m->data[0][1] = 2; m->data[0][2] = 3;
   m->data[1][0] = 4; m->data[1][1] = 5; m->data[1][2] = 6;
   m->data[2][0] = 7; m->data[2][1] = 8; m->data[2][2] = 11;
   m->data[3][0] = 9; m->data[3][1] = 10; m->data[3][2] = 12;
+
+  initMatrix(& dist_mt);
+  CalculateDistance(m, m, dist_mt, 4, SQUARE_EUCLIDEAN);
 
   initDVector(&dist_condensed);
   SquaredEuclideanDistanceCondensed(m, dist_condensed, 2);
@@ -105,7 +109,8 @@ void test12()
         val = dist_condensed->data[indx];
       }
 
-      if(FLOAT_EQ(val, dist_st->data[i][j], EPSILON)){
+      if(FLOAT_EQ(val, dist_st->data[i][j], EPSILON) && 
+        FLOAT_EQ(val, dist_mt->data[i][j], EPSILON)){
         continue;
       }
       else{
@@ -117,6 +122,7 @@ void test12()
   puts("SquaredEuclideanDistanceCondensed: OK");
   DelDVector(&dist_condensed);
   DelMatrix(&dist_st);
+  DelMatrix(&dist_mt);
   DelMatrix(&m);
 }
 
@@ -194,7 +200,7 @@ void test10()
 
 
   initMatrix(&dist_mt);
-  ManhattanDistance(m2, m1, dist_mt, 2);
+  CalculateDistance(m2, m1, dist_mt, 2, MANHATTAN);
 
   initMatrix(&dist_st);
   ManhattanDistance_ST(m2, m1, dist_st);
@@ -243,7 +249,7 @@ void test9()
 
 
   initMatrix(&dist_mt);
-  CosineDistance(m2, m1, dist_mt, 2);
+  CalculateDistance(m2, m1, dist_mt, 2, COSINE);
 
   initMatrix(&dist_st);
   CosineDistance_ST(m2, m1, dist_st);
@@ -292,7 +298,7 @@ void test8()
 
 
   initMatrix(&dist_mt);
-  SquaredEuclideanDistance(m2, m1, dist_mt, 2);
+  CalculateDistance(m2, m1, dist_mt, 2, SQUARE_EUCLIDEAN);
 
   initMatrix(&dist_st);
   SquaredEuclideanDistance_ST(m2, m1, dist_st);
@@ -364,7 +370,8 @@ void test6()
   }
 
   initMatrix(&dist);
-  CosineDistance(m, m, dist, 4);
+  CalculateDistance(m, m, dist, 4, COSINE);
+
   puts("CosineDistance: OK");
   DelMatrix(&m);
   DelMatrix(&dist);
@@ -389,7 +396,7 @@ void test5()
   }
 
   initMatrix(&dist);
-  SquaredEuclideanDistance(m, m, dist, 4);
+  CalculateDistance(m, m, dist, 4, SQUARE_EUCLIDEAN);
   puts("SquaredEuclideanDistance: OK");
   DelMatrix(&m);
   DelMatrix(&dist);
@@ -558,7 +565,7 @@ void test2()
   }
 
   initMatrix(&dist);
-  EuclideanDistance(m, m, dist, 4);
+  CalculateDistance(m, m, dist, 4, EUCLIDEAN);
   DelMatrix(&m);
   DelMatrix(&dist);
 }
@@ -589,7 +596,7 @@ void test1()
 
 
   initMatrix(&dist_mt);
-  EuclideanDistance(m2, m1, dist_mt, 2);
+  CalculateDistance(m2, m1, dist_mt, 4, EUCLIDEAN);
 
   initMatrix(&dist_st);
   EuclideanDistance_ST(m2, m1, dist_st);

@@ -119,13 +119,13 @@ void MDC(matrix* m,
   matrix *dm;
   NewMatrix(&dm, m->row, m->row);
   if(metric == 0){
-    EuclideanDistance(m, m, dm, nthreads);
+    CalculateDistance(m, m, dm, nthreads, EUCLIDEAN);
   }
   else if(metric == 1){
-    ManhattanDistance(m, m, dm, nthreads);
+    CalculateDistance(m, m, dm, nthreads, MANHATTAN);
   }
   else{
-    CosineDistance(m, m, dm, nthreads);
+    CalculateDistance(m, m, dm, nthreads, COSINE);
   }
 
   for(i = 0; i < m->row; i++){
@@ -367,14 +367,13 @@ void MaxDis(matrix* m,
     initMatrix(&distances);
 
     if(metric == 0){
-      EuclideanDistance(m1, m2, distances, nthreads);
+      CalculateDistance(m1, m2, distances, nthreads, EUCLIDEAN);
     }
     else if(metric == 1){
-      ManhattanDistance(m1, m2, distances, nthreads);
+      CalculateDistance(m1, m2, distances, nthreads,  MANHATTAN);
     }
     else{
-      CosineDistance(m1, m2, distances, nthreads);
-      PrintMatrix(distances);
+      CalculateDistance(m1, m2, distances, nthreads,  COSINE);
     }
 
     /* 3. The next object to be selected is always as distant as possible from already selected molecules */
@@ -896,7 +895,7 @@ void PruneResults(matrix *m,
     }
 
     initMatrix(&distmx);
-    EuclideanDistance(subcentroid, submx, distmx, nthreads);
+    CalculateDistance(subcentroid, submx, distmx, nthreads, EUCLIDEAN); 
 
     if(type == 0){ /* Near Object */
       for(j = 0; j < nmaxobj; j++){
@@ -1388,7 +1387,7 @@ void KMeansRandomGroupsCV(matrix* m,
         KMeans(subm, j, initializer, clusters, centroids, nthreads);
 
         initMatrix(&distances);
-        EuclideanDistance(centroids, predm, distances, nthreads);
+        CalculateDistance(centroids, predm, distances, nthreads, EUCLIDEAN);
 
         #ifdef DEBUG
         puts("Centroids");
@@ -1567,10 +1566,10 @@ void HierarchicalClustering(matrix* _m,
   initDVector(&clusterdist);
 
   if(linktype > 2){
-    SquaredEuclideanDistance(_m, _m, distmx, nthreads);
+    CalculateDistance(_m, _m, distmx, nthreads, SQUARE_EUCLIDEAN);
   }
   else{
-    EuclideanDistance(_m, _m, distmx, nthreads);
+    CalculateDistance(_m, _m, distmx, nthreads, EUCLIDEAN);
   }
 
   for(i = 0; i < _m->row; i++){
