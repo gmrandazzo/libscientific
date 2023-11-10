@@ -43,6 +43,8 @@ Create portable Windows python package (MSYS2/Mingw64)
   mingw32-make
   cd ../src/python_bindings/
   python3 setup.py bdist_wheel --plat-name  win_amd64
+  python3 setup.py bdist_wheel --plat-name  mingw_x86_64
+
 
 N.B.: Use pip3 debug --verbose to get the compatible platform name tags
 

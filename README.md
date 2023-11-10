@@ -170,20 +170,30 @@ Manual Installation
 ```
 
 Compile python platform portable whl (no library installation required)
+-----------------------------------------------------------------------
+## Linux/OSX
+```
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release -DPORTABLE_PYTHON_PACKAGE=True ..
+make -j
+cd ../src/python_bindings/
+OSX: python3 setup.py bdist_wheel --plat-name  macosx-14-0-arm64
+Linux: python3 setup.py bdist_wheel --plat-name  manylinux1_x86_64
+N.B.: pip3 debug --verbose to get the compatible tags
+```
+
+## Windows with MSYS/MinGW64
 
 ```
 mkdir build
 cd build
-cmake -DPORTABLE_PYTHON_PACKAGE=True .. # Linux and OSX
-cmake -G "MinGW Makefiles" -DPORTABLE_PYTHON_PACKAGE=True .. # Windows MSYS2/MinGW64
-make -j # on Linux
-mingw32-make # on Windows
+cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release -DPORTABLE_PYTHON_PACKAGE=True ..
+mingw32-make -j
 cd ../src/python_bindings/
-
-# pip3 debug --verbose to get the compatible tags
-OSX: python3 setup.py bdist_wheel --plat-name  macosx-14-0-arm64
-Linux: python3 setup.py bdist_wheel --plat-name  manylinux1_x86_64
-Win32: python3 setup.py bdist_wheel --plat-name  win_amd64
+python3 setup.py bdist_wheel --plat-name  win_amd64
+python3 setup.py bdist_wheel --plat-name  mingw_x86_64
+N.B.: pip3 debug --verbose to get the compatible tags
 ```
 
 
