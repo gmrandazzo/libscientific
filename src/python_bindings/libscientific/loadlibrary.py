@@ -63,7 +63,9 @@ def load_library_for_posix():
             if pathlib.Path(f'{lib_path}/libgfortran.so.{i}').is_file():
                 _ = ctypes.CDLL(f'{lib_path}/libgfortran.so.{i}')
                 break
-        _ = ctypes.CDLL(f'{lib_path}/libquadmath.so.0.0.0')
+        if pathlib.Path(f'{lib_path}/libquadmath.so.0.0.0').is_file():
+            # arm32 architecture do not have libquadmath
+            _ = ctypes.CDLL(f'{lib_path}/libquadmath.so.0.0.0')
         _ = ctypes.CDLL(f'{lib_path}/libblas.so')
         _ = ctypes.CDLL(f'{lib_path}/liblapack.so')
         return ctypes.CDLL(f'{lib_path}/libscientific.so')
