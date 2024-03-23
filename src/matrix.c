@@ -1619,8 +1619,6 @@ void MatrixColDescStat(matrix *m, matrix *ds)
  *  Calculation of the covariance matrix
  *  m x n x n x m = m x m
  */
-/*
-WRONG!
 void MatrixCovariance(matrix *m, matrix *cm)
 {
   size_t i;
@@ -1644,8 +1642,10 @@ void MatrixCovariance(matrix *m, matrix *cm)
   }
 
   DelDVector(&colaverage);
-}*/
+}
 
+/*
+WRONG!
 void MatrixCovariance(matrix *m, matrix *cm)
 {
   size_t i;
@@ -1667,6 +1667,7 @@ void MatrixCovariance(matrix *m, matrix *cm)
   }
   DelDVector(&rowaverage);
 }
+*/
 
 /* Transform a matrix into a logaritmic matrix */
 void Matrix2LogMatrix(matrix *m_in, matrix *m_out)

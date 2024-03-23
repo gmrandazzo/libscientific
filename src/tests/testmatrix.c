@@ -282,10 +282,11 @@ void Test53()
   MatrixInitRandomInt(m, -100, 100);
   for(i = 0; i < m->row; i++){
     for(j = 0; j < m->col; j++){
-      if(m->data[i][j] > -100 && m->data[i][j] < 100 && !FLOAT_EQ(m->data[i][j], 0.f, 1e-8)){
+      if((int)m->data[i][j] >= -100 && (int)m->data[i][j] <= 100 && !FLOAT_EQ(m->data[i][j], 0.f, 1e-8)){
         continue;
       }
       else{
+        printf("%f \n", m->data[i][j]);
         puts("Error Test53");
         abort();
       }
@@ -1391,16 +1392,20 @@ void Test19()
 
 void Test18()
 {
-  matrix *m, *covm;
+  size_t i, j;
+  matrix *m, *covm, *res;
   puts("Test Calculation Covariance Matrix");
 
   NewMatrix(&m, 5, 2);
-
   m->data[0][0] = 1; m->data[0][1] = 2;
   m->data[1][0] = 2; m->data[1][1] = 3;
   m->data[2][0] = 3; m->data[2][1] = 3;
   m->data[3][0] = 4; m->data[3][1] = 5;
   m->data[4][0] = 5; m->data[4][1] = 5;
+
+  NewMatrix(&res, 2, 2);
+  res->data[0][0] = 2.5; res->data[0][1] = 2.;
+  res->data[1][0] = 2.; res->data[1][1] = 1.8;
 
   initMatrix(&covm);
 
@@ -1411,6 +1416,18 @@ void Test18()
 
   puts("Covariance Matrix");
   PrintMatrix(covm);
+
+  for(i = 0; i < res->row; i++){
+    for(j = 0; j < res->row; j++){
+      if(!FLOAT_EQ(res->data[i][j], covm->data[i][j], 1e-1)){
+        puts("Error Test18 - Calculation covariance matrix");
+        abort();
+      }
+      else{
+        continue;
+      }
+    }
+  }
 
   DelMatrix(&covm);
   DelMatrix(&m);
