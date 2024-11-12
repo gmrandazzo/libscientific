@@ -69,7 +69,9 @@ message(STATUS "Build Type: ${CMAKE_BUILD_TYPE}")
 
 if(cmake_build_type_tolower STREQUAL "debug")
   include(Dart)
-  cmake_policy(SET CMP0145 OLD)
+  if(POLICY CMP0145)
+    cmake_policy(SET CMP0145 OLD)
+  endif()
   enable_testing()
 endif()
 
