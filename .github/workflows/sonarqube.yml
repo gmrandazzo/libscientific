@@ -39,7 +39,7 @@ jobs:
           sed -i -e 's/<source>libscientific<\/source>/<source>src\/python_bindings\/libscientific<\/source>/' coverage.xml
       - name: Download and install the SonarScanner
         env:
-          SONAR_SCANNER_VERSION: 4.6.2.2472
+          SONAR_SCANNER_VERSION: 5.0.1.3006
         run: |
           mkdir $HOME/.sonar
           curl -sSLo $HOME/.sonar/sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${{ env.SONAR_SCANNER_VERSION }}-linux.zip
