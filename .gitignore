@@ -5,6 +5,10 @@ build/*
 .vscode
 .vscode/*
 .venv
+*.egg-info/
+*.egg-info/*
+__pycache__/
+__pycache__/*
 
 # Object files
 *.o
