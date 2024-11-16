@@ -46,7 +46,7 @@ def get_platform_specific_paths() -> List[pathlib.Path]:
         pathlib.Path('/usr/lib'),
         pathlib.Path('/usr/local/lib'),
     ]
-    
+
     # Add platform-specific paths
     if platform.system() == 'Linux':
         # Get machine architecture
@@ -62,7 +62,7 @@ def get_platform_specific_paths() -> List[pathlib.Path]:
                 pathlib.Path('/usr/lib/arm-linux-gnueabi'),
                 pathlib.Path('/usr/lib/aarch64-linux-gnu'),
             ])
-        
+
     return paths
 
 def get_search_paths(local_path: pathlib.Path, verbose: bool = False) -> List[pathlib.Path]:
@@ -76,11 +76,11 @@ def get_search_paths(local_path: pathlib.Path, verbose: bool = False) -> List[pa
         List of unique, existing library paths
     """
     search_paths: Set[pathlib.Path] = set()
-    
+
     # Add local paths
     search_paths.add(local_path)
     search_paths.add(local_path / 'lib')
-    
+
     # Add paths from environment variables
     for env_var in ['LD_LIBRARY_PATH', 'LIBRARY_PATH']:
         paths = os.environ.get(env_var, '')
@@ -89,19 +89,19 @@ def get_search_paths(local_path: pathlib.Path, verbose: bool = False) -> List[pa
                 if p:
                     path = pathlib.Path(p)
                     search_paths.add(path)
-                    search_paths.add(path / 'lib')
-                    
+                    search_paths.add(path/'lib')
+
     # Add platform-specific paths
     search_paths.update(get_platform_specific_paths())
-    
+
     # Filter non-existent paths and convert to list
     valid_paths = [p for p in search_paths if p.is_dir()]
-    
+
     if verbose:
         print("Searching in the following paths:")
         for path in valid_paths:
             print(f"  - {path}")
-            
+
     return valid_paths
 
 def find_versioned_library(base_path: pathlib.Path, lib_name: str) -> Optional[pathlib.Path]:
@@ -129,7 +129,11 @@ def find_versioned_library(base_path: pathlib.Path, lib_name: str) -> Optional[p
                 return matches[0]
     return None
 
-def find_library(lib_name: str, local_path: pathlib.Path, verbose: bool = False) -> Optional[pathlib.Path]:
+def find_library(
+        lib_name: str,
+        local_path: pathlib.Path,
+        verbose: bool = False
+    ) -> Optional[pathlib.Path]:
     """Try to find a library in system paths and local directory.
     
     Args:
@@ -145,26 +149,50 @@ def find_library(lib_name: str, local_path: pathlib.Path, verbose: bool = False)
     """
     if not isinstance(local_path, pathlib.Path):
         local_path = pathlib.Path(local_path)
-        
+
     search_paths = get_search_paths(local_path, verbose)
-    
+
     for path in search_paths:
         # Try exact match
         full_path = path / lib_name
         if verbose:
             print(f"Checking {full_path}")
-            
+
         if full_path.exists():
             return full_path
-            
+
         # Try versioned library
         versioned_lib = find_versioned_library(path, lib_name)
         if versioned_lib:
             return versioned_lib
-            
+
     if verbose:
         print(f"Could not find library: {lib_name}")
     return None
+
+def load_gfortran_for_posix(package_lib_path: pathlib.Path):
+    """
+    Load libgfortran
+    """
+    for i in range(3, 6):
+        gfortran_path = find_library(f'libgfortran.so.{i}', package_lib_path)
+        if gfortran_path:
+            _ = ctypes.CDLL(str(gfortran_path))
+            break
+
+def load_quadmath_for_posix(package_lib_path: pathlib.Path):
+    """
+    Load libquadmath (optional for non-ARM systems)
+    """
+    quadmath_names = ['libquadmath.so.0', 'libquadmath.so.0.0.0']
+    for name in quadmath_names:
+        quadmath_path = find_library(name, package_lib_path)
+        if quadmath_path:
+            try:
+                _ = ctypes.CDLL(str(quadmath_path))
+                break
+            except OSError:
+                continue
 
 def load_library_for_posix():
     """Load the libscientific library and its dependencies for POSIX systems.
@@ -180,47 +208,33 @@ def load_library_for_posix():
         # Handle MacOS
         if os.uname()[0] == "Darwin":
             return ctypes.CDLL(str(package_lib_path / 'libscientific.dylib'))
+
+        # Handle Linux
+        load_gfortran_for_posix(package_lib_path=package_lib_path)
+
+        # Load libquadmath (optional for non-ARM systems)
+        load_gfortran_for_posix(package_lib_path=package_lib_path)
+
+        # Load BLAS and LAPACK
+        blas_path = find_library('libblas.so', package_lib_path)
+        lapack_path = find_library('liblapack.so', package_lib_path)
+
+        if blas_path:
+            _ = ctypes.CDLL(str(blas_path))
         else:
-            # Handle Linux
-            # Load libgfortran
-            for i in range(3, 6):
-                gfortran_path = find_library(f'libgfortran.so.{i}', package_lib_path)
-                if gfortran_path:
-                    _ = ctypes.CDLL(str(gfortran_path))
-                    break
-            
-            # Load libquadmath (optional for non-ARM systems)
-            quadmath_names = ['libquadmath.so.0', 'libquadmath.so.0.0.0']
-            for name in quadmath_names:
-                quadmath_path = find_library(name, package_lib_path)
-                if quadmath_path:
-                    try:
-                        _ = ctypes.CDLL(str(quadmath_path))
-                        break
-                    except OSError:
-                        continue
-            
-            # Load BLAS and LAPACK
-            blas_path = find_library('libblas.so', package_lib_path)
-            lapack_path = find_library('liblapack.so', package_lib_path)
-            
-            if blas_path:
-                _ = ctypes.CDLL(str(blas_path))
-            else:
-                raise OSError("Could not find BLAS library")
-                
-            if lapack_path:
-                _ = ctypes.CDLL(str(lapack_path))
-            else:
-                raise OSError("Could not find LAPACK library")
-            
-            # Finally load libscientific
-            scientific_path = find_library('libscientific.so', package_lib_path)
-    
-            if scientific_path:
-                return ctypes.CDLL(str(scientific_path))
-            else:
-                raise OSError("Could not find libscientific.so")
+            raise OSError("Could not find BLAS library")
+
+        if lapack_path:
+            _ = ctypes.CDLL(str(lapack_path))
+        else:
+            raise OSError("Could not find LAPACK library")
+
+        # Finally load libscientific
+        scientific_path = find_library('libscientific.so', package_lib_path)
+
+        if scientific_path:
+            return ctypes.CDLL(str(scientific_path))
+        raise OSError("Could not find libscientific.so")
     except OSError as err:
         msg = [
             f"Failed to load libscientific on {os.name}",
