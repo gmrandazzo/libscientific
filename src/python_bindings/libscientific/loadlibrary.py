@@ -57,7 +57,7 @@ def get_platform_specific_paths() -> List[pathlib.Path]:
         pathlib.Path('/usr/lib'),
         pathlib.Path('/usr/local/lib'),
     ]
-    if system == 'Linux':
+    if system == 'linux':
         # Get machine architecture
         if arch == 'x86_64':
             paths.extend([
@@ -178,7 +178,7 @@ def find_library(
         Path to library if found, None otherwise
     
     Example:
-        >>> find_library('libblas.so', Path('/usr/local'), verbose=True)
+        >>> find_library('liblapack.so', Path('/usr/local'), verbose=True)
     """
     if not isinstance(local_path, pathlib.Path):
         local_path = pathlib.Path(local_path)
@@ -189,15 +189,11 @@ def find_library(
         lib_name = f"{lib_name[:-3]}.dylib"
 
     for path in search_paths:
-        # Try exact match
         full_path = path / lib_name
         if verbose:
             print(f"Checking {full_path}")
-
         if full_path.exists():
             return full_path
-
-        # Try versioned library
         versioned_lib = find_versioned_library(path, lib_name)
         if versioned_lib:
             return versioned_lib
@@ -282,7 +278,6 @@ def load_library_for_posix():
         # Handle Linux
         load_gfortran_for_posix(package_lib_path)
         load_quadmath_for_posix(package_lib_path)
-
         # Load BLAS and LAPACK
         for lib_name in ['libblas.so', 'liblapack.so']:
             lib_path = find_library(lib_name, package_lib_path)
@@ -290,16 +285,14 @@ def load_library_for_posix():
                 _ = ctypes.CDLL(str(lib_path))
             else:
                 raise OSError(f"Could not find {lib_name}")
-
         # Load libscientific
         scientific_path = find_library('libscientific.so', package_lib_path)
         if scientific_path:
             return ctypes.CDLL(str(scientific_path))
         raise OSError("Could not find libscientific.so")
-
-    except OSError as err:
+    except (OSError,RuntimeError) as err:
         msg = [
-            f"Failed to load libscientific on {platform.system()}",
+            f"Failed to load libscientific on {system}",
             "Please either:",
             "1. Install the library from source:",
             "   https://github.com/gmrandazzo/libscientific",
