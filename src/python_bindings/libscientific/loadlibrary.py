@@ -20,21 +20,31 @@ import os
 import pathlib
 import ctypes
 from typing import (
+    Dict,
     Optional,
+    Tuple,
     List,
     Set
 )
 
 import platform
 
-def load_library_for_nt():
-    """Load the libscientific library for NT systems
+def get_platform_info() -> Tuple[str, str]:
+    """Get detailed platform and architecture information.
+    
+    Returns:
+        Tuple of (system_name, architecture)
     """
-    try:
-        lib_path = f'{pathlib.Path(__file__).parent}'
-        return ctypes.WinDLL(f'{lib_path}\\libscientific.dll')
-    except TypeError:
-        return None
+    system = platform.system().lower()
+    machine = platform.machine().lower()
+    arch_map = {
+        'x86_64': 'x86_64',
+        'amd64': 'x86_64',
+        'arm64': 'arm64',
+        'aarch64': 'arm64'
+    }
+    arch = arch_map.get(machine, machine)
+    return system, arch
 
 def get_platform_specific_paths() -> List[pathlib.Path]:
     """Get platform-specific library paths based on the OS and architecture.
@@ -42,27 +52,35 @@ def get_platform_specific_paths() -> List[pathlib.Path]:
     Returns:
         List of platform-specific library paths
     """
+    system, arch = get_platform_info()
     paths = [
         pathlib.Path('/usr/lib'),
         pathlib.Path('/usr/local/lib'),
     ]
-
-    # Add platform-specific paths
-    if platform.system() == 'Linux':
+    if system == 'Linux':
         # Get machine architecture
-        machine = platform.machine()
-        if machine == 'x86_64':
+        if arch == 'x86_64':
             paths.extend([
                 pathlib.Path('/usr/lib/x86_64-linux-gnu'),  # Debian/Ubuntu
                 pathlib.Path('/usr/lib64'),                 # RedHat/CentOS
                 pathlib.Path('/lib64'),                     # Some distributions
             ])
-        elif machine.startswith('arm') or machine.startswith('aarch'):
+        elif arch.startswith('arm') or arch.startswith('aarch'):
             paths.extend([
                 pathlib.Path('/usr/lib/arm-linux-gnueabi'),
                 pathlib.Path('/usr/lib/aarch64-linux-gnu'),
             ])
-
+    elif system == 'darwin':  # macOS
+        paths.extend([
+            pathlib.Path('/opt/homebrew/lib'),
+            pathlib.Path('/usr/local/lib'),
+            pathlib.Path('/usr/local/opt/gcc/lib'),
+            pathlib.Path('/opt/homebrew/opt/gcc/lib'),
+            pathlib.Path('/opt/homebrew/opt/openblas/lib'),
+            pathlib.Path('/opt/homebrew/opt/lapack/lib'),
+            pathlib.Path('/usr/local/opt/opt/openblas/lib'),
+            pathlib.Path('/usr/local/opt/opt/lapack/lib'),
+        ])
     return paths
 
 def get_search_paths(local_path: pathlib.Path, verbose: bool = False) -> List[pathlib.Path]:
@@ -82,7 +100,8 @@ def get_search_paths(local_path: pathlib.Path, verbose: bool = False) -> List[pa
     search_paths.add(local_path / 'lib')
 
     # Add paths from environment variables
-    for env_var in ['LD_LIBRARY_PATH', 'LIBRARY_PATH']:
+    env_vars = ['LD_LIBRARY_PATH', 'LIBRARY_PATH', 'DYLD_LIBRARY_PATH']
+    for env_var in env_vars:
         paths = os.environ.get(env_var, '')
         if paths:
             for p in paths.split(':'):
@@ -104,6 +123,19 @@ def get_search_paths(local_path: pathlib.Path, verbose: bool = False) -> List[pa
 
     return valid_paths
 
+def get_lib_extensions() -> Dict[str, List[str]]:
+    """Get library extensions and patterns for different platforms.
+    
+    Returns:
+        Dictionary of platform-specific library patterns
+    """
+    system, _ = get_platform_info()
+    return {
+        'linux': ['.so', '.so.*'],
+        'darwin': ['.dylib', '.dylib.*'],
+        'windows': ['.dll']
+    }.get(system, ['.so', '.dylib', '.dll'])
+
 def find_versioned_library(base_path: pathlib.Path, lib_name: str) -> Optional[pathlib.Path]:
     """Search for versioned library files.
     
@@ -114,19 +146,20 @@ def find_versioned_library(base_path: pathlib.Path, lib_name: str) -> Optional[p
     Returns:
         Path to the library if found, None otherwise
     """
-    if lib_name.endswith('.so'):
-        base_name = lib_name[:-3]  # Remove .so
-        # Try common version patterns
-        patterns = [
-            f'{base_name}.so.*',    # Standard version pattern
-            f'{lib_name}.*',        # Alternative version pattern
-        ]
-        for pattern in patterns:
-            matches = list(base_path.glob(pattern))
-            if matches:
-                # Sort by version number to get the newest version
-                matches.sort(reverse=True)
-                return matches[0]
+    system, _ = get_platform_info()
+    extensions = get_lib_extensions()
+    for ext in extensions:
+        if lib_name.endswith(ext):
+            base_name = lib_name[:-len(ext)]
+            patterns = [f'{base_name}{ext}*']
+            if system == 'darwin':
+                version_patterns = ['.*.dylib']
+                patterns.extend(f'{base_name}{pat}' for pat in version_patterns)
+            for pattern in patterns:
+                matches = list(base_path.glob(pattern))
+                if matches:
+                    matches.sort(reverse=True)
+                    return matches[0]
     return None
 
 def find_library(
@@ -150,7 +183,10 @@ def find_library(
     if not isinstance(local_path, pathlib.Path):
         local_path = pathlib.Path(local_path)
 
+    system, _ = get_platform_info()
     search_paths = get_search_paths(local_path, verbose)
+    if system == 'darwin' and lib_name.endswith('.so'):
+        lib_name = f"{lib_name[:-3]}.dylib"
 
     for path in search_paths:
         # Try exact match
@@ -169,6 +205,35 @@ def find_library(
     if verbose:
         print(f"Could not find library: {lib_name}")
     return None
+
+def load_dependencies_for_darwin(package_lib_path: pathlib.Path):
+    """Load required dependencies for macOS (both ARM and x86_64).
+    
+    Args:
+        package_lib_path: Path to the package library directory
+    """
+    system, _ = get_platform_info()
+    if system != 'darwin':
+        return
+
+    # Try to load OpenMP runtime (required for some BLAS/LAPACK implementations)
+    omp_names = ['libomp.dylib', 'libgomp.dylib']
+    for name in omp_names:
+        omp_path = find_library(name, package_lib_path)
+        if omp_path:
+            try:
+                _ = ctypes.CDLL(str(omp_path))
+                break
+            except OSError:
+                continue
+    # Load BLAS and LAPACK
+    for lib_name in ['libblas.dylib', 'liblapack.dylib']:
+        lib_path = find_library(lib_name, package_lib_path)
+        if lib_path:
+            try:
+                _ = ctypes.CDLL(str(lib_path))
+            except OSError as e:
+                print(f"Warning: Failed to load {lib_name}: {e}")
 
 def load_gfortran_for_posix(package_lib_path: pathlib.Path):
     """
@@ -205,46 +270,53 @@ def load_library_for_posix():
     """
     try:
         package_lib_path = pathlib.Path(__file__).parent.absolute()
-        # Handle MacOS
-        if os.uname()[0] == "Darwin":
-            return ctypes.CDLL(str(package_lib_path / 'libscientific.dylib'))
+        system, _ = get_platform_info()
+
+        if system == 'darwin':
+            load_dependencies_for_darwin(package_lib_path)
+            lib_path = find_library('libscientific.dylib', package_lib_path)
+            if lib_path:
+                return ctypes.CDLL(str(lib_path))
+            raise OSError("Could not find libscientific.dylib")
 
         # Handle Linux
-        load_gfortran_for_posix(package_lib_path=package_lib_path)
-
-        # Load libquadmath (optional for non-ARM systems)
-        load_gfortran_for_posix(package_lib_path=package_lib_path)
+        load_gfortran_for_posix(package_lib_path)
+        load_quadmath_for_posix(package_lib_path)
 
         # Load BLAS and LAPACK
-        blas_path = find_library('libblas.so', package_lib_path)
-        lapack_path = find_library('liblapack.so', package_lib_path)
+        for lib_name in ['libblas.so', 'liblapack.so']:
+            lib_path = find_library(lib_name, package_lib_path)
+            if lib_path:
+                _ = ctypes.CDLL(str(lib_path))
+            else:
+                raise OSError(f"Could not find {lib_name}")
 
-        if blas_path:
-            _ = ctypes.CDLL(str(blas_path))
-        else:
-            raise OSError("Could not find BLAS library")
-
-        if lapack_path:
-            _ = ctypes.CDLL(str(lapack_path))
-        else:
-            raise OSError("Could not find LAPACK library")
-
-        # Finally load libscientific
+        # Load libscientific
         scientific_path = find_library('libscientific.so', package_lib_path)
-
         if scientific_path:
             return ctypes.CDLL(str(scientific_path))
         raise OSError("Could not find libscientific.so")
+
     except OSError as err:
         msg = [
-            f"Failed to load libscientific on {os.name}",
+            f"Failed to load libscientific on {platform.system()}",
             "Please either:",
             "1. Install the library from source:",
             "   https://github.com/gmrandazzo/libscientific",
-            "2. If already installed, specify location in LD_LIBRARY_PATH:",
-            "   export LD_LIBRARY_PATH=<path to libscientific>"
+            "2. If already installed, specify location in appropriate environment variable:",
+            "   Linux: export LD_LIBRARY_PATH=<path to libscientific>",
+            "   macOS: export DYLD_LIBRARY_PATH=<path to libscientific>"
         ]
         raise RuntimeError('\n'.join(msg)) from err
+
+def load_library_for_nt():
+    """Load the libscientific library for NT systems
+    """
+    try:
+        lib_path = f'{pathlib.Path(__file__).parent}'
+        return ctypes.WinDLL(f'{lib_path}\\libscientific.dll')
+    except TypeError:
+        return None
 
 def load_libscientific_library():
     """Load the libscientific library dynamically.

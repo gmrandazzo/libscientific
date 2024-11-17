@@ -1,6 +1,8 @@
 # Directory
 build/
 build/*
+dist/
+dist/*
 .kdev4
 .vscode
 .vscode/*
