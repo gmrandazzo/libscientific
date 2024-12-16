@@ -2,7 +2,7 @@
 *
 * Copyright (C) <2016>  Giuseppe Marco Randazzo
 *
-* This program is free software: you can redistribute it and/or modify
+* This program is free software = you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
@@ -13,7 +13,7 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+* along with this program.  If not, see <http =//www.gnu.org/licenses/>.
 */
 
 #include <stdlib.h>
@@ -24,8 +24,78 @@
 #include "datasets.h"
 #include "scientificinfo.h"
 
+void test11()
+{
+  printf("Test 11 - PCA T squared Contributions = ");
+  matrix *m; /* Data matrix */
+  matrix *contributions;
+  dvector *spe;
+  dvector *spe_ground_truth;
+  PCAMODEL *model;
+  int run = SIGSCIENTIFICRUN;
+
+  NewMatrix(&m, 14, 7);
+
+  m->data[0][0] = 4.0000;  m->data[0][1] = 4.0000;  m->data[0][2] = 1.0000;  m->data[0][3] = 84.1400;  m->data[0][4] = 1.0500;  m->data[0][5] = 235.1500;  m->data[0][6] = 357.1500;
+  m->data[1][0] = 5.0000;  m->data[1][1] = 5.0000;  m->data[1][2] = 1.0000;  m->data[1][3] = 79.1000;  m->data[1][4] = 0.9780;  m->data[1][5] = 1.5090;  m->data[1][6] = 231.0000;
+  m->data[2][0] = 4.0000;  m->data[2][1] = 5.0000;  m->data[2][2] = 1.0000;  m->data[2][3] = 67.0900;  m->data[2][4] = 0.9700;  m->data[2][5] = 249.0000;  m->data[2][6] = 403.0000;
+  m->data[3][0] = 4.0000;  m->data[3][1] = 4.0000;  m->data[3][2] = 1.0000;  m->data[3][3] = 68.0700;  m->data[3][4] = 0.9360;  m->data[3][5] = 187.3500;  m->data[3][6] = 304.5500;
+  m->data[4][0] = 3.0000;  m->data[4][1] = 4.0000;  m->data[4][2] = 2.0000;  m->data[4][3] = 68.0800;  m->data[4][4] = 1.0300;  m->data[4][5] = 363.0000;  m->data[4][6] = 529.0000;
+  m->data[5][0] = 9.0000;  m->data[5][1] = 7.0000;  m->data[5][2] = 1.0000;  m->data[5][3] = 129.1600;  m->data[5][4] = 1.0900;  m->data[5][5] = 258.0000;  m->data[5][6] = 510.0000;
+  m->data[6][0] = 10.0000;  m->data[6][1] = 8.0000;  m->data[6][2] = 0.0000;  m->data[6][3] = 128.1600;  m->data[6][4] = 1.1500;  m->data[6][5] = 352.0000;  m->data[6][6] = 491.0000;
+  m->data[7][0] = 6.0000;  m->data[7][1] = 6.0000;  m->data[7][2] = 0.0000;  m->data[7][3] = 78.1118;  m->data[7][4] = 0.8765;  m->data[7][5] = 278.6400;  m->data[7][6] = 353.3000;
+  m->data[8][0] = 16.0000;  m->data[8][1] = 10.0000;  m->data[8][2] = 0.0000;  m->data[8][3] = 202.2550;  m->data[8][4] = 1.2710;  m->data[8][5] = 429.1500;  m->data[8][6] = 666.6500;
+  m->data[9][0] = 6.0000;  m->data[9][1] = 12.0000;  m->data[9][2] = 0.0000;  m->data[9][3] = 84.1600;  m->data[9][4] = 0.7800;  m->data[9][5] = 279.0000;  m->data[9][6] = 354.0000;
+  m->data[10][0] = 4.0000;  m->data[10][1] = 8.0000;  m->data[10][2] = 1.0000;  m->data[10][3] = 72.1100;  m->data[10][4] = 0.8900;  m->data[10][5] = 164.5000;  m->data[10][6] = 339.0000;
+  m->data[11][0] = 4.0000;  m->data[11][1] = 9.0000;  m->data[11][2] = 1.0000;  m->data[11][3] = 71.1100;  m->data[11][4] = 0.8660;  m->data[11][5] = 210.0000;  m->data[11][6] = 360.0000;
+  m->data[12][0] = 5.0000;  m->data[12][1] = 11.0000;  m->data[12][2] = 1.0000;  m->data[12][3] = 85.1500;  m->data[12][4] = 0.8620;  m->data[12][5] = 266.0000;  m->data[12][6] = 379.0000;
+  m->data[13][0] = 5.0000;  m->data[13][1] = 10.0000;  m->data[13][2] = 1.0000;  m->data[13][3] = 86.1300;  m->data[13][4] = 0.8800;  m->data[13][5] = 228.0000;  m->data[13][6] = 361.0000;
+
+  NewDVector(&spe_ground_truth, 14);
+  spe_ground_truth->data[0] = 0.0492;
+  spe_ground_truth->data[1] = 0.0059;
+  spe_ground_truth->data[2] = 0.0407;
+  spe_ground_truth->data[3] = 0.0555;
+  spe_ground_truth->data[4] = 0.0025;
+  spe_ground_truth->data[5] = 0.0049;
+  spe_ground_truth->data[6] = 0.0312;
+  spe_ground_truth->data[7] = 0.0017;
+  spe_ground_truth->data[8] = 0.0070;
+  spe_ground_truth->data[9] = 0.0030;
+  spe_ground_truth->data[10] = 0.0242;
+  spe_ground_truth->data[11] = 0.0115;
+  spe_ground_truth->data[12] = 0.0236;
+  spe_ground_truth->data[13] = 0.0166;
+
+  NewPCAModel(&model);
+
+  PrintMatrix(m);
+  PCA(m, 1, 5, model, &run);
+  initDVector(&spe);
+  initMatrix(&contributions);
+  PCATsqContributions(m, model, 5, spe, contributions);
+  PrintDVector(spe);
+  PrintMatrix(contributions);
+  for(size_t i = 0; i < spe->size; i++){
+    if(FLOAT_EQ(spe->data[i], spe_ground_truth->data[i], 1e-4)){
+      continue;
+    }
+    else{
+      printf("%f %f\n", spe->data[i], spe_ground_truth->data[i]);
+      abort();
+    }
+  }
+  printf("OK.\n");
+  
+  DelDVector(&spe_ground_truth);
+  DelDVector(&spe);
+  DelMatrix(&contributions);
+  DelPCAModel(&model);
+  DelMatrix(&m);
+}
+
 void test10(){
-  printf("Test PCA 10 - Check PCAIndVarPredictor : ");
+  printf("Test PCA 10 - Check PCAIndVarPredictor  = ");
   size_t i, j;
   matrix *m, *_, *rm;
   PCAMODEL *model;
@@ -59,7 +129,7 @@ void test10(){
 
 void test9()
 {
-  printf("Test PCA 9 - Check algorithm consistency: ");
+  printf("Test PCA 9 - Check algorithm consistency = ");
   size_t i;
   size_t id;
   matrix *m1;
@@ -112,7 +182,7 @@ void test9()
 
 void test8()
 {
-  printf("Test PCA 8 - Score prediction test: ");
+  printf("Test PCA 8 - Score prediction test = ");
   size_t i, j;
   matrix *m, *_, *p;
   PCAMODEL *model;
@@ -147,7 +217,7 @@ void test8()
 
 void test7()
 {
-  printf("Test PCA 7 - PCA on iris dataset: ");
+  printf("Test PCA 7 - PCA on iris dataset = ");
   matrix *m, *_;
   PCAMODEL *model;
 
@@ -166,7 +236,7 @@ void test7()
 
 void test6()
 {
-  puts("Test PCA 6: PCA on a simple dataset: ");
+  puts("Test PCA 6 = PCA on a simple dataset = ");
   matrix *m;
   PCAMODEL *model;
 
@@ -190,7 +260,7 @@ void test6()
 
 void test5()
 {
-  printf("Test PCA 5 - PCA on a simple dataset: ");
+  printf("Test PCA 5 - PCA on a simple dataset = ");
   matrix *m; /* Data matrix */
   PCAMODEL *model;
 
@@ -212,7 +282,7 @@ void test5()
 
 void test4()
 {
-  printf("Test PCA 4 - PCA on a simple dataset: ");
+  printf("Test PCA 4 - PCA on a simple dataset = ");
   matrix *m; /* Data matrix */
   PCAMODEL *model;
   int run = SIGSCIENTIFICRUN;
@@ -233,7 +303,7 @@ void test4()
 
 void test3()
 {
-  printf("Test PCA 3 - PCA on a simple dataset: ");
+  printf("Test PCA 3 - PCA on a simple dataset = ");
   matrix *m; /* Data matrix */
   PCAMODEL *model;
   int run = SIGSCIENTIFICRUN;
@@ -262,7 +332,7 @@ void test3()
 
 void test2()
 {
-  printf("Test PCA 2 - PCARankValidation test: ");
+  printf("Test PCA 2 - PCARankValidation test = ");
   size_t i;
   matrix *m; /* Data matrix */
   dvector *R;
@@ -300,7 +370,7 @@ void test2()
 
 void test1()
 {
-  printf("Test 1 - PCA on a simple dataset: ");
+  printf("Test 1 - PCA on a simple dataset = ");
   matrix *m; /* Data matrix */
   PCAMODEL *model;
   int run = SIGSCIENTIFICRUN;
@@ -346,5 +416,6 @@ int main(void)
   test8();
   test9();
   test10();
+  test11();
   return 0;
 }

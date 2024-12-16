@@ -172,71 +172,6 @@ void PCA(matrix *mx, int scaling, size_t npc, PCAMODEL* model, ssignal *s)
       * calculate variance for each column for select after the vector with the greater value
       */
 
-      /*
-      * During the first iteration the variance for all the column is the same: 1
-      * So we select a random column. With this can change the sign of the plot
-      *
-      if(pc == 0){
-        srand(time(0));
-        j = (size_t) rand() % E->col;
-        printf("Selected %u\n", (unsigned int)j);
-      }
-      else{
-        initDVector(&colvar);
-        MatrixColVar(E, &colvar);
-
-        Step 1: select the column vector t with the largest column variance
-        j = 0;
-        for(i = 1; i < E->col; i++){
-          if(colvar->data[i] > colvar->data[j])
-            j = i;
-          else
-            continue;
-        }
-
-        DelDVector(&colvar);
-      }
-
-      * In order to prevent a random sign numbering is preferable
-      * select in the first calculation the first column and afther getting
-      * the best one.
-      */
-      /*
-      if(pc == 0){
-        we do not know if the first variable is 0 so we have to iterate to find the first column with a value != 0
-        j = 0;
-        while(1){
-          if(j < model->colaverage->size){
-            if(FLOAT_EQ(getDVectorValue(model->colaverage, j), 0.f, PCACONVERGENCE)){
-              j++;
-            }
-            else{
-              break;
-            }
-          }
-          else{
-            j = 0;
-            break;
-          }
-        }
-      }
-      else{
-        initDVector(&colvar);
-        MatrixColVar(E, &colvar);
-
-        Step 1: select the column vector t with the largest column variance
-        j = 0;
-        for(i = 1; i < E->col; i++){
-          if(getDVectorValue(colvar, i) > getDVectorValue(colvar, j))
-            j = i;
-          else
-            continue;
-        }
-
-        DelDVector(&colvar);
-      }
-      */
-
       initDVector(&colvar);
       MatrixColVar(E, colvar);
 
@@ -331,8 +266,8 @@ void PCA(matrix *mx, int scaling, size_t npc, PCAMODEL* model, ssignal *s)
                * DmodX it simple to divide for the variance of the residuals E
                * DmodX /= Variance(E)
                */
-               model->dmodx->data[i][pc] += square(E->data[i][j]);
-           }
+              model->dmodx->data[i][pc] += square(E->data[i][j]);
+            }
             model->dmodx->data[i][pc] = sqrt(model->dmodx->data[i][pc]);
           }
           /* End Step 6 */
@@ -343,7 +278,6 @@ void PCA(matrix *mx, int scaling, size_t npc, PCAMODEL* model, ssignal *s)
         }
         else{
           DVectorCopy(t, t_old);
-          //continue;
           /* End Step 5 */
         }
       }
@@ -703,6 +637,56 @@ void PCARankValidation(matrix *mx,
   for(i = 0; i < r2->size; i++){
     r2->data[i] /= group*iterations;
   }
+}
+
+
+void PCATsqContributions(
+  matrix *x,
+  PCAMODEL *model,
+  size_t npc,
+  dvector *spe,
+  matrix *contributions){
+  /*
+   * Reconstruct the original matrix using N principal components (npc)
+   */
+  matrix *reconstructed_x;
+  initMatrix(&reconstructed_x);
+  matrix *pscores;
+  initMatrix(&pscores);
+  PCAScorePredictor(x, model, npc, pscores);
+  PCAIndVarPredictor(
+    pscores,
+    model->loadings,
+    model->colaverage,
+    model->colscaling,
+    npc,
+    reconstructed_x
+  );
+  DelMatrix(&pscores);
+  /*
+  * Calculate SPE (Squared Prediction Error) and SPE contributions in one pass
+  */
+  DVectorResize(spe, x->row);
+  ResizeMatrix(contributions, x->row, x->col);
+  for (size_t i = 0; i < x->row; i++) {
+      double sum_squared_diff = 0.0;
+      for (size_t j = 0; j < x->col; j++) {
+          /* normalize to avoid dwarf everthing. */
+          double diff = ((x->data[i][j]-model->colaverage->data[j])/model->colscaling->data[j]) - ((reconstructed_x->data[i][j]-model->colaverage->data[j])/model->colscaling->data[j]);
+          if(isfinite(diff)){
+              double squared_diff = diff * diff;
+              if(isfinite(squared_diff)){
+                sum_squared_diff += squared_diff;
+                contributions->data[i][j] = squared_diff;
+              }
+              else{
+                contributions->data[i][j] = 0;
+              }
+          }
+      }
+      spe->data[i] = sum_squared_diff;
+  }
+  DelMatrix(&reconstructed_x);
 }
 
 void GetResidualMatrix(matrix* mx, PCAMODEL* model, size_t pc, matrix *rmx)

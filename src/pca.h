@@ -30,6 +30,7 @@
  * - **scores** matrix of scores
  * - **loadings** matrix of loadings
  * - **varexp** vector of explained variance by every component 
+ * - **dmodx** object distance from the model
  * - **colaverage** input matrix column average
  * - **colscaling** input matrix column scaling
  */
@@ -149,6 +150,23 @@ void PCARankValidation(matrix *mx,
                        size_t iterations,
                        dvector *r2,
                        ssignal *s);
+
+/**
+ * @brief Compute the T squared feature contributions and SPE for every object.
+ *
+ * @param [in] x matrix of objects to project and calculate contributions
+ * @param [in] model computed pca model
+ * @param [in] npc number of principal component to use
+ * @param [out] spe square prediction error value on each object
+ * @param [out] contributions objects features contributions
+ *
+ */
+void PCATsqContributions(
+  matrix *x,
+  PCAMODEL *model,
+  size_t npc,
+  dvector *spe,
+  matrix *contributions);
 
 /**
  * @brief Compute the residual matrix for a specific number of component.
