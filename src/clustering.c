@@ -883,7 +883,7 @@ void PruneResults(matrix *m,
     initMatrix(&submx);
     initUIVector(&ids);
     for(i = 0; i < clusters->size; i++){
-      if(getUIVectorValue(clusters, i) == n+1){
+      if(clusters->data[i] == n+1){
         tmp = getMatrixRow(m, i);
         MatrixAppendRow(submx, tmp);
         DelDVector(&tmp);
@@ -897,58 +897,29 @@ void PruneResults(matrix *m,
     initMatrix(&distmx);
     CalculateDistance(subcentroid, submx, distmx, nthreads, EUCLIDEAN); 
 
-    if(type == 0){ /* Near Object */
-      for(j = 0; j < nmaxobj; j++){
-        l = 0;
-        k = getUIVectorValue(ids, 0);
-        var = getMatrixValue(distmx, l, 0);
-        for(i = 1; i < distmx->row; i++){
-          if(getMatrixValue(distmx, i, 0) < var){
-            var = getMatrixValue(distmx, i, 0);
-            k =  getUIVectorValue(ids, i);
-            l = i;
-          }
-          else{
-            continue;
-          }
-        }
-
-        if(FLOAT_EQ(var, MISSING, EPSILON)){
-          setMatrixValue(distmx, l, 0, MISSING);
-        }
-        else{
-          setMatrixValue(distmx, l, 0, MISSING);
-          setUIVectorValue(clusters_, k, n+1);
-        }
-
-      }
-    }
-    else{ /*  Faar Object */
-      for(j = 0; j < nmaxobj; j++){
-        l = 0;
-        k = getUIVectorValue(ids, 0);
-        var = getMatrixValue(distmx, l, 0);
-        for(i = 1; i < distmx->row; i++){
-          if(getMatrixValue(distmx, i, 0) > var){
-            var = getMatrixValue(distmx, i, 0);
-            k =  getUIVectorValue(ids, i);
-            l = i;
-          }
-          else{
-            continue;
-          }
-        }
-
-        if(FLOAT_EQ(var, 0, EPSILON)){
-          setMatrixValue(distmx, l, 0, 0);
-        }
-        else{
-          setMatrixValue(distmx, l, 0, 0);
-          setUIVectorValue(clusters_, k, n+1);
+    /* type == 0 = Near Object else Faar object */
+    float (*compare_func)(float, float) = (type == 0) ? fminf : fmaxf;
+    for (j = 0; j < nmaxobj; j++) {
+      l = 0;
+      k = ids->data[0];
+      var = distmx->data[0][0];
+      for (int i = 1; i < distmx->row; i++) {
+        if (compare_func(distmx->data[i][0], var) == distmx->data[i][0]){
+          var = distmx->data[i][0];
+          k = ids->data[i];
+          l = i;
         }
       }
-    }
 
+      if(FLOAT_EQ(var, MISSING, EPSILON)){
+        distmx->data[l][0] = MISSING;
+      }
+      else{
+        distmx->data[l][0] = MISSING;
+        clusters_->data[k] = n+1;
+      }
+    }
+  
     DelMatrix(&distmx);
     DelMatrix(&subcentroid);
     DelUIVector(&ids);
@@ -956,7 +927,7 @@ void PruneResults(matrix *m,
   }
 
   for(i = 0; i < clusters->size; i++){
-    setUIVectorValue(clusters, i, getUIVectorValue(clusters_, i));
+    clusters->data[i] = clusters_->data[i];
   }
 
   DelUIVector(&clusters_);
@@ -1293,7 +1264,7 @@ void KMeansRandomGroupsCV(matrix* m,
           n = (size_t)randInt(0, m->row);
         } while(ValInMatrix(gid, n) == 1 && k < (m->row));
         if(k < m->row){
-          setMatrixValue(gid, i, j, n);
+          gid->data[i][j] = n;
           k++;
         }
         else
@@ -1313,7 +1284,7 @@ void KMeansRandomGroupsCV(matrix* m,
       for(i = 0; i < gid->row; i++){
         if(i != g){
           for(j = 0; j < gid->col; j++){
-            if((int)getMatrixValue(gid, i, j) != -1)
+            if((int)gid->data[i][j] != -1)
               n++;
             else
               continue;
@@ -1329,7 +1300,7 @@ void KMeansRandomGroupsCV(matrix* m,
       /* Estimate how many objects are inside the group "g" to predict*/
       n = 0;
       for(j = 0; j < gid->col; j++){
-        if((int)getMatrixValue(gid, g, j) != -1)
+        if((int)gid->data[g][j] != -1)
           n++;
         else
           continue;
@@ -1345,10 +1316,10 @@ void KMeansRandomGroupsCV(matrix* m,
       for(i = 0, k = 0; i < gid->row; i++){
         if(i != g){
           for(j = 0; j < gid->col; j++){
-            a =  (size_t)getMatrixValue(gid, i, j); /* get the row index */
-            if(a != -1){
+            a = (int)gid->data[i][j]; /* get the row index */
+            if(a != -1){ 
               for(n = 0; n < m->col; n++){
-                setMatrixValue(subm, k, n, getMatrixValue(m, a, n));
+                subm->data[k][n] = m->data[a][n];
               }
               k++;
             }
@@ -1364,10 +1335,10 @@ void KMeansRandomGroupsCV(matrix* m,
 
       /* copy the objects to predict into predictm*/
       for(j = 0, k = 0; j < gid->col; j++){
-        a = (size_t)getMatrixValue(gid, g, j);
+        a = (int)gid->data[g][j];
         if(a != -1){
           for(n = 0; n < m->col; n++){
-            setMatrixValue(predm, k, n, getMatrixValue(m, a, n));
+            predm->data[k][n] = m->data[a][n];
           }
           k++;
         }
@@ -1400,16 +1371,16 @@ void KMeansRandomGroupsCV(matrix* m,
 
         /*Get the minumum distance for each point ant sum it in ssdist. This is the kmeans clustering*/
         for(i = 0; i < distances->row; i++){ /* for each object */
-          mindist = getMatrixValue(distances, i, 0);
+          mindist = distances->data[i][0];
           for(k = 1; k < distances->col; k++){ /*for each centroid */
-            if(getMatrixValue(distances, i, k) < mindist){
-              mindist = getMatrixValue(distances, i, k);
+            if(distances->data[i][k] < mindist){
+              mindist = distances->data[i][k];
             }
             else{
               continue;
             }
           }
-          setDVectorValue(ssdist, j-1, getDVectorValue(ssdist, j-1) + mindist);
+          ssdist->data[j-1] += mindist;
         }
         DelMatrix(&distances);
         DelUIVector(&clusters);
@@ -1425,7 +1396,7 @@ void KMeansRandomGroupsCV(matrix* m,
 
   /* divide all the value of the ssdist for the number of iteration */
   for(i = 0; i < ssdist->size; i++){
-    setDVectorValue(ssdist, i, getDVectorValue(ssdist, i) / iterations);
+    ssdist->data[i] /= (double)iterations;
   }
 
   DVectNorm(ssdist, ssdist);
@@ -1484,10 +1455,10 @@ void KMeansJumpMethod(matrix* m,
     printf("dist %f  %f\n", dist, pow(dist, -y));
 
     if(FLOAT_EQ(dist, 0.f, EPSILON)){
-      setDVectorValue(d, k, 0.f);
+      d->data[k] = 0.f;
     }
     else{
-      setDVectorValue(d, k, pow(dist, -y));
+      d->data[k] = pow(dist, -y);
     }
 
     DelUIVector(&clusters);
@@ -1495,14 +1466,14 @@ void KMeansJumpMethod(matrix* m,
   }
 
   for(i = 1; i < d->size; i++){
-    setDVectorValue(jumps, i-1, getDVectorValue(d, i)-getDVectorValue(d, i-1));
+    jumps->data[i-1] = d->data[i] - d->data[i-1];
   }
 
   DVectorMinMax(jumps, &min, &max);
 
   y = max - min;
   for(i = 0; i < jumps->size; i++){
-    setDVectorValue(jumps, i, (getDVectorValue(jumps, i)- min) / y);
+    jumps->data[i] = (jumps->data[i] - min)/ y;
   }
 
   DelDVector(&d);
@@ -1585,8 +1556,8 @@ void HierarchicalClustering(matrix* _m,
     min_j = 1;
     for(i = 0; i < distmx->row; i++ ){
       for(j = i+1; j < distmx->col; j++ ){
-        if(getMatrixValue(distmx, i, j) < getMatrixValue(distmx, min_i, min_j) &&
-          !FLOAT_EQ(getMatrixValue(distmx, i, j), 0.f, EPSILON)){
+        if(distmx->data[i][j] < distmx->data[min_i][min_j] &&
+          !FLOAT_EQ(distmx->data[i][j], 0.f, EPSILON)){
           min_i = i;
           min_j = j;
         }
@@ -1598,7 +1569,7 @@ void HierarchicalClustering(matrix* _m,
     }
 
     /* Step 3 merge the cluster and increase m. */
-    DVectorAppend(clusterdist, getMatrixValue(distmx, min_i, min_j));
+    DVectorAppend(clusterdist, distmx->data[min_i][min_j]);
     res = generatePointPointNameV1(getStr(pointname, min_i), getStr(pointname, min_j));
     StrVectorAppend(clusters, res);
     xfree(res);
@@ -1628,20 +1599,20 @@ void HierarchicalClustering(matrix* _m,
       else{
         if(linktype == 0){
           /* Single-Linkage Criterion */
-          if( getMatrixValue(distmx, min_i, i) < getMatrixValue(distmx, min_j, i)){
-            DVectorAppend(tmp, getMatrixValue(distmx, min_i, i));
+          if(distmx->data[min_i][i] < distmx->data[min_j][i]){
+            DVectorAppend(tmp, distmx->data[min_i][i]);
           }
           else{
-            DVectorAppend(tmp, getMatrixValue(distmx, min_j, i));
+            DVectorAppend(tmp, distmx->data[min_j][i]);
           }
         }
         else if(linktype == 1){
           /*Complete Linkage*/
-          if( getMatrixValue(distmx, min_i, i) > getMatrixValue(distmx, min_j, i)){
-            DVectorAppend(tmp, getMatrixValue(distmx, min_i, i));
+          if(distmx->data[min_i][i] > distmx->data[min_j][i]){
+            DVectorAppend(tmp, distmx->data[min_i][i]);
           }
           else{
-            DVectorAppend(tmp, getMatrixValue(distmx, min_j, i));
+            DVectorAppend(tmp, distmx->data[min_j][i]);
           }
         }
         else if(linktype == 2){
@@ -1666,7 +1637,7 @@ void HierarchicalClustering(matrix* _m,
           l = 0;
           for(j = 0; j < distmx->col; j++){
             if(j != min_j){
-              setMatrixValue(distmx_new, k, l, getMatrixValue(distmx, i, j));
+              distmx_new->data[k][l] = distmx->data[i][j];
               l++;
             }
             else{
@@ -1682,11 +1653,11 @@ void HierarchicalClustering(matrix* _m,
 
       /* Fill the column min_i with the row[i] */
       for(i = 0; i < tmp->size; i++){
-        setMatrixValue(distmx, i, min_i, getDVectorValue(tmp, i));
+        distmx->data[i][min_i] = tmp->data[i];
       }
       /* Fill the row min_i with the row[i] */
       for( i=0; i < tmp->size; i++ ){
-        setMatrixValue(distmx, min_i, i, getDVectorValue(tmp, i));
+        distmx->data[min_i][i] = tmp->data[i];
       }
     }
     else{
@@ -1698,7 +1669,7 @@ void HierarchicalClustering(matrix* _m,
           l = 0;
           for(j = 0; j < distmx->col; j++){
             if(j != min_i){
-              setMatrixValue(distmx_new, k, l, getMatrixValue(distmx, i, j));
+              distmx_new->data[k][l] = distmx->data[i][j];
               l++;
             }
             else{
@@ -1714,11 +1685,11 @@ void HierarchicalClustering(matrix* _m,
 
       /* Fill the column min_j with the row[i] */
       for(i = 0; i < tmp->size; i++){
-        setMatrixValue(distmx, i, min_j, getDVectorValue(tmp, i));
+        distmx->data[i][min_j] = tmp->data[i];
       }
       /* Fill the row min_j with the row[i] */
       for( i=0; i < tmp->size; i++ ){
-        setMatrixValue(distmx, min_j, i, getDVectorValue(tmp, i));
+        distmx->data[min_j][i] = tmp->data[i];
       }
     }
 

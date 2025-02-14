@@ -31,8 +31,7 @@
 void *xmalloc(size_t size)
 {
   void *ptr = NULL;
-  ptr = malloc(size);
-  if(ptr == NULL){
+  if ((ptr = malloc(size)) == NULL) {
     fprintf(stderr, "[Libscientific] Memory Exhausted!\n");
     abort();
   }
@@ -41,8 +40,8 @@ void *xmalloc(size_t size)
 
 void *xrealloc(void *ptr, size_t size)
 {
-  register void *value = realloc (ptr, size);
-  if (value == 0){
+  register void *value = realloc(ptr, size);
+  if (!value) {
     fprintf(stderr, "[Libscientific] Memory Exhausted!\n");
     abort();
   }
@@ -51,7 +50,9 @@ void *xrealloc(void *ptr, size_t size)
 
 void xfree(void *ptr)
 {
-  free(ptr);
+  if (ptr != NULL) {
+    free(ptr);
+  }
 }
 
 void GetNProcessor(size_t *nprocs_online, size_t *nprocs_max)

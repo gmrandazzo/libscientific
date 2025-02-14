@@ -308,27 +308,25 @@ dvector *DVectorExtend(dvector *d1, dvector *d2)
   return dext;
 }
 
-
 void setDVectorValue(dvector *d, size_t id, double val)
 {
-  if(id < d->size)
-    (*d).data[id] = val;
-  else{
+  if(id >= d->size) {
     fprintf(stdout,"setDVectorValue Error: vector id %d out of range.\n", (int)id);
     fflush(stdout);
     abort();
   }
+  double *elem = &(*d).data[id];
+  *elem = val;
 }
 
 double getDVectorValue(dvector *d, size_t id)
 {
-  if(id < d->size)
-    return d->data[id];
-  else{
+  if(id >= d->size) {
     fprintf(stdout,"getDVectorValue Error: vector id %d out of range\n.", (int)id);
     fflush(stdout);
-    abort();
+    return -1; // or raise an exception
   }
+  return d->data[id];
 }
 
 int DVectorHasValue(dvector* d, double val)

@@ -158,7 +158,6 @@ void PCA(matrix *mx, int scaling, size_t npc, PCAMODEL* model, ssignal *s)
   ResizeMatrix(model->loadings, E->col, npc);
   ResizeMatrix(model->dmodx, E->row, npc);
 
-  /*setDVectorValue(obj_d, 0, calcObjectDistance(E)); */
   for(pc = 0; pc < npc; pc++){
     if(s != NULL && (*s) == SIGSCIENTIFICSTOP){
       break;
@@ -669,22 +668,25 @@ void PCATsqContributions(
   DVectorResize(spe, x->row);
   ResizeMatrix(contributions, x->row, x->col);
   for (size_t i = 0; i < x->row; i++) {
-      double sum_squared_diff = 0.0;
-      for (size_t j = 0; j < x->col; j++) {
-          /* normalize to avoid dwarf everthing. */
-          double diff = ((x->data[i][j]-model->colaverage->data[j])/model->colscaling->data[j]) - ((reconstructed_x->data[i][j]-model->colaverage->data[j])/model->colscaling->data[j]);
-          if(isfinite(diff)){
-              double squared_diff = diff * diff;
-              if(isfinite(squared_diff)){
-                sum_squared_diff += squared_diff;
-                contributions->data[i][j] = squared_diff;
-              }
-              else{
-                contributions->data[i][j] = 0;
-              }
-          }
+    double sum_squared_diff = 0.0;
+    for (size_t j = 0; j < x->col; j++) {
+      /* normalize to avoid dwarf everthing. */
+      double diff = ((x->data[i][j]-model->colaverage->data[j])/model->colscaling->data[j]) - ((reconstructed_x->data[i][j]-model->colaverage->data[j])/model->colscaling->data[j]);
+      if(isfinite(diff)){
+        double squared_diff = diff * diff;
+        if(isfinite(squared_diff)){
+          sum_squared_diff += squared_diff;
+          contributions->data[i][j] = squared_diff;
+        }
+        else{
+          contributions->data[i][j] = 0.0;
+        }
       }
-      spe->data[i] = sum_squared_diff;
+      else{
+        contributions->data[i][j] = 0.0;
+      }
+    }
+    spe->data[i] = sum_squared_diff;
   }
   DelMatrix(&reconstructed_x);
 }

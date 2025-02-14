@@ -76,18 +76,18 @@ void MLR(matrix* mx, matrix* my, MLRMODEL* model, ssignal *s)
   /*Adding constant coefcient for polinomial equation */
   for(j = 1; j < mx_->col; j++){
     for(i = 0; i < mx_->row; i++){
-      setMatrixValue(mx_, i, j, getMatrixValue(mx, i, j-1));
+      mx_->data[i][j] = mx->data[i][j-1]; 
     }
   }
 
   for(i = 0; i < mx_->row; i++){
-    setMatrixValue(mx_, i, 0, 1);
+    mx_->data[i][0] = 1.f;
   }
 
   /*build models with more than one y*/
   for(j = 0; j < my->col; j++){
     for(i = 0; i < my->row; i++){
-      setDVectorValue(y_, i, getMatrixValue(my, i, j));
+      y_->data[i] = my->data[i][j];
     }
 
     initDVector(&b_);
@@ -129,11 +129,11 @@ void MLRPredictY(matrix* mx,
 
     for(k = 0; k < model->b->col; k++){ /*FOR EACH Y*/
       for(i = 0; i < mx->row; i++){ /* FOR EACH OBJECT */
-        ypred = getMatrixValue(model->b, 0, k); /* CONSTANT c + ...*/
+        ypred = model->b->data[0][k]; /* CONSTANT c + ...*/
         for(j = 0; j < mx->col; j++){
-          ypred += getMatrixValue(mx, i, j)*getMatrixValue(model->b, j+1, k);
+          ypred += mx->data[i][j]*model->b->data[j+1][k];
         }
-        setMatrixValue(predicted_y, i, k, ypred);
+        predicted_y->data[i][k] = ypred;
       }
     }
 
@@ -154,10 +154,10 @@ void MLRPredictY(matrix* mx,
         rss = tss = 0.f;
         for(i = 0; i < my->row; i++){
           if(predicted_residuals != 0){
-            setMatrixValue(predicted_residuals, i, j, getMatrixValue(predicted_y, i, j) - getMatrixValue(my, i, j));
+            predicted_residuals->data[i][j] = predicted_y->data[i][j] - my->data[i][j];
           }
-          rss += square(getMatrixValue(my, i, j) - getMatrixValue(predicted_y, i, j));
-          tss += square(getMatrixValue(my, i, j) - getDVectorValue(model->ymean, j));
+          rss += square(my->data[i][j] - predicted_y->data[i][j]);
+          tss += square(my->data[i][j] - model->ymean->data[j]);
         }
 
         if(r2y != 0){
