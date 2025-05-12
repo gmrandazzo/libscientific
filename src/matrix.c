@@ -1010,10 +1010,28 @@ void MatrixLUInversion(matrix *m, matrix *m_inv)
     }
   }
   dgetrf_(&N,&N,M,&N,IPIV,&INFO);
+
+  if (INFO < 0) {
+    fprintf(stderr, "MatrixLUInversion Error: dgetrf_ illegal argument %d\n", -INFO);
+    xfree(M); xfree(IPIV); xfree(WORK);
+    abort();
+  } else if (INFO > 0) {
+      fprintf(stderr, "MatrixLUInversion Error: Matrix is singular, U(%d,%d) is zero in dgetrf_.\n", INFO, INFO);
+      xfree(M); xfree(IPIV); xfree(WORK);
+      abort();
+  }
+
   dgetri_(&N,M,&N,IPIV,WORK,&LWORK,&INFO);
 
-  xfree(IPIV);
-  xfree(WORK);
+  if (INFO < 0) {
+    fprintf(stderr, "MatrixLUInversion Error: dgetri_ illegal argument %d\n", -INFO);
+    xfree(M); xfree(IPIV); xfree(WORK);
+    abort();
+  } else if (INFO > 0) {
+    fprintf(stderr, "MatrixLUInversion Error: Matrix is singular, U(%d,%d) is zero in dgetri_ (should have been caught by dgetrf_).\n", INFO, INFO);
+    xfree(M); xfree(IPIV); xfree(WORK);
+    abort();
+  }
 
   ResizeMatrix(m_inv, m->row, m->col);
   k = 0;
@@ -1023,6 +1041,8 @@ void MatrixLUInversion(matrix *m, matrix *m_inv)
       k++;
     }
   }
+  xfree(IPIV);
+  xfree(WORK);
   xfree(M);
 }
 

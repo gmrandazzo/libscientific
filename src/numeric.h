@@ -23,12 +23,14 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <time.h>
+#include <math.h>
 #include "vector.h"
 #include "matrix.h"
 
 /* FLOATING POINT NUMBER PRECISION */
 #define EPSILON 1e-3  /* Define your own tolerance*/
-#define FLOAT_EQ(x,v, EPSILON) (((v - EPSILON) < x) && (x <( v + EPSILON)))
+#define FLOAT_EQ(x, v, EPSILON) \
+    (!_isnan_(x) && !_isnan_(v) && ((v - EPSILON) < (x)) && ((x) < (v + EPSILON)))
 
 #define _isnan_(a) (a != a)
 #define _isinf_(a) (!_isnan_(a) && _isnan_(a - a))

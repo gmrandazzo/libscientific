@@ -378,7 +378,7 @@ void Test49()
   m->data[0][2] = NAN;
   m->data[2][1] = NAN;
   MatrixCheck(m);
-   if(!FLOAT_EQ(m->data[1][1], MISSING, 1e-1) ||
+  if(!FLOAT_EQ(m->data[1][1], MISSING, 1e-1) ||
       !FLOAT_EQ(m->data[0][2], MISSING, 1e-1) ||
       !FLOAT_EQ(m->data[2][1], MISSING, 1e-1)){
     puts("Error Test49");
