@@ -30,66 +30,50 @@
 
 void *xmalloc(size_t size)
 {
-  void *ptr = NULL;
-  if ((ptr = malloc(size)) == NULL) {
-    fprintf(stderr, "[Libscientific] Memory Exhausted!\n");
-    abort();
-  }
-  return ptr;
+	if (size == 0) size = 1;
+	void *ptr = malloc(size);
+	if (!ptr) {
+		fprintf(stderr, "[Libscientific] Memory exhausted allocating %zu bytes\n", size);
+		abort();
+	}
+	return ptr;
 }
 
 void *xrealloc(void *ptr, size_t size)
 {
-  register void *value = realloc(ptr, size);
-  if (!value) {
-    fprintf(stderr, "[Libscientific] Memory Exhausted!\n");
-    abort();
-  }
-  return value;
+	if (size == 0) { free(ptr); return NULL; }
+	void *new_ptr = realloc(ptr, size);
+	if (!new_ptr) {
+		fprintf(stderr, "[Libscientific] Memory exhausted reallocating %zu bytes\n", size);
+		abort();
+	}
+	return new_ptr;
 }
 
 void xfree(void *ptr)
 {
-  if (ptr != NULL) {
-    free(ptr);
-  }
+	free(ptr);
 }
 
 void GetNProcessor(size_t *nprocs_online, size_t *nprocs_max)
 {
-  if(nprocs_online != NULL)
-    (*nprocs_online) = -1;
-  
-  if(nprocs_max != NULL)
-    (*nprocs_max) = -1;
-  #ifdef WIN32
-  #ifndef _SC_NPROCESSORS_ONLN
-  SYSTEM_INFO info;
-  GetSystemInfo(&info);
-  #define sysconf(a) info.dwNumberOfProcessors
-  #define _SC_NPROCESSORS_ONLN
-  #endif
-  #endif
-  
-  #ifdef _SC_NPROCESSORS_ONLN
-  if(nprocs_online != NULL){
-    (*nprocs_online) = sysconf(_SC_NPROCESSORS_ONLN);
-    if ((*nprocs_online) < 1){
-      (*nprocs_online) = 1;
-    }
-  }
-  
-  if(nprocs_max != NULL){
-    (*nprocs_max) = sysconf(_SC_NPROCESSORS_CONF);
-    if((*nprocs_max) < 1){
-      (*nprocs_max) = 1;
-    }
-  }
-  #else
-  if(nprocs_online != NULL)
-    (*nprocs_online) = 1;
-  
-  if(nprocs_max != NULL)
-    (*nprocs_max) = 1
-  #endif
+	if (nprocs_online) *nprocs_online = 1;
+	if (nprocs_max) *nprocs_max = 1;
+
+#if defined(_WIN32)
+	SYSTEM_INFO info;
+	GetSystemInfo(&info);
+	size_t n = (size_t)(info.dwNumberOfProcessors > 0 ? info.dwNumberOfProcessors : 1);
+	if (nprocs_online) *nprocs_online = n;
+	if (nprocs_max) *nprocs_max = n;
+#else
+#ifdef _SC_NPROCESSORS_ONLN
+	long onln = sysconf(_SC_NPROCESSORS_ONLN);
+	if (onln > 0 && nprocs_online) *nprocs_online = (size_t)onln;
+#endif
+#ifdef _SC_NPROCESSORS_CONF
+	long conf = sysconf(_SC_NPROCESSORS_CONF);
+	if (conf > 0 && nprocs_max) *nprocs_max = (size_t)conf;
+#endif
+#endif
 }

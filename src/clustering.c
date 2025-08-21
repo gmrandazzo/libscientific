@@ -426,7 +426,133 @@ void MaxDis(matrix* m,
 /*
  * Fast implementation but can pose some memory problems with large datasets!
  */
+
+/*
+ * Fast implementation but can pose some memory problems with large datasets!
+ */
 void MaxDis_Fast(matrix* m,
+                 size_t n,
+                 int metric,
+                 uivector *selections,
+                 size_t nthreads)
+{
+  size_t i;
+  size_t j;
+  size_t nobj;
+  size_t far_away;
+  dvector *distances;
+  dvector *c;
+  dvector *min_dists;
+  unsigned char *is_selected;
+
+  /* guard */
+  if (n == 0 || m->row == 0) return;
+
+  is_selected = xmalloc(sizeof(unsigned char) * m->row);
+  memset(is_selected, 0, sizeof(unsigned char) * m->row);
+
+  initDVector(&distances);
+  /*
+   * Calculate a square distance matrix
+   * Slow process!
+   */
+  if(metric == 0){
+    EuclideanDistanceCondensed(m, distances, nthreads);
+  }
+  else if(metric == 1){
+    ManhattanDistanceCondensed(m, distances, nthreads);
+  }
+  else{
+    CosineDistanceCondensed(m, distances, nthreads);
+  }
+
+  /* select the faraway compound from centroid */
+  NewDVector(&c, m->col);
+  for(i = 0; i < m->row; i++){
+    for(j = 0; j < m->col; j++){
+      c->data[j] += m->data[i][j];
+    }
+  }
+
+  for(j = 0; j < m->col; j++){
+    c->data[j] /= (double)m->row;
+  }
+
+  far_away = 0;
+  double far = 0.f;
+  for(j = 0; j < m->col; j++){
+    far += square(c->data[j] - m->data[far_away][j]);
+  }
+  far = sqrt(far);
+
+  for(i = 1; i < m->row; i++){
+    double dst = 0.f;
+    for(j = 0; j < m->col; j++){
+      dst += square(c->data[j] - m->data[i][j]);
+    }
+    dst = sqrt(dst);
+    if(dst > far){
+      far = dst;
+      far_away = i;
+    }
+  }
+  DelDVector(&c);
+
+  /* Append the far away compound to the final selection */
+  UIVectorAppend(selections, far_away);
+
+  /* Initialize min distances to the first selected point */
+  NewDVector(&min_dists, m->row);
+  for (i = 0; i < m->row; i++){
+    if (i == far_away){
+      min_dists->data[i] = 0.0;
+      continue;
+    }
+    size_t idx0 = square_to_condensed_index(i, far_away, m->row);
+    min_dists->data[i] = distances->data[idx0];
+  }
+  is_selected[far_away] = 1;
+
+  /*
+   * The next object to be selected is always as distant as possible
+   * from already selected objects. Hence iterate in the distance matrix
+   * using the remaining ids.
+   */
+
+  /* ntob = 1 because we have already selected the first object, the far away object */
+  for(nobj = 1; nobj < n && nobj < m->row; nobj++){
+    /* choose the unselected point with maximum of current min distance */
+    size_t best = (size_t)-1;
+    double best_val = -1.0;
+    for (i = 0; i < m->row; i++){
+      if (is_selected[i]) continue;
+      double v = min_dists->data[i];
+      if (v > best_val){
+        best_val = v;
+        best = i;
+      }
+    }
+    if (best == (size_t)-1) break;
+
+    UIVectorAppend(selections, best);
+    is_selected[best] = 1;
+
+    /* update min distances with distances to newly selected point */
+    for (i = 0; i < m->row; i++){
+      if (is_selected[i]) continue;
+      size_t idx = square_to_condensed_index(i, best, m->row);
+      double dnew = distances->data[idx];
+      if (dnew < min_dists->data[i]){
+        min_dists->data[i] = dnew;
+      }
+    }
+  }
+  DelDVector(&min_dists);
+  DelDVector(&distances);
+  xfree(is_selected);
+}
+
+void MaxDis_Fast_old(matrix* m,
                  size_t n,
                  int metric,
                  uivector *selections,

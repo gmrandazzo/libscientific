@@ -107,6 +107,7 @@ void DelPLSModel(PLSMODEL** m)
 
   DelMatrix(&(*m)->yscrambling);
   xfree((*m));
+  (*m) = NULL;
 }
 
 /*
@@ -208,6 +209,7 @@ void LVCalc(matrix *X,
   step = 0;
   #endif
   loop = 0;
+  const size_t max_iter = 1000;
   while(1){
     #ifdef DEBUG
     printf("######### Step %u\n", (unsigned int)step);
@@ -217,7 +219,9 @@ void LVCalc(matrix *X,
     DVectorSet(w_, 0.f); /* Reset the w vector */
     DVectorMatrixDotProduct(X_, u_, w_);
     dot_u = DVectorDVectorDotProd(u_, u_);
-
+    if (dot_u <= EPSILON) {
+      break;
+    }
     for(i = 0; i < w_->size; i++){
       w_->data[i] /= dot_u;
     }
@@ -237,7 +241,9 @@ void LVCalc(matrix *X,
     DVectorSet(t_, 0.f);
     MatrixDVectorDotProduct(X_, w_, t_);
     dot_w = DVectorDVectorDotProd(w_, w_);
-
+    if (dot_w <= EPSILON) {
+      break;
+    }
     for(i = 0; i < t_->size; i++){
       t_->data[i] /= dot_w;
     }
@@ -253,7 +259,9 @@ void LVCalc(matrix *X,
       DVectorSet(q_, 0.f); /* Reset the c vector */
       DVectorMatrixDotProduct(Y_, t_, q_);
       dot_t = DVectorDVectorDotProd(t_, t_);
-
+      if (dot_t <= EPSILON) {
+        break;
+      }
       for(i = 0; i < q_->size; i++){
         q_->data[i] /= dot_t;
       }
@@ -265,7 +273,9 @@ void LVCalc(matrix *X,
       DVectorSet(u_, 0.f);
       MatrixDVectorDotProduct(Y_, q_, u_);
       dot_q = DVectorDVectorDotProd(q_, q_);
-
+      if (dot_q <= EPSILON) {
+        break;
+      }
       for(i = 0; i < u_->size; i++){
         u_->data[i] /= dot_q;
       }
@@ -298,6 +308,9 @@ void LVCalc(matrix *X,
       }
     }
     loop++;
+    if (loop >= max_iter) {
+      break;
+    }
     /* End step 8 */
   }
 
@@ -305,8 +318,14 @@ void LVCalc(matrix *X,
   DVectorMatrixDotProduct(X_, t_, p_);
 
   dot_t = DVectorDVectorDotProd(t_, t_);
-  for(i = 0; i < p_->size; i++){
-    p_->data[i] /= dot_t;
+  if (dot_t > EPSILON) {
+    for(i = 0; i < p_->size; i++){
+      p_->data[i] /= dot_t;
+    }
+  } else {
+    for(i = 0; i < p_->size; i++){
+      p_->data[i] = 0.0;
+    }
   }
 
   #ifdef DEBUG
@@ -332,8 +351,11 @@ void LVCalc(matrix *X,
 
   /* Step 13 Find the Regression Coefficient b:  b = u't/t't */
   dot_t = DVectorDVectorDotProd(t_, t_);
-
-  (*bcoef) = DVectorDVectorDotProd(u_, t_)/dot_t;
+  if (dot_t > EPSILON) {
+    (*bcoef) = DVectorDVectorDotProd(u_, t_) / dot_t;
+  } else {
+    (*bcoef) = 0.0;
+  }
 
   /*End Step 13*/
 

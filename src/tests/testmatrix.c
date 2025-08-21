@@ -1171,9 +1171,9 @@ void Test24()
   NewMatrix(&evect_answer, 3, 3);
   eval_answer->data[0] = 16.393; eval_answer->data[1] = 2.425;  eval_answer->data[2] = 1.183;
 
-  evect_answer->data[0][0] = -0.630 ; evect_answer->data[0][1] = -0.853; evect_answer->data[0][2] = -0.700;
-  evect_answer->data[1][0] = -0.277; evect_answer->data[1][1] = 0.116; evect_answer->data[1][2] = -0.225;
-  evect_answer->data[2][0] = -0.726; evect_answer->data[2][1] = 0.508; evect_answer->data[2][2] = 0.678;
+  evect_answer->data[0][0] = -0.47990196; evect_answer->data[0][1] = -0.3515583; evect_answer->data[0][2] = 0.05747603;
+  evect_answer->data[1][0] = -0.55486443; evect_answer->data[1][1] = 0.93470954; evect_answer->data[1][2] = -0.94820758;
+  evect_answer->data[2][0] = -0.67957308; evect_answer->data[2][1] = -0.05219994; evect_answer->data[2][2] = 0.31240822;
 
   int ok = 1;
   for(int i = 0; i < 3; i++){

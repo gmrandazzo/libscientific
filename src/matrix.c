@@ -81,8 +81,7 @@ void  ResizeMatrix(matrix *m, size_t row_, size_t col_)
     }
   }
   else{
-    fprintf(stdout,"Error: Unable to resize matrix! The matrix is not allocated with initMatrix.\n");
-    fflush(stdout);
+    fprintf(stderr, "Error: Unable to resize matrix! The matrix is not allocated with initMatrix.\n");
   }
 }
 
@@ -94,6 +93,7 @@ void DelMatrix(matrix **m)
       xfree((*m)->data[i]);
     xfree((*m)->data);
     xfree((*m));
+    (*m) = NULL;
   }
 }
 
@@ -127,7 +127,7 @@ void PrintMatrix(matrix *m)
 {
   size_t i;
   size_t j;
-  printf("Matrix of row: %u; col: %u\n", (unsigned int)m->row, (unsigned int)m->col);
+  printf("Matrix of row: %zu; col: %zu\n", m->row, m->col);
   for(i = 0; i < m->row; i++){
     for(j = 0; j < m->col; j++)
       printf("%8.3f\t", m->data[i][j]);
@@ -144,8 +144,6 @@ int ValInMatrix(matrix* m, double val)
     for(j = 0; j < m->col; j++){
       if(FLOAT_EQ(m->data[i][j], val, 1*10e-8))
         return 1;
-      else
-        continue;
     }
   }
   return 0;
@@ -2147,18 +2145,19 @@ void SVDlapack(matrix *m_, matrix *u, matrix *s, matrix *vt)
   }
 
   /* dgesdd_ implementation */
-  int iwork[8*n];
+  int mn = (m < n) ? m : n;
+  int *iwork = (int*)xmalloc(sizeof(int) * 8 * mn);
   lwork = -1;
   /* U * SIGMA * V^H */
-  dgesdd_( "Singular vectors", &m, &n, a, &lda, s_, u_, &ldu, vt_, &ldvt, &wkopt, &lwork, iwork, &info );
+  dgesdd_( "S", &m, &n, a, &lda, s_, u_, &ldu, vt_, &ldvt, &wkopt, &lwork, iwork, &info );
   lwork = (int)wkopt;
-  work = (double*)malloc( lwork*sizeof(double) );
+  work = (double*)xmalloc( lwork*sizeof(double) );
   /* Compute SVD */
-  dgesdd_( "Singular vectors", &m, &n, a, &lda, s_, u_, &ldu, vt_, &ldvt, work, &lwork, iwork, &info );
+  dgesdd_( "S", &m, &n, a, &lda, s_, u_, &ldu, vt_, &ldvt, work, &lwork, iwork, &info );
 
   if(info > 0) {
-    printf("SVD convergence failed!\n" );
-    return;
+    fprintf(stderr, "SVD convergence failed (info=%d)\n", info);
+    goto cleanup;
   }
 
   /* s are the eigenvectors singular values diagonal matrix*/
@@ -2172,11 +2171,13 @@ void SVDlapack(matrix *m_, matrix *u, matrix *s, matrix *vt)
   /*vt is the right singular vectors */
   conv2matrix(m, n, vt_, ldvt, vt);
   /* Free workspace */
+cleanup:
   xfree(work);
   xfree(a);
   xfree(s_);
   xfree(vt_);
   xfree(u_);
+  xfree(iwork);
 }
 
 void print_eigenvalues( char* desc, int n, double* wr, double* wi ) {
@@ -2244,9 +2245,10 @@ void EVectEval(matrix *m, dvector *eval, matrix *evect)
 
   double *a = xmalloc(sizeof(double)*N*LDA);
 
+  /* pack m into column-major order expected by LAPACK */
   k = 0;
-  for(i = 0; i < m->row; i++){
-    for(j = 0; j < m->col; j++){
+  for(j = 0; j < m->col; j++){
+    for(i = 0; i < m->row; i++){
       a[k] = m->data[i][j];
       k++;
     }

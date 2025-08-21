@@ -54,20 +54,27 @@ void DelCPCAModel(CPCAMODEL **m)
   DelDVectorList(&(*m)->colaverage);
   DelDVectorList(&(*m)->colscaling);
   xfree((*m));
+  (*m) = NULL;
 }
 
+/*
+* pb = Xb_T x t / tT x t (step 2)
+*/
 static inline void CalcBlockLoadings(matrix *Xb, dvector *t, dvector *p){
   size_t i;
-  double mod_t;
-  matrix *Xb_T;
-
-  NewMatrix(&Xb_T, Xb->col, Xb->row);
-  MatrixTranspose(Xb, Xb_T);
-  MT_MatrixDVectorDotProduct(Xb_T, t, p);
-  DelMatrix(&Xb_T);
-  mod_t = DVectorDVectorDotProd(t, t);
-  for(i = 0; i < p->size; i++)
-    p->data[i] /= mod_t;
+  size_t j;
+  double mod_t = DVectorDVectorDotProd(t, t);
+  if (mod_t <= EPSILON) {
+    for (j = 0; j < p->size; j++) p->data[j] = 0.0;
+    return;
+  }
+  for (j = 0; j < Xb->col; j++) {
+    double s = 0.0;
+    for (i = 0; i < Xb->row; i++) {
+      s += Xb->data[i][j] * t->data[i];
+    }
+    p->data[j] = s / mod_t;
+  }
 }
 
 /*

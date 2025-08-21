@@ -17,6 +17,7 @@
 */
 
 #include <math.h>
+#include <float.h>
 #include <string.h>
 
 #include "memwrapper.h"
@@ -47,14 +48,16 @@ void DelPCAModel(PCAMODEL** m)
   DelMatrix(&((*m)->loadings));
   DelMatrix(&((*m)->scores));
   xfree((*m));
+  (*m) = NULL;
 }
 
 
 void calcVarExpressed(double ss, dvector *eval, dvector *varexp)
 /* ss is the sum of squares, eval = eigenvalue  varexp is an object that is resized for each component */
 {
+  DVectorResize(varexp, eval->size);
   for(size_t i = 0; i < eval->size; i++){
-    DVectorAppend(varexp, (eval->data[i]/ss) * 100);
+    varexp->data[i] = (eval->data[i]/ss) * 100;
     #ifdef DEBUG
     printf("Variance expressed for PC %u\t %f\n", (unsigned int)i, (getDVectorValue(eval, i)/ss) * 100);
     #endif
@@ -89,6 +92,9 @@ double calcConvergence(dvector *t_new, dvector *t_old)
     n += square(t_new->data[i]-t_old->data[i]);
     d += square(t_new->data[i]);
   }
+  if (d <= DBL_MIN) {
+    return (n <= DBL_MIN) ? 0.0 : 1.0;
+  }
   return n/((double)t_new->size*d);
 }
 
@@ -121,6 +127,8 @@ double calcConvergence(dvector *t_new, dvector *t_old)
 void PCA(matrix *mx, int scaling, size_t npc, PCAMODEL* model, ssignal *s)
 {
   size_t i, j, pc;
+  size_t iter = 0;
+  const size_t max_iter = 1000;
   dvector *t;
   dvector *t_old;
   dvector *p;
@@ -198,6 +206,9 @@ void PCA(matrix *mx, int scaling, size_t npc, PCAMODEL* model, ssignal *s)
         mod_t = DVectorDVectorDotProd(t, t);
 
         /* division of (t'*E)/t'*t (mx.p/mx.mod_t_old) for calculate the p' vector that represents the loadings */
+        if (mod_t <= EPSILON) {
+          break; /* degenerate component */
+        }
         for(i = 0; i < p->size; i++)
           p->data[i] /= mod_t; /* now p' is the loadings vector calculated */
 
@@ -213,7 +224,9 @@ void PCA(matrix *mx, int scaling, size_t npc, PCAMODEL* model, ssignal *s)
 
         /* p'*p = Sum(p[i]^2) */
         mod_p = DVectorDVectorDotProd(p, p);
-
+        if (mod_p <= EPSILON) {
+          break; /* degenerate component */
+        }
         for(i = 0; i < E->row; i++)
           t->data[i] /= mod_p;
 
@@ -278,6 +291,10 @@ void PCA(matrix *mx, int scaling, size_t npc, PCAMODEL* model, ssignal *s)
         else{
           DVectorCopy(t, t_old);
           /* End Step 5 */
+        }
+        iter++;
+        if (iter >= max_iter) {
+          break; /* stop if not converging */
         }
       }
       /*Reset all the variables*/
@@ -671,7 +688,12 @@ void PCATsqContributions(
     double sum_squared_diff = 0.0;
     for (size_t j = 0; j < x->col; j++) {
       /* normalize to avoid dwarf everthing. */
-      double diff = ((x->data[i][j]-model->colaverage->data[j])/model->colscaling->data[j]) - ((reconstructed_x->data[i][j]-model->colaverage->data[j])/model->colscaling->data[j]);
+      double denom = model->colscaling->data[j];
+      if (fabs(denom) <= EPSILON) {
+        contributions->data[i][j] = 0.0;
+        continue;
+      }
+      double diff = ((x->data[i][j]-model->colaverage->data[j])/denom) - ((reconstructed_x->data[i][j]-model->colaverage->data[j])/denom);
       if(isfinite(diff)){
         double squared_diff = diff * diff;
         if(isfinite(squared_diff)){
