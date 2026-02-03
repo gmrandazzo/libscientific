@@ -22,14 +22,18 @@
 #include <math.h>
 #include <float.h>
 
-/*
- * Calculate R^2
+/**
+ * Calculate R^2 as the square of the Pearson correlation coefficient.
+ * This is appropriate for models with or without intercept, 
+ * but ignores bias in predicted values.
  */
 double R2(dvector *ytrue, dvector *ypred)
 {
   size_t i, ny;
-  double ssreg, sstot, yavg;
-  ssreg = sstot = yavg = 0.f;
+  double yavg, ypredavg;
+  double num, den1, den2;
+
+  yavg = ypredavg = 0.f;
   ny = 0;
   for(i = 0; i < ytrue->size; i++){
     if(FLOAT_EQ(ytrue->data[i], MISSING, 1e-1)){
@@ -37,10 +41,64 @@ double R2(dvector *ytrue, dvector *ypred)
     }
     else{
       yavg += ytrue->data[i];
+      ypredavg += ypred->data[i];
       ny+=1;
     }
   }
+
+  if (ny < 2) return 0.f;
   yavg /= (double)ny;
+  ypredavg /= (double)ny;
+
+  num = den1 = den2 = 0.f;
+  for(i = 0; i < ytrue->size; i++){
+    if(FLOAT_EQ(ytrue->data[i], MISSING, 1e-1)){
+      continue;
+    }
+    else{
+      double diff_y = ytrue->data[i] - yavg;
+      double diff_ypred = ypred->data[i] - ypredavg;
+      num += diff_y * diff_ypred;
+      den1 += square(diff_y);
+      den2 += square(diff_ypred);
+    }
+  }
+
+  if (den1 <= 0.f || den2 <= 0.f) return 0.f;
+
+  return square(num / sqrt(den1 * den2));
+}
+
+/**
+ * Calculate R^2 (Coefficient of Determination) as 1 - RSS/SST.
+ * This is sensitive to bias and is often used for model validation (Q^2).
+ * It automatically detects if the model has an intercept by checking if
+ * the mean of predicted values is close to the mean of true values.
+ */
+double R2_cv(dvector *ytrue, dvector *ypred)
+{
+  size_t i, ny;
+  double ssreg, sstot, yavg, ypredavg;
+  ssreg = sstot = yavg = ypredavg = 0.f;
+  ny = 0;
+  for(i = 0; i < ytrue->size; i++){
+    if(FLOAT_EQ(ytrue->data[i], MISSING, 1e-1)){
+      continue;
+    }
+    else{
+      yavg += ytrue->data[i];
+      ypredavg += ypred->data[i];
+      ny+=1;
+    }
+  }
+
+  if (ny == 0) return 0.f;
+  yavg /= (double)ny;
+  ypredavg /= (double)ny;
+
+  /* Check for intercept presence: in OLS with intercept, the mean of predicted values 
+     should equal the mean of true values (sum of residuals is zero). */
+  int has_intercept = (fabs(yavg - ypredavg) < 1e-5);
 
   for(i = 0; i < ytrue->size; i++){
     if(FLOAT_EQ(ytrue->data[i], MISSING, 1e-1)){
@@ -48,9 +106,15 @@ double R2(dvector *ytrue, dvector *ypred)
     }
     else{
       ssreg += square(ypred->data[i] - ytrue->data[i]);
-      sstot += square(ytrue->data[i] - yavg);
+      if (has_intercept)
+        sstot += square(ytrue->data[i] - yavg);
+      else
+        sstot += square(ytrue->data[i]);
     }
   }
+
+  if (sstot <= 0.f) return 0.f;
+
   return 1.f - (ssreg/sstot);
 }
 

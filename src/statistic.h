@@ -34,6 +34,13 @@ double R2(dvector *ytrue, dvector *ypred);
  * ypred = Predicted values
  *
  */
+double R2_cv(dvector *ytrue, dvector *ypred);
+
+/*
+ * ytrue = True values
+ * ypred = Predicted values
+ *
+ */
 double MAE(dvector *ytrue, dvector *ypred);
 
 /*

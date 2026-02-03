@@ -110,13 +110,24 @@ void test2()
   ypred->data[9] = 0.857753138117355;
   ypred->data[10] = MISSING;
 
-  if(FLOAT_EQ(R2(ytrue, ypred), 0.9375711069105384, 1e-12)){
-    printf("R2 OK!\n");
+  if(FLOAT_EQ(R2(ytrue, ypred), 0.9950358893726658, 1e-12)){
+    printf("R2 (correlation squared) OK!\n");
   }
   else{
     printf("R2 ERROR!\n");
+    printf("Expected: 0.9950358893726658, Got: %.16f\n", R2(ytrue, ypred));
     abort();
   }
+
+  if(FLOAT_EQ(R2_cv(ytrue, ypred), 0.9760005506085202, 1e-12)){
+    printf("R2_cv (uncentered) OK!\n");
+  }
+  else{
+    printf("R2_cv ERROR!\n");
+    printf("Expected: 0.9760005506085202, Got: %.16f\n", R2_cv(ytrue, ypred));
+    abort();
+  }
+
 
   if(FLOAT_EQ(MSE(ytrue, ypred), 0.00438450926319716, 1e-12)){
     printf("MSE OK!\n");
