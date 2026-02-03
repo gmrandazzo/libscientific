@@ -59,20 +59,15 @@ void WriteCPCA(char *dbpath, CPCAMODEL *cpca);
  */
 void ReadCPCA(char *dbpath, CPCAMODEL *cpca);
 
-/**
- * Save a PLS model to sqlite session
- * 
- * @param [in] dbname output path of th sqlite3 database
- * @param [out] pls PLS model to save
- */
 void WritePLS(char *dbpath, PLSMODEL *pls);
+void ReadPLS(char *dbpath, PLSMODEL *pls);
 
 /**
- * Read a PLS model from an sqlite session
+ * Save a matrix to a CSV file
  * 
- * @param [in] dbname input path of th sqlite3 database
- * @param [out] pls PLS model to fill
+ * @param [in] path output path of the CSV file
+ * @param [in] m matrix to save
  */
-void ReadPLS(char *dbpath, PLSMODEL *pls);
+void WriteMatrixCSV(char *path, matrix *m);
 
 #endif

@@ -168,7 +168,7 @@ void MatrixWhitening(matrix *X,
     DelMatrix(&vt);
 
     NewMatrix(&X_whiten_, X->row, X->col);
-    MatrixDotProduct(whitening_matrix, X, X_whiten_);
+    MatrixDotProduct(X, whitening_matrix, X_whiten_);
     MatrixCopy(X_whiten_, &X_whiten);
     
     DelMatrix(&X_whiten_);

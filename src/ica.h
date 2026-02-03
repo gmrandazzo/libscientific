@@ -41,6 +41,14 @@ void ICA(matrix *mx,
          size_t n_signals,
          ICAMODEL *model);
 
+void ICA_ext(matrix *mx,
+         size_t scaling,
+         size_t n_signals,
+         double alpha,
+         double thresh,
+         size_t max_iter,
+         ICAMODEL *model);
+
 void ICASignalPredictor(matrix *mx,
                         ICAMODEL *model,
                         matrix *p_signals);

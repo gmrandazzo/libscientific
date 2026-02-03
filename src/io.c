@@ -129,7 +129,7 @@ static void write_vector_into_sqltable(sqlite3 *db, char *tabname, dvector *vect
     /* Create SQL statement */
     lenght = snprintf(NULL, 0, "CREATE TABLE IF NOT EXISTS %s (id INTEGER PRIMARY KEY AUTOINCREMENT, value REAL);", tabname);
     sql = xmalloc(lenght+1);
-    snprintf(sql, lenght+1, "CREATE TABLE IF NOT EXISTS %s (id INTEGER PRIMARY KEY AUTOINCREMENT, value REAL);", tabname);
+    snprintf(sql,lenght+1, "CREATE TABLE IF NOT EXISTS %s (id INTEGER PRIMARY KEY AUTOINCREMENT, value REAL);", tabname);
     #ifdef DEBUG
     printf("%s\n", sql);
     #endif
@@ -150,7 +150,7 @@ static void write_vector_into_sqltable(sqlite3 *db, char *tabname, dvector *vect
     for (i = 0; i < vect->size; i++){
         lenght = snprintf(NULL, 0, "INSERT INTO %s (value) VALUES (%.18f);", tabname, vect->data[i]);
         sql = xmalloc(lenght+1);
-        snprintf(sql, lenght+1, "INSERT INTO %s (value) VALUES (%.18f);", tabname, vect->data[i]);
+        snprintf(sql,lenght+1, "INSERT INTO %s (value) VALUES (%.18f);", tabname, vect->data[i]);
         #ifdef DEBUG
         printf("%s\n", sql);
         #endif
@@ -182,7 +182,7 @@ static void read_vector(sqlite3 *db, char *tabname, dvector *vect)
 
     lenght = snprintf(NULL, 0, "SELECT value FROM %s;", tabname);
     sql = xmalloc(lenght+1);
-    snprintf(sql, lenght+1, "SELECT value FROM %s;", tabname);
+    snprintf(sql,lenght+1, "SELECT value FROM %s;", tabname);
     #ifdef DEBUG
     printf("%s\n", sql);
     #endif
@@ -719,4 +719,21 @@ void ReadPLS(char *dbpath, PLSMODEL *pls)
     DelDVector(&serial_vect);
 
     CloseDB(db);
+}
+
+void WriteMatrixCSV(char *path, matrix *m)
+{
+  FILE *f = fopen(path, "w");
+  if(!f){
+    fprintf(stderr, "Error: Unable to open file %s for writing\n", path);
+    return;
+  }
+  size_t i, j;
+  for(i = 0; i < m->row; i++){
+    for(j = 0; j < m->col; j++){
+      fprintf(f, "%f%s", m->data[i][j], (j == m->col - 1) ? "" : ",");
+    }
+    fprintf(f, "\n");
+  }
+  fclose(f);
 }

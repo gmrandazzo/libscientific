@@ -88,7 +88,7 @@ add_test(NAME testcpca COMMAND testcpca)
 
 add_executable(testica ${ICATest_SRC})
 target_link_libraries(testica libscientific)
-add_test(NAME testica COMMAND testcpca)
+add_test(NAME testica COMMAND testica)
 
 add_executable(testpls ${PLSTest_SRC})
 target_link_libraries(testpls libscientific)

@@ -461,7 +461,7 @@ void UPLS(tensor* X_,
         #endif
 
         /*Check Distance */
-        if(calcConvergence(t_new, t_old)){
+        if(calcConvergence(t_new, t_old) < UPLSCONVERGENCE){
           /* storing t score result */
           MatrixAppendCol(m->xscores, t_new);
           TensorAppendMatrix(m->xweights, W);
