@@ -51,7 +51,7 @@ double MSE(dvector *ytrue, dvector *ypred);
  * @param [in] ypred Predicted values
  * @return double MSE
  */
-double mse_blue(dvector *ytrue, dvector *ypred);
+double MSE_blue(dvector *ytrue, dvector *ypred);
 
 /*
  * ytrue = True values

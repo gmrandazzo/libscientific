@@ -102,7 +102,7 @@ double MSE(dvector *ytrue, dvector *ypred)
  * Blue (1978) ACM Transactions on Mathematical Software 4, 15-23.
  * Calculate MSE avoiding overflow and underflow
  */
-double mse_blue(dvector *ytrue, dvector *ypred)
+double MSE_blue(dvector *ytrue, dvector *ypred)
 {
   size_t i, ny;
   double sum_small, sum_medium, sum_large;
@@ -132,9 +132,11 @@ double mse_blue(dvector *ytrue, dvector *ypred)
         if (abs_diff > 0) {
             sum_small += square(diff / b1);
         }
-      } else if (abs_diff > b2) {
+      }
+      else if (abs_diff > b2) {
         sum_large += square(diff / b2);
-      } else {
+      }
+      else {
         sum_medium += square(diff);
       }
     }
@@ -145,9 +147,11 @@ double mse_blue(dvector *ytrue, dvector *ypred)
   /* Combine the sums robustly */
   if (sum_large > 0) {
     return square(b2) * (sum_large / (double)ny + ((sum_medium + square(b1) * sum_small) / square(b2)) / (double)ny);
-  } else if (sum_medium > 0) {
+  }
+  else if (sum_medium > 0) {
     return (sum_medium / (double)ny + (square(b1) * sum_small / (double)ny));
-  } else {
+  }
+  else {
     return square(b1) * (sum_small / (double)ny);
   }
 }
