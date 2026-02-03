@@ -3,6 +3,7 @@
 #include "numeric.h"
 #include "statistic.h"
 #include <time.h>
+#include <float.h>
 
 /*
  * 
@@ -55,6 +56,13 @@ void test2()
   }else{
     printf("MSE ERROR!\n");
     
+    abort();
+  }
+
+  if(FLOAT_EQ(mse_blue(ytrue, ypred), 0.00438450926319716, 1e-12)){
+    printf("MSE BLUE OK!\n");
+  }else{
+    printf("MSE BLUE ERROR!\n");
     abort();
   }
 
@@ -177,9 +185,72 @@ void test1()
   DelDVector(&y_score);
 }
 
+void test3()
+{
+  puts("Test3: mse_blue robustness");
+  dvector *ytrue;
+  dvector *ypred;
+  NewDVector(&ytrue, 2);
+  NewDVector(&ypred, 2);
+
+  /* Case 1: Large values that would overflow if summed normally but average fits */
+  /* x = 1.5e154, x^2 = 2.25e308 (> DBL_MAX ~1.79e308)
+     But (x^2 + 0) / 2 = 1.125e308 (< DBL_MAX)
+  */
+  ytrue->data[0] = 0.0;
+  ypred->data[0] = 1.5e154; 
+  ytrue->data[1] = 0.0;
+  ypred->data[1] = 0.0;
+
+  double m_blue = mse_blue(ytrue, ypred);
+  double m_normal = MSE(ytrue, ypred);
+
+  printf("Large values - Blue: %e, Normal: %e\n", m_blue, m_normal);
+
+  if (isinf(m_normal)) {
+      printf("Normal MSE overflowed as expected.\n");
+  } else {
+      printf("Normal MSE DID NOT overflow (check DBL_MAX: %e)\n", DBL_MAX);
+  }
+
+  if (!isinf(m_blue) && m_blue > 0) {
+      printf("MSE BLUE robustness (large) OK!\n");
+  } else {
+      printf("MSE BLUE robustness (large) ERROR!\n");
+      abort();
+  }
+
+  /* Case 2: Extremely small values that would underflow to zero if squared normally */
+  /* x = 1.0e-160, x^2 = 1.0e-320 (subnormal) */
+  ytrue->data[0] = 0.0;
+  ypred->data[0] = 1.0e-160;
+  ytrue->data[1] = 0.0;
+  ypred->data[1] = 1.0e-160;
+
+  m_blue = mse_blue(ytrue, ypred);
+  m_normal = MSE(ytrue, ypred);
+
+  printf("Small values - Blue: %e, Normal: %e\n", m_blue, m_normal);
+
+  /* Note: on many systems m_normal might still be subnormal at 1e-320. 
+     Blue's algorithm is more about preventing intermediate underflow 
+     when many small values are summed. */
+
+  if (m_blue > 0 && m_blue < 1e-300) {
+      printf("MSE BLUE robustness (small) OK!\n");
+  } else {
+      printf("MSE BLUE robustness (small) ERROR!\n");
+      abort();
+  }
+
+  DelDVector(&ytrue);
+  DelDVector(&ypred);
+}
+
 
 int main(void)
 {
   test1();
   test2();
+  test3();
 }

@@ -20,6 +20,7 @@
 #include "numeric.h"
 #include "memwrapper.h"
 #include <math.h>
+#include <float.h>
 
 /*
  * Calculate R^2
@@ -95,6 +96,60 @@ double MSE(dvector *ytrue, dvector *ypred)
   }
   mse /= (double)ny;
   return mse;
+}
+
+/**
+ * Blue (1978) ACM Transactions on Mathematical Software 4, 15-23.
+ * Calculate MSE avoiding overflow and underflow
+ */
+double mse_blue(dvector *ytrue, dvector *ypred)
+{
+  size_t i, ny;
+  double sum_small, sum_medium, sum_large;
+  double b1, b2;
+  double diff, abs_diff;
+
+  sum_small = sum_medium = sum_large = 0.0;
+  ny = 0;
+
+  /* Constants for Blue's algorithm
+   * b1: values smaller than this may underflow when squared
+   * b2: values larger than this may overflow when squared
+   */
+  b1 = sqrt(DBL_MIN / DBL_EPSILON);
+  b2 = sqrt(DBL_MAX * DBL_EPSILON);
+
+  for(i = 0; i < ytrue->size; i++){
+    if(FLOAT_EQ(ytrue->data[i], MISSING, 1e-1)){
+      continue;
+    }
+    else{
+      diff = ypred->data[i] - ytrue->data[i];
+      abs_diff = fabs(diff);
+      ny += 1;
+
+      if (abs_diff < b1) {
+        if (abs_diff > 0) {
+            sum_small += square(diff / b1);
+        }
+      } else if (abs_diff > b2) {
+        sum_large += square(diff / b2);
+      } else {
+        sum_medium += square(diff);
+      }
+    }
+  }
+
+  if (ny == 0) return 0.0;
+
+  /* Combine the sums robustly */
+  if (sum_large > 0) {
+    return square(b2) * (sum_large / (double)ny + ((sum_medium + square(b1) * sum_small) / square(b2)) / (double)ny);
+  } else if (sum_medium > 0) {
+    return (sum_medium / (double)ny + (square(b1) * sum_small / (double)ny));
+  } else {
+    return square(b1) * (sum_small / (double)ny);
+  }
 }
 
 double RMSE(dvector *ytrue, dvector *ypred)

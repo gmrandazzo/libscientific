@@ -43,6 +43,16 @@ double MAE(dvector *ytrue, dvector *ypred);
  */
 double MSE(dvector *ytrue, dvector *ypred);
 
+/**
+ * @brief Calculate the mean squared error using the Blue's algorithm to avoid overflow and underflow.
+ * Reference: Blue (1978) ACM Transactions on Mathematical Software 4, 15-23.
+ *
+ * @param [in] ytrue True values
+ * @param [in] ypred Predicted values
+ * @return double MSE
+ */
+double mse_blue(dvector *ytrue, dvector *ypred);
+
 /*
  * ytrue = True values
  * ypred = Predicted values
