@@ -1,20 +1,19 @@
-/* clustering.c
-*
-* Copyright (C) <2016>  Giuseppe Marco Randazzo
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+/* Implements clustering algorithms for data grouping.
+ * Copyright (C) 2016-2026 designed, written and maintained by Giuseppe Marco Randazzo <gmrandazzo@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,6 +21,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <pthread.h>
+#include <float.h>
 
 #include "scientificinfo.h"
 #include "clustering.h"
@@ -265,6 +265,271 @@ void MDC(matrix* m,
   DelDVector(&vectinfo);
 }
 
+/* Start of MDC_Fast helper types and functions */
+
+typedef struct {
+  double dist;
+  size_t index;
+} mdc_pair;
+
+static int compare_mdc_pair(const void *a, const void *b) {
+  const mdc_pair *p1 = (const mdc_pair *)a;
+  const mdc_pair *p2 = (const mdc_pair *)b;
+  if (p1->dist < p2->dist) return -1;
+  if (p1->dist > p2->dist) return 1;
+  return 0;
+}
+
+typedef struct {
+  matrix *m;
+  dvector *local_vectinfo;
+  size_t from, to;
+  int metric;
+} mdc_fast_init_args;
+
+static void *MDCFastInitialWorker(void *arg_) {
+  mdc_fast_init_args *arg = (mdc_fast_init_args*)arg_;
+  size_t i, j, k;
+  double d;
+  mdc_pair *pairs = xmalloc(sizeof(mdc_pair) * arg->m->row);
+
+  for (i = arg->from; i < arg->to; i++) {
+    /* Calculate distances from i to all j */
+    for (j = 0; j < arg->m->row; j++) {
+      pairs[j].index = j;
+      if (i == j) {
+        pairs[j].dist = 0.0;
+        continue;
+      }
+      
+      double dist = 0.0;
+      /* Inline distance calculation for speed */
+      if (arg->metric == 0) { /* Euclidean */
+        for (k = 0; k < arg->m->col; k++) {
+           double diff = arg->m->data[i][k] - arg->m->data[j][k];
+           dist += diff * diff;
+        }
+        pairs[j].dist = sqrt(dist);
+      } else if (arg->metric == 1) { /* Manhattan */
+        for (k = 0; k < arg->m->col; k++) {
+           dist += fabs(arg->m->data[i][k] - arg->m->data[j][k]);
+        }
+        pairs[j].dist = dist;
+      } else { /* Cosine */
+        double d_a = 0.0, d_b = 0.0;
+        for (k = 0; k < arg->m->col; k++) {
+          dist += arg->m->data[i][k] * arg->m->data[j][k];
+          d_a += square(arg->m->data[i][k]);
+          d_b += square(arg->m->data[j][k]);
+        }
+        if (d_a > 0 && d_b > 0)
+            pairs[j].dist = dist / (sqrt(d_a) * sqrt(d_b));
+        else
+            pairs[j].dist = 0.0; /* Handle zero vectors */
+      }
+    }
+    
+    /* Sort distances */
+    qsort(pairs, arg->m->row, sizeof(mdc_pair), compare_mdc_pair);
+    
+    /* Update local_vectinfo (accumulate votes) */
+    d = 2.0;
+    for (j = 0; j < arg->m->row; j++) {
+       size_t idx = pairs[j].index;
+       if (idx == i) {
+         arg->local_vectinfo->data[idx] += 1.0; 
+       } else {
+         arg->local_vectinfo->data[idx] += 1.0 / d;
+         d += 1.0;
+       }
+    }
+  }
+  
+  xfree(pairs);
+  return NULL;
+}
+
+typedef struct {
+  matrix *m;
+  mdc_pair *distances; 
+  size_t mdc_idx;
+  size_t from, to;
+  int metric;
+} mdc_fast_dist_args;
+
+static void *MDCFastDistWorker(void *arg_) {
+  mdc_fast_dist_args *arg = (mdc_fast_dist_args*)arg_;
+  size_t j, k;
+
+  for (j = arg->from; j < arg->to; j++) {
+      arg->distances[j].index = j;
+      if (arg->mdc_idx == j) {
+          arg->distances[j].dist = 0.0;
+          continue;
+      }
+
+      double dist = 0.0;
+      size_t i = arg->mdc_idx;
+      /* Inline distance calculation */
+      if (arg->metric == 0) { /* Euclidean */
+        for (k = 0; k < arg->m->col; k++) {
+           double diff = arg->m->data[i][k] - arg->m->data[j][k];
+           dist += diff * diff;
+        }
+        arg->distances[j].dist = sqrt(dist);
+      } else if (arg->metric == 1) { /* Manhattan */
+        for (k = 0; k < arg->m->col; k++) {
+           dist += fabs(arg->m->data[i][k] - arg->m->data[j][k]);
+        }
+        arg->distances[j].dist = dist;
+      } else { /* Cosine */
+        double d_a = 0.0, d_b = 0.0;
+        for (k = 0; k < arg->m->col; k++) {
+          dist += arg->m->data[i][k] * arg->m->data[j][k];
+          d_a += square(arg->m->data[i][k]);
+          d_b += square(arg->m->data[j][k]);
+        }
+        if (d_a > 0 && d_b > 0)
+            arg->distances[j].dist = dist / (sqrt(d_a) * sqrt(d_b));
+        else
+            arg->distances[j].dist = 0.0;
+      }
+  }
+  return NULL;
+}
+
+void MDC_Fast(matrix* m,
+              size_t n,
+              int metric,
+              uivector *selections,
+              size_t nthreads)
+{
+  size_t i, j, k, l;
+  size_t mdc, nmdc;
+  size_t th;
+  double d, dist;
+  dvector *vectinfo;
+  dvector *rankvector;
+  mdc_pair *rank_pairs;
+
+  pthread_t *threads;
+  mdc_fast_init_args *init_args;
+  mdc_fast_dist_args *dist_args;
+
+  NewDVector(&vectinfo, m->row);
+  DVectorSet(vectinfo, 0.0);
+  NewDVector(&rankvector, m->row);
+
+  threads = xmalloc(sizeof(pthread_t) * nthreads);
+  init_args = xmalloc(sizeof(mdc_fast_init_args) * nthreads);
+
+  /* PHASE 1: Initial Scoring (Parallel & Memory Efficient) */
+  size_t step = (size_t)ceil((double)m->row / (double)nthreads);
+  size_t from = 0;
+  
+  for (th = 0; th < nthreads; th++) {
+    init_args[th].m = m;
+    init_args[th].from = from;
+    init_args[th].to = (from + step > m->row) ? m->row : from + step;
+    init_args[th].metric = metric;
+    NewDVector(&init_args[th].local_vectinfo, m->row);
+    DVectorSet(init_args[th].local_vectinfo, 0.0);
+    
+    pthread_create(&threads[th], NULL, MDCFastInitialWorker, (void*)&init_args[th]);
+    
+    from = init_args[th].to;
+  }
+
+  for (th = 0; th < nthreads; th++) {
+    pthread_join(threads[th], NULL);
+    /* Accumulate local results into main vectinfo */
+    for (i = 0; i < m->row; i++) {
+        vectinfo->data[i] += init_args[th].local_vectinfo->data[i];
+    }
+    DelDVector(&init_args[th].local_vectinfo);
+  }
+  xfree(init_args);
+
+  /* PHASE 2: Selection Loop */
+  dist_args = xmalloc(sizeof(mdc_fast_dist_args) * nthreads);
+  rank_pairs = xmalloc(sizeof(mdc_pair) * m->row);
+  nmdc = 0;
+
+  while(1) {
+    /* Find compound with largest value */
+    dist = vectinfo->data[0];
+    mdc = 0;
+    for (i = 1; i < vectinfo->size; i++) {
+      if (vectinfo->data[i] > dist) {
+        dist = vectinfo->data[i];
+        mdc = i;
+      }
+    }
+
+    nmdc++;
+    UIVectorAppend(selections, mdc);
+
+    /* Break if we have enough */
+    if (n > 0 && nmdc >= n) break;
+    
+    /* Stop if all scores are <= 1 and we want "auto" selection (n=0 logic from original code) */
+    if (n == 0) {
+        k = 0; l = 0;
+        for(i = 0; i < vectinfo->size; i++){
+            double val = vectinfo->data[i];
+            if(val > 1.0) k++;
+            else if(FLOAT_EQ(val, 0.0, EPSILON)) l++;
+        }
+        /* If there are items with 0 < score <= 1, stop */
+        if(k != vectinfo->size - l) break;
+    }
+
+    /* Recalculate distances from new MDC to all others (Parallel) */
+    step = (size_t)ceil((double)m->row / (double)nthreads);
+    from = 0;
+    for (th = 0; th < nthreads; th++) {
+        dist_args[th].m = m;
+        dist_args[th].distances = rank_pairs;
+        dist_args[th].mdc_idx = mdc;
+        dist_args[th].from = from;
+        dist_args[th].to = (from + step > m->row) ? m->row : from + step;
+        dist_args[th].metric = metric;
+        
+        pthread_create(&threads[th], NULL, MDCFastDistWorker, (void*)&dist_args[th]);
+        from = dist_args[th].to;
+    }
+    for (th = 0; th < nthreads; th++) {
+        pthread_join(threads[th], NULL);
+    }
+
+    /* Sort ranks (Serial - N log N is fast enough for loop iteration) */
+    qsort(rank_pairs, m->row, sizeof(mdc_pair), compare_mdc_pair);
+
+    /* Calculate penalty factors */
+    d = 2.0;
+    for (i = 0; i < m->row; i++) {
+        j = rank_pairs[i].index;
+        if (j == mdc) {
+            rankvector->data[j] = 0.0; /* Select probability 0 for already selected */
+        } else {
+            rankvector->data[j] = 1.0 - (1.0 / d);
+            d += 1.0;
+        }
+    }
+
+    /* Update scores */
+    for (i = 0; i < vectinfo->size; i++) {
+        vectinfo->data[i] *= rankvector->data[i];
+    }
+  }
+
+  xfree(threads);
+  xfree(dist_args);
+  xfree(rank_pairs);
+  DelDVector(&rankvector);
+  DelDVector(&vectinfo);
+}
+
 /*
  * MaxDis object selection.
  */
@@ -423,260 +688,179 @@ void MaxDis(matrix* m,
   DelMatrix(&m2);
 }
 
-/*
- * Fast implementation but can pose some memory problems with large datasets!
- */
 
-/*
- * Fast implementation but can pose some memory problems with large datasets!
- */
-void MaxDis_Fast(matrix* m,
-                 size_t n,
-                 int metric,
-                 uivector *selections,
-                 size_t nthreads)
-{
-  size_t i;
-  size_t j;
-  size_t nobj;
-  size_t far_away;
-  dvector *distances;
-  dvector *c;
+
+/* MaxDis_Parallel Helper Structures and Functions */
+
+typedef struct {
+  matrix *m;
   dvector *min_dists;
   unsigned char *is_selected;
+  size_t last_selected;
+  size_t from, to;
+  int metric;
+} maxdis_worker_args;
 
-  /* guard */
+static void *MaxDisUpdateWorker(void *arg_) {
+  maxdis_worker_args *arg = (maxdis_worker_args*)arg_;
+  size_t i, j, k;
+  double d, val_i, val_last;
+  
+  /* Pointers for faster access */
+  double **data = arg->m->data;
+  double *dists = arg->min_dists->data;
+  unsigned char *sel = arg->is_selected;
+  size_t last = arg->last_selected;
+  size_t cols = arg->m->col;
+
+  for (i = arg->from; i < arg->to; i++) {
+    if (sel[i]) continue;
+
+    d = 0.0;
+    if (arg->metric == 0) { /* Euclidean */
+      for (k = 0; k < cols; k++) {
+        double diff = data[i][k] - data[last][k];
+        d += diff * diff;
+      }
+      d = sqrt(d);
+    } else if (arg->metric == 1) { /* Manhattan */
+      for (k = 0; k < cols; k++) {
+        d += fabs(data[i][k] - data[last][k]);
+      }
+    } else { /* Cosine Distance (1 - Similarity) */
+      double dot = 0.0, norm_i = 0.0, norm_last = 0.0;
+      for (k = 0; k < cols; k++) {
+        val_i = data[i][k];
+        val_last = data[last][k];
+        dot += val_i * val_last;
+        norm_i += val_i * val_i;
+        norm_last += val_last * val_last;
+      }
+      if (norm_i > 0 && norm_last > 0)
+        d = 1.0 - (dot / (sqrt(norm_i) * sqrt(norm_last)));
+      else
+        d = 1.0; /* Treat zero vector as max distance */
+    }
+
+    if (d < dists[i]) {
+      dists[i] = d;
+    }
+  }
+  return NULL;
+}
+
+void MaxDis_Fast(matrix* m,
+                     size_t n,
+                     int metric,
+                     uivector *selections,
+                     size_t nthreads)
+{
+  size_t i, j, k;
+  size_t far_away, best_idx;
+  size_t nobj;
+  double max_min_dist;
+  dvector *min_dists;
+  dvector *centroid;
+  unsigned char *is_selected;
+  pthread_t *threads;
+  maxdis_worker_args *args;
+
   if (n == 0 || m->row == 0) return;
+
+  /* Allocations */
+  NewDVector(&min_dists, m->row);
+  /* Initialize min_dists to infinity */
+  for(i=0; i<m->row; i++) min_dists->data[i] = DBL_MAX;
 
   is_selected = xmalloc(sizeof(unsigned char) * m->row);
   memset(is_selected, 0, sizeof(unsigned char) * m->row);
+  
+  threads = xmalloc(sizeof(pthread_t) * nthreads);
+  args = xmalloc(sizeof(maxdis_worker_args) * nthreads);
 
-  initDVector(&distances);
-  /*
-   * Calculate a square distance matrix
-   * Slow process!
-   */
-  if(metric == 0){
-    EuclideanDistanceCondensed(m, distances, nthreads);
-  }
-  else if(metric == 1){
-    ManhattanDistanceCondensed(m, distances, nthreads);
-  }
-  else{
-    CosineDistanceCondensed(m, distances, nthreads);
-  }
-
-  /* select the faraway compound from centroid */
-  NewDVector(&c, m->col);
+  /* Step 1: Select first point (farthest from centroid) */
+  NewDVector(&centroid, m->col);
   for(i = 0; i < m->row; i++){
     for(j = 0; j < m->col; j++){
-      c->data[j] += m->data[i][j];
+      centroid->data[j] += m->data[i][j];
     }
   }
-
-  for(j = 0; j < m->col; j++){
-    c->data[j] /= (double)m->row;
-  }
+  for(j = 0; j < m->col; j++) centroid->data[j] /= (double)m->row;
 
   far_away = 0;
-  double far = 0.f;
-  for(j = 0; j < m->col; j++){
-    far += square(c->data[j] - m->data[far_away][j]);
-  }
-  far = sqrt(far);
-
-  for(i = 1; i < m->row; i++){
-    double dst = 0.f;
+  double max_d = -1.0;
+  
+  /* This loop is O(N*D), can be parallelized but fast enough usually. keeping serial for simplicity of Phase 1 */
+  for(i = 0; i < m->row; i++){
+    double d = 0.0;
     for(j = 0; j < m->col; j++){
-      dst += square(c->data[j] - m->data[i][j]);
+      double diff = m->data[i][j] - centroid->data[j];
+      d += diff * diff;
     }
-    dst = sqrt(dst);
-    if(dst > far){
-      far = dst;
-      far_away = i;
+    /* We use squared euclidean for centroid check to avoid sqrt */
+    if (d > max_d) {
+        max_d = d;
+        far_away = i;
     }
   }
-  DelDVector(&c);
+  DelDVector(&centroid);
 
-  /* Append the far away compound to the final selection */
+  /* Add first selection */
   UIVectorAppend(selections, far_away);
-
-  /* Initialize min distances to the first selected point */
-  NewDVector(&min_dists, m->row);
-  for (i = 0; i < m->row; i++){
-    if (i == far_away){
-      min_dists->data[i] = 0.0;
-      continue;
-    }
-    size_t idx0 = square_to_condensed_index(i, far_away, m->row);
-    min_dists->data[i] = distances->data[idx0];
-  }
   is_selected[far_away] = 1;
+  min_dists->data[far_away] = 0.0;
 
-  /*
-   * The next object to be selected is always as distant as possible
-   * from already selected objects. Hence iterate in the distance matrix
-   * using the remaining ids.
-   */
+  /* Step 2: Iteratively select remaining points */
+  /* We need to select n points total. We have 1. Loop n-1 times. */
+  size_t last_selected = far_away;
 
-  /* ntob = 1 because we have already selected the first object, the far away object */
-  for(nobj = 1; nobj < n && nobj < m->row; nobj++){
-    /* choose the unselected point with maximum of current min distance */
-    size_t best = (size_t)-1;
-    double best_val = -1.0;
-    for (i = 0; i < m->row; i++){
-      if (is_selected[i]) continue;
-      double v = min_dists->data[i];
-      if (v > best_val){
-        best_val = v;
-        best = i;
+  for (nobj = 1; nobj < n && nobj < m->row; nobj++) {
+      
+      /* Phase 2a: Update min_dists in parallel */
+      size_t step = (size_t)ceil((double)m->row / (double)nthreads);
+      size_t from = 0;
+
+      for (k = 0; k < nthreads; k++) {
+          args[k].m = m;
+          args[k].min_dists = min_dists;
+          args[k].is_selected = is_selected;
+          args[k].last_selected = last_selected;
+          args[k].from = from;
+          args[k].to = (from + step > m->row) ? m->row : from + step;
+          args[k].metric = metric;
+          
+          pthread_create(&threads[k], NULL, MaxDisUpdateWorker, (void*)&args[k]);
+          from = args[k].to;
       }
-    }
-    if (best == (size_t)-1) break;
 
-    UIVectorAppend(selections, best);
-    is_selected[best] = 1;
-
-    /* update min distances with distances to newly selected point */
-    for (i = 0; i < m->row; i++){
-      if (is_selected[i]) continue;
-      size_t idx = square_to_condensed_index(i, best, m->row);
-      double dnew = distances->data[idx];
-      if (dnew < min_dists->data[i]){
-        min_dists->data[i] = dnew;
+      for (k = 0; k < nthreads; k++) {
+          pthread_join(threads[k], NULL);
       }
-    }
+
+      /* Phase 2b: Find point with maximum min_dist (Serial) */
+      max_min_dist = -1.0;
+      best_idx = (size_t)-1;
+
+      for (i = 0; i < m->row; i++) {
+          if (is_selected[i]) continue;
+          if (min_dists->data[i] > max_min_dist) {
+              max_min_dist = min_dists->data[i];
+              best_idx = i;
+          }
+      }
+
+      if (best_idx == (size_t)-1) break; /* Should not happen if nobj < m->row */
+
+      UIVectorAppend(selections, best_idx);
+      is_selected[best_idx] = 1;
+      min_dists->data[best_idx] = 0.0;
+      last_selected = best_idx;
   }
-  DelDVector(&min_dists);
-  DelDVector(&distances);
+
+  xfree(threads);
+  xfree(args);
   xfree(is_selected);
-}
-
-void MaxDis_Fast_old(matrix* m,
-                 size_t n,
-                 int metric,
-                 uivector *selections,
-                 size_t nthreads)
-{
-  size_t i;
-  size_t j;
-  size_t indx;
-  size_t nobj;
-  size_t far_away;
-  double dis;
-  dvector *distances;
-  uivector *id;
-  dvector *c, *mindists;
-
-  NewUIVector(&id, m->row);
-  /* Store into the id array the original point positions */
-  for(i = 0; i < m->row; i++)
-    id->data[i] = i;
-
-  initDVector(&distances);
-  /*
-   * Calculate a square distance matrix
-   * Slow process!
-   */
-  if(metric == 0){
-    EuclideanDistanceCondensed(m, distances, nthreads);
-  }
-  else if(metric == 1){
-    ManhattanDistanceCondensed(m, distances, nthreads);
-  }
-  else{
-    CosineDistanceCondensed(m, distances, nthreads);
-  }
-
-  /* select the faraway compound from centroid */
-  NewDVector(&c, m->col);
-  for(i = 0; i < m->row; i++){
-    for(j = 0; j < m->col; j++){
-      c->data[j] += m->data[i][j];
-    }
-  }
-
-  for(j = 0; j < m->col; j++){
-    c->data[j] /= (double)m->row;
-  }
-
-  far_away = 0;
-  double far = 0.f;
-  for(j = 0; j < m->col; j++){
-    far += square(c->data[j] - m->data[far_away][j]);
-  }
-  far = sqrt(far);
-
-  for(i = 1; i < m->row; i++){
-    double dst = 0.f;
-    for(j = 0; j < m->col; j++){
-      dst += square(c->data[j] - m->data[i][j]);
-    }
-    dst = sqrt(dst);
-    if(dst > far){
-      far = dst;
-      far_away = i;
-    }
-  }
-  DelDVector(&c);
-
-  /* Append the far away compound to the final selection */
-  UIVectorAppend(selections, far_away);
-
-  /* Remove the selected point from the position list */
-  UIVectorRemoveAt(id, far_away);
-
-  /*
-   * The next object to be selected is always as distant as possible
-   * from already selected objects. Hence iterate in the distance matrix
-   * using the remaining ids.
-   */
-
-  /* ntob = 1 because we have already selected the first object, the far away objcet*/
-  for(nobj = 1; nobj < n; nobj++){
-    /* Select the minumum distance of all remaining objects
-      * from the already selected points
-      */
-    NewDVector(&mindists, id->size);
-    for(i = 0; i < id->size; i++){
-      size_t ii = id->data[i];
-      size_t jj = selections->data[0];
-      indx = square_to_condensed_index(ii, jj, m->row);
-      dis = distances->data[indx];
-      for(j = 1; j < selections->size; j++){
-        jj = selections->data[j];
-        indx = square_to_condensed_index(ii, jj, m->row);
-        if(distances->data[indx] < dis){
-          dis = distances->data[indx];
-        }
-        else{
-          continue;
-        }
-      }
-      mindists->data[i] = dis;
-    }
-
-    /*
-      * From the final smallest distance list select the maximum distant objects
-      */
-    j = 0;
-    for(i = 1; i < mindists->size; i++){
-      if(mindists->data[i] > mindists->data[j]){
-        j = i;
-      }
-      else{
-        continue;
-      }
-    }
-
-    /* l is the max min object to select */
-    UIVectorAppend(selections, id->data[j]);
-    UIVectorRemoveAt(id, j);
-
-    DelDVector(&mindists);
-  }
-  DelDVector(&distances);
-  DelUIVector(&id);
+  DelDVector(&min_dists);
 }
 
 void NewHyperGridMap(HyperGridModel **hgm)
@@ -1606,32 +1790,14 @@ void KMeansJumpMethod(matrix* m,
   DelMatrix(&xcenter);
 }
 
-/*
- * Here we generate point;point; string from two names
- */
-char *generatePointPointNameV1(char *pname1, char *pname2)
-{
-    char *result;
-    size_t length = snprintf(NULL, 0, "%s", pname1);
-    length += 2*snprintf(NULL, 0, "%s", ";");
-    length += snprintf(NULL, 0, "%s", pname2);
-    result = xmalloc(sizeof(char)*length+1);
-    snprintf(result, length + 1, "%s;%s;", pname1, pname2);
-    return result;
-}
+/* Helper struct for the optimized tree */
+typedef struct {
+    int left;
+    int right;
+    double dist;
+    size_t size;
+} HClusterNode;
 
-char *generatePointPointNameV2(char *pname1, char *pname2)
-{
-    char *result;
-    size_t length = snprintf(NULL, 0, "%s", pname1);
-    length += snprintf(NULL, 0, "%s", ";");
-    length += snprintf(NULL, 0, "%s", pname2);
-    result = xmalloc(sizeof(char)*length+1);
-    snprintf(result, length + 1, "%s;%s", pname1, pname2);
-    return result;
-}
-
-/*hierarchical clustering with different linkage criterion*/
 void HierarchicalClustering(matrix* _m,
                             size_t nclusters,
                             uivector *_clusters,
@@ -1639,251 +1805,339 @@ void HierarchicalClustering(matrix* _m,
                             enum LinkageType linktype,
                             size_t nthreads)
 {
-  size_t i;
-  size_t j;
-  size_t k;
-  size_t l;
-  size_t m;
-  size_t min_i;
-  size_t min_j;
-  char *res;
-  /* calc the matrix distance */
+  size_t i, j, k;
+  size_t n = _m->row;
+  size_t n_active;
+  size_t min_i, min_j;
+  double min_dist;
+  
   matrix *distmx;
-  matrix *distmx_new;
-  strvector *pointname;
-  strvector *pointname_new;
-  strvector *clusters;
-  strvector *tokens;
-  dvector *clusterdist;
-  dvector *tmp;
+  HClusterNode *tree;     /* Stores nodes N to 2N-2 */
+  int *node_map;          /* Maps row index to tree node index */
+  int *cluster_size;      /* Size of cluster at row i */
+  unsigned char *active;  /* 1 if row is active, 0 otherwise */
+  
+  /* Caching for speed optimization */
+  double *row_min_val;    /* Minimum distance for row i */
+  int *row_min_idx;       /* Index of minimum distance for row i */
 
-  initMatrix(&distmx);
-  initStrVector(&pointname);
-  initStrVector(&clusters);
-  initDVector(&clusterdist);
+  if (n == 0) return;
+  if (nclusters > n) nclusters = n;
+  if (nclusters == 0) nclusters = 1;
 
-  if(linktype > 2){
+  /* 1. Initialization */
+  NewMatrix(&distmx, n, n);
+  
+  /* Use Squared Euclidean for Ward, else Euclidean */
+  if(linktype == ward_linkage){
     CalculateDistance(_m, _m, distmx, nthreads, SQUARE_EUCLIDEAN);
-  }
-  else{
+  } else {
     CalculateDistance(_m, _m, distmx, nthreads, EUCLIDEAN);
   }
 
-  for(i = 0; i < _m->row; i++){
-    StrVectorAppendInt(pointname, i);
+  /* Fill diagonal with infinity to ignore self-distances */
+  for(i=0; i<n; i++) distmx->data[i][i] = DBL_MAX;
+
+  tree = xmalloc(sizeof(HClusterNode) * (n - 1));
+  node_map = xmalloc(sizeof(int) * n);
+  cluster_size = xmalloc(sizeof(int) * n);
+  active = xmalloc(sizeof(unsigned char) * n);
+  row_min_val = xmalloc(sizeof(double) * n);
+  row_min_idx = xmalloc(sizeof(int) * n);
+
+  for(i=0; i<n; i++) {
+      node_map[i] = i; /* Initial leaves are 0..n-1 */
+      cluster_size[i] = 1;
+      active[i] = 1;
+      
+      /* Initialize row mins */
+      double min_v = DBL_MAX;
+      int min_k = -1;
+      for(j=0; j<n; j++) {
+          if (i==j) continue;
+          if (distmx->data[i][j] < min_v) {
+              min_v = distmx->data[i][j];
+              min_k = j;
+          }
+      }
+      row_min_val[i] = min_v;
+      row_min_idx[i] = min_k;
   }
 
+  /* 2. Main Loop */
+  n_active = n;
+  for (k = 0; k < n - 1; k++) {
+      /* Find global minimum among active rows */
+      min_dist = DBL_MAX;
+      min_i = 0; 
+      min_j = 0;
 
-  m = 1; /* identifier for cluster */
+      for(i = 0; i < n; i++) {
+          if(!active[i]) continue;
+          if(row_min_val[i] < min_dist) {
+              min_dist = row_min_val[i];
+              min_i = i;
+              min_j = row_min_idx[i];
+          }
+      }
 
-  while(m < _m->row){
-    /* Step 2. find the minimum distance value inside the distance matrix */
-    min_i = 0;
-    min_j = 1;
-    for(i = 0; i < distmx->row; i++ ){
-      for(j = i+1; j < distmx->col; j++ ){
-        if(distmx->data[i][j] < distmx->data[min_i][min_j] &&
-          !FLOAT_EQ(distmx->data[i][j], 0.f, EPSILON)){
-          min_i = i;
-          min_j = j;
-        }
-        else{
-          continue;
+      /* Ensure min_i < min_j for consistent indexing */
+      /* Note: row_min_idx might point to inactive if we didn't update perfectly, 
+         but our update logic below ensures validity. */
+      
+      /* Record Merge */
+      tree[k].left = node_map[min_i];
+      tree[k].right = node_map[min_j];
+      tree[k].dist = min_dist;
+      tree[k].size = cluster_size[min_i] + cluster_size[min_j];
+      
+      /* Update active sets */
+      active[min_j] = 0; /* min_j is merged into min_i */
+      node_map[min_i] = n + k; /* New node index */
+      
+      /* Update distances for min_i (the merged row) */
+      /* We effectively move the new cluster into row min_i */
+      
+      for (i = 0; i < n; i++) {
+          if (!active[i] || i == min_i) continue;
+          
+          double d_iu = distmx->data[i][min_i];
+          double d_iv = distmx->data[i][min_j];
+          double d_new = 0.0;
+
+          if (linktype == single_linkage) {
+              d_new = (d_iu < d_iv) ? d_iu : d_iv;
+          } else if (linktype == complete_linkage) {
+              d_new = (d_iu > d_iv) ? d_iu : d_iv;
+          } else if (linktype == average_linkage) {
+              /* Standard UPGMA: weighted average */
+              /* d_new = (size_i*d_iu + size_j*d_iv) / (size_i + size_j) 
+                 Using indices min_i and min_j for u and v */
+              /* Wait, i is external. u is min_i, v is min_j */
+              double n_u = (double)cluster_size[min_i];
+              double n_v = (double)cluster_size[min_j];
+              d_new = (n_u * d_iu + n_v * d_iv) / (n_u + n_v);
+          } else if (linktype == ward_linkage) {
+              /* Standard Ward Update */
+              double n_i_ = (double)cluster_size[i];
+              double n_u = (double)cluster_size[min_i];
+              double n_v = (double)cluster_size[min_j];
+              double n_sum = n_i_ + n_u + n_v;
+              d_new = ((n_i_ + n_u) * d_iu + (n_i_ + n_v) * d_iv - n_i_ * min_dist) / n_sum;
+          } else {
+              /* Fallback Average */
+              d_new = (d_iu + d_iv) / 2.0; 
+          }
+          
+          /* Update Symmetric Matrix */
+          distmx->data[i][min_i] = d_new;
+          distmx->data[min_i][i] = d_new;
+      }
+      
+      cluster_size[min_i] += cluster_size[min_j];
+
+      /* Update row_min cache */
+      /* 1. Update row min_i: requires full scan of its new values */
+      double best_val = DBL_MAX;
+      int best_idx = -1;
+      for(j=0; j<n; j++) {
+          if(!active[j] || min_i == j) continue;
+          if(distmx->data[min_i][j] < best_val) {
+              best_val = distmx->data[min_i][j];
+              best_idx = j;
+          }
+      }
+      row_min_val[min_i] = best_val;
+      row_min_idx[min_i] = best_idx;
+
+      /* 2. Update other rows: Check if they pointed to min_j (invalid) or min_i (value changed) */
+      for(i=0; i<n; i++) {
+          if(!active[i] || i == min_i) continue;
+          
+          int old_target = row_min_idx[i];
+          
+          /* If the new distance to min_i is smaller than old min, update */
+          if (distmx->data[i][min_i] < row_min_val[i]) {
+              row_min_val[i] = distmx->data[i][min_i];
+              row_min_idx[i] = min_i;
+          } 
+          /* If it pointed to min_j (now gone) or min_i (value increased?), we must rescan */
+          else if (old_target == min_j || old_target == min_i) {
+              double m_v = DBL_MAX;
+              int m_k = -1;
+              for(j=0; j<n; j++) {
+                  if(!active[j] || i==j) continue;
+                  if(distmx->data[i][j] < m_v) {
+                      m_v = distmx->data[i][j];
+                      m_k = j;
+                  }
+              }
+              row_min_val[i] = m_v;
+              row_min_idx[i] = m_k;
+          }
+      }
+  }
+
+  /* 3. Extract Flat Clusters */
+  UIVectorResize(_clusters, n);
   
-        }
-      }
-    }
-
-    /* Step 3 merge the cluster and increase m. */
-    DVectorAppend(clusterdist, distmx->data[min_i][min_j]);
-    res = generatePointPointNameV1(getStr(pointname, min_i), getStr(pointname, min_j));
-    StrVectorAppend(clusters, res);
-    xfree(res);
-//     printf("clusters: %s == %s?\n", getStr(clusters, clusters->size-1), buffer);
-
-    res = generatePointPointNameV2(getStr(pointname, min_i), getStr(pointname, min_j));
-    setStr(pointname, min_i, res);
-    xfree(res);
-
-    res = generatePointPointNameV2(getStr(pointname, min_j), getStr(pointname, min_i));
-    setStr(pointname, min_j, res);
-    xfree(res);
-    m++;
-
-    /*Step 4 Remove the min_i and min_j from the matrix and update the distance matrix
-    * Erase Row with index "min_i"
-    */
-
-    initDVector(&tmp);
-    for(i = 0; i < distmx->row; i++){
-      if(i == min_i){
-        DVectorAppend(tmp, 0.f);
-      }
-      else if(i == min_j){
-        continue;
-      }
-      else{
-        if(linktype == 0){
-          /* Single-Linkage Criterion */
-          if(distmx->data[min_i][i] < distmx->data[min_j][i]){
-            DVectorAppend(tmp, distmx->data[min_i][i]);
-          }
-          else{
-            DVectorAppend(tmp, distmx->data[min_j][i]);
-          }
-        }
-        else if(linktype == 1){
-          /*Complete Linkage*/
-          if(distmx->data[min_i][i] > distmx->data[min_j][i]){
-            DVectorAppend(tmp, distmx->data[min_i][i]);
-          }
-          else{
-            DVectorAppend(tmp, distmx->data[min_j][i]);
-          }
-        }
-        else if(linktype == 2){
-          /*Average Linkage*/
-          DVectorAppend(tmp, sqrt(square(distmx->data[min_i][i]-distmx->data[min_j][i]))/2.);
-        }
-        else{
-          /* Ward-Linkage Criterion */
-          DVectorAppend(tmp, square(distmx->data[min_i][i]-distmx->data[min_j][i]));
-        }
-      }
-    }
-
-    NewMatrix(&distmx_new, distmx->row-1, distmx->col-1);
-    NewStrVector(&pointname_new, pointname->size-1);
-    if(min_i < min_j){
-      /* Erase the row min_j and col min_j */
-      k = 0;
-      for(i = 0; i < distmx->row; i++){
-        if(i != min_j){
-          setStr(pointname_new, k, getStr(pointname, i));
-          l = 0;
-          for(j = 0; j < distmx->col; j++){
-            if(j != min_j){
-              distmx_new->data[k][l] = distmx->data[i][j];
-              l++;
-            }
-            else{
-              continue;
-            }
-          }
-          k++;
-        }
-        else{
-          continue;
-        }
-      }
-
-      /* Fill the column min_i with the row[i] */
-      for(i = 0; i < tmp->size; i++){
-        distmx->data[i][min_i] = tmp->data[i];
-      }
-      /* Fill the row min_i with the row[i] */
-      for( i=0; i < tmp->size; i++ ){
-        distmx->data[min_i][i] = tmp->data[i];
-      }
-    }
-    else{
-      /* Erase the row min_i and col min_i */
-      k = 0;
-      for(i = 0; i < distmx->row; i++){
-        if(i != min_i){
-          setStr(pointname_new, k, getStr(pointname, i));
-          l = 0;
-          for(j = 0; j < distmx->col; j++){
-            if(j != min_i){
-              distmx_new->data[k][l] = distmx->data[i][j];
-              l++;
-            }
-            else{
-              continue;
-            }
-          }
-          k++;
-        }
-        else{
-          continue;
-        }
-      }
-
-      /* Fill the column min_j with the row[i] */
-      for(i = 0; i < tmp->size; i++){
-        distmx->data[i][min_j] = tmp->data[i];
-      }
-      /* Fill the row min_j with the row[i] */
-      for( i=0; i < tmp->size; i++ ){
-        distmx->data[min_j][i] = tmp->data[i];
-      }
-    }
-
-    MatrixCopy(distmx_new, &distmx);
-    StrVectorResize(pointname, pointname_new->size);
-    for(i = 0; i < pointname_new->size; i++){
-      setStr(pointname, i, getStr(pointname_new, i));
-    }
-
-    DelMatrix(&distmx_new);
-    DelStrVector(&pointname_new);
-    DelDVector(&tmp);
-  }
-
-
-  #ifdef DEBUG
-  puts("Dendogram Clusters");
-  for(i = 0; i < clusters->size; i++ ){
-    printf("%s\t%f\n", getStr(clusters, i), getDVectorValue(clusterdist, i));
-  }
-  #endif
-
-  if(dendogram != NULL){
-    for(i = 0; i < clusters->size; i++){
+  /* We have a tree structure. 
+     Root is at tree[n-2] (last merge).
+     We need to perform a cut.
+     Strategy:
+     - Assign Cluster ID 1 to Root.
+     - While number of clusters < nclusters:
+       - Find cluster with highest merge distance? 
+       - Actually, the merges are ordered by distance (agglomerative).
+       - The last (nclusters-1) merges form the top of the tree.
+       - If we undo the last (nclusters-1) merges, we get nclusters.
+  */
   
-      size_t length = snprintf(NULL, 0, "%s", getStr(clusters, i));
-      length += snprintf(NULL, 0, "%f", clusterdist->data[i]);
-      res = xmalloc(sizeof(char)*length+1);
-      snprintf(res, length + 1, "%s%f", getStr(clusters, i), clusterdist->data[i]);
-      StrVectorAppend(dendogram, res);
-      xfree(res);
-    }
+  /* Array to map Tree Node ID (0..2n-2) to Final Cluster ID (1..nclusters) */
+  /* Initialize leaves with 0 */
+  int *membership = xmalloc(sizeof(int) * (2*n));
+  for(i=0; i<2*n; i++) membership[i] = 0;
+  
+  /* The last merge created node (2n-2).
+     Iterate backwards from the last merge.
+     We start with 1 cluster (the root).
+     Each step backwards splits one cluster into two.
+     We stop when we have enough clusters.
+  */
+  
+  /* Label the top nodes */
+  /* The nodes kept are those that were NOT children of the last (nclusters-1) merges? 
+     No.
+     We process the tree from top (last merge) down.
+     Assign label 1 to root (node 2n-2).
+     Queue: Nodes to process.
+     While queue size < nclusters:
+       Take node with highest distance (last merges) from queue?
+       Split it: Assign label X to left child, label Y to right child.
+       
+     Simpler:
+     Mark the "cut" nodes.
+     The nodes formed by merges [n-2 ... n-nclusters] are the top nodes.
+     The children of these top nodes that are NOT in the top set are the roots of our final clusters.
+  */
+  
+  int *is_cluster_root = xmalloc(sizeof(int) * (2*n));
+  memset(is_cluster_root, 0, sizeof(int) * (2*n));
+  
+  /* Valid active nodes at the cut level */
+  /* Root is valid */
+  is_cluster_root[2*n - 2] = 1;
+  
+  /* We need to perform (nclusters - 1) splits to get nclusters */
+  /* We iterate k from n-2 down to n-nclusters.
+     For each k, node (n+k) is a merge. If it is marked as a cluster root, 
+     we unmark it and mark its children.
+  */
+  
+  /* Merge indices in tree array are 0..n-2. 
+     tree[k] creates node (n+k).
+     Last merge is index n-2. 
+  */
+  
+  size_t splits_needed = nclusters - 1;
+  for (k = 0; k < splits_needed; k++) {
+      int merge_idx = (n - 2) - k; /* Go backwards from last merge */
+      int node_id = n + merge_idx;
+      
+      if (is_cluster_root[node_id]) {
+          is_cluster_root[node_id] = 0;
+          is_cluster_root[tree[merge_idx].left] = 1;
+          is_cluster_root[tree[merge_idx].right] = 1;
+      }
+  }
+  
+  /* Now assign IDs to leaves by traversing down from marked roots */
+  /* Assign sequential IDs 1..nclusters to the marked roots */
+  int current_label = 1;
+  for (i = 0; i < 2*n-1; i++) {
+      if (is_cluster_root[i]) {
+          /* Perform BFS/DFS to mark all leaves under this node with current_label */
+          /* Simple stack for DFS */
+          int *stack = xmalloc(sizeof(int) * n); 
+          int top = 0;
+          stack[top++] = i;
+          
+          while(top > 0) {
+              int curr = stack[--top];
+              if (curr < n) {
+                  /* Leaf */
+                  _clusters->data[curr] = current_label;
+              } else {
+                  /* Internal node - index in tree is curr - n */
+                  int t_idx = curr - n;
+                  stack[top++] = tree[t_idx].left;
+                  stack[top++] = tree[t_idx].right;
+              }
+          }
+          xfree(stack);
+          current_label++;
+      }
+  }
+  
+  /* 4. Generate Dendrogram Strings (if requested) */
+  /* Format: "Name1;Name2;Dist" for each merge step k=0..n-2 */
+  if (dendogram != NULL) {
+      /* We need to reconstruct the names used in original code logic?
+         Original code: merged "Name1;Name2;"
+         We can just output indices or reconstruct.
+         Since dendogram is just a string list, let's output "LeftID;RightID;Dist"
+         Note: The original code accumulated names recursively: "1;2;5;"
+         We can do that if we really want, but it's expensive. 
+         Let's output simple "ID1;ID2;Dist" where IDs refer to leaves or cluster indices?
+         Original format: "clustername\tdistance". 
+         Where clustername was "leaf1;leaf2;leaf3...".
+         
+         Let's replicate that behavior efficiently.
+         We maintain an array of strings for each active node.
+         Only create them if dendogram != NULL.
+      */
+      char **node_names = xmalloc(sizeof(char*) * (2*n));
+      for(i=0; i<n; i++) {
+          size_t len = snprintf(NULL, 0, "%zu", i);
+          node_names[i] = xmalloc(len + 2);
+          snprintf(node_names[i], len + 2, "%zu;", i); /* Original appended ';' */
+      }
+      
+      for(k=0; k<n-1; k++) {
+          int left = tree[k].left;
+          int right = tree[k].right;
+          int new_id = n + k;
+          
+          /* Combine names */
+          /* Name = "LeftNameRightName" (Original logic did simple concat) */
+          size_t len_l = strlen(node_names[left]);
+          size_t len_r = strlen(node_names[right]);
+          node_names[new_id] = xmalloc(len_l + len_r + 1);
+          strcpy(node_names[new_id], node_names[left]);
+          strcat(node_names[new_id], node_names[right]);
+          
+          /* Add to dendogram vector */
+          /* Format: Name + Distance */
+          size_t len_entry = snprintf(NULL, 0, "%s%f", node_names[new_id], tree[k].dist);
+          char *entry = xmalloc(len_entry + 1);
+          snprintf(entry, len_entry + 1, "%s%f", node_names[new_id], tree[k].dist);
+          StrVectorAppend(dendogram, entry);
+          xfree(entry);
+      }
+      
+      for(i=0; i<2*n-1; i++) if(node_names[i]) xfree(node_names[i]);
+      xfree(node_names);
   }
 
-  /* Merge Clusters to _clusters: split and select clusters. */
-
-  UIVectorResize(_clusters, _m->row);
-
-  k = 1;
-
-  for(i = clusters->size-nclusters-1; i < clusters->size; i++){
-    initStrVector(&tokens);
-//     printf("Cluster %s\n", getStr(clusters, i));
-    SplitString(getStr(clusters, i), ";", tokens);
-    m = 0;
-    for(j = 0; j < tokens->size; j++){
-      l = atoi(getStr(tokens, j));
-      if(getUIVectorValue(_clusters, l) == 0){
-        setUIVectorValue(_clusters, l, k);
-        m = 1;
-      }
-      else{
-        continue;
-      }
-    }
-    DelStrVector(&tokens);
-
-    /* if are foundet new element added to the cluster than encrease the cluster level. */
-    if(m == 1){
-      k++;
-    }
-    else{
-      continue;
-    }
-  }
-
+  /* Cleanup */
+  xfree(is_cluster_root);
+  xfree(membership);
+  xfree(row_min_idx);
+  xfree(row_min_val);
+  xfree(active);
+  xfree(cluster_size);
+  xfree(node_map);
+  xfree(tree);
   DelMatrix(&distmx);
-  DelStrVector(&pointname);
-  DelStrVector(&clusters);
-  DelDVector(&clusterdist);
 }
+

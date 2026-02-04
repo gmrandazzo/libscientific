@@ -1,20 +1,19 @@
-/* statistic.c
-*
-* Copyright (C) <2016>  Giuseppe Marco Randazzo
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+/* Provides statistical functions and metrics.
+ * Copyright (C) 2016-2026 designed, written and maintained by Giuseppe Marco Randazzo <gmrandazzo@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #include "statistic.h"
 #include "numeric.h"
@@ -27,7 +26,7 @@
  * This is appropriate for models with or without intercept, 
  * but ignores bias in predicted values.
  */
-double R2(dvector *ytrue, dvector *ypred)
+double R2_deprecated(dvector *ytrue, dvector *ypred)
 {
   size_t i, ny;
   double yavg, ypredavg;
@@ -75,7 +74,7 @@ double R2(dvector *ytrue, dvector *ypred)
  * It automatically detects if the model has an intercept by checking if
  * the mean of predicted values is close to the mean of true values.
  */
-double R2_cv(dvector *ytrue, dvector *ypred)
+double R2(dvector *ytrue, dvector *ypred)
 {
   size_t i, ny;
   double ssreg, sstot, yavg, ypredavg;
@@ -143,7 +142,7 @@ double MAE(dvector *ytrue, dvector *ypred)
 /*
  * Calculate mean absolute error
  */
-double MSE(dvector *ytrue, dvector *ypred)
+double MSE_deprecated(dvector *ytrue, dvector *ypred)
 {
   size_t i, ny;
   double mse;
@@ -166,7 +165,7 @@ double MSE(dvector *ytrue, dvector *ypred)
  * Blue (1978) ACM Transactions on Mathematical Software 4, 15-23.
  * Calculate MSE avoiding overflow and underflow
  */
-double MSE_blue(dvector *ytrue, dvector *ypred)
+double MSE(dvector *ytrue, dvector *ypred)
 {
   size_t i, ny;
   double sum_small, sum_medium, sum_large;

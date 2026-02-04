@@ -1,20 +1,19 @@
-/* testclustering.c
-*
-* Copyright (C) <2016>  Giuseppe Marco Randazzo
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+/* Unit tests for the clustering module.
+ * Copyright (C) 2016-2026 designed, written and maintained by Giuseppe Marco Randazzo <gmrandazzo@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #include <stdio.h>
 #include <math.h>
@@ -52,6 +51,54 @@ void test19()
   DelMatrix(&m);
 }
 
+void test20()
+{
+  puts("Test Clustering 20: MDC_Fast vs MDC comparison");
+  size_t i, j, maxrow, maxcol;
+  matrix *m; /* Data matrix */
+  uivector *selections;
+  uivector *selections_slow;
+  clock_t start, end;
+  double time_fast, time_slow;
+
+  maxrow = 1000; /* Increased size to see speed difference */
+  maxcol = 100;
+
+  NewMatrix(&m, maxrow, maxcol);
+
+  srand(maxrow+maxcol);
+  for(i = 0; i < maxrow; i++){
+    for(j = 0; j < maxcol; j++){
+      setMatrixValue(m, i, j, rand() % 100);
+    }
+  }
+
+  initUIVector(&selections);
+  initUIVector(&selections_slow);
+
+  puts("Running MDC_Fast...");
+  start = clock();
+  MDC_Fast(m, 10, 0, selections, 8);
+  end = clock();
+  time_fast = ((double) (end - start)) / CLOCKS_PER_SEC;
+  printf("MDC Fast: %f seconds. Selected %zu instances.\n", time_fast, selections->size);
+  // PrintUIVector(selections);
+  
+  puts("Running MDC (Standard)...");
+  start = clock();
+  MDC(m, 10, 0, selections_slow, 8);
+  end = clock();
+  time_slow = ((double) (end - start)) / CLOCKS_PER_SEC;
+  printf("MDC Slow: %f seconds. Selected %zu instances.\n", time_slow, selections_slow->size);
+  // PrintUIVector(selections_slow);
+
+  printf("Speedup: %.2fx\n", time_slow / time_fast);
+
+  DelUIVector(&selections);
+  DelUIVector(&selections_slow);
+  DelMatrix(&m);
+}
+
 void test18()
 {
   puts("Test Clustering 18: KMeans++ clustering on random data");
@@ -60,7 +107,7 @@ void test18()
 
   size_t i, j, maxrow, maxcol;
   maxrow = 10000;
-  maxcol = 20;
+  maxcol = 5;
 
   NewMatrix(&m, maxrow, maxcol);
 
@@ -879,6 +926,62 @@ void test1()
   DelMatrix(&m);
 }
 
+void test21()
+{
+  puts("Test Clustering 21: MaxDis Comparisons");
+  size_t i, j, maxrow, maxcol;
+  matrix *m;
+  uivector *sel_orig, *sel_fast, *sel_par;
+  clock_t start, end;
+  double t_orig, t_fast;
+
+  maxrow = 2000;
+  maxcol = 50;
+  size_t n_select = 50;
+  
+  NewMatrix(&m, maxrow, maxcol);
+  srand(42);
+  for(i=0; i<maxrow; i++)
+    for(j=0; j<maxcol; j++)
+      setMatrixValue(m, i, j, (double)(rand()%100));
+
+  initUIVector(&sel_orig);
+  initUIVector(&sel_fast);
+  initUIVector(&sel_par);
+
+  puts("Running MaxDis (Original)...");
+  start = clock();
+  MaxDis(m, n_select, 0, sel_orig, 8);
+  end = clock();
+  t_orig = ((double)(end-start))/CLOCKS_PER_SEC;
+  printf("Time: %f s\n", t_orig);
+
+  puts("Running MaxDis_Fast (New Memory Efficient)...");
+  start = clock();
+  MaxDis_Fast(m, n_select, 0, sel_par, 8);
+  end = clock();
+  t_fast = ((double)(end-start))/CLOCKS_PER_SEC;
+  printf("Time: %f s\n", t_fast);
+
+  printf("Speedup Fast vs Original: %.2fx\n", t_orig/t_fast);
+    
+  int match = 1;
+  if(sel_fast->size != sel_par->size) match = 0;
+  else {
+      for(i=0; i<sel_fast->size; i++) {
+          if(sel_fast->data[i] != sel_par->data[i]) {
+             match = 0; break; 
+          }
+      }
+  }
+  printf("Results Match (Fast vs Parallel): %s\n", match ? "YES" : "NO");
+
+  DelUIVector(&sel_orig);
+  DelUIVector(&sel_fast);
+  DelUIVector(&sel_par);
+  DelMatrix(&m);
+}
+
 int main(void){
   /* Selection Tests */
   test1();
@@ -893,13 +996,15 @@ int main(void){
   test9();
   test10();
   test11();
-  // test12(); WARNING ERROR HERE!
+  test12();
   test13();
   test14();
-  //test15();
+  test15();
   test16();
   test17();
-  /*test18();*/
+  test18();
   test19();
+  test20();
+  test21();
   return 0;
 }

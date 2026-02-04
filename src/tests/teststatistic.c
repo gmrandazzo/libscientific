@@ -1,3 +1,20 @@
+/* Unit tests for the statistic module.
+ * Copyright (C) 2023-2026 designed, written and maintained by Giuseppe Marco Randazzo <gmrandazzo@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 #include <stdio.h>
 #include <math.h>
 #include "numeric.h"
@@ -29,8 +46,8 @@ void test3()
   ytrue->data[1] = 0.0;
   ypred->data[1] = 0.0;
 
-  double m_blue = MSE_blue(ytrue, ypred);
-  double m_normal = MSE(ytrue, ypred);
+  double m_blue = MSE(ytrue, ypred);
+  double m_normal = MSE_deprecated(ytrue, ypred);
 
   printf("Large values - Blue: %e, Normal: %e\n", m_blue, m_normal);
 
@@ -56,8 +73,8 @@ void test3()
   ytrue->data[1] = 0.0;
   ypred->data[1] = 1.0e-160;
 
-  m_blue = MSE_blue(ytrue, ypred);
-  m_normal = MSE(ytrue, ypred);
+  m_blue = MSE(ytrue, ypred);
+  m_normal = MSE_deprecated(ytrue, ypred);
 
   printf("Small values - Blue: %e, Normal: %e\n", m_blue, m_normal);
 
@@ -110,39 +127,39 @@ void test2()
   ypred->data[9] = 0.857753138117355;
   ypred->data[10] = MISSING;
 
-  if(FLOAT_EQ(R2(ytrue, ypred), 0.9950358893726658, 1e-12)){
+  if(FLOAT_EQ(R2(ytrue, ypred), 0.9760005506085202, 1e-12)){
     printf("R2 (correlation squared) OK!\n");
   }
   else{
     printf("R2 ERROR!\n");
-    printf("Expected: 0.9950358893726658, Got: %.16f\n", R2(ytrue, ypred));
+    printf("Expected: 0.9760005506085202, Got: %.16f\n", R2(ytrue, ypred));
     abort();
   }
 
-  if(FLOAT_EQ(R2_cv(ytrue, ypred), 0.9760005506085202, 1e-12)){
-    printf("R2_cv (uncentered) OK!\n");
+  if(FLOAT_EQ(R2_deprecated(ytrue, ypred), 0.9950358893726656, 1e-12)){
+    printf("R2_deprecated (uncentered) OK!\n");
   }
   else{
-    printf("R2_cv ERROR!\n");
-    printf("Expected: 0.9760005506085202, Got: %.16f\n", R2_cv(ytrue, ypred));
+    printf("R2_deprecated ERROR!\n");
+    printf("Expected: 0.9950358893726656, Got: %.16f\n", R2_deprecated(ytrue, ypred));
     abort();
   }
 
+
+  if(FLOAT_EQ(MSE_deprecated(ytrue, ypred), 0.00438450926319716, 1e-12)){
+    printf("MSE_deprecated OK!\n");
+  }
+  else{
+    printf("MSE_deprecated ERROR!\n");
+    
+    abort();
+  }
 
   if(FLOAT_EQ(MSE(ytrue, ypred), 0.00438450926319716, 1e-12)){
     printf("MSE OK!\n");
   }
   else{
     printf("MSE ERROR!\n");
-    
-    abort();
-  }
-
-  if(FLOAT_EQ(MSE_blue(ytrue, ypred), 0.00438450926319716, 1e-12)){
-    printf("MSE BLUE OK!\n");
-  }
-  else{
-    printf("MSE BLUE ERROR!\n");
     abort();
   }
 

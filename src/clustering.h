@@ -1,20 +1,19 @@
-/* clustering.h
-*
-* Copyright (C) <2016>  Giuseppe Marco Randazzo
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+/* Implements clustering algorithms for data grouping.
+ * Copyright (C) 2016-2026 designed, written and maintained by Giuseppe Marco Randazzo <gmrandazzo@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #ifndef CLUSTERING_H
 #define CLUSTERING_H
@@ -44,6 +43,22 @@ void MDC(matrix* m,
          uivector *selections,
          size_t nthreads);
 
+/**
+ *  Most Descriptive Compound Method (Fast Implementation)
+ *  Uses memory-efficient parallelization for large datasets.
+ * 
+ *  @param [in] m matrix of data in coordinate
+ *  @param [in] n number of object to select.
+ *  @param [in] metric metric type: 0 euclidean, 1 manhattan, 2 cosine distances
+ *  @param [out] selections initialised uivector. This variable will be filled up with the selected object ids.
+ *  @param [in] nthreads number of threads to use
+ */
+void MDC_Fast(matrix* m,
+              size_t n,
+              int metric,
+              uivector *selections,
+              size_t nthreads);
+
 
 /**
  * MaxMin Dissimilarity Selection Method 
@@ -62,8 +77,9 @@ void MaxDis(matrix* m,
             uivector *selections,
             size_t nthreads);
 
+
 /**
- * MaxMin Dissimilarity Selection Method
+ * MaxMin Dissimilarity Selection Method (Parallel & Memory Efficient)
  *
  * @param [in] m matrix of data in coordinate
  * @param [in] n number of object to select.
@@ -72,10 +88,10 @@ void MaxDis(matrix* m,
  * @param [in] nthreads number of threads to use
  */
 void MaxDis_Fast(matrix* m,
-                 size_t n,
-                 int metric,
-                 uivector *selections,
-                 size_t nthreads);
+                     size_t n,
+                     int metric,
+                     uivector *selections,
+                     size_t nthreads);
 
 
 typedef struct{
