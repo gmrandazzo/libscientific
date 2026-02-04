@@ -21,6 +21,19 @@
 #include <math.h>
 #include <float.h>
 
+void calcVarExpressed(double total_ss, dvector *eval, dvector *varexp)
+{
+    size_t i;
+    DVectorResize(varexp, eval->size);
+    if (total_ss <= 0.0) {
+        DVectorSet(varexp, 0.0);
+        return;
+    }
+    for(i = 0; i < eval->size; i++) {
+        varexp->data[i] = (eval->data[i] / total_ss) * 100.0;
+    }
+}
+
 /**
  * Calculate R^2 as the square of the Pearson correlation coefficient.
  * This is appropriate for models with or without intercept, 

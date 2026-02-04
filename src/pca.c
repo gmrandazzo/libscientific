@@ -51,17 +51,16 @@ void DelPCAModel(PCAMODEL** m)
 }
 
 
-void calcVarExpressed(double ss, dvector *eval, dvector *varexp)
-/* ss is the sum of squares, eval = eigenvalue  varexp is an object that is resized for each component */
+/* void calcVarExpressed(double total_ss, dvector *eval, dvector *varexp)
 {
+  size_t i;
   DVectorResize(varexp, eval->size);
-  for(size_t i = 0; i < eval->size; i++){
-    varexp->data[i] = (eval->data[i]/ss) * 100;
-    #ifdef DEBUG
-    printf("Variance expressed for PC %u\t %f\n", (unsigned int)i, (getDVectorValue(eval, i)/ss) * 100);
-    #endif
+  if(total_ss > 0){
+    for(i = 0; i < eval->size; i++){
+      varexp->data[i] = (eval->data[i] / total_ss) * 100.;
+    }
   }
-}
+} */
 
 double calcObjectDistance(matrix *m)
 {

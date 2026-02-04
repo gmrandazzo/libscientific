@@ -21,10 +21,19 @@
 #include "matrix.h"
 #include "vector.h"
 
-/*
- * ytrue = True values
- * ypred = Predicted values
+/**
+ * Calculate the Variance Expressed for each component
  *
+ * @param [in] total_ss Total Sum of Squares
+ * @param [in] eval Eigenvalues or Variance of each component
+ * @param [out] varexp Output vector of percentages
+ */
+void calcVarExpressed(double total_ss, dvector *eval, dvector *varexp);
+
+/**
+ * Calculate R^2 as the square of the Pearson correlation coefficient.
+ * This is appropriate for models with or without intercept, 
+ * but ignores bias in predicted values.
  */
 double R2_deprecated(dvector *ytrue, dvector *ypred);
 

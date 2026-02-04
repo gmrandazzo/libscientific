@@ -21,45 +21,35 @@
 #include "pca.h"
 #include "pls.h"
 #include "cpca.h"
+#include "mlr.h"
+#include "lda.h"
+#include "ica.h"
 #include "upca.h"
 #include "upls.h"
-#include "scientificinfo.h"
 
-/**
- * Save a PCA model to sqlite session
- * 
- * @param [in] dbname output path of th sqlite3 database
- * @param [out] pca PCA model to save
- */
 void WritePCA(char *dbpath, PCAMODEL *pca);
-
-/**
- * Read a PLS model from an sqlite session
- * 
- * @param [in] dbname input path of th sqlite3 database
- * @param [out] pca PCA model to fill
- */
 void ReadPCA(char *dbpath, PCAMODEL *pca);
-
-
-/**
- * Save a CPCA model to sqlite session
- * 
- * @param [in] dbname output path of th sqlite3 database
- * @param [out] cpca CPCA model to save
- */
-void WriteCPCA(char *dbpath, CPCAMODEL *cpca);
-
-/**
- * Read a CPCA model from an sqlite session
- * 
- * @param [in] dbname input path of th sqlite3 database
- * @param [out] cpca CPCA model to fill
- */
-void ReadCPCA(char *dbpath, CPCAMODEL *cpca);
 
 void WritePLS(char *dbpath, PLSMODEL *pls);
 void ReadPLS(char *dbpath, PLSMODEL *pls);
+
+void WriteCPCA(char *dbpath, CPCAMODEL *cpca);
+void ReadCPCA(char *dbpath, CPCAMODEL *cpca);
+
+void WriteMLR(char *dbpath, MLRMODEL *mlr);
+void ReadMLR(char *dbpath, MLRMODEL *mlr);
+
+void WriteLDA(char *dbpath, LDAMODEL *lda);
+void ReadLDA(char *dbpath, LDAMODEL *lda);
+
+void WriteICA(char *dbpath, ICAMODEL *ica);
+void ReadICA(char *dbpath, ICAMODEL *ica);
+
+void WriteUPCA(char *dbpath, UPCAMODEL *upca);
+void ReadUPCA(char *dbpath, UPCAMODEL *upca);
+
+void WriteUPLS(char *dbpath, UPLSMODEL *upls);
+void ReadUPLS(char *dbpath, UPLSMODEL *upls);
 
 /**
  * Save a matrix to a CSV file

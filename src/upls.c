@@ -28,6 +28,7 @@
 #include "matrix.h"
 #include "vector.h"
 #include "numeric.h"
+#include "statistic.h"
 
 void NewUPLSModel(UPLSMODEL** m)
 {
@@ -541,7 +542,14 @@ void UPLS(tensor* X_,
       }
 
       /*Adding EigenValue for estimate the principal component variance explained */
-      setDVectorValue(xeval, pc, DVectorDVectorDotProd(t_new, t_new));
+      double t_sq = DVectorDVectorDotProd(t_new, t_new);
+      double p_sq = 0.0;
+      size_t r, c;
+      for(r = 0; r < P->row; r++)
+        for(c = 0; c < P->col; c++)
+          p_sq += square(P->data[r][c]);
+      
+      setDVectorValue(xeval, pc, t_sq * p_sq);
 
       /*Reset all*/
       MatrixSet(W, 0.f);
