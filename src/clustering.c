@@ -1864,7 +1864,6 @@ void HierarchicalClustering(matrix* _m,
   }
 
   /* 2. Main Loop */
-  n_active = n;
   for (k = 0; k < n - 1; k++) {
       /* Find global minimum among active rows */
       min_dist = DBL_MAX;
