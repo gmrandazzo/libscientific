@@ -685,24 +685,27 @@ void PCATsqContributions(
   for (size_t i = 0; i < x->row; i++) {
     double sum_squared_diff = 0.0;
     for (size_t j = 0; j < x->col; j++) {
-      /* normalize to avoid dwarf everthing. */
+      /* Cache values to avoid repeated array access and apply centering */
+      double val_orig = x->data[i][j] - model->colaverage->data[j];
+      double val_recon = reconstructed_x->data[i][j] - model->colaverage->data[j];
+
+      /* Apply scaling normalization to avoid dwarf everything */
       double denom = model->colscaling->data[j];
-      if (fabs(denom) <= EPSILON) {
-        contributions->data[i][j] = 0.0;
-        continue;
+      if (fabs(denom) > EPSILON) {
+        val_orig /= denom;
+        val_recon /= denom;
+      } else {
+        val_orig = 0.0;
+        val_recon = 0.0;
       }
-      double diff = ((x->data[i][j]-model->colaverage->data[j])/denom) - ((reconstructed_x->data[i][j]-model->colaverage->data[j])/denom);
-      if(isfinite(diff)){
+
+      /* Calculate difference and squared difference */
+      double diff = val_orig - val_recon;
+      if (isfinite(diff)) {
         double squared_diff = diff * diff;
-        if(isfinite(squared_diff)){
-          sum_squared_diff += squared_diff;
-          contributions->data[i][j] = squared_diff;
-        }
-        else{
-          contributions->data[i][j] = 0.0;
-        }
-      }
-      else{
+        sum_squared_diff += isfinite(squared_diff) ? squared_diff : 0.0;
+        contributions->data[i][j] = isfinite(squared_diff) ? squared_diff : 0.0;
+      } else {
         contributions->data[i][j] = 0.0;
       }
     }

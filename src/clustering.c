@@ -703,7 +703,7 @@ typedef struct {
 
 static void *MaxDisUpdateWorker(void *arg_) {
   maxdis_worker_args *arg = (maxdis_worker_args*)arg_;
-  size_t i, j, k;
+  size_t i, k;
   double d, val_i, val_last;
   
   /* Pointers for faster access */
@@ -1807,7 +1807,6 @@ void HierarchicalClustering(matrix* _m,
 {
   size_t i, j, k;
   size_t n = _m->row;
-  size_t n_active;
   size_t min_i, min_j;
   double min_dist;
   
