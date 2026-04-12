@@ -67,12 +67,13 @@ jobs:
 
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v6
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         with:
           args: >
+            -Dsonar.projectKey=libscientific
             -Dsonar.cfamily.build-wrapper-output=bw-output
             -Dsonar.coverageReportPaths=coverage-c.xml
             -Dsonar.python.coverage.reportPaths=src/python_bindings/coverage.xml
             -Dsonar.verbose=true
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
