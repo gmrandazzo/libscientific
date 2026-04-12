@@ -70,6 +70,7 @@ jobs:
         with:
           args: >
             -Dsonar.projectKey=libscientific
+            -Dsonar.branch.name=${{ github.ref_name }}
             -Dsonar.cfamily.build-wrapper-output=bw-output
             -Dsonar.coverageReportPaths=coverage-c.xml
             -Dsonar.python.coverage.reportPaths=src/python_bindings/coverage.xml
