@@ -100,6 +100,8 @@ void MDC(matrix* m,
   pthread_t *threads;
   mdc_th_args *args;
 
+  if (nthreads < 1) nthreads = 1;
+
   NewDVector(&vectinfo, m->row);
   NewDVector(&rankvector, m->row);
   DVectorSet(vectinfo, 0.f);

@@ -748,6 +748,9 @@ void PLSYPredictor(matrix *tscore, PLSMODEL *model, size_t nlv, matrix *y)
 
   if(nlv > tscore->col)
     nlv = tscore->col;
+  
+  if(nlv > model->b->size)
+    nlv = model->b->size;
 
   /*Allocate the y results*/
   ResizeMatrix(y, tscore->row, model->yloadings->row);
@@ -823,6 +826,11 @@ void PLSRegressionStatistics(matrix *my_true,
 
   dvector *yt;
   dvector *yp;
+
+  if (my_true->col == 0) {
+      fprintf(stderr, "Error: my_true matrix has 0 columns in PLSRegressionStatistics\n");
+      return;
+  }
 
   size_t nlv = (size_t) my_pred->col/my_true->col;
   /*Calculate the Q2 and SDEP */

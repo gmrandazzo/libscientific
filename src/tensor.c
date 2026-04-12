@@ -360,7 +360,21 @@ void TransposedTensorDVectorProduct(tensor *t, dvector *v, matrix *p)
 {
   size_t i, j, k;
   double res;
+
+  if (p->row < t->order) {
+      fprintf(stderr, "Error: matrix p row size too small in TransposedTensorDVectorProduct\n");
+      return;
+  }
+
   for(k = 0; k < t->order; k++){
+    if (v->size < t->m[k]->col) {
+        fprintf(stderr, "Error: vector v size too small for tensor slice %zu in TransposedTensorDVectorProduct\n", k);
+        continue;
+    }
+    if (p->col < t->m[k]->row) {
+        fprintf(stderr, "Error: matrix p col size too small for tensor slice %zu in TransposedTensorDVectorProduct\n", k);
+        continue;
+    }
     for(i = 0; i < t->m[k]->row; i++){
       for(j = 0; j < t->m[k]->col; j++){
         res = t->m[k]->data[i][j]*v->data[j];
@@ -412,7 +426,7 @@ void TensorMatrixDotProduct(tensor *t, matrix *m, dvector *v)
     if(m->col == t->order && m->row == t->m[k]->col){
       for(i = 0; i < t->m[k]->row; i++){
         for(j = 0; j < t->m[k]->col; j++){
-          res = t->m[k]->data[i][j]= m->data[j][k];
+          res = t->m[k]->data[i][j] * m->data[j][k];
           v->data[i] = v->data[i] + res * (1.0f - ((_isnan_(res) | _isinf_(res)) & 1));
         }
       }

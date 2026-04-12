@@ -220,8 +220,8 @@ void UPLS(tensor* X_,
     matrix *Q;
 
     /* nipals shunt */
-    dvector *s;
-    dvector *r;
+    dvector *sh_s;
+    dvector *sh_r;
 
     NewTensor(&X, X_->order);
     for(k = 0; k < X_->order; k++){
@@ -280,6 +280,7 @@ void UPLS(tensor* X_,
 
       /* step 2: chosing u-start with the best variance in Y*/
       order = column = 0;
+      a = -1.0;
       for(i = 0; i < Y->order; i++){
         initDVector(&colvar);
         MatrixColVar(Y->m[i], colvar);
@@ -300,21 +301,17 @@ void UPLS(tensor* X_,
           }
         }
 
-        if(i > 0){
+        if(a < 0){
+          a = getDVectorValue(colvar, k);
+          order = i;
+          column = k;
+        }
+        else{
           if(getDVectorValue(colvar, k) > a){
             a = getDVectorValue(colvar, k);
             order = i;
             column = k;
           }
-          else{
-            DelDVector(&colvar);
-            continue;
-          }
-        }
-        else{
-          a = getDVectorValue(colvar, k);
-          order = i;
-          column = k;
         }
 
         DelDVector(&colvar);
@@ -337,6 +334,7 @@ void UPLS(tensor* X_,
         DvectorTensorDotProduct(X, u, W);
 
         a = DVectorDVectorDotProd(u, u);
+        if (a <= EPSILON) { printf("UPLS PC %zu: dot_u too small\n", pc); goto next_pc; }
 
         for(i = 0; i < W->row; i++){
           for(j = 0; j < W->col; j++){
@@ -345,7 +343,7 @@ void UPLS(tensor* X_,
         }
 
 
-        /*step 4: W = W / ||W|| */
+        /*step 4: W = W / ||W|| normalize W to 1 */
         MatrixNorm(W, W);
 
         #ifdef DEBUG
@@ -355,24 +353,13 @@ void UPLS(tensor* X_,
 
         /* step 5:
         * step 5: NIPALS shunt in order to decompose W into say sr'
-        *
-        *    step 5.1: s-start is the largest column in W
-        *    for h = 0 to h = 2 do
-        *
-        *    step 5.1: r' = s'W/s's
-        *
-        *    step 5.2: r = r / ||r||   normalize r to 1
-        *
-        *    step 5.3: s = Wr
-        *
-        *    step 5.4: if h < 2 then bac to step 5.1 else stop and set W = sr'
         */
 
         #ifdef DEBUG
         puts("Nipals SHUNT");
         #endif
-        NewDVector(&r, W->col);
-        NewDVector(&s, W->row);
+        NewDVector(&sh_r, W->col);
+        NewDVector(&sh_s, W->row);
 
         /*s-start is the larget column in W*/
         initDVector(&colvar);
@@ -396,48 +383,49 @@ void UPLS(tensor* X_,
 
         /*copy the best column vector from P to u*/
         for(i = 0; i < W->row; i++){
-          setDVectorValue(s, i, getMatrixValue(W, i, j));
+          setDVectorValue(sh_s, i, getMatrixValue(W, i, j));
         }
 
         #ifdef DEBUG
         puts("S-start");
-        PrintDVector(s);
+        PrintDVector(sh_s);
         puts("........");
         #endif
 
-        for(i = 0; i < 2; i++){ /* for the simplest case */
+        for(size_t h = 0; h < 2; h++){ /* for the simplest case */
           /*  r' = s'W/s's  */
-          DVectorSet(r, 0.f);
-          DVectorMatrixDotProduct(W, s, r);
-          a = DVectorDVectorDotProd(s, s);
+          DVectorSet(sh_r, 0.f);
+          DVectorMatrixDotProduct(W, sh_s, sh_r);
+          a = DVectorDVectorDotProd(sh_s, sh_s);
+          if (a <= EPSILON) break;
 
-          for(j = 0; j < r->size; j++){
-            setDVectorValue(r, j, getDVectorValue(r, j) / a);
+          for(j = 0; j < sh_r->size; j++){
+            setDVectorValue(sh_r, j, getDVectorValue(sh_r, j) / a);
           }
 
           /*||r|| = 1; */
-          DVectNorm(r, r);
+          DVectNorm(sh_r, sh_r);
 
           #ifdef DEBUG
           puts("r vector");
-          PrintDVector(r);
+          PrintDVector(sh_r);
           #endif
 
           /*s = Wr */
-          DVectorSet(s, 0.f); /* reset the s vector*/
-          MatrixDVectorDotProduct(W, r, s);
+          DVectorSet(sh_s, 0.f); /* reset the s vector*/
+          MatrixDVectorDotProduct(W, sh_r, sh_s);
 
           #ifdef DEBUG
           puts("s vector");
-          PrintDVector(s);
+          PrintDVector(sh_s);
           #endif
         }
 
         MatrixSet(W, 0.f);
-        RowColOuterProduct(s, r, W);
+        RowColOuterProduct(sh_s, sh_r, W);
 
-        DelDVector(&s);
-        DelDVector(&r);
+        DelDVector(&sh_s);
+        DelDVector(&sh_r);
 
         #ifdef DEBUG
         puts("Recomputed W Loadings Matrix from sr'");
@@ -449,6 +437,7 @@ void UPLS(tensor* X_,
         TensorMatrixDotProduct(X, W, t_new);
 
         a = Matrixnorm(W);
+        if (a <= EPSILON) { printf("UPLS PC %zu: norm_W too small\n", pc); goto next_pc; }
         a = square(a);
 
         for(i = 0; i < t_new->size; i++)
@@ -477,8 +466,7 @@ void UPLS(tensor* X_,
         else if(_isnan_(DVectorDVectorDotProd(t_new, t_new))){
           fprintf(stderr, "UPLS Error! The Solver Engine was Unable to Converge! Please Check your data.\n");
           fflush(stderr);
-          return;
-          /*abort();*/
+          goto next_pc;
         }
         else{
           DVectorCopy(t_new, t_old);
@@ -490,6 +478,7 @@ void UPLS(tensor* X_,
       DvectorTensorDotProduct(Y, t_new, Q);
 
       a = DVectorDVectorDotProd(t_new, t_new);
+      if (a <= EPSILON) goto next_pc;
 
       for(i = 0; i < Q->row; i++)
         for(j = 0; j < Q->col; j++)
@@ -503,6 +492,7 @@ void UPLS(tensor* X_,
       TensorMatrixDotProduct(Y, Q, u);
 
       a = Matrixnorm(Q);
+      if (a <= EPSILON) goto next_pc;
       a = square(a);
 
       for(i = 0; i < u->size; i++)
@@ -517,6 +507,7 @@ void UPLS(tensor* X_,
       DvectorTensorDotProduct(X, t_new, P);
 
       a = DVectorDVectorDotProd(t_new, t_new);
+      if (a <= EPSILON) goto next_pc;
 
       for(i = 0; i < P->row; i++)
         for(j = 0; j < P->col; j++)
@@ -558,6 +549,7 @@ void UPLS(tensor* X_,
       setDVectorValue(xeval, pc, t_sq * p_sq);
 
       /*Reset all*/
+      next_pc:
       MatrixSet(W, 0.f);
       MatrixSet(P, 0.f);
       DVectorSet(t_new, 0.f);
@@ -729,6 +721,16 @@ void UPLSYPredictor(matrix *tscores, UPLSMODEL *m, size_t npc, tensor *py)
   */
   if(npc > tscores->col)
     npc = tscores->col;
+
+  if (m->yloadings->order == 0) {
+      return;
+  }
+
+  if (m->b->size < npc)
+      npc = m->b->size;
+  
+  if (m->yloadings->order < npc)
+      npc = m->yloadings->order;
 
   for(k = 0; k < m->yloadings->m[0]->col; k++){
     AddTensorMatrix(py, tscores->row, m->yloadings->m[0]->row );
@@ -1781,6 +1783,10 @@ size_t UPLSGetPCModelCutOff(tensor *rq2)
   size_t i, j, k, best_pc;
   matrix *rq2mean;
   double tmp_value, best_value;
+
+  if (rq2->order == 0 || rq2->m[0]->col == 0) {
+      return 0;
+  }
 
   NewMatrix(&rq2mean, rq2->order, rq2->m[0]->row);
 
