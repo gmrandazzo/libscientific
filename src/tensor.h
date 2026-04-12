@@ -74,6 +74,11 @@ void AddTensorMatrix(tensor *t, size_t row, size_t col);
 void DelTensor(tensor**t);
 
 /**
+ * Clear a tensor by deleting all its matrices and resetting its order to 0.
+ */
+void ClearTensor(tensor* t);
+
+/**
  * Print to video the tensor.
  */
 void PrintTensor(tensor *t);

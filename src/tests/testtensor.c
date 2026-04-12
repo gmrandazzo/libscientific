@@ -448,6 +448,41 @@ void test1()
 
 }
 
+void test10()
+{
+  puts("Test 10 - Test ClearTensor");
+  tensor *t;
+  NewTensor(&t, 3);
+  NewTensorMatrix(t, 0, 2, 2);
+  NewTensorMatrix(t, 1, 2, 2);
+  NewTensorMatrix(t, 2, 2, 2);
+  
+  if(t->order != 3){
+    puts("ClearTensor initial state ERROR!");
+    abort();
+  }
+
+  ClearTensor(t);
+
+  if(t->order != 0 || t->m != NULL){
+    puts("ClearTensor final state ERROR!");
+    abort();
+  }
+  
+  /* Test clearing an already empty tensor */
+  ClearTensor(t);
+  if(t->order != 0 || t->m != NULL){
+    puts("ClearTensor empty state ERROR!");
+    abort();
+  }
+
+  /* Test clearing a NULL tensor (should handle gracefully) */
+  ClearTensor(NULL);
+
+  puts("Test 10: OK.");
+  free(t); 
+}
+
 int main(void)
 {
   test1();
@@ -460,5 +495,6 @@ int main(void)
   test7();
   test8();
   test9();
+  test10();
   return 0;
 }

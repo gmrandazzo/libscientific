@@ -230,9 +230,15 @@ void UPLS(tensor* X_,
 
     TensorPreprocess(X_, xautoscaling, m->xcolaverage, m->xcolscaling, X);
 
+    if(X->m[0]->col < 1){
+      fprintf(stderr, "Unable to run UPLS Calculation.\n The number of independent variables (X) is 0\n");
+      return;
+    }
+
     if(npc > X->m[0]->col)
       npc = X->m[0]->col;
 
+    ClearTensor(m->recalculated_y);
 
     ssx = 0.f;
     for(k = 0; k < X->order; k++)

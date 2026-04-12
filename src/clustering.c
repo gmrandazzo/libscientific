@@ -1993,8 +1993,7 @@ void HierarchicalClustering(matrix* _m,
   
   /* Array to map Tree Node ID (0..2n-2) to Final Cluster ID (1..nclusters) */
   /* Initialize leaves with 0 */
-  int *membership = xmalloc(sizeof(int) * (2*n));
-  for(i=0; i<2*n; i++) membership[i] = 0;
+  int *membership = xcalloc(2 * n, sizeof(int));
   
   /* The last merge created node (2n-2).
      Iterate backwards from the last merge.
@@ -2019,12 +2018,11 @@ void HierarchicalClustering(matrix* _m,
      The children of these top nodes that are NOT in the top set are the roots of our final clusters.
   */
   
-  int *is_cluster_root = xmalloc(sizeof(int) * (2*n));
-  memset(is_cluster_root, 0, sizeof(int) * (2*n));
+  int *is_cluster_root = xcalloc(2 * n, sizeof(int));
   
   /* Valid active nodes at the cut level */
   /* Root is valid */
-  is_cluster_root[2*n - 2] = 1;
+  is_cluster_root[2 * n - 2] = 1;
   
   /* We need to perform (nclusters - 1) splits to get nclusters */
   /* We iterate k from n-2 down to n-nclusters.
@@ -2094,11 +2092,11 @@ void HierarchicalClustering(matrix* _m,
          We maintain an array of strings for each active node.
          Only create them if dendogram != NULL.
       */
-      char **node_names = xmalloc(sizeof(char*) * (2*n));
+      char **node_names = xcalloc(2 * n, sizeof(char*));
       for(i=0; i<n; i++) {
-          size_t len = snprintf(NULL, 0, "%zu", i);
-          node_names[i] = xmalloc(len + 2);
-          snprintf(node_names[i], len + 2, "%zu;", i); /* Original appended ';' */
+          size_t len = snprintf(NULL, 0, "%zu;", i);
+          node_names[i] = xmalloc(len + 1);
+          snprintf(node_names[i], len + 1, "%zu;", i); /* Original appended ';' */
       }
       
       for(k=0; k<n-1; k++) {
@@ -2108,11 +2106,9 @@ void HierarchicalClustering(matrix* _m,
           
           /* Combine names */
           /* Name = "LeftNameRightName" (Original logic did simple concat) */
-          size_t len_l = strlen(node_names[left]);
-          size_t len_r = strlen(node_names[right]);
-          node_names[new_id] = xmalloc(len_l + len_r + 1);
-          strcpy(node_names[new_id], node_names[left]);
-          strcat(node_names[new_id], node_names[right]);
+          size_t len = snprintf(NULL, 0, "%s%s", node_names[left], node_names[right]);
+          node_names[new_id] = xmalloc(len + 1);
+          snprintf(node_names[new_id], len + 1, "%s%s", node_names[left], node_names[right]);
           
           /* Add to dendogram vector */
           /* Format: Name + Distance */

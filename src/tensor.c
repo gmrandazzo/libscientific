@@ -88,6 +88,20 @@ void DelTensor(tensor** t)
   free((*t));
 }
 
+void ClearTensor(tensor* t)
+{
+  size_t i;
+  if(t != NULL){
+    if(t->order > 0){
+      for(i = 0; i < t->order; i++)
+        DelMatrix(&t->m[i]);
+      xfree(t->m);
+      t->m = NULL;
+      t->order = 0;
+    }
+  }
+}
+
 
 void PrintTensor(tensor *t)
 {

@@ -451,8 +451,15 @@ void PLS(matrix *mx, matrix *my, size_t nlv, int xautoscaling, int yautoscaling,
     double ssx;
 
     if(mx->row == my->row){
+      if(mx->col < 1){
+        fprintf(stderr, "Unable to run PLS Calculation.\n The number of independent variables (X) is 0\n");
+        return;
+      }
+
       if(nlv > mx->col) /* if the number of principal component selected is major of the permitted */
         nlv = mx->col;
+
+      ResizeMatrix(model->recalculated_y, my->row, 0);
 
       NewMatrix(&X, mx->row, mx->col);
       MatrixPreprocess(mx, xautoscaling, model->xcolaverage, model->xcolscaling, X);
