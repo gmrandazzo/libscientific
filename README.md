@@ -4,8 +4,8 @@
 [![Licence: GPL v3](https://img.shields.io/github/license/gmrandazzo/libscientific)](https://github.com/gmrandazzo/libscientific/blob/master/LICENSE)
 [![Pylint](https://github.com/gmrandazzo/libscientific/actions/workflows/pylint.yml/badge.svg)](https://github.com/gmrandazzo/libscientific/actions/workflows/pylint.yml)
 [![Pytest](https://github.com/gmrandazzo/libscientific/actions/workflows/pytest.yml/badge.svg)](https://github.com/gmrandazzo/libscientific/actions/workflows/pytest.yml)
-[![Coverage](https://sonarqube.gmrandazzo.com/api/project_badges/measure?project=libscientific&metric=coverage&token=sqb_426f9a683b14ac981c8e32a1782672fc11c1a789)](https://sonarqube.gmrandazzo.com/dashboard?id=libscientific)
-[![Maintainability Rating](https://sonarqube.gmrandazzo.com/api/project_badges/measure?project=libscientific&metric=sqale_rating&token=sqb_426f9a683b14ac981c8e32a1782672fc11c1a789)](https://sonarqube.gmrandazzo.com/dashboard?id=libscientific)
+[![Coverage](https://sonarqube.gmrandazzo.com/api/project_badges/measure?project=libscientific&metric=coverage&token=sqb_f37b38679864cfa4294f7efa1f2509a46e00cee2)](https://sonarqube.gmrandazzo.com/dashboard?id=libscientific)
+[![Maintainability Rating](https://sonarqube.gmrandazzo.com/api/project_badges/measure?project=libscientific&metric=software_quality_maintainability_rating&token=sqb_f37b38679864cfa4294f7efa1f2509a46e00cee2)](https://sonarqube.gmrandazzo.com/dashboard?id=libscientific)
 
 `libscientific` is a lightweight C framework for multivariate statistical analysis and numerical computing. Designed for high performance and portability, it is independent of most standard calculus libraries, making it ideal for both research environments and resource-constrained embedded systems.
 
