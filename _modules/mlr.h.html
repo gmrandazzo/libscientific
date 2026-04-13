@@ -1,25 +1,21 @@
-
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>mlr.h &#8212; libscientific 1.5.1 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=2bf1fcf8" />
     
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/documentation_options.js?v=44dfd65d"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -39,23 +35,22 @@
           <div class="body" role="main">
             
   <h1>Source code for mlr.h</h1><div class="highlight"><pre>
-<span></span><span class="cm">/* mlr.h</span>
-<span class="cm">*</span>
-<span class="cm">* Copyright (C) &lt;2016&gt;  Giuseppe Marco Randazzo</span>
-<span class="cm">*</span>
-<span class="cm">* This program is free software: you can redistribute it and/or modify</span>
-<span class="cm">* it under the terms of the GNU General Public License as published by</span>
-<span class="cm">* the Free Software Foundation, either version 3 of the License, or</span>
-<span class="cm">* (at your option) any later version.</span>
-<span class="cm">*</span>
-<span class="cm">* This program is distributed in the hope that it will be useful,</span>
-<span class="cm">* but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
-<span class="cm">* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
-<span class="cm">* GNU General Public License for more details.</span>
-<span class="cm">*</span>
-<span class="cm">* You should have received a copy of the GNU General Public License</span>
-<span class="cm">* along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
-<span class="cm">*/</span>
+<span></span><span class="cm">/* Implements Multiple Linear Regression (MLR).</span>
+<span class="cm"> * Copyright (C) 2016-2026 designed, written and maintained by Giuseppe Marco Randazzo &lt;gmrandazzo@gmail.com&gt;</span>
+<span class="cm"> *</span>
+<span class="cm"> * This program is free software: you can redistribute it and/or modify</span>
+<span class="cm"> * it under the terms of the GNU Affero General Public License as published by</span>
+<span class="cm"> * the Free Software Foundation, either version 3 of the License, or</span>
+<span class="cm"> * (at your option) any later version.</span>
+<span class="cm"> *</span>
+<span class="cm"> * This program is distributed in the hope that it will be useful,</span>
+<span class="cm"> * but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="cm"> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the</span>
+<span class="cm"> * GNU Affero General Public License for more details.</span>
+<span class="cm"> *</span>
+<span class="cm"> * You should have received a copy of the GNU Affero General Public License</span>
+<span class="cm"> * along with this program. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
+<span class="cm"> */</span>
 
 <span class="cp">#ifndef MLR_H</span>
 <div class="viewcode-block" id="c.MLR_H"><span class="cp">#define MLR_H</span></div>
@@ -116,7 +111,7 @@
 <span class="kt">void</span><span class="w"> </span><span class="nf">MLR</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">mx</span><span class="p">,</span>
 <span class="w">         </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">my</span><span class="p">,</span>
 <span class="w">         </span><span class="n">MLRMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">model</span><span class="p">,</span>
-<span class="w">         </span><span class="n">ssignal</span><span class="w"> </span><span class="o">*</span><span class="n">s</span><span class="p">);</span></div>
+<span class="w">         </span><span class="n">scisignal</span><span class="w"> </span><span class="o">*</span><span class="n">s</span><span class="p">);</span></div>
 
 <div class="viewcode-block" id="c.MLRPredictY"><a class="viewcode-back" href="../C-API.html#c.MLRPredictY">[docs]</a><span class="cm">/**</span>
 <span class="cm"> * Predict Y targets using a MLR model</span>
@@ -173,9 +168,9 @@
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
@@ -183,13 +178,13 @@
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
+</search>
 <script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -203,8 +198,8 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2011, Giuseppe Marco Randazzo.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    &#169; Copyright 2011, Giuseppe Marco Randazzo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     </div>
   </body>
 </html>

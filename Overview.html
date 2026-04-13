@@ -1,28 +1,24 @@
-
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="./">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>What is libscientific? &#8212; libscientific 1.5.1 documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css?v=2bf1fcf8" />
     
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="_static/doctools.js"></script>
-    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/documentation_options.js?v=44dfd65d"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Install" href="Install.html" />
     <link rel="prev" title="The libscientific documentation" href="index.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -48,7 +44,7 @@
           <div class="body" role="main">
             
   <section id="what-is-libscientific">
-<h1>What is libscientific?<a class="headerlink" href="#what-is-libscientific" title="Permalink to this heading">¶</a></h1>
+<h1>What is libscientific?<a class="headerlink" href="#what-is-libscientific" title="Link to this heading">¶</a></h1>
 <p>Libscientific aims to do numerical/multivariate and statistical analysis.
 The library is written in C language for almost all the computations except
 for a few methods such as the singular value decomposition (SVD) and
@@ -56,22 +52,27 @@ the eigenvector/eigenvalue transformation from a third-party library, the Lapack
 It requires two dependencies: CMake and a c/fortran compiler
 and supports Windows, Linux, macOS, and embedded systems.
 Python bindings are available using ctypes to avoid dependencies.
-The library is distributed under GPLv3 license allowing it
-to be used for public and commercial purposes.</p>
+The library is distributed under GPLv3 license.</p>
+<p>The project has been published in the Journal of Open Source Software (JOSS):
+<a class="reference external" href="https://doi.org/10.21105/joss.05420">Randazzo, (2023). libscientific: A C framework for multivariate and statistical analysis. Journal of Open Source Software, 8(90), 5420</a>.</p>
 <p>The significant advantage of libscientific is that it does not require dependencies
 unless a c/fortran compiler and CMake. Moreover, the size of the library is under 1.5MB.
 Libscientific also has been tested with old computers.</p>
 <section id="what-can-i-do-with-libscientific">
-<h2>What can I do with libscientific?<a class="headerlink" href="#what-can-i-do-with-libscientific" title="Permalink to this heading">¶</a></h2>
+<h2>What can I do with libscientific?<a class="headerlink" href="#what-can-i-do-with-libscientific" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><dl class="simple">
 <dt>Multivariate analysis:</dt><dd><ul>
 <li><p>Principal Component Analysis using the NIPALS algorithm</p></li>
 <li><p>Partial Least Squares (PLS) using the NIPALS algorithm (Regression and Classification)</p></li>
+<li><p>Consensus PCA (CPCA) for multi-block data analysis</p></li>
+<li><p>Independent Component Analysis (ICA)</p></li>
 <li><p>Multiple Linear Regression (MLR) using the Ordinary Least Squares algorithm</p></li>
 <li><p>Linear Discriminant Analysis (LDA) using the Fisher algorithm</p></li>
-<li><p>Multi-waw unfolding PCA (UPCA) using the S. Wold, P. Geladi and K. Esbensen algorithm</p></li>
+<li><p>Multi-way unfolding PCA (UPCA) using the S. Wold, P. Geladi and K. Esbensen algorithm</p></li>
 <li><p>Multi-way unfolding PLS (UPLS) using the S. Wold, P. Geladi and K. Esbensen algorithm</p></li>
+<li><p>Variable Importance in Projection (VIP) scores</p></li>
+<li><p>Contributions plot calculation for model interpretation</p></li>
 </ul>
 </dd>
 </dl>
@@ -98,6 +99,7 @@ Libscientific also has been tested with old computers.</p>
 <li><p>R squared (R^2)</p></li>
 <li><p>Mean absolute error (MAE)</p></li>
 <li><p>Mean squared error (MSE)</p></li>
+<li><p>Robust Mean Squared Error using Blue’s algorithm</p></li>
 <li><p>Root mean squared error (RMSE)</p></li>
 <li><p>Bias estimation (BIAS)</p></li>
 <li><p>Sensitivity binary classification test</p></li>
@@ -178,21 +180,21 @@ Libscientific also has been tested with old computers.</p>
 </ul>
 </section>
 <section id="history">
-<h2>History<a class="headerlink" href="#history" title="Permalink to this heading">¶</a></h2>
+<h2>History<a class="headerlink" href="#history" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>2009: Developed and used during my PhD thesis at the Laboratory of chemometrics and cheminformatics at the University of Perugia</p></li>
 <li><p>2016: Open-source the code release under GPLv3. The development still continue under open-source licence</p></li>
 </ul>
 </section>
 <section id="integration-with-other-open-source-projects">
-<h2>Integration with other open-source projects<a class="headerlink" href="#integration-with-other-open-source-projects" title="Permalink to this heading">¶</a></h2>
+<h2>Integration with other open-source projects<a class="headerlink" href="#integration-with-other-open-source-projects" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>Libscientific is the engine of <a class="reference external" href="https://github.com/gmrandazzo/QStudioMetrics">QStudioMetrics</a>, a software to develop easy multivariate analysis</p></li>
 <li><p><a class="reference external" href="https://github.com/gmrandazzo/MolecularFramework">MolecularFramework</a> a c/c++ cheminformatic library to analyze 3D molecules and develop process 3D information for model development</p></li>
 </ul>
 </section>
 <section id="licensing">
-<h2>Licensing<a class="headerlink" href="#licensing" title="Permalink to this heading">¶</a></h2>
+<h2>Licensing<a class="headerlink" href="#licensing" title="Link to this heading">¶</a></h2>
 <p>This documentation is copiright (C) 2011-2020 by Giuseppe Marco Randazzo</p>
 <p>This work is licensed under the Creative Commons Attribution-ShareAlike 4.0 License. To view a copy of this license, visit <a class="reference external" href="http://creativecommons.org/licenses/by-sa/4.0/">http://creativecommons.org/licenses/by-sa/4.0/</a> or send a letter to Creative Commons, 543 Howard Street, 5th Floor, San Francisco, California, 94105, USA.</p>
 </section>
@@ -203,7 +205,7 @@ Libscientific also has been tested with old computers.</p>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
   <div>
     <h3><a href="index.html">Table of Contents</a></h3>
@@ -235,7 +237,7 @@ Libscientific also has been tested with old computers.</p>
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
@@ -243,13 +245,13 @@ Libscientific also has been tested with old computers.</p>
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
+</search>
 <script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -269,8 +271,8 @@ Libscientific also has been tested with old computers.</p>
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2011, Giuseppe Marco Randazzo.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    &#169; Copyright 2011, Giuseppe Marco Randazzo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     </div>
   </body>
 </html>

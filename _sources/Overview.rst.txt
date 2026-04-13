@@ -14,8 +14,10 @@ the eigenvector/eigenvalue transformation from a third-party library, the Lapack
 It requires two dependencies: CMake and a c/fortran compiler
 and supports Windows, Linux, macOS, and embedded systems.
 Python bindings are available using ctypes to avoid dependencies.
-The library is distributed under GPLv3 license allowing it
-to be used for public and commercial purposes.
+The library is distributed under GPLv3 license.
+
+The project has been published in the Journal of Open Source Software (JOSS): 
+`Randazzo, (2023). libscientific: A C framework for multivariate and statistical analysis. Journal of Open Source Software, 8(90), 5420 <https://doi.org/10.21105/joss.05420>`_.
 
 The significant advantage of libscientific is that it does not require dependencies
 unless a c/fortran compiler and CMake. Moreover, the size of the library is under 1.5MB.
@@ -28,10 +30,14 @@ What can I do with libscientific?
 * Multivariate analysis:
         * Principal Component Analysis using the NIPALS algorithm
         * Partial Least Squares (PLS) using the NIPALS algorithm (Regression and Classification)
+        * Consensus PCA (CPCA) for multi-block data analysis
+        * Independent Component Analysis (ICA)
         * Multiple Linear Regression (MLR) using the Ordinary Least Squares algorithm
         * Linear Discriminant Analysis (LDA) using the Fisher algorithm
-        * Multi-waw unfolding PCA (UPCA) using the S. Wold, P. Geladi and K. Esbensen algorithm
+        * Multi-way unfolding PCA (UPCA) using the S. Wold, P. Geladi and K. Esbensen algorithm
         * Multi-way unfolding PLS (UPLS) using the S. Wold, P. Geladi and K. Esbensen algorithm
+        * Variable Importance in Projection (VIP) scores
+        * Contributions plot calculation for model interpretation
 
 * Matrix/Vector/Tensor computations:
         * Matrix/Vector and Vector/Matrix dot product
@@ -50,6 +56,7 @@ What can I do with libscientific?
         * R squared (R^2)
         * Mean absolute error (MAE)
         * Mean squared error (MSE)
+        * Robust Mean Squared Error using Blue's algorithm
         * Root mean squared error (RMSE)
         * Bias estimation (BIAS)
         * Sensitivity binary classification test
