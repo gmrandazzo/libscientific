@@ -111,14 +111,14 @@ def pls_algorithm(x_input,
     nlv = kwargs["nlv"]
     x_scaling = kwargs["x_scaling"]
     y_scaling = kwargs["y_scaling"]
-    ssignal = ctypes.c_int(0)
+    scisignal = ctypes.c_int(0)
     lsci.PLS(x_input,
              y_input,
              nlv,
              x_scaling,
              y_scaling,
              mpls,
-             ctypes.pointer(ssignal))
+             ctypes.pointer(scisignal))
 
 lsci.PLSBetasCoeff.argtypes = [ctypes.POINTER(PLSMODEL),
                                ctypes.c_size_t,

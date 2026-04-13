@@ -1,20 +1,19 @@
-/* matrix.c
-*
-* Copyright (C) <2016>  Giuseppe Marco Randazzo
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+/* Defines the matrix data structure and linear algebra operations.
+ * Copyright (C) 2016-2026 designed, written and maintained by Giuseppe Marco Randazzo <gmrandazzo@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #include "matrix.h"
 #include <stdio.h>
@@ -81,8 +80,7 @@ void  ResizeMatrix(matrix *m, size_t row_, size_t col_)
     }
   }
   else{
-    fprintf(stdout,"Error: Unable to resize matrix! The matrix is not allocated with initMatrix.\n");
-    fflush(stdout);
+    fprintf(stderr, "Error: Unable to resize matrix! The matrix is not allocated with initMatrix.\n");
   }
 }
 
@@ -94,6 +92,7 @@ void DelMatrix(matrix **m)
       xfree((*m)->data[i]);
     xfree((*m)->data);
     xfree((*m));
+    (*m) = NULL;
   }
 }
 
@@ -127,7 +126,7 @@ void PrintMatrix(matrix *m)
 {
   size_t i;
   size_t j;
-  printf("Matrix of row: %u; col: %u\n", (unsigned int)m->row, (unsigned int)m->col);
+  printf("Matrix of row: %zu; col: %zu\n", m->row, m->col);
   for(i = 0; i < m->row; i++){
     for(j = 0; j < m->col; j++)
       printf("%8.3f\t", m->data[i][j]);
@@ -144,8 +143,6 @@ int ValInMatrix(matrix* m, double val)
     for(j = 0; j < m->col; j++){
       if(FLOAT_EQ(m->data[i][j], val, 1*10e-8))
         return 1;
-      else
-        continue;
     }
   }
   return 0;
@@ -1010,10 +1007,28 @@ void MatrixLUInversion(matrix *m, matrix *m_inv)
     }
   }
   dgetrf_(&N,&N,M,&N,IPIV,&INFO);
+
+  if (INFO < 0) {
+    fprintf(stderr, "MatrixLUInversion Error: dgetrf_ illegal argument %d\n", -INFO);
+    xfree(M); xfree(IPIV); xfree(WORK);
+    abort();
+  } else if (INFO > 0) {
+      fprintf(stderr, "MatrixLUInversion Error: Matrix is singular, U(%d,%d) is zero in dgetrf_.\n", INFO, INFO);
+      xfree(M); xfree(IPIV); xfree(WORK);
+      abort();
+  }
+
   dgetri_(&N,M,&N,IPIV,WORK,&LWORK,&INFO);
 
-  xfree(IPIV);
-  xfree(WORK);
+  if (INFO < 0) {
+    fprintf(stderr, "MatrixLUInversion Error: dgetri_ illegal argument %d\n", -INFO);
+    xfree(M); xfree(IPIV); xfree(WORK);
+    abort();
+  } else if (INFO > 0) {
+    fprintf(stderr, "MatrixLUInversion Error: Matrix is singular, U(%d,%d) is zero in dgetri_ (should have been caught by dgetrf_).\n", INFO, INFO);
+    xfree(M); xfree(IPIV); xfree(WORK);
+    abort();
+  }
 
   ResizeMatrix(m_inv, m->row, m->col);
   k = 0;
@@ -1023,6 +1038,8 @@ void MatrixLUInversion(matrix *m, matrix *m_inv)
       k++;
     }
   }
+  xfree(IPIV);
+  xfree(WORK);
   xfree(M);
 }
 
@@ -2127,18 +2144,19 @@ void SVDlapack(matrix *m_, matrix *u, matrix *s, matrix *vt)
   }
 
   /* dgesdd_ implementation */
-  int iwork[8*n];
+  int mn = (m < n) ? m : n;
+  int *iwork = (int*)xmalloc(sizeof(int) * 8 * mn);
   lwork = -1;
   /* U * SIGMA * V^H */
-  dgesdd_( "Singular vectors", &m, &n, a, &lda, s_, u_, &ldu, vt_, &ldvt, &wkopt, &lwork, iwork, &info );
+  dgesdd_( "S", &m, &n, a, &lda, s_, u_, &ldu, vt_, &ldvt, &wkopt, &lwork, iwork, &info );
   lwork = (int)wkopt;
-  work = (double*)malloc( lwork*sizeof(double) );
+  work = (double*)xmalloc( lwork*sizeof(double) );
   /* Compute SVD */
-  dgesdd_( "Singular vectors", &m, &n, a, &lda, s_, u_, &ldu, vt_, &ldvt, work, &lwork, iwork, &info );
+  dgesdd_( "S", &m, &n, a, &lda, s_, u_, &ldu, vt_, &ldvt, work, &lwork, iwork, &info );
 
   if(info > 0) {
-    printf("SVD convergence failed!\n" );
-    return;
+    fprintf(stderr, "SVD convergence failed (info=%d)\n", info);
+    goto cleanup;
   }
 
   /* s are the eigenvectors singular values diagonal matrix*/
@@ -2152,11 +2170,13 @@ void SVDlapack(matrix *m_, matrix *u, matrix *s, matrix *vt)
   /*vt is the right singular vectors */
   conv2matrix(m, n, vt_, ldvt, vt);
   /* Free workspace */
+cleanup:
   xfree(work);
   xfree(a);
   xfree(s_);
   xfree(vt_);
   xfree(u_);
+  xfree(iwork);
 }
 
 void print_eigenvalues( char* desc, int n, double* wr, double* wi ) {
@@ -2224,9 +2244,10 @@ void EVectEval(matrix *m, dvector *eval, matrix *evect)
 
   double *a = xmalloc(sizeof(double)*N*LDA);
 
+  /* pack m into column-major order expected by LAPACK */
   k = 0;
-  for(i = 0; i < m->row; i++){
-    for(j = 0; j < m->col; j++){
+  for(j = 0; j < m->col; j++){
+    for(i = 0; i < m->row; i++){
       a[k] = m->data[i][j];
       k++;
     }

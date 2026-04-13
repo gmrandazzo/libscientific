@@ -1,20 +1,19 @@
-/* upca.h
-*
-* Copyright (C) <2016>  Giuseppe Marco Randazzo
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+/* Implements UPCA algorithms.
+ * Copyright (C) 2016-2026 designed, written and maintained by Giuseppe Marco Randazzo <gmrandazzo@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #ifndef UPCA_H
 #define UPCA_H
@@ -63,7 +62,7 @@ int CheckTensor(tensor *X);
  * @param [in] npc number of desired principal components
  * @param [in] autoscaling
  * @param [out] m initialized model using NewUPCAModel(...). The datastructure will be populated with results
- * @param [in] ssignal libscientific signal. Default value is NULL
+ * @param [in] scisignal libscientific signal. Default value is NULL
  * 
  * Available scalings:
  *
@@ -84,7 +83,7 @@ void UPCA(tensor *X,
           size_t npc,
           size_t autoscaling,
           UPCAMODEL *m,
-          ssignal *s);
+          scisignal *s);
 
 /**
  *  Predict scores given an unfolded principal component analysis and a tensor as input. 

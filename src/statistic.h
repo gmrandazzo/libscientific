@@ -1,26 +1,41 @@
-/* statistic.h
-*
-* Copyright (C) <2016>  Giuseppe Marco Randazzo
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+/* Provides statistical functions and metrics.
+ * Copyright (C) 2016-2026 designed, written and maintained by Giuseppe Marco Randazzo <gmrandazzo@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #ifndef STATISTIC_H
 #define STATISTIC_H
 
 #include "matrix.h"
 #include "vector.h"
+
+/**
+ * Calculate the Variance Expressed for each component
+ *
+ * @param [in] total_ss Total Sum of Squares
+ * @param [in] eval Eigenvalues or Variance of each component
+ * @param [out] varexp Output vector of percentages
+ */
+void calcVarExpressed(double total_ss, dvector *eval, dvector *varexp);
+
+/**
+ * Calculate R^2 as the square of the Pearson correlation coefficient.
+ * This is appropriate for models with or without intercept, 
+ * but ignores bias in predicted values.
+ */
+double R2_deprecated(dvector *ytrue, dvector *ypred);
 
 /*
  * ytrue = True values
@@ -40,6 +55,16 @@ double MAE(dvector *ytrue, dvector *ypred);
  * ytrue = True values
  * ypred = Predicted values
  *
+ */
+double MSE_deprecated(dvector *ytrue, dvector *ypred);
+
+/**
+ * @brief Calculate the mean squared error using the Blue's algorithm to avoid overflow and underflow.
+ * Reference: Blue (1978) ACM Transactions on Mathematical Software 4, 15-23.
+ *
+ * @param [in] ytrue True values
+ * @param [in] ypred Predicted values
+ * @return double MSE
  */
 double MSE(dvector *ytrue, dvector *ypred);
 

@@ -1,8 +1,26 @@
+/* Unit tests for the statistic module.
+ * Copyright (C) 2023-2026 designed, written and maintained by Giuseppe Marco Randazzo <gmrandazzo@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 #include <stdio.h>
 #include <math.h>
 #include "numeric.h"
 #include "statistic.h"
 #include <time.h>
+#include <float.h>
 
 /*
  * 
@@ -10,6 +28,72 @@ void MatrixCode(matrix *inmx, matrix *outmx);
 void BifactorialMatrixExpansion(matrix* inmx, matrix* outmx);
 void YatesVarEffect(matrix *mx, dvector *veff);
 */
+
+void test3()
+{
+  puts("Test3: MSE_blue robustness");
+  dvector *ytrue;
+  dvector *ypred;
+  NewDVector(&ytrue, 2);
+  NewDVector(&ypred, 2);
+
+  /* Case 1: Large values that would overflow if summed normally but average fits */
+  /* x = 1.5e154, x^2 = 2.25e308 (> DBL_MAX ~1.79e308)
+     But (x^2 + 0) / 2 = 1.125e308 (< DBL_MAX)
+  */
+  ytrue->data[0] = 0.0;
+  ypred->data[0] = 1.5e154; 
+  ytrue->data[1] = 0.0;
+  ypred->data[1] = 0.0;
+
+  double m_blue = MSE(ytrue, ypred);
+  double m_normal = MSE_deprecated(ytrue, ypred);
+
+  printf("Large values - Blue: %e, Normal: %e\n", m_blue, m_normal);
+
+  if (isinf(m_normal)) {
+      printf("Normal MSE overflowed as expected.\n");
+  }
+  else {
+      printf("Normal MSE DID NOT overflow (check DBL_MAX: %e)\n", DBL_MAX);
+  }
+
+  if (!isinf(m_blue) && m_blue > 0) {
+      printf("MSE BLUE robustness (large) OK!\n");
+  }
+  else {
+      printf("MSE BLUE robustness (large) ERROR!\n");
+      abort();
+  }
+
+  /* Case 2: Extremely small values that would underflow to zero if squared normally */
+  /* x = 1.0e-160, x^2 = 1.0e-320 (subnormal) */
+  ytrue->data[0] = 0.0;
+  ypred->data[0] = 1.0e-160;
+  ytrue->data[1] = 0.0;
+  ypred->data[1] = 1.0e-160;
+
+  m_blue = MSE(ytrue, ypred);
+  m_normal = MSE_deprecated(ytrue, ypred);
+
+  printf("Small values - Blue: %e, Normal: %e\n", m_blue, m_normal);
+
+  /* Note: on many systems m_normal might still be subnormal at 1e-320. 
+     Blue's algorithm is more about preventing intermediate underflow 
+     when many small values are summed. */
+
+  if (m_blue > 0 && m_blue < 1e-300) {
+      printf("MSE BLUE robustness (small) OK!\n");
+  }
+  else {
+      printf("MSE BLUE robustness (small) ERROR!\n");
+      abort();
+  }
+
+  DelDVector(&ytrue);
+  DelDVector(&ypred);
+}
+
 
 void test2()
 {
@@ -43,24 +127,46 @@ void test2()
   ypred->data[9] = 0.857753138117355;
   ypred->data[10] = MISSING;
 
-  if(FLOAT_EQ(R2(ytrue, ypred), 0.9375711069105384, 1e-12)){
-    printf("R2 OK!\n");
-  }else{
+  if(FLOAT_EQ(R2(ytrue, ypred), 0.9760005506085202, 1e-12)){
+    printf("R2 (correlation squared) OK!\n");
+  }
+  else{
     printf("R2 ERROR!\n");
+    printf("Expected: 0.9760005506085202, Got: %.16f\n", R2(ytrue, ypred));
+    abort();
+  }
+
+  if(FLOAT_EQ(R2_deprecated(ytrue, ypred), 0.9950358893726656, 1e-12)){
+    printf("R2_deprecated (uncentered) OK!\n");
+  }
+  else{
+    printf("R2_deprecated ERROR!\n");
+    printf("Expected: 0.9950358893726656, Got: %.16f\n", R2_deprecated(ytrue, ypred));
+    abort();
+  }
+
+
+  if(FLOAT_EQ(MSE_deprecated(ytrue, ypred), 0.00438450926319716, 1e-12)){
+    printf("MSE_deprecated OK!\n");
+  }
+  else{
+    printf("MSE_deprecated ERROR!\n");
+    
     abort();
   }
 
   if(FLOAT_EQ(MSE(ytrue, ypred), 0.00438450926319716, 1e-12)){
     printf("MSE OK!\n");
-  }else{
+  }
+  else{
     printf("MSE ERROR!\n");
-    
     abort();
   }
 
   if(FLOAT_EQ(MAE(ytrue, ypred), 0.0603173534922268, 1e-12)){
     printf("MAE OK!\n");
-  }else{
+  }
+  else{
     printf("MAE ERROR!\n");
     
     abort();
@@ -68,7 +174,8 @@ void test2()
 
   if(FLOAT_EQ(BIAS(ytrue, ypred), 0.0700982284901095, 1e-12)){
     printf("BIAS OK!\n");
-  }else{
+  }
+  else{
     printf("BIAS ERROR!\n");
     printf("%f\n", BIAS(ytrue, ypred));
     abort();
@@ -122,7 +229,8 @@ void test1()
   PrintMatrix(roc);
   if(FLOAT_EQ(auc, 0.904762, 1e-6)){
     printf("AUC OK!\n");
-  }else{
+  }
+  else{
     printf("AUC ERROR!\n");
   }
   printf("AUC: %f\n", auc);
@@ -133,7 +241,8 @@ void test1()
 
   if(FLOAT_EQ(ap, 0.900425, 1e-6)){
     printf("AVERAGE PRECISION-RECALL OK!\n");
-  }else{
+  }
+  else{
     printf("AVERAGE PRECISION-RECALL ERROR!\n");
   }
   printf("AVERAGE PRECISION-RECALL: %f\n", ap);
@@ -177,9 +286,9 @@ void test1()
   DelDVector(&y_score);
 }
 
-
 int main(void)
 {
   test1();
   test2();
+  test3();
 }

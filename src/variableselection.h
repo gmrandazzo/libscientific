@@ -1,3 +1,20 @@
+/* Implements variable selection algorithms.
+ * Copyright (C) 2018-2026 designed, written and maintained by Giuseppe Marco Randazzo <gmrandazzo@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 
 /* Variable Selection using the Particle Swarm Optimization algorithm
  *
@@ -14,7 +31,7 @@
 void PSLPSOVariableSelection(matrix *mx, matrix *my, matrix *px, matrix *py,
                        size_t xautoscaling, size_t yautoscaling, size_t nlv, int validation_type, size_t ngroup, size_t niter,
                        size_t population_size, double randomness,
-                       uivector **varselected, matrix **map, uivector **vardistribution, size_t nthreads, ssignal *s);
+                       uivector **varselected, matrix **map, uivector **vardistribution, size_t nthreads, scisignal *s);
 
 /*
  * Variable selection using the Genetic Algorithm
@@ -37,7 +54,7 @@ void PSLPSOVariableSelection(matrix *mx, matrix *my, matrix *px, matrix *py,
 void PLSGAVariableSelection(matrix *mx, matrix *my, matrix *px, matrix *py,
                        size_t xautoscaling, size_t yautoscaling, size_t nlv, int validation_type, size_t ngroup, size_t niter,
                        size_t population_size, double fraction_of_population, double mutation_rate, size_t crossovertype, double nswapping, double populationconvergence,
-                       uivector **varselected, matrix **map, uivector **vardistribution, size_t nthreads, ssignal *s);
+                       uivector **varselected, matrix **map, uivector **vardistribution, size_t nthreads, scisignal *s);
 
 /* Variable selection using the Spearmann correlation coefficient
  * Input
@@ -59,4 +76,4 @@ void PLSSpearmannVariableSelection(matrix *mx, matrix *my, matrix *px, matrix *p
                                    size_t xautoscaling, size_t yautoscaling, size_t nlv, int validation_type,
                                    size_t ngroup, size_t niter,
                                    double threshold,
-                                   uivector **varselected, matrix **map, uivector **vardistribution, size_t nthreads, ssignal *s);
+                                   uivector **varselected, matrix **map, uivector **vardistribution, size_t nthreads, scisignal *s);

@@ -1,9 +1,17 @@
 cmake_minimum_required(VERSION 3.17)
 project(libscientific LANGUAGES C)
+
+if(POLICY CMP0145)
+  cmake_policy(SET CMP0145 OLD)
+endif()
+if(POLICY CMP0144)
+  cmake_policy(SET CMP0144 OLD)
+endif()
+
 set(AUTHOR "Giuseppe Marco Randazzo")
 set(VERSION_MAJOR 1)
-set(VERSION_MINOR 6)
-set(VERSION_PATCH 1)
+set(VERSION_MINOR 7)
+set(VERSION_PATCH 0)
 configure_file(src/scientificconfig.h.in scientificconfig.h)
 
 if(NOT CMAKE_BUILD_TYPE)
@@ -68,10 +76,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
 message(STATUS "Build Type: ${CMAKE_BUILD_TYPE}")
 
 if(cmake_build_type_tolower STREQUAL "debug")
-  include(Dart)
-  if(POLICY CMP0145)
-    cmake_policy(SET CMP0145 OLD)
-  endif()
+  include(CTest)
   enable_testing()
 endif()
 

@@ -1,20 +1,19 @@
-/* pls.c
-*
-* Copyright (C) <2016>  Giuseppe Marco Randazzo
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+/* Implements Partial Least Squares (PLS) regression.
+ * Copyright (C) 2016-2026 designed, written and maintained by Giuseppe Marco Randazzo <gmrandazzo@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #include "memwrapper.h"
 #include "tensor.h"
@@ -107,6 +106,7 @@ void DelPLSModel(PLSMODEL** m)
 
   DelMatrix(&(*m)->yscrambling);
   xfree((*m));
+  (*m) = NULL;
 }
 
 /*
@@ -208,6 +208,7 @@ void LVCalc(matrix *X,
   step = 0;
   #endif
   loop = 0;
+  const size_t max_iter = 1000;
   while(1){
     #ifdef DEBUG
     printf("######### Step %u\n", (unsigned int)step);
@@ -217,7 +218,9 @@ void LVCalc(matrix *X,
     DVectorSet(w_, 0.f); /* Reset the w vector */
     DVectorMatrixDotProduct(X_, u_, w_);
     dot_u = DVectorDVectorDotProd(u_, u_);
-
+    if (dot_u <= EPSILON) {
+      break;
+    }
     for(i = 0; i < w_->size; i++){
       w_->data[i] /= dot_u;
     }
@@ -237,7 +240,9 @@ void LVCalc(matrix *X,
     DVectorSet(t_, 0.f);
     MatrixDVectorDotProduct(X_, w_, t_);
     dot_w = DVectorDVectorDotProd(w_, w_);
-
+    if (dot_w <= EPSILON) {
+      break;
+    }
     for(i = 0; i < t_->size; i++){
       t_->data[i] /= dot_w;
     }
@@ -253,7 +258,9 @@ void LVCalc(matrix *X,
       DVectorSet(q_, 0.f); /* Reset the c vector */
       DVectorMatrixDotProduct(Y_, t_, q_);
       dot_t = DVectorDVectorDotProd(t_, t_);
-
+      if (dot_t <= EPSILON) {
+        break;
+      }
       for(i = 0; i < q_->size; i++){
         q_->data[i] /= dot_t;
       }
@@ -265,7 +272,9 @@ void LVCalc(matrix *X,
       DVectorSet(u_, 0.f);
       MatrixDVectorDotProduct(Y_, q_, u_);
       dot_q = DVectorDVectorDotProd(q_, q_);
-
+      if (dot_q <= EPSILON) {
+        break;
+      }
       for(i = 0; i < u_->size; i++){
         u_->data[i] /= dot_q;
       }
@@ -298,6 +307,9 @@ void LVCalc(matrix *X,
       }
     }
     loop++;
+    if (loop >= max_iter) {
+      break;
+    }
     /* End step 8 */
   }
 
@@ -305,8 +317,14 @@ void LVCalc(matrix *X,
   DVectorMatrixDotProduct(X_, t_, p_);
 
   dot_t = DVectorDVectorDotProd(t_, t_);
-  for(i = 0; i < p_->size; i++){
-    p_->data[i] /= dot_t;
+  if (dot_t > EPSILON) {
+    for(i = 0; i < p_->size; i++){
+      p_->data[i] /= dot_t;
+    }
+  } else {
+    for(i = 0; i < p_->size; i++){
+      p_->data[i] = 0.0;
+    }
   }
 
   #ifdef DEBUG
@@ -332,8 +350,11 @@ void LVCalc(matrix *X,
 
   /* Step 13 Find the Regression Coefficient b:  b = u't/t't */
   dot_t = DVectorDVectorDotProd(t_, t_);
-
-  (*bcoef) = DVectorDVectorDotProd(u_, t_)/dot_t;
+  if (dot_t > EPSILON) {
+    (*bcoef) = DVectorDVectorDotProd(u_, t_) / dot_t;
+  } else {
+    (*bcoef) = 0.0;
+  }
 
   /*End Step 13*/
 
@@ -409,7 +430,7 @@ void LVCalc(matrix *X,
   *
   */
 
-void PLS(matrix *mx, matrix *my, size_t nlv, int xautoscaling, int yautoscaling, PLSMODEL* model, ssignal *s)
+void PLS(matrix *mx, matrix *my, size_t nlv, int xautoscaling, int yautoscaling, PLSMODEL* model, scisignal *s)
 {
   if(nlv >= 1){
     size_t i, j, pc; /* pc = principal component */
@@ -430,8 +451,15 @@ void PLS(matrix *mx, matrix *my, size_t nlv, int xautoscaling, int yautoscaling,
     double ssx;
 
     if(mx->row == my->row){
+      if(mx->col < 1){
+        fprintf(stderr, "Unable to run PLS Calculation.\n The number of independent variables (X) is 0\n");
+        return;
+      }
+
       if(nlv > mx->col) /* if the number of principal component selected is major of the permitted */
         nlv = mx->col;
+
+      ResizeMatrix(model->recalculated_y, my->row, 0);
 
       NewMatrix(&X, mx->row, mx->col);
       MatrixPreprocess(mx, xautoscaling, model->xcolaverage, model->xcolscaling, X);
@@ -720,6 +748,9 @@ void PLSYPredictor(matrix *tscore, PLSMODEL *model, size_t nlv, matrix *y)
 
   if(nlv > tscore->col)
     nlv = tscore->col;
+  
+  if(nlv > model->b->size)
+    nlv = model->b->size;
 
   /*Allocate the y results*/
   ResizeMatrix(y, tscore->row, model->yloadings->row);
@@ -795,6 +826,11 @@ void PLSRegressionStatistics(matrix *my_true,
 
   dvector *yt;
   dvector *yp;
+
+  if (my_true->col == 0) {
+      fprintf(stderr, "Error: my_true matrix has 0 columns in PLSRegressionStatistics\n");
+      return;
+  }
 
   size_t nlv = (size_t) my_pred->col/my_true->col;
   /*Calculate the Q2 and SDEP */
@@ -918,35 +954,59 @@ void PLSDiscriminantAnalysisStatistics(matrix *my_true,
 }
 
 /*
- * VIP: VARIABLE IMPORTANCE
- * VIP are calculated according to the formula:
- * VIP[j][pc] = sqrt(n_predvars * Sum( (b[pc]^2*t[pc]*t^[pc]) * (w[j][pc]/||w[pc]||) ^2 ) / Sum((b[pc]^2*t[pc]*t^[pc])))
+ * VIP: VARIABLE IMPORTANCE IN PROJECTION
+ * VIP scores summarize the influence of individual X variables on the PLS model.
+ * The VIP score for the jth variable is:
+ * VIP_j = sqrt( (J * sum_{f=1}^{F} (w_jf^2 * SSY_f)) / (SSY_total * F) )
+ * where:
+ * - J is the total number of X variables.
+ * - F is the total number of components.
+ * - w_jf is the weight of variable j for component f.
+ * - SSY_f = b_f^2 * t_f' * t_f is the explained Y variance by component f.
+ * - SSY_total = sum(SSY_f) is the total explained Y variance.
  */
 void PLSVIP(PLSMODEL *model, matrix *vip)
 {
-  size_t nlv = model->xscores->col;
-  size_t npred = model->xloadings->row;
-  size_t i, j, k;
-  ResizeMatrix(vip, npred, nlv);
-  for(i = 0; i < nlv; i++){
-    for(j = 0; j < i; j++){
-      double n = 0.f;
-      double d = 0.f;
-      double b = model->b->data[j];
-      dvector *t = getMatrixColumn(model->xscores, i);
-      double dot_t = DVectorDVectorDotProd(t, t);
-      dvector *w = getMatrixColumn(model->xweights, i);
-      double w_mod = DvectorModule(w);
-      for(k = 0; k < npred; k++){
-        /*HIGHLY EXPERIMENTAL! NOT TESTED! MAY NOT WORK!! */
-        n += (b*b*dot_t) * square(w->data[k]/w_mod);
-        d += (b*b*dot_t);
-      }
-      DelDVector(&t);
-      DelDVector(&w);
-      vip->data[j][i] = sqrt(npred*(n/d));
-    }
+  size_t nlv = model->xscores->col;    /* F */
+  size_t npred = model->xweights->row; /* J */
+  size_t f, j;
+  double ssy_total = 0.0;
+  dvector *ssy_f;
+
+  if (nlv == 0 || npred == 0) return;
+
+  NewDVector(&ssy_f, nlv);
+  ResizeMatrix(vip, npred, 1); /* VIP is a single vector for all components */
+
+  /* 1. Calculate SSY_f for each component and SSY_total */
+  for (f = 0; f < nlv; f++) {
+    double bf = model->b->data[f];
+    dvector *tf = getMatrixColumn(model->xscores, f);
+    double tf_tf = DVectorDVectorDotProd(tf, tf);
+    double ssy = bf * bf * tf_tf;
+    
+    setDVectorValue(ssy_f, f, ssy);
+    ssy_total += ssy;
+    DelDVector(&tf);
   }
+
+  if (ssy_total <= EPSILON) {
+    DelDVector(&ssy_f);
+    MatrixSet(vip, 0.0);
+    return;
+  }
+
+  /* 2. Calculate VIP_j for each variable */
+  for (j = 0; j < npred; j++) {
+    double weighted_sum_w2 = 0.0;
+    for (f = 0; f < nlv; f++) {
+      double w_jf = model->xweights->data[j][f];
+      weighted_sum_w2 += (w_jf * w_jf * ssy_f->data[f]);
+    }
+    vip->data[j][0] = sqrt((double)npred * weighted_sum_w2 / (ssy_total * (double)nlv));
+  }
+
+  DelDVector(&ssy_f);
 }
 
 int GetLVCCutoff_(matrix *rq2y){
@@ -977,28 +1037,32 @@ int GetLVCCutoff_(matrix *rq2y){
   return cutoff;
 }
 
+
 int GetLVCCutoff(matrix *coeff){
   size_t i, j, cutoff = 0;
   double prec;
   dvector *coeff_avg;
   NewDVector(&coeff_avg, coeff->row);
+
   for(i = 0; i < coeff->row; i++){
     for(j = 0; j < coeff->col; j++){
       coeff_avg->data[i] += coeff->data[i][j];
     }
   }
-
   prec = coeff_avg->data[0];
-  for(i = 1; i < coeff_avg->size-1; i++){
-    if(prec < coeff_avg->data[i] && coeff_avg->data[i] < coeff_avg->data[i+1]){
-      prec = coeff_avg->data[i];
-      cutoff = i+1;
-      continue;
+  for(i = 1; i < coeff_avg->size; i++){
+    double current = coeff_avg->data[i];
+    // Check if strictly increasing AND improvement is > 3%
+    if(current > prec && ((current - prec) / current) > 0.03){
+      prec = current;
+      cutoff = i;
     }
     else{
+      // If the improvement drops below 3%, stop looking
       break;
     }
   }
+
   DelDVector(&coeff_avg);
   return cutoff;
 }

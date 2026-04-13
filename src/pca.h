@@ -1,20 +1,19 @@
-/* pca.h
-*
-* Copyright (C) <2016>  Giuseppe Marco Randazzo
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+/* Implements Principal Component Analysis (PCA).
+ * Copyright (C) 2016-2026 designed, written and maintained by Giuseppe Marco Randazzo <gmrandazzo@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #ifndef PCA_H
 #define PCA_H
@@ -30,6 +29,7 @@
  * - **scores** matrix of scores
  * - **loadings** matrix of loadings
  * - **varexp** vector of explained variance by every component 
+ * - **dmodx** object distance from the model
  * - **colaverage** input matrix column average
  * - **colscaling** input matrix column scaling
  */
@@ -75,7 +75,7 @@ double calcConvergence(dvector *t_new, dvector *t_old);
  * @param [in] scaling scaling type expressed as unsigned int type
  * @param [in] npc number of desired principal components
  * @param [out] PCAMODEL initialized model using NewPCAModel(...). The datastructure will be populated with results
- * @param [in] ssignal libscientific signal. Default value is NULL
+ * @param [in] scisignal libscientific signal. Default value is NULL
  * 
  * Available scalings:
  *
@@ -98,7 +98,7 @@ void PCA(matrix *mx,
          int scaling,
          size_t npc,
          PCAMODEL *model,
-         ssignal *s);
+         scisignal *s);
 
 
 /**
@@ -148,7 +148,24 @@ void PCARankValidation(matrix *mx,
                        size_t group,
                        size_t iterations,
                        dvector *r2,
-                       ssignal *s);
+                       scisignal *s);
+
+/**
+ * @brief Compute the T squared feature contributions and SPE for every object.
+ *
+ * @param [in] x matrix of objects to project and calculate contributions
+ * @param [in] model computed pca model
+ * @param [in] npc number of principal component to use
+ * @param [out] spe square prediction error value on each object
+ * @param [out] contributions objects features contributions
+ *
+ */
+void PCATsqContributions(
+  matrix *x,
+  PCAMODEL *model,
+  size_t npc,
+  dvector *spe,
+  matrix *contributions);
 
 /**
  * @brief Compute the residual matrix for a specific number of component.

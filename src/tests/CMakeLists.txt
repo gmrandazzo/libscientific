@@ -29,6 +29,7 @@ set(INTERPOLATETest_SRC testinterpolate.c)
 set(GRAPHSTest_SRC testgraphs.c)
 set(OptimizationTest_SRC testoptimization.c)
 set(IOTests_SRC testio.c)
+set(MemWrapperTest_SRC testmemwrapper.c)
 
 add_executable(testscientificinfo ${TestScientificInfo_SRC})
 target_link_libraries(testscientificinfo libscientific)
@@ -88,7 +89,7 @@ add_test(NAME testcpca COMMAND testcpca)
 
 add_executable(testica ${ICATest_SRC})
 target_link_libraries(testica libscientific)
-add_test(NAME testica COMMAND testcpca)
+add_test(NAME testica COMMAND testica)
 
 add_executable(testpls ${PLSTest_SRC})
 target_link_libraries(testpls libscientific)
@@ -137,3 +138,11 @@ add_test(NAME testoptimization COMMAND testoptimization)
 add_executable(testio ${IOTests_SRC})
 target_link_libraries(testio libscientific)
 add_test(NAME testio COMMAND testio)
+
+add_executable(testmemwrapper ${MemWrapperTest_SRC})
+target_link_libraries(testmemwrapper libscientific)
+add_test(NAME testmemwrapper COMMAND testmemwrapper)
+
+add_test(NAME testmemwrapper_malloc_fail COMMAND testmemwrapper --malloc-fail)
+add_test(NAME testmemwrapper_calloc_fail COMMAND testmemwrapper --calloc-fail)
+add_test(NAME testmemwrapper_realloc_fail COMMAND testmemwrapper --realloc-fail)

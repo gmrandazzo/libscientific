@@ -1,10 +1,16 @@
 # Directory
 build/
 build/*
+dist/
+dist/*
 .kdev4
 .vscode
 .vscode/*
 .venv
+*.egg-info/
+*.egg-info/*
+__pycache__/
+__pycache__/*
 
 # Object files
 *.o

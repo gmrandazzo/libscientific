@@ -1,20 +1,19 @@
-/* pls.h
-*
-* Copyright (C) <2016>  Giuseppe Marco Randazzo
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+/* Implements Partial Least Squares (PLS) regression.
+ * Copyright (C) 2016-2026 designed, written and maintained by Giuseppe Marco Randazzo <gmrandazzo@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #ifndef PLS_H
 #define PLS_H
@@ -129,7 +128,7 @@ void LVCalc(matrix *X, matrix *Y, dvector *t, dvector *u, dvector *p, dvector *q
  * @param [in] xautoscaling scaling typeon the x independent variables expressed as unsigned int type
  * @param [in] yautoscaling scaling typeon the y dependent variables expressed as unsigned int type
  * @param [out] PLSMODEL output -initialized model using NewPLSAModel(...). The datastructure will be populated with results
- * @param [in] ssignal libscientific signal. Default value is NULL.
+ * @param [in] scisignal libscientific signal. Default value is NULL.
  * 
  * Available scalings:
  *
@@ -154,7 +153,7 @@ void PLS(matrix *mx,
          int xautoscaling,
          int yautoscaling,
          PLSMODEL *model,
-         ssignal *s);
+         scisignal *s);
 
 /**
  * Calculate betas coefficients from a pls model at specific nlv latent variables

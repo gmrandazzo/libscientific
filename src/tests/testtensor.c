@@ -1,20 +1,19 @@
-/* testtensor.c
-*
-* Copyright (C) <2016>  Giuseppe Marco Randazzo
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+/* Unit tests for the tensor module.
+ * Copyright (C) 2016-2026 designed, written and maintained by Giuseppe Marco Randazzo <gmrandazzo@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -449,6 +448,41 @@ void test1()
 
 }
 
+void test10()
+{
+  puts("Test 10 - Test ClearTensor");
+  tensor *t;
+  NewTensor(&t, 3);
+  NewTensorMatrix(t, 0, 2, 2);
+  NewTensorMatrix(t, 1, 2, 2);
+  NewTensorMatrix(t, 2, 2, 2);
+  
+  if(t->order != 3){
+    puts("ClearTensor initial state ERROR!");
+    abort();
+  }
+
+  ClearTensor(t);
+
+  if(t->order != 0 || t->m != NULL){
+    puts("ClearTensor final state ERROR!");
+    abort();
+  }
+  
+  /* Test clearing an already empty tensor */
+  ClearTensor(t);
+  if(t->order != 0 || t->m != NULL){
+    puts("ClearTensor empty state ERROR!");
+    abort();
+  }
+
+  /* Test clearing a NULL tensor (should handle gracefully) */
+  ClearTensor(NULL);
+
+  puts("Test 10: OK.");
+  free(t); 
+}
+
 int main(void)
 {
   test1();
@@ -461,5 +495,6 @@ int main(void)
   test7();
   test8();
   test9();
+  test10();
   return 0;
 }

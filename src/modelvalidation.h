@@ -1,20 +1,19 @@
-/* modelvalidation.h
-*
-* Copyright (C) <2016>  Giuseppe Marco Randazzo
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+/* Provides tools for model validation and error estimation.
+ * Copyright (C) 2016-2026 designed, written and maintained by Giuseppe Marco Randazzo <gmrandazzo@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #ifndef MODELVALIDATION_H
 #define MODELVALIDATION_H
@@ -143,7 +142,7 @@ void BootstrapRandomGroupsCV(MODELINPUT *input,
                              matrix *predicted_y,
                              matrix *pred_residuals,
                              size_t nthreads,
-                             ssignal *s,
+                             scisignal *s,
                              int num_arg,
                              ...);
 
@@ -164,7 +163,7 @@ void LeaveOneOut(MODELINPUT *input,
                  matrix *predicted_y,
                  matrix *pred_residuals,
                  size_t nthreads,
-                 ssignal *s,
+                 scisignal *s,
                  int num_arg,
                  ...);
 
@@ -186,7 +185,7 @@ void KFoldCV(MODELINPUT *input,
              matrix *predicted_y,
              matrix *pred_residuals,
              size_t nthreads,
-             ssignal *s,
+             scisignal *s,
              int arg,
              ...);
 
@@ -208,6 +207,6 @@ void YScrambling(MODELINPUT *input,
                  size_t iterations,
                  matrix *ccoeff_yscrambling,
                  size_t nthreads,
-                 ssignal *s);
+                 scisignal *s);
 
 #endif

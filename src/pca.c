@@ -1,22 +1,22 @@
-/* pca.c
-*
-* Copyright (C) <2016>  Giuseppe Marco Randazzo
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+/* Implements Principal Component Analysis (PCA).
+ * Copyright (C) 2016-2026 designed, written and maintained by Giuseppe Marco Randazzo <gmrandazzo@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #include <math.h>
+#include <float.h>
 #include <string.h>
 
 #include "memwrapper.h"
@@ -47,19 +47,20 @@ void DelPCAModel(PCAMODEL** m)
   DelMatrix(&((*m)->loadings));
   DelMatrix(&((*m)->scores));
   xfree((*m));
+  (*m) = NULL;
 }
 
 
-void calcVarExpressed(double ss, dvector *eval, dvector *varexp)
-/* ss is the sum of squares, eval = eigenvalue  varexp is an object that is resized for each component */
+/* void calcVarExpressed(double total_ss, dvector *eval, dvector *varexp)
 {
-  for(size_t i = 0; i < eval->size; i++){
-    DVectorAppend(varexp, (eval->data[i]/ss) * 100);
-    #ifdef DEBUG
-    printf("Variance expressed for PC %u\t %f\n", (unsigned int)i, (getDVectorValue(eval, i)/ss) * 100);
-    #endif
+  size_t i;
+  DVectorResize(varexp, eval->size);
+  if(total_ss > 0){
+    for(i = 0; i < eval->size; i++){
+      varexp->data[i] = (eval->data[i] / total_ss) * 100.;
+    }
   }
-}
+} */
 
 double calcObjectDistance(matrix *m)
 {
@@ -88,6 +89,9 @@ double calcConvergence(dvector *t_new, dvector *t_old)
   for(i = 0; i < t_new->size; i++){
     n += square(t_new->data[i]-t_old->data[i]);
     d += square(t_new->data[i]);
+  }
+  if (d <= DBL_MIN) {
+    return (n <= DBL_MIN) ? 0.0 : 1.0;
   }
   return n/((double)t_new->size*d);
 }
@@ -118,9 +122,11 @@ double calcConvergence(dvector *t_new, dvector *t_old)
  * Martens, Harald, and Magni Martens. 2001. Multivariate Analysis of Quality: An Introduction. J.Wiley & Son
  * https://www.wiley.com/en-us/Multivariate+Analysis+of+Quality%3A+An+Introduction-p-9780471974284
  */
-void PCA(matrix *mx, int scaling, size_t npc, PCAMODEL* model, ssignal *s)
+void PCA(matrix *mx, int scaling, size_t npc, PCAMODEL* model, scisignal *s)
 {
   size_t i, j, pc;
+  size_t iter = 0;
+  const size_t max_iter = 1000;
   dvector *t;
   dvector *t_old;
   dvector *p;
@@ -158,7 +164,6 @@ void PCA(matrix *mx, int scaling, size_t npc, PCAMODEL* model, ssignal *s)
   ResizeMatrix(model->loadings, E->col, npc);
   ResizeMatrix(model->dmodx, E->row, npc);
 
-  /*setDVectorValue(obj_d, 0, calcObjectDistance(E)); */
   for(pc = 0; pc < npc; pc++){
     if(s != NULL && (*s) == SIGSCIENTIFICSTOP){
       break;
@@ -170,71 +175,6 @@ void PCA(matrix *mx, int scaling, size_t npc, PCAMODEL* model, ssignal *s)
 
       /* Init Step
       * calculate variance for each column for select after the vector with the greater value
-      */
-
-      /*
-      * During the first iteration the variance for all the column is the same: 1
-      * So we select a random column. With this can change the sign of the plot
-      *
-      if(pc == 0){
-        srand(time(0));
-        j = (size_t) rand() % E->col;
-        printf("Selected %u\n", (unsigned int)j);
-      }
-      else{
-        initDVector(&colvar);
-        MatrixColVar(E, &colvar);
-
-        Step 1: select the column vector t with the largest column variance
-        j = 0;
-        for(i = 1; i < E->col; i++){
-          if(colvar->data[i] > colvar->data[j])
-            j = i;
-          else
-            continue;
-        }
-
-        DelDVector(&colvar);
-      }
-
-      * In order to prevent a random sign numbering is preferable
-      * select in the first calculation the first column and afther getting
-      * the best one.
-      */
-      /*
-      if(pc == 0){
-        we do not know if the first variable is 0 so we have to iterate to find the first column with a value != 0
-        j = 0;
-        while(1){
-          if(j < model->colaverage->size){
-            if(FLOAT_EQ(getDVectorValue(model->colaverage, j), 0.f, PCACONVERGENCE)){
-              j++;
-            }
-            else{
-              break;
-            }
-          }
-          else{
-            j = 0;
-            break;
-          }
-        }
-      }
-      else{
-        initDVector(&colvar);
-        MatrixColVar(E, &colvar);
-
-        Step 1: select the column vector t with the largest column variance
-        j = 0;
-        for(i = 1; i < E->col; i++){
-          if(getDVectorValue(colvar, i) > getDVectorValue(colvar, j))
-            j = i;
-          else
-            continue;
-        }
-
-        DelDVector(&colvar);
-      }
       */
 
       initDVector(&colvar);
@@ -264,6 +204,9 @@ void PCA(matrix *mx, int scaling, size_t npc, PCAMODEL* model, ssignal *s)
         mod_t = DVectorDVectorDotProd(t, t);
 
         /* division of (t'*E)/t'*t (mx.p/mx.mod_t_old) for calculate the p' vector that represents the loadings */
+        if (mod_t <= EPSILON) {
+          break; /* degenerate component */
+        }
         for(i = 0; i < p->size; i++)
           p->data[i] /= mod_t; /* now p' is the loadings vector calculated */
 
@@ -279,7 +222,9 @@ void PCA(matrix *mx, int scaling, size_t npc, PCAMODEL* model, ssignal *s)
 
         /* p'*p = Sum(p[i]^2) */
         mod_p = DVectorDVectorDotProd(p, p);
-
+        if (mod_p <= EPSILON) {
+          break; /* degenerate component */
+        }
         for(i = 0; i < E->row; i++)
           t->data[i] /= mod_p;
 
@@ -331,8 +276,8 @@ void PCA(matrix *mx, int scaling, size_t npc, PCAMODEL* model, ssignal *s)
                * DmodX it simple to divide for the variance of the residuals E
                * DmodX /= Variance(E)
                */
-               model->dmodx->data[i][pc] += square(E->data[i][j]);
-           }
+              model->dmodx->data[i][pc] += square(E->data[i][j]);
+            }
             model->dmodx->data[i][pc] = sqrt(model->dmodx->data[i][pc]);
           }
           /* End Step 6 */
@@ -343,8 +288,11 @@ void PCA(matrix *mx, int scaling, size_t npc, PCAMODEL* model, ssignal *s)
         }
         else{
           DVectorCopy(t, t_old);
-          //continue;
           /* End Step 5 */
+        }
+        iter++;
+        if (iter >= max_iter) {
+          break; /* stop if not converging */
         }
       }
       /*Reset all the variables*/
@@ -550,7 +498,7 @@ void PCARankValidation(matrix *mx,
                        size_t group,
                        size_t iterations,
                        dvector *r2,
-                       ssignal *s)
+                       scisignal *s)
 {
   size_t iterations_, i, j, k, n, g;
   matrix *gid;
@@ -703,6 +651,67 @@ void PCARankValidation(matrix *mx,
   for(i = 0; i < r2->size; i++){
     r2->data[i] /= group*iterations;
   }
+}
+
+
+void PCATsqContributions(
+  matrix *x,
+  PCAMODEL *model,
+  size_t npc,
+  dvector *spe,
+  matrix *contributions){
+  /*
+   * Reconstruct the original matrix using N principal components (npc)
+   */
+  matrix *reconstructed_x;
+  initMatrix(&reconstructed_x);
+  matrix *pscores;
+  initMatrix(&pscores);
+  PCAScorePredictor(x, model, npc, pscores);
+  PCAIndVarPredictor(
+    pscores,
+    model->loadings,
+    model->colaverage,
+    model->colscaling,
+    npc,
+    reconstructed_x
+  );
+  DelMatrix(&pscores);
+  /*
+  * Calculate SPE (Squared Prediction Error) and SPE contributions in one pass
+  */
+  DVectorResize(spe, x->row);
+  ResizeMatrix(contributions, x->row, x->col);
+  for (size_t i = 0; i < x->row; i++) {
+    double sum_squared_diff = 0.0;
+    for (size_t j = 0; j < x->col; j++) {
+      /* Cache values to avoid repeated array access and apply centering */
+      double val_orig = x->data[i][j] - model->colaverage->data[j];
+      double val_recon = reconstructed_x->data[i][j] - model->colaverage->data[j];
+
+      /* Apply scaling normalization to avoid dwarf everything */
+      double denom = model->colscaling->data[j];
+      if (fabs(denom) > EPSILON) {
+        val_orig /= denom;
+        val_recon /= denom;
+      } else {
+        val_orig = 0.0;
+        val_recon = 0.0;
+      }
+
+      /* Calculate difference and squared difference */
+      double diff = val_orig - val_recon;
+      if (isfinite(diff)) {
+        double squared_diff = diff * diff;
+        sum_squared_diff += isfinite(squared_diff) ? squared_diff : 0.0;
+        contributions->data[i][j] = isfinite(squared_diff) ? squared_diff : 0.0;
+      } else {
+        contributions->data[i][j] = 0.0;
+      }
+    }
+    spe->data[i] = sum_squared_diff;
+  }
+  DelMatrix(&reconstructed_x);
 }
 
 void GetResidualMatrix(matrix* mx, PCAMODEL* model, size_t pc, matrix *rmx)

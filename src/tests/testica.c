@@ -1,28 +1,28 @@
-/* testica.c
-*
-* Copyright (C) <2022>  Giuseppe Marco Randazzo
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+/* Unit tests for the ica module.
+ * Copyright (C) 2022-2026 designed, written and maintained by Giuseppe Marco Randazzo <gmrandazzo@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #include <stdlib.h>
-#include <stdlib.h>
+#include <stdio.h>
+#include <math.h>
 #include "numeric.h"
 #include "ica.h"
 #include "datasets.h"
-#include "numeric.h"
 #include "scientificinfo.h"
+#include "io.h"
 
 void test3()
 {
@@ -107,11 +107,69 @@ void test1()
   DelMatrix(&m);
 }
 
+void test4()
+{
+  puts("Test ICA 4: Signal separation and CSV output");
+  size_t n_samples = 200;
+  size_t n_sources = 2;
+  matrix *S_orig; /* Original sources */
+  matrix *X;      /* Mixed signals */
+  matrix *A;      /* Mixing matrix */
+  ICAMODEL *model;
+
+  NewMatrix(&S_orig, n_samples, n_sources);
+  for(size_t i = 0; i < n_samples; i++){
+    double t = (double)i / 20.0;
+    S_orig->data[i][0] = sin(t); /* Sine wave */
+    S_orig->data[i][1] = (sin(2.0*t) > 0) ? 1.0 : -1.0; /* Square wave */
+  }
+
+  /* Mixing matrix */
+  NewMatrix(&A, n_sources, n_sources);
+  A->data[0][0] = 0.5; A->data[0][1] = 0.5;
+  A->data[1][0] = 0.2; A->data[1][1] = 0.8;
+
+  /* Mix signals: X = S_orig * A^T (since S_orig is n_samples x n_sources) */
+  NewMatrix(&X, n_samples, n_sources);
+  for(size_t i = 0; i < n_samples; i++){
+    for(size_t j = 0; j < n_sources; j++){
+      for(size_t k = 0; k < n_sources; k++){
+        X->data[i][j] += S_orig->data[i][k] * A->data[j][k];
+      }
+    }
+  }
+
+  NewICAModel(&model);
+  ICA_ext(X, 1, n_sources, 1.0, 1e-8, 5000, model);
+
+  /* Output original, mixed and separated signals to CSV */
+  matrix *out;
+  NewMatrix(&out, n_samples, n_sources * 3);
+  for(size_t i = 0; i < n_samples; i++){
+    out->data[i][0] = S_orig->data[i][0];
+    out->data[i][1] = S_orig->data[i][1];
+    out->data[i][2] = X->data[i][0];
+    out->data[i][3] = X->data[i][1];
+    out->data[i][4] = model->S->data[i][0];
+    out->data[i][5] = model->S->data[i][1];
+  }
+
+  WriteMatrixCSV("ica_signals.csv", out);
+  puts("Results saved to ica_signals.csv. OK.");
+
+  DelMatrix(&out);
+  DelICAModel(&model);
+  DelMatrix(&X);
+  DelMatrix(&A);
+  DelMatrix(&S_orig);
+}
+
 
 int main(void)
 {
   test1();
   /*test2();
   test3();*/
+  test4();
   return 0;
 }

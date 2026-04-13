@@ -1,20 +1,19 @@
-/* testmlr.c
-*
-* Copyright (C) <2016>  Giuseppe Marco Randazzo
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+/* Unit tests for the mlr module.
+ * Copyright (C) 2016-2026 designed, written and maintained by Giuseppe Marco Randazzo <gmrandazzo@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #include <stdio.h>
 #include "mlr.h"
@@ -25,7 +24,7 @@ void test3()
 {
   matrix *mx, *my;
   MLRMODEL *m;
-  ssignal s = SIGSCIENTIFICRUN;
+  scisignal s = SIGSCIENTIFICRUN;
   puts("Test3: Simple Calculation MLR Model with BootstrapRandomGroupsCV");
 
   NewMatrix(&mx, 5, 1);
@@ -121,7 +120,7 @@ void test2()
   size_t i;
   matrix *mx, *my;
   MLRMODEL *m;
-  ssignal s = SIGSCIENTIFICRUN;
+  scisignal s = SIGSCIENTIFICRUN;
   puts("Test2: Simple Calculation MLR Model with LOOCV and YScrambling");
 
 
@@ -165,7 +164,7 @@ void test1()
 {
   matrix *mx, *my;
   MLRMODEL *m;
-  ssignal s = SIGSCIENTIFICRUN;
+  scisignal s = SIGSCIENTIFICRUN;
   puts("Test1: Simple Calculation MLR Model with BootstrapRandomGroupsCV and YScrambling");
 
   NewMatrix(&mx, 5, 1);

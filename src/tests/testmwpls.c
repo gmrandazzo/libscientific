@@ -1,20 +1,19 @@
-/* testmwpls.c
-*
-* Copyright (C) <2016>  Giuseppe Marco Randazzo
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+/* Unit tests for the mwpls module.
+ * Copyright (C) 2016-2026 designed, written and maintained by Giuseppe Marco Randazzo <gmrandazzo@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -163,7 +162,7 @@ void test8()
 
   NewUPLSModel(&m);
 
-  ssignal run = SIGSCIENTIFICRUN;
+  scisignal run = SIGSCIENTIFICRUN;
 
   UPLS(ax, ay, 99, 1, 0, m, &run);
 
@@ -283,7 +282,7 @@ void test7()
   initTensor(&sdep);
   initTensor(&predicted_y);
 
-  ssignal run = SIGSCIENTIFICRUN;
+  scisignal run = SIGSCIENTIFICRUN;
   /* we divide all the dataset in 5 groups */
   UPLSRandomGroupsCV(ax, ay, 1, 0, 3, 3, 20, &q2x, &q2y, &sdep, &predicted_y, NULL, &run);
 

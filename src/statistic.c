@@ -1,34 +1,51 @@
-/* statistic.c
-*
-* Copyright (C) <2016>  Giuseppe Marco Randazzo
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+/* Provides statistical functions and metrics.
+ * Copyright (C) 2016-2026 designed, written and maintained by Giuseppe Marco Randazzo <gmrandazzo@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #include "statistic.h"
 #include "numeric.h"
 #include "memwrapper.h"
 #include <math.h>
+#include <float.h>
 
-/*
- * Calculate R^2
+void calcVarExpressed(double total_ss, dvector *eval, dvector *varexp)
+{
+    size_t i;
+    DVectorResize(varexp, eval->size);
+    if (total_ss <= 0.0) {
+        DVectorSet(varexp, 0.0);
+        return;
+    }
+    for(i = 0; i < eval->size; i++) {
+        varexp->data[i] = (eval->data[i] / total_ss) * 100.0;
+    }
+}
+
+/**
+ * Calculate R^2 as the square of the Pearson correlation coefficient.
+ * This is appropriate for models with or without intercept, 
+ * but ignores bias in predicted values.
  */
-double R2(dvector *ytrue, dvector *ypred)
+double R2_deprecated(dvector *ytrue, dvector *ypred)
 {
   size_t i, ny;
-  double ssreg, sstot, yavg;
-  ssreg = sstot = yavg = 0.f;
+  double yavg, ypredavg;
+  double num, den1, den2;
+
+  yavg = ypredavg = 0.f;
   ny = 0;
   for(i = 0; i < ytrue->size; i++){
     if(FLOAT_EQ(ytrue->data[i], MISSING, 1e-1)){
@@ -36,10 +53,64 @@ double R2(dvector *ytrue, dvector *ypred)
     }
     else{
       yavg += ytrue->data[i];
+      ypredavg += ypred->data[i];
       ny+=1;
     }
   }
+
+  if (ny < 2) return 0.f;
   yavg /= (double)ny;
+  ypredavg /= (double)ny;
+
+  num = den1 = den2 = 0.f;
+  for(i = 0; i < ytrue->size; i++){
+    if(FLOAT_EQ(ytrue->data[i], MISSING, 1e-1)){
+      continue;
+    }
+    else{
+      double diff_y = ytrue->data[i] - yavg;
+      double diff_ypred = ypred->data[i] - ypredavg;
+      num += diff_y * diff_ypred;
+      den1 += square(diff_y);
+      den2 += square(diff_ypred);
+    }
+  }
+
+  if (den1 <= 0.f || den2 <= 0.f) return 0.f;
+
+  return square(num / sqrt(den1 * den2));
+}
+
+/**
+ * Calculate R^2 (Coefficient of Determination) as 1 - RSS/SST.
+ * This is sensitive to bias and is often used for model validation (Q^2).
+ * It automatically detects if the model has an intercept by checking if
+ * the mean of predicted values is close to the mean of true values.
+ */
+double R2(dvector *ytrue, dvector *ypred)
+{
+  size_t i, ny;
+  double ssreg, sstot, yavg, ypredavg;
+  ssreg = sstot = yavg = ypredavg = 0.f;
+  ny = 0;
+  for(i = 0; i < ytrue->size; i++){
+    if(FLOAT_EQ(ytrue->data[i], MISSING, 1e-1)){
+      continue;
+    }
+    else{
+      yavg += ytrue->data[i];
+      ypredavg += ypred->data[i];
+      ny+=1;
+    }
+  }
+
+  if (ny == 0) return 0.f;
+  yavg /= (double)ny;
+  ypredavg /= (double)ny;
+
+  /* Check for intercept presence: in OLS with intercept, the mean of predicted values 
+     should equal the mean of true values (sum of residuals is zero). */
+  int has_intercept = (fabs(yavg - ypredavg) < 1e-5);
 
   for(i = 0; i < ytrue->size; i++){
     if(FLOAT_EQ(ytrue->data[i], MISSING, 1e-1)){
@@ -47,9 +118,15 @@ double R2(dvector *ytrue, dvector *ypred)
     }
     else{
       ssreg += square(ypred->data[i] - ytrue->data[i]);
-      sstot += square(ytrue->data[i] - yavg);
+      if (has_intercept)
+        sstot += square(ytrue->data[i] - yavg);
+      else
+        sstot += square(ytrue->data[i]);
     }
   }
+
+  if (sstot <= 0.f) return 0.f;
+
   return 1.f - (ssreg/sstot);
 }
 
@@ -78,7 +155,7 @@ double MAE(dvector *ytrue, dvector *ypred)
 /*
  * Calculate mean absolute error
  */
-double MSE(dvector *ytrue, dvector *ypred)
+double MSE_deprecated(dvector *ytrue, dvector *ypred)
 {
   size_t i, ny;
   double mse;
@@ -95,6 +172,64 @@ double MSE(dvector *ytrue, dvector *ypred)
   }
   mse /= (double)ny;
   return mse;
+}
+
+/**
+ * Blue (1978) ACM Transactions on Mathematical Software 4, 15-23.
+ * Calculate MSE avoiding overflow and underflow
+ */
+double MSE(dvector *ytrue, dvector *ypred)
+{
+  size_t i, ny;
+  double sum_small, sum_medium, sum_large;
+  double b1, b2;
+  double diff, abs_diff;
+
+  sum_small = sum_medium = sum_large = 0.0;
+  ny = 0;
+
+  /* Constants for Blue's algorithm
+   * b1: values smaller than this may underflow when squared
+   * b2: values larger than this may overflow when squared
+   */
+  b1 = sqrt(DBL_MIN / DBL_EPSILON);
+  b2 = sqrt(DBL_MAX * DBL_EPSILON);
+
+  for(i = 0; i < ytrue->size; i++){
+    if(FLOAT_EQ(ytrue->data[i], MISSING, 1e-1)){
+      continue;
+    }
+    else{
+      diff = ypred->data[i] - ytrue->data[i];
+      abs_diff = fabs(diff);
+      ny += 1;
+
+      if (abs_diff < b1) {
+        if (abs_diff > 0) {
+            sum_small += square(diff / b1);
+        }
+      }
+      else if (abs_diff > b2) {
+        sum_large += square(diff / b2);
+      }
+      else {
+        sum_medium += square(diff);
+      }
+    }
+  }
+
+  if (ny == 0) return 0.0;
+
+  /* Combine the sums robustly */
+  if (sum_large > 0) {
+    return square(b2) * (sum_large / (double)ny + ((sum_medium + square(b1) * sum_small) / square(b2)) / (double)ny);
+  }
+  else if (sum_medium > 0) {
+    return (sum_medium / (double)ny + (square(b1) * sum_small / (double)ny));
+  }
+  else {
+    return square(b1) * (sum_small / (double)ny);
+  }
 }
 
 double RMSE(dvector *ytrue, dvector *ypred)

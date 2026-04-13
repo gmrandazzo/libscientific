@@ -1,54 +1,80 @@
-name: SonarQube
+name: Build, Analyze, and SonarQube Integration
 
 on:
   push:
     branches:
       - master
+      - develop
   pull_request:
     types: [opened, synchronize, reopened]
 
 jobs:
-  build:
-    name: Build
+  build_and_analyze:
+    name: SonarQube Analysis (C & Python)
     runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        python-version: ['3.12']
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-      - name: Build library
+          fetch-depth: 0
+
+      - name: Install system dependencies
         run: |
-          sudo apt-get -y update
-          sudo apt-get -y upgrade
-          sudo apt-get -y install liblapack-dev cmake libsqlite3-dev
-          mkdir build
-          cd build
-          cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=TRUE -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr
-          make
-          ctest -T Test -T Coverage
-          sudo make install
+          sudo apt-get update
+          sudo apt-get -y install \
+            build-essential cmake liblapack-dev libsqlite3-dev gcovr tox curl unzip
+
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python }}
-      - name: Install tox and dependencies
-        run: sudo apt-get install tox
-      - name: Run tox
+          python-version: ${{ matrix.python-version }}
+
+      - name: Download Build Wrapper from Server
+        run: |
+          curl -sSLo build-wrapper.zip ${{ secrets.SONAR_HOST_URL }}/static/cpp/build-wrapper-linux-x86.zip
+          unzip -o build-wrapper.zip
+          echo "$(pwd)/build-wrapper-linux-x86" >> $GITHUB_PATH
+
+      - name: Configure CMake
+        # Added -DENABLE_COVERAGE=ON assuming your CMakeLists uses it for gcov
+        run: cmake -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=TRUE -DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=ON .
+
+      - name: Build C Library with Build-Wrapper
+        run: |
+          build-wrapper-linux-x86-64 --out-dir bw-output cmake --build build --parallel $(nproc)
+          sudo cmake --install build
+
+      - name: Run C Tests
+        run: |
+          cd build && ctest --output-on-failure
+
+      - name: Generate C Coverage Report
+        run: |
+          # Generates a generic coverage XML file for SonarQube using gcovr
+          gcovr -r . --sonarqube coverage-c.xml
+
+      - name: Run Python Tests and Coverage (tox)
         run: |
           cd src/python_bindings
           tox -e py
+          # Adjust paths in the Python coverage report for SonarQube
           sed -i -e 's/<source>libscientific<\/source>/<source>src\/python_bindings\/libscientific<\/source>/' coverage.xml
-      - name: Download and install the SonarScanner
-        env:
-          SONAR_SCANNER_VERSION: 5.0.1.3006
-        run: |
-          mkdir $HOME/.sonar
-          curl -sSLo $HOME/.sonar/sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${{ env.SONAR_SCANNER_VERSION }}-linux.zip
-          unzip -o $HOME/.sonar/sonar-scanner.zip -d $HOME/.sonar/
-          echo "$HOME/.sonar/sonar-scanner-${{ env.SONAR_SCANNER_VERSION }}-linux/bin" >> $GITHUB_PATH
+
       - name: SonarQube Scan
-        run: |
-          sonar-scanner --define sonar.cfamily.compile-commands=build/compile_commands.json --define sonar.cfamily.gcov.reportsPath=build/Testing/CoverageInfo/ --define sonar.python.coverage.reportPaths=src/python_bindings/coverage.xml --define sonar.verbose=true
+        uses: SonarSource/sonarqube-scan-action@v6
+        with:
+          args: >
+            -Dsonar.projectKey=libscientific
+            -Dsonar.branch.name=${{ github.ref_name }}
+            -Dsonar.cfamily.build-wrapper-output=bw-output
+            -Dsonar.coverageReportPaths=coverage-c.xml
+            -Dsonar.python.coverage.reportPaths=src/python_bindings/coverage.xml
+            -Dsonar.verbose=true
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-      

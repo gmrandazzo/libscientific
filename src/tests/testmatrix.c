@@ -1,20 +1,19 @@
-/* testmatrix.c
-*
-* Copyright (C) <2016>  Giuseppe Marco Randazzo
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+/* Unit tests for the matrix module.
+ * Copyright (C) 2016-2026 designed, written and maintained by Giuseppe Marco Randazzo <gmrandazzo@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -378,7 +377,7 @@ void Test49()
   m->data[0][2] = NAN;
   m->data[2][1] = NAN;
   MatrixCheck(m);
-   if(!FLOAT_EQ(m->data[1][1], MISSING, 1e-1) ||
+  if(!FLOAT_EQ(m->data[1][1], MISSING, 1e-1) ||
       !FLOAT_EQ(m->data[0][2], MISSING, 1e-1) ||
       !FLOAT_EQ(m->data[2][1], MISSING, 1e-1)){
     puts("Error Test49");
@@ -1171,9 +1170,9 @@ void Test24()
   NewMatrix(&evect_answer, 3, 3);
   eval_answer->data[0] = 16.393; eval_answer->data[1] = 2.425;  eval_answer->data[2] = 1.183;
 
-  evect_answer->data[0][0] = -0.630 ; evect_answer->data[0][1] = -0.853; evect_answer->data[0][2] = -0.700;
-  evect_answer->data[1][0] = -0.277; evect_answer->data[1][1] = 0.116; evect_answer->data[1][2] = -0.225;
-  evect_answer->data[2][0] = -0.726; evect_answer->data[2][1] = 0.508; evect_answer->data[2][2] = 0.678;
+  evect_answer->data[0][0] = -0.47990196; evect_answer->data[0][1] = -0.3515583; evect_answer->data[0][2] = 0.05747603;
+  evect_answer->data[1][0] = -0.55486443; evect_answer->data[1][1] = 0.93470954; evect_answer->data[1][2] = -0.94820758;
+  evect_answer->data[2][0] = -0.67957308; evect_answer->data[2][1] = -0.05219994; evect_answer->data[2][2] = 0.31240822;
 
   int ok = 1;
   for(int i = 0; i < 3; i++){

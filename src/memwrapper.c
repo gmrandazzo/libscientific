@@ -1,20 +1,19 @@
-/* memwrapper.c
-*
-* Copyright (C) <2016>  Giuseppe Marco Randazzo
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+/* Provides memory management wrappers and safeguards.
+ * Copyright (C) 2016-2026 designed, written and maintained by Giuseppe Marco Randazzo <gmrandazzo@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #include "memwrapper.h"
 #include <stdio.h>
@@ -30,65 +29,61 @@
 
 void *xmalloc(size_t size)
 {
-  void *ptr = NULL;
-  ptr = malloc(size);
-  if(ptr == NULL){
-    fprintf(stderr, "[Libscientific] Memory Exhausted!\n");
-    abort();
-  }
-  return ptr;
+	if (size == 0) size = 1;
+	void *ptr = malloc(size);
+	if (!ptr) {
+		fprintf(stderr, "[Libscientific] Memory exhausted allocating %zu bytes\n", size);
+		abort();
+	}
+	return ptr;
+}
+
+void *xcalloc(size_t nmemb, size_t size)
+{
+	if (nmemb == 0 || size == 0) { nmemb = 1; size = 1; }
+	void *ptr = calloc(nmemb, size);
+	if (!ptr) {
+		fprintf(stderr, "[Libscientific] Memory exhausted allocating %zu elements of %zu bytes each\n", nmemb, size);
+		abort();
+	}
+	return ptr;
 }
 
 void *xrealloc(void *ptr, size_t size)
 {
-  register void *value = realloc (ptr, size);
-  if (value == 0){
-    fprintf(stderr, "[Libscientific] Memory Exhausted!\n");
-    abort();
-  }
-  return value;
+	if (size == 0) { free(ptr); return NULL; }
+	void *new_ptr = realloc(ptr, size);
+	if (!new_ptr) {
+		fprintf(stderr, "[Libscientific] Memory exhausted reallocating %zu bytes\n", size);
+		abort();
+	}
+	return new_ptr;
 }
 
 void xfree(void *ptr)
 {
-  free(ptr);
+	free(ptr);
 }
 
 void GetNProcessor(size_t *nprocs_online, size_t *nprocs_max)
 {
-  if(nprocs_online != NULL)
-    (*nprocs_online) = -1;
-  
-  if(nprocs_max != NULL)
-    (*nprocs_max) = -1;
-  #ifdef WIN32
-  #ifndef _SC_NPROCESSORS_ONLN
-  SYSTEM_INFO info;
-  GetSystemInfo(&info);
-  #define sysconf(a) info.dwNumberOfProcessors
-  #define _SC_NPROCESSORS_ONLN
-  #endif
-  #endif
-  
-  #ifdef _SC_NPROCESSORS_ONLN
-  if(nprocs_online != NULL){
-    (*nprocs_online) = sysconf(_SC_NPROCESSORS_ONLN);
-    if ((*nprocs_online) < 1){
-      (*nprocs_online) = 1;
-    }
-  }
-  
-  if(nprocs_max != NULL){
-    (*nprocs_max) = sysconf(_SC_NPROCESSORS_CONF);
-    if((*nprocs_max) < 1){
-      (*nprocs_max) = 1;
-    }
-  }
-  #else
-  if(nprocs_online != NULL)
-    (*nprocs_online) = 1;
-  
-  if(nprocs_max != NULL)
-    (*nprocs_max) = 1
-  #endif
+	if (nprocs_online) *nprocs_online = 1;
+	if (nprocs_max) *nprocs_max = 1;
+
+#if defined(_WIN32)
+	SYSTEM_INFO info;
+	GetSystemInfo(&info);
+	size_t n = (size_t)(info.dwNumberOfProcessors > 0 ? info.dwNumberOfProcessors : 1);
+	if (nprocs_online) *nprocs_online = n;
+	if (nprocs_max) *nprocs_max = n;
+#else
+#ifdef _SC_NPROCESSORS_ONLN
+	long onln = sysconf(_SC_NPROCESSORS_ONLN);
+	if (onln > 0 && nprocs_online) *nprocs_online = (size_t)onln;
+#endif
+#ifdef _SC_NPROCESSORS_CONF
+	long conf = sysconf(_SC_NPROCESSORS_CONF);
+	if (conf > 0 && nprocs_max) *nprocs_max = (size_t)conf;
+#endif
+#endif
 }

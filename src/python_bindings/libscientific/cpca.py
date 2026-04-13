@@ -85,8 +85,8 @@ def cpca_algorithm(t_input, scaling, npc, mpca):
     """
     CPCA: Calculate the CPCA model for a matrix m using the NIPALS algorithm
     """
-    ssignal = ctypes.c_int(0)
-    lsci.CPCA(t_input, scaling, npc, mpca, ssignal)
+    scisignal = ctypes.c_int(0)
+    lsci.CPCA(t_input, scaling, npc, mpca, scisignal)
 
 
 lsci.CPCAScorePredictor.argtypes = [ctypes.POINTER(tns.TENSOR),

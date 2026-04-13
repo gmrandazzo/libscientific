@@ -1,20 +1,19 @@
-/* tensor.c
-*
-* Copyright (C) <2016>  Giuseppe Marco Randazzo
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+/* Defines the tensor data structure and operations.
+ * Copyright (C) 2016-2026 designed, written and maintained by Giuseppe Marco Randazzo <gmrandazzo@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -89,6 +88,18 @@ void DelTensor(tensor** t)
   free((*t));
 }
 
+void ClearTensor(tensor* t)
+{
+  size_t i;
+  if(t != NULL && t->order > 0){
+    for(i = 0; i < t->order; i++)
+      DelMatrix(&t->m[i]);
+    xfree(t->m);
+    t->m = NULL;
+    t->order = 0;
+  }
+}
+
 
 void PrintTensor(tensor *t)
 {
@@ -98,7 +109,7 @@ void PrintTensor(tensor *t)
     printf("Tensor No: %u of row: %u; col: %u\n", (unsigned int)i+1, (unsigned int)t->m[i]->row, (unsigned int)t->m[i]->col);
     for(j = 0; j < t->m[i]->row; j++){
       for(k = 0; k < t->m[i]->col; k++)
-        printf("%8.3f\t", getMatrixValue(t->m[i], j, k));
+        printf("%8.3f\t", t->m[i]->data[j][k]);
       printf("\n");
     }
   }
@@ -109,7 +120,7 @@ void setTensorValue(tensor *t, size_t order, size_t row, size_t col, double val)
   if(order < (*t).order){
     if(row < (*t).m[order]->row){
       if(col < (*t).m[order]->col){
-        setMatrixValue((*t).m[order], row, col, val);
+        (*t).m[order]->data[row][col] = val;
       }
       else{
         fprintf(stderr, "setTensorValue Error! Wrong columnindex.\n");
@@ -135,7 +146,7 @@ double getTensorValue(tensor *t, size_t order, size_t row, size_t col)
   if(order < (*t).order){
     if(row < (*t).m[order]->row){
       if(col < (*t).m[order]->col){
-        return getMatrixValue((*t).m[order], row, col);
+        return (*t).m[order]->data[row][col];
       }
       else{
         fprintf(stderr, "getTensorValue Error! Wrong columnindex.\n");
@@ -347,16 +358,25 @@ void TransposedTensorDVectorProduct(tensor *t, dvector *v, matrix *p)
 {
   size_t i, j, k;
   double res;
+
+  if (p->row < t->order) {
+      fprintf(stderr, "Error: matrix p row size too small in TransposedTensorDVectorProduct\n");
+      return;
+  }
+
   for(k = 0; k < t->order; k++){
+    if (v->size < t->m[k]->col) {
+        fprintf(stderr, "Error: vector v size too small for tensor slice %zu in TransposedTensorDVectorProduct\n", k);
+        continue;
+    }
+    if (p->col < t->m[k]->row) {
+        fprintf(stderr, "Error: matrix p col size too small for tensor slice %zu in TransposedTensorDVectorProduct\n", k);
+        continue;
+    }
     for(i = 0; i < t->m[k]->row; i++){
       for(j = 0; j < t->m[k]->col; j++){
-        res = getTensorValue(t, k, i, j)*getDVectorValue(v, j);
-        if(_isnan_(res) || _isinf_(res)){
-          setMatrixValue(p, k, i, getMatrixValue(p, k, i) + 0);
-        }
-        else{
-          setMatrixValue(p, k, i, getMatrixValue(p, k, i) + res);
-        }
+        res = t->m[k]->data[i][j]*v->data[j];
+        p->data[k][i] = p->data[k][i] + res * (1.0f - ((_isnan_(res) | _isinf_(res)) & 1));
       }
     }
   }
@@ -368,7 +388,6 @@ void TransposedTensorDVectorProduct(tensor *t, dvector *v, matrix *p)
  */
 void DvectorTensorDotProduct(tensor* t, dvector* v, matrix* m)
 {
-  /*We do not need tests because getMatrixValue and setMatrixValue and getTensorValue handle some errors*/
   size_t i, j, k;
   double res;
   /* m = v't
@@ -384,13 +403,8 @@ void DvectorTensorDotProduct(tensor* t, dvector* v, matrix* m)
     for(i = 0; i < t->m[k]->row; i++){
       for(j = 0; j < t->m[k]->col; j++){
         if(v->size == t->m[k]->row && t->m[k]->col == m->row && t->order == m->col){
-          res = getDVectorValue(v, i) * getTensorValue(t, k, i, j);
-          if(_isnan_(res) || _isinf_(res)){
-            setMatrixValue(m, j, k, (getMatrixValue(m, j, k) + 0));
-          }
-          else{
-            setMatrixValue(m, j, k, (getMatrixValue(m, j, k) + res));
-          }
+          res = v->data[i]*t->m[k]->data[i][j];
+          m->data[j][k] = m->data[j][k] + (res * (1.0f - ((_isnan_(res) | _isinf_(res)) & 1)));
         }
         else{
           fprintf(stderr, "Error while computing DvectorTensorDotProduct.\n");
@@ -410,13 +424,8 @@ void TensorMatrixDotProduct(tensor *t, matrix *m, dvector *v)
     if(m->col == t->order && m->row == t->m[k]->col){
       for(i = 0; i < t->m[k]->row; i++){
         for(j = 0; j < t->m[k]->col; j++){
-          res = (getTensorValue(t, k, i, j)*getMatrixValue(m, j, k));
-          if(_isnan_(res) || _isinf_(res)){
-            setDVectorValue(v, i, (getDVectorValue(v, i) + 0));
-          }
-          else{
-            setDVectorValue(v, i, (getDVectorValue(v, i) + res));
-          }
+          res = t->m[k]->data[i][j] * m->data[j][k];
+          v->data[i] = v->data[i] + res * (1.0f - ((_isnan_(res) | _isinf_(res)) & 1));
         }
       }
     }
@@ -442,7 +451,7 @@ void TensorMatrixDotProduct2(tensor *t, matrix *m, dvector *v)
   for(i = 0; i < v->size; i++){
     for(k = 0; k < t->order; k++){
       for(j = 0; j < t->m[k]->col; j++){
-        setDVectorValue(v, i, getDVectorValue(v, i) + (getTensorValue(t, k, i, j)*getMatrixValue(m, k, j)));
+        v->data[i] = v->data[i] + t->m[k]->data[i][j]*m->data[k][j];
       }
     }
   }
@@ -455,13 +464,8 @@ void KronekerProductVectorMatrix(dvector* v, matrix* m, tensor* t)
   for(i = 0; i < v->size; i++){
     for(j = 0; j < m->row; j++){
       for(k = 0; k < m->col; k++){
-        res = getDVectorValue(v, i)*getMatrixValue(m, j, k);
-        if(_isnan_(res) || _isinf_(res)){
-          setTensorValue(t, k, i, j, 0.f);
-        }
-        else{
-          setTensorValue(t, k, i, j, res);
-        }
+        res = v->data[i]*m->data[j][k];
+        t->m[k]->data[i][j] = res * (1.0f - ((_isnan_(res) | _isinf_(res)) & 1));
       }
     }
   }

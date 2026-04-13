@@ -1,20 +1,19 @@
-/* vector.c
-*
-* Copyright (C) <2016>  Giuseppe Marco Randazzo
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+/* Defines the vector data structure and operations.
+ * Copyright (C) 2016-2026 designed, written and maintained by Giuseppe Marco Randazzo <gmrandazzo@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #include "vector.h"
 #include "numeric.h"
@@ -308,27 +307,25 @@ dvector *DVectorExtend(dvector *d1, dvector *d2)
   return dext;
 }
 
-
 void setDVectorValue(dvector *d, size_t id, double val)
 {
-  if(id < d->size)
-    (*d).data[id] = val;
-  else{
+  if(id >= d->size) {
     fprintf(stdout,"setDVectorValue Error: vector id %d out of range.\n", (int)id);
     fflush(stdout);
     abort();
   }
+  double *elem = &(*d).data[id];
+  *elem = val;
 }
 
 double getDVectorValue(dvector *d, size_t id)
 {
-  if(id < d->size)
-    return d->data[id];
-  else{
+  if(id >= d->size) {
     fprintf(stdout,"getDVectorValue Error: vector id %d out of range\n.", (int)id);
     fflush(stdout);
-    abort();
+    return -1; // or raise an exception
   }
+  return d->data[id];
 }
 
 int DVectorHasValue(dvector* d, double val)

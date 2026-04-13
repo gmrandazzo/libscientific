@@ -1,20 +1,19 @@
-/* testpls.c
-*
-* Copyright (C) <2016>  Giuseppe Marco Randazzo
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+/* Unit tests for the pls module.
+ * Copyright (C) 2016-2026 designed, written and maintained by Giuseppe Marco Randazzo <gmrandazzo@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #include "tensor.h"
 #include "pls.h"
@@ -213,7 +212,7 @@ void TestPLS13()
   puts("Y:");
   PrintMatrix(y);*/
 
-  ssignal run = SIGSCIENTIFICRUN;
+  scisignal run = SIGSCIENTIFICRUN;
   PLS(x, y, 4, 1, 0, m, &run);
 
 
@@ -313,7 +312,7 @@ void TestPLS12()
   puts("Y:");
   PrintMatrix(y);*/
 
-  ssignal run = SIGSCIENTIFICRUN;
+  scisignal run = SIGSCIENTIFICRUN;
   PLS(x, y, 4, 1, 0, m, &run);
 
   /*VALIDATE THE MODEL */
@@ -532,7 +531,7 @@ void TestPLS9()
   puts("Y:");
   PrintMatrix(y);
 
-  ssignal run = SIGSCIENTIFICRUN;
+  scisignal run = SIGSCIENTIFICRUN;
   PLS(x, y, 4, 1, 0, m, &run);
 
   initMatrix(&r2y);
@@ -794,7 +793,7 @@ void TestPLS5()
   initMatrix(&q2y);
   initMatrix(&sdep);
 
-  ssignal run = SIGSCIENTIFICRUN;
+  scisignal run = SIGSCIENTIFICRUN;
 
   MODELINPUT minpt = initModelInput();
   minpt.mx = x;
@@ -994,7 +993,7 @@ void TestPLS2()
   boston_house_price(x,  y);
 
   NewPLSModel(&m);
-  ssignal run = SIGSCIENTIFICRUN;
+  scisignal run = SIGSCIENTIFICRUN;
 
   PLS(x, y, 5, 0, 0, m, &run);
 
@@ -1123,6 +1122,80 @@ void TestPLS1()
   DelMatrix(&y);
 }
 
+void TestPLSGetLVCCutoff()
+{
+  printf("Test PLS GetLVCCutoff: ");
+  matrix *m;
+  NewMatrix(&m, 4, 1);
+  /* 
+   * Rows are compared in pairs (0 vs 1, 2 vs 3).
+   * Logic in GetLVCCutoff:
+   * i=0: prev = m[0][0], next = m[1][0].
+   * If next > prev and (next-prev)/next > 0.03, cutoff = 1.
+   */
+  m->data[0][0] = 0.50;
+  m->data[1][0] = 0.60; /* Improvement > 3% */
+  m->data[2][0] = 0.61;
+  m->data[3][0] = 0.62; /* Improvement < 3% */
+
+  int cutoff = GetLVCCutoff(m);
+  if (cutoff != 1) {
+      printf("Failed! Expected 1, got %d\n", cutoff);
+      abort();
+  }
+  printf("OK.\n");
+  DelMatrix(&m);
+}
+
+void TestPLSVIP()
+{
+  printf("Test PLS PLSVIP: ");
+  matrix *x, *y, *vip;
+  PLSMODEL *m;
+
+  NewMatrix(&x, 5, 2);
+  NewMatrix(&y, 5, 1);
+  initMatrix(&vip);
+
+  /* Simple linear relationship */
+  for(size_t i=0; i<5; i++) {
+      x->data[i][0] = (double)i;
+      x->data[i][1] = 0.0; /* This variable should have low VIP */
+      y->data[i][0] = (double)i * 2.0;
+  }
+
+  NewPLSModel(&m);
+  PLS(x, y, 1, 1, 1, m, NULL);
+  PLSVIP(m, vip);
+
+  /* 
+   * With 1 component perfectly explaining Y using only first variable:
+   * VIP[0] should be >> VIP[1]
+   * Average squared VIP should be 1.0
+   */
+  if (vip->row != 2 || vip->col != 1) {
+      printf("Failed! Wrong VIP matrix dimensions.\n");
+      abort();
+  }
+
+  if (vip->data[0][0] <= vip->data[1][0]) {
+      printf("Failed! VIP[0] (%f) should be greater than VIP[1] (%f)\n", vip->data[0][0], vip->data[1][0]);
+      abort();
+  }
+
+  double avg_sq_vip = (square(vip->data[0][0]) + square(vip->data[1][0])) / 2.0;
+  if (!FLOAT_EQ(avg_sq_vip, 1.0, 1e-5)) {
+      printf("Failed! Average squared VIP should be 1.0, got %f\n", avg_sq_vip);
+      abort();
+  }
+
+  printf("OK.\n");
+  DelPLSModel(&m);
+  DelMatrix(&vip);
+  DelMatrix(&x);
+  DelMatrix(&y);
+}
+
 int main(void)
 {
   /*test 1- 5*/
@@ -1143,5 +1216,7 @@ int main(void)
   TestPLS13();
   TestPLS14();
   TestPLS15();
+  TestPLSGetLVCCutoff();
+  TestPLSVIP();
   return 0;
 }
