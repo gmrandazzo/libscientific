@@ -74,7 +74,7 @@ void DelMLRModel(MLRMODEL **m);
 void MLR(matrix *mx,
          matrix *my,
          MLRMODEL *model,
-         ssignal *s);
+         scisignal *s);
 
 /**
  * Predict Y targets using a MLR model

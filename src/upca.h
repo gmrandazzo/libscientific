@@ -62,7 +62,7 @@ int CheckTensor(tensor *X);
  * @param [in] npc number of desired principal components
  * @param [in] autoscaling
  * @param [out] m initialized model using NewUPCAModel(...). The datastructure will be populated with results
- * @param [in] ssignal libscientific signal. Default value is NULL
+ * @param [in] scisignal libscientific signal. Default value is NULL
  * 
  * Available scalings:
  *
@@ -83,7 +83,7 @@ void UPCA(tensor *X,
           size_t npc,
           size_t autoscaling,
           UPCAMODEL *m,
-          ssignal *s);
+          scisignal *s);
 
 /**
  *  Predict scores given an unfolded principal component analysis and a tensor as input. 

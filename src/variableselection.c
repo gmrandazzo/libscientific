@@ -79,7 +79,7 @@ void PLSCostPopulation(matrix *mx, matrix *my,
                       uivector *popvector,
                       size_t xautoscaling, size_t yautoscaling, size_t nlv,
                       int validation_type, size_t ngroup, size_t niter,
-                      double *r2, double *q2, double *bias_, size_t nthreads, ssignal *s)
+                      double *r2, double *q2, double *bias_, size_t nthreads, scisignal *s)
 {
   size_t i, j, k, subsize, cutoff;
   double r2_, q2_, _bias_;
@@ -285,7 +285,7 @@ void PLSCostPopulation(matrix *mx, matrix *my,
 void PSLPSOVariableSelection(matrix *mx, matrix *my, matrix *px, matrix *py,
                        size_t xautoscaling, size_t yautoscaling, size_t nlv, int validation_type, size_t ngroup, size_t niter,
                        size_t population_size, double randomness,
-                       uivector **varselected, matrix **map, uivector **vardistribution, size_t nthreads, ssignal *s)
+                       uivector **varselected, matrix **map, uivector **vardistribution, size_t nthreads, scisignal *s)
 {
   size_t i, j, iter, new_position, population_size_, tmp_var_id, nvarON;
   double model_r2, cost_g_best, cost_best, tmp_model_r2, tmp_cost_best, tmp_g_best, new_v, new_pos, rand1, rand2;
@@ -599,7 +599,7 @@ int FitnessMaxsimized(dvector* modelsfitness, dvector* modelsfitness_old, double
 void PLSGAVariableSelection(matrix *mx, matrix *my, matrix *px, matrix *py,
                        size_t xautoscaling, size_t yautoscaling, size_t nlv, int validation_type, size_t ngroup, size_t niter,
                        size_t population_size, double fraction_of_population, double mutation_rate, size_t crossovertype, double nswapping, double populationconvergence,
-                      uivector **varselected, matrix **map, uivector **vardistribution, size_t nthreads, ssignal *s)
+                      uivector **varselected, matrix **map, uivector **vardistribution, size_t nthreads, scisignal *s)
 {
   size_t i, j, k, position, mutatebit, bitswap, totbitswapp, copy_selection, crossover_selection, mutation_selection, init, a, b, nvarON, blockitercount;
   double best_fitness = 0, best_bias = 99, model_r2, tmp_fitness, tmp_bias, tmp_model_r2;
@@ -1011,7 +1011,7 @@ void PLSGAVariableSelection(matrix *mx, matrix *my, matrix *px, matrix *py,
 void PLSSpearmannVariableSelection(matrix* mx, matrix* my, matrix* px, matrix* py,
                                    size_t xautoscaling, size_t yautoscaling, size_t nlv, int validation_type, size_t ngroup, size_t niter,
                                    double threshold,
-                                   uivector** varselected, matrix** map, uivector **vardistribution, size_t nthreads, ssignal* s){
+                                   uivector** varselected, matrix** map, uivector **vardistribution, size_t nthreads, scisignal* s){
   size_t i, j, k, nstep, nvarON;
   double step, r2, q2, best_q2 = 0, rangemax;
 

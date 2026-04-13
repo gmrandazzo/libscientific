@@ -430,7 +430,7 @@ void LVCalc(matrix *X,
   *
   */
 
-void PLS(matrix *mx, matrix *my, size_t nlv, int xautoscaling, int yautoscaling, PLSMODEL* model, ssignal *s)
+void PLS(matrix *mx, matrix *my, size_t nlv, int xautoscaling, int yautoscaling, PLSMODEL* model, scisignal *s)
 {
   if(nlv >= 1){
     size_t i, j, pc; /* pc = principal component */

@@ -110,7 +110,7 @@ void UPLS(tensor *X_,
           size_t xautoscaling,
           size_t yautoscaling,
           UPLSMODEL *m,
-          ssignal *s);
+          scisignal *s);
 
 /* Description: Predict Score variable through the UPLSMODEL m.
  * This Function is used by UPLSRSquared and UPLSRSquared_SSErr_SStot
@@ -177,7 +177,7 @@ void UPLSYScrambling(tensor *X_, tensor *Y_,
                         size_t xautoscaling, size_t yautoscaling,
                         size_t npc, size_t block,
                         size_t valtype, size_t rgcv_groups, size_t rgcv_iterations,
-                        tensor **q2y, tensor **sdep, ssignal *s);
+                        tensor **q2y, tensor **sdep, scisignal *s);
 
 /*
  * Description: Random Cross Validation. Is used to extimate the model predictivity.
@@ -192,7 +192,7 @@ void UPLSYScrambling(tensor *X_, tensor *Y_,
 void UPLSRandomGroupsCV(tensor *X_, tensor *Y_,
                          size_t xautoscaling, size_t yautoscaling,
                          size_t npc, size_t group, size_t iterations,
-                         dvector **r2x, tensor **q2y, tensor **sdep, tensor **predicted_y, tensor **pred_residuals, ssignal *s);
+                         dvector **r2x, tensor **q2y, tensor **sdep, tensor **predicted_y, tensor **pred_residuals, scisignal *s);
 
 
 /*
@@ -208,7 +208,7 @@ void UPLSRandomGroupsCV(tensor *X_, tensor *Y_,
 void UPLSLOOCV(tensor *X_, tensor *Y_,
                          size_t xautoscaling, size_t yautoscaling,
                          size_t npc,
-                         dvector **r2x, tensor **q2y, tensor **sdep, tensor **predicted_y, tensor **pred_residuals, ssignal *s);
+                         dvector **r2x, tensor **q2y, tensor **sdep, tensor **predicted_y, tensor **pred_residuals, scisignal *s);
 
 
 /*This function from Q^2, or R^2 return the number of components to use for make predictions.

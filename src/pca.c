@@ -122,7 +122,7 @@ double calcConvergence(dvector *t_new, dvector *t_old)
  * Martens, Harald, and Magni Martens. 2001. Multivariate Analysis of Quality: An Introduction. J.Wiley & Son
  * https://www.wiley.com/en-us/Multivariate+Analysis+of+Quality%3A+An+Introduction-p-9780471974284
  */
-void PCA(matrix *mx, int scaling, size_t npc, PCAMODEL* model, ssignal *s)
+void PCA(matrix *mx, int scaling, size_t npc, PCAMODEL* model, scisignal *s)
 {
   size_t i, j, pc;
   size_t iter = 0;
@@ -498,7 +498,7 @@ void PCARankValidation(matrix *mx,
                        size_t group,
                        size_t iterations,
                        dvector *r2,
-                       ssignal *s)
+                       scisignal *s)
 {
   size_t iterations_, i, j, k, n, g;
   matrix *gid;

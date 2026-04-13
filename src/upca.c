@@ -106,7 +106,7 @@ int CheckTensor(tensor *X_){
  *
  */
 
-void UPCA(tensor *X_, size_t npc, size_t autoscaling, UPCAMODEL *m, ssignal *s)
+void UPCA(tensor *X_, size_t npc, size_t autoscaling, UPCAMODEL *m, scisignal *s)
 {
   if(CheckTensor(X_) == 0){
     size_t pc, i, j, k, order, column;

@@ -142,7 +142,7 @@ void BootstrapRandomGroupsCV(MODELINPUT *input,
                              matrix *predicted_y,
                              matrix *pred_residuals,
                              size_t nthreads,
-                             ssignal *s,
+                             scisignal *s,
                              int num_arg,
                              ...);
 
@@ -163,7 +163,7 @@ void LeaveOneOut(MODELINPUT *input,
                  matrix *predicted_y,
                  matrix *pred_residuals,
                  size_t nthreads,
-                 ssignal *s,
+                 scisignal *s,
                  int num_arg,
                  ...);
 
@@ -185,7 +185,7 @@ void KFoldCV(MODELINPUT *input,
              matrix *predicted_y,
              matrix *pred_residuals,
              size_t nthreads,
-             ssignal *s,
+             scisignal *s,
              int arg,
              ...);
 
@@ -207,6 +207,6 @@ void YScrambling(MODELINPUT *input,
                  size_t iterations,
                  matrix *ccoeff_yscrambling,
                  size_t nthreads,
-                 ssignal *s);
+                 scisignal *s);
 
 #endif

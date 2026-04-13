@@ -73,7 +73,7 @@ ELearningParameters initElearningParameters()
   return (ELearningParameters){ .n_models = 100, .trainsize = 0.3, .algorithm = Bagging, .r_fix = 4};
 }
 
-void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautoscaling, EPLSMODEL *m, ELearningParameters eparm, ssignal *s)
+void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautoscaling, EPLSMODEL *m, ELearningParameters eparm, scisignal *s)
 {
   size_t i, j, it;
   /* Model allocation */

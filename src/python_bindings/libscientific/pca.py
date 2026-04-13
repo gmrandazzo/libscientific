@@ -80,8 +80,8 @@ def pca_algorithm(m_input, scaling, npc, mpca):
     """
     PCA: Calculate the PCA model for a matrix m using the NIPALS algorithm
     """
-    ssignal = ctypes.c_int(0)
-    lsci.PCA(m_input, scaling, npc, mpca, ssignal)
+    scisignal = ctypes.c_int(0)
+    lsci.PCA(m_input, scaling, npc, mpca, scisignal)
 
 
 lsci.PCAScorePredictor.argtypes = [ctypes.POINTER(mx.MATRIX),

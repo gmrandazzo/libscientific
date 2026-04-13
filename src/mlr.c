@@ -60,7 +60,7 @@ void DelMLRModel(MLRMODEL** m)
   xfree((*m));
 }
 
-void MLR(matrix* mx, matrix* my, MLRMODEL* model, ssignal *s)
+void MLR(matrix* mx, matrix* my, MLRMODEL* model, scisignal *s)
 {
   size_t i, j;
   matrix *mx_;

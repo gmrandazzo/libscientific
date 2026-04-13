@@ -203,7 +203,7 @@ void test2()
   */
 
   NewUPCAModel(&m);
-  ssignal run = SIGSCIENTIFICRUN;
+  scisignal run = SIGSCIENTIFICRUN;
   UPCA(t, 3, 1, m, &run);
 
   PrintUPCAModel(m);

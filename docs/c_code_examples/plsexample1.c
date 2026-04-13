@@ -55,10 +55,10 @@ int main(void)
      * xautoscaling: the autoscaling type for the x matrix
      * yautoscaling: the autoscaling type for the y Matrix
      * model: the PLSMODEL previously allocated
-     * ssignal: a scientific signal to stop the calculation if requested by the user
+     * scisignal: a scientific signal to stop the calculation if requested by the user
      *
      * more information in the pls.h header file
-     * void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautoscaling, PLSMODEL *model, ssignal *s);
+     * void PLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautoscaling, PLSMODEL *model, scisignal *s);
      */
     PLS(x, y, 3, 1, 0, m, NULL);
 

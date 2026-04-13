@@ -75,7 +75,7 @@ double calcConvergence(dvector *t_new, dvector *t_old);
  * @param [in] scaling scaling type expressed as unsigned int type
  * @param [in] npc number of desired principal components
  * @param [out] PCAMODEL initialized model using NewPCAModel(...). The datastructure will be populated with results
- * @param [in] ssignal libscientific signal. Default value is NULL
+ * @param [in] scisignal libscientific signal. Default value is NULL
  * 
  * Available scalings:
  *
@@ -98,7 +98,7 @@ void PCA(matrix *mx,
          int scaling,
          size_t npc,
          PCAMODEL *model,
-         ssignal *s);
+         scisignal *s);
 
 
 /**
@@ -148,7 +148,7 @@ void PCARankValidation(matrix *mx,
                        size_t group,
                        size_t iterations,
                        dvector *r2,
-                       ssignal *s);
+                       scisignal *s);
 
 /**
  * @brief Compute the T squared feature contributions and SPE for every object.

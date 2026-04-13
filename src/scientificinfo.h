@@ -22,7 +22,7 @@
 #include <stdlib.h>
 
 /* SIGNALS */
-typedef int ssignal;
+typedef int scisignal;
 
 #define SIGSCIENTIFICSTOP 1
 #define SIGSCIENTIFICRUN 0

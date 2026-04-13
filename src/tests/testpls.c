@@ -212,7 +212,7 @@ void TestPLS13()
   puts("Y:");
   PrintMatrix(y);*/
 
-  ssignal run = SIGSCIENTIFICRUN;
+  scisignal run = SIGSCIENTIFICRUN;
   PLS(x, y, 4, 1, 0, m, &run);
 
 
@@ -312,7 +312,7 @@ void TestPLS12()
   puts("Y:");
   PrintMatrix(y);*/
 
-  ssignal run = SIGSCIENTIFICRUN;
+  scisignal run = SIGSCIENTIFICRUN;
   PLS(x, y, 4, 1, 0, m, &run);
 
   /*VALIDATE THE MODEL */
@@ -531,7 +531,7 @@ void TestPLS9()
   puts("Y:");
   PrintMatrix(y);
 
-  ssignal run = SIGSCIENTIFICRUN;
+  scisignal run = SIGSCIENTIFICRUN;
   PLS(x, y, 4, 1, 0, m, &run);
 
   initMatrix(&r2y);
@@ -793,7 +793,7 @@ void TestPLS5()
   initMatrix(&q2y);
   initMatrix(&sdep);
 
-  ssignal run = SIGSCIENTIFICRUN;
+  scisignal run = SIGSCIENTIFICRUN;
 
   MODELINPUT minpt = initModelInput();
   minpt.mx = x;
@@ -993,7 +993,7 @@ void TestPLS2()
   boston_house_price(x,  y);
 
   NewPLSModel(&m);
-  ssignal run = SIGSCIENTIFICRUN;
+  scisignal run = SIGSCIENTIFICRUN;
 
   PLS(x, y, 5, 0, 0, m, &run);
 

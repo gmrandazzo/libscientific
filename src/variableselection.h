@@ -31,7 +31,7 @@
 void PSLPSOVariableSelection(matrix *mx, matrix *my, matrix *px, matrix *py,
                        size_t xautoscaling, size_t yautoscaling, size_t nlv, int validation_type, size_t ngroup, size_t niter,
                        size_t population_size, double randomness,
-                       uivector **varselected, matrix **map, uivector **vardistribution, size_t nthreads, ssignal *s);
+                       uivector **varselected, matrix **map, uivector **vardistribution, size_t nthreads, scisignal *s);
 
 /*
  * Variable selection using the Genetic Algorithm
@@ -54,7 +54,7 @@ void PSLPSOVariableSelection(matrix *mx, matrix *my, matrix *px, matrix *py,
 void PLSGAVariableSelection(matrix *mx, matrix *my, matrix *px, matrix *py,
                        size_t xautoscaling, size_t yautoscaling, size_t nlv, int validation_type, size_t ngroup, size_t niter,
                        size_t population_size, double fraction_of_population, double mutation_rate, size_t crossovertype, double nswapping, double populationconvergence,
-                       uivector **varselected, matrix **map, uivector **vardistribution, size_t nthreads, ssignal *s);
+                       uivector **varselected, matrix **map, uivector **vardistribution, size_t nthreads, scisignal *s);
 
 /* Variable selection using the Spearmann correlation coefficient
  * Input
@@ -76,4 +76,4 @@ void PLSSpearmannVariableSelection(matrix *mx, matrix *my, matrix *px, matrix *p
                                    size_t xautoscaling, size_t yautoscaling, size_t nlv, int validation_type,
                                    size_t ngroup, size_t niter,
                                    double threshold,
-                                   uivector **varselected, matrix **map, uivector **vardistribution, size_t nthreads, ssignal *s);
+                                   uivector **varselected, matrix **map, uivector **vardistribution, size_t nthreads, scisignal *s);

@@ -128,7 +128,7 @@ void LVCalc(matrix *X, matrix *Y, dvector *t, dvector *u, dvector *p, dvector *q
  * @param [in] xautoscaling scaling typeon the x independent variables expressed as unsigned int type
  * @param [in] yautoscaling scaling typeon the y dependent variables expressed as unsigned int type
  * @param [out] PLSMODEL output -initialized model using NewPLSAModel(...). The datastructure will be populated with results
- * @param [in] ssignal libscientific signal. Default value is NULL.
+ * @param [in] scisignal libscientific signal. Default value is NULL.
  * 
  * Available scalings:
  *
@@ -153,7 +153,7 @@ void PLS(matrix *mx,
          int xautoscaling,
          int yautoscaling,
          PLSMODEL *model,
-         ssignal *s);
+         scisignal *s);
 
 /**
  * Calculate betas coefficients from a pls model at specific nlv latent variables

@@ -24,7 +24,7 @@ void test3()
 {
   matrix *mx, *my;
   MLRMODEL *m;
-  ssignal s = SIGSCIENTIFICRUN;
+  scisignal s = SIGSCIENTIFICRUN;
   puts("Test3: Simple Calculation MLR Model with BootstrapRandomGroupsCV");
 
   NewMatrix(&mx, 5, 1);
@@ -120,7 +120,7 @@ void test2()
   size_t i;
   matrix *mx, *my;
   MLRMODEL *m;
-  ssignal s = SIGSCIENTIFICRUN;
+  scisignal s = SIGSCIENTIFICRUN;
   puts("Test2: Simple Calculation MLR Model with LOOCV and YScrambling");
 
 
@@ -164,7 +164,7 @@ void test1()
 {
   matrix *mx, *my;
   MLRMODEL *m;
-  ssignal s = SIGSCIENTIFICRUN;
+  scisignal s = SIGSCIENTIFICRUN;
   puts("Test1: Simple Calculation MLR Model with BootstrapRandomGroupsCV and YScrambling");
 
   NewMatrix(&mx, 5, 1);

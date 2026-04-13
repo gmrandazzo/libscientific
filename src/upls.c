@@ -200,7 +200,7 @@ void UPLS(tensor* X_,
           size_t xautoscaling,
           size_t yautoscaling,
           UPLSMODEL* m,
-          ssignal *s)
+          scisignal *s)
 {
 
   if(CheckTensors(X_, Y_) == 0 && npc >= 1){
@@ -940,7 +940,7 @@ void UPLSYScrambling(tensor *X_, tensor *Y_,
                         size_t xautoscaling, size_t yautoscaling,
                         size_t npc, size_t block,
                         size_t valtype, size_t rgcv_group, size_t rgcv_iterations,
-                        tensor **q2y, tensor **sdep, ssignal *s)
+                        tensor **q2y, tensor **sdep, scisignal *s)
 {
   size_t scrambiterations, iterations_, i, j, order, q, k, n, y_, blocksize;
   int id;
@@ -1136,7 +1136,7 @@ void UPLSYScrambling(tensor *X_, tensor *Y_,
 }
 
 /* DEPRECATED */
-void UPLSRandomGroupsCV(tensor *X_, tensor *Y_, size_t xautoscaling, size_t yautoscaling, size_t npc, size_t group, size_t iterations, dvector **r2x, tensor **q2y, tensor **sdep, tensor **predicted_y, tensor **pred_residuals, ssignal *s)
+void UPLSRandomGroupsCV(tensor *X_, tensor *Y_, size_t xautoscaling, size_t yautoscaling, size_t npc, size_t group, size_t iterations, dvector **r2x, tensor **q2y, tensor **sdep, tensor **predicted_y, tensor **pred_residuals, scisignal *s)
 {
   if(npc > 0 && X_->m[0]->row == Y_->m[0]->row && group > 0 && iterations > 0){
     size_t iterations_, i, j, k, n, l, g;
@@ -1522,7 +1522,7 @@ void UPLSRandomGroupsCV(tensor *X_, tensor *Y_, size_t xautoscaling, size_t yaut
  * 2) calculate the model
  * 3) predict the removed object and so the r2 and q2
  */
-void UPLSLOOCV(tensor* X_, tensor* Y_, size_t xautoscaling, size_t yautoscaling, size_t npc, dvector** r2x, tensor** q2y, tensor** sdep, tensor** predicted_y, tensor **pred_residuals, ssignal *s)
+void UPLSLOOCV(tensor* X_, tensor* Y_, size_t xautoscaling, size_t yautoscaling, size_t npc, dvector** r2x, tensor** q2y, tensor** sdep, tensor** predicted_y, tensor **pred_residuals, scisignal *s)
 {
   if(npc > 0 && X_->m[0]->row == Y_->m[0]->row){
     size_t i, j, k, l, m, model;
@@ -1898,7 +1898,7 @@ void UPLSCostPopulation(tensor *ax, tensor *ay,
                       uivector *popvector,
                       size_t xautoscaling, size_t yautoscaling, size_t npc,
                       int validation_type, size_t ngroup, size_t niter,
-                      double *r2, double *q2, ssignal *s)
+                      double *r2, double *q2, scisignal *s)
 {
   size_t i, j, k, cc, subsize, cutoff;
   double r2_, q2_;

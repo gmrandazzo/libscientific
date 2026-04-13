@@ -162,7 +162,7 @@ void test8()
 
   NewUPLSModel(&m);
 
-  ssignal run = SIGSCIENTIFICRUN;
+  scisignal run = SIGSCIENTIFICRUN;
 
   UPLS(ax, ay, 99, 1, 0, m, &run);
 
@@ -282,7 +282,7 @@ void test7()
   initTensor(&sdep);
   initTensor(&predicted_y);
 
-  ssignal run = SIGSCIENTIFICRUN;
+  scisignal run = SIGSCIENTIFICRUN;
   /* we divide all the dataset in 5 groups */
   UPLSRandomGroupsCV(ax, ay, 1, 0, 3, 3, 20, &q2x, &q2y, &sdep, &predicted_y, NULL, &run);
 
