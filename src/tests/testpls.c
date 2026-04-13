@@ -1122,6 +1122,80 @@ void TestPLS1()
   DelMatrix(&y);
 }
 
+void TestPLSGetLVCCutoff()
+{
+  printf("Test PLS GetLVCCutoff: ");
+  matrix *m;
+  NewMatrix(&m, 4, 1);
+  /* 
+   * Rows are compared in pairs (0 vs 1, 2 vs 3).
+   * Logic in GetLVCCutoff:
+   * i=0: prev = m[0][0], next = m[1][0].
+   * If next > prev and (next-prev)/next > 0.03, cutoff = 1.
+   */
+  m->data[0][0] = 0.50;
+  m->data[1][0] = 0.60; /* Improvement > 3% */
+  m->data[2][0] = 0.61;
+  m->data[3][0] = 0.62; /* Improvement < 3% */
+
+  int cutoff = GetLVCCutoff(m);
+  if (cutoff != 1) {
+      printf("Failed! Expected 1, got %d\n", cutoff);
+      abort();
+  }
+  printf("OK.\n");
+  DelMatrix(&m);
+}
+
+void TestPLSVIP()
+{
+  printf("Test PLS PLSVIP: ");
+  matrix *x, *y, *vip;
+  PLSMODEL *m;
+
+  NewMatrix(&x, 5, 2);
+  NewMatrix(&y, 5, 1);
+  initMatrix(&vip);
+
+  /* Simple linear relationship */
+  for(size_t i=0; i<5; i++) {
+      x->data[i][0] = (double)i;
+      x->data[i][1] = 0.0; /* This variable should have low VIP */
+      y->data[i][0] = (double)i * 2.0;
+  }
+
+  NewPLSModel(&m);
+  PLS(x, y, 1, 1, 1, m, NULL);
+  PLSVIP(m, vip);
+
+  /* 
+   * With 1 component perfectly explaining Y using only first variable:
+   * VIP[0] should be >> VIP[1]
+   * Average squared VIP should be 1.0
+   */
+  if (vip->row != 2 || vip->col != 1) {
+      printf("Failed! Wrong VIP matrix dimensions.\n");
+      abort();
+  }
+
+  if (vip->data[0][0] <= vip->data[1][0]) {
+      printf("Failed! VIP[0] (%f) should be greater than VIP[1] (%f)\n", vip->data[0][0], vip->data[1][0]);
+      abort();
+  }
+
+  double avg_sq_vip = (square(vip->data[0][0]) + square(vip->data[1][0])) / 2.0;
+  if (!FLOAT_EQ(avg_sq_vip, 1.0, 1e-5)) {
+      printf("Failed! Average squared VIP should be 1.0, got %f\n", avg_sq_vip);
+      abort();
+  }
+
+  printf("OK.\n");
+  DelPLSModel(&m);
+  DelMatrix(&vip);
+  DelMatrix(&x);
+  DelMatrix(&y);
+}
+
 int main(void)
 {
   /*test 1- 5*/
@@ -1142,5 +1216,7 @@ int main(void)
   TestPLS13();
   TestPLS14();
   TestPLS15();
+  TestPLSGetLVCCutoff();
+  TestPLSVIP();
   return 0;
 }

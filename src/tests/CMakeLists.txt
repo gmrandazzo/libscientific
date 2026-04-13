@@ -142,3 +142,7 @@ add_test(NAME testio COMMAND testio)
 add_executable(testmemwrapper ${MemWrapperTest_SRC})
 target_link_libraries(testmemwrapper libscientific)
 add_test(NAME testmemwrapper COMMAND testmemwrapper)
+
+add_test(NAME testmemwrapper_malloc_fail COMMAND testmemwrapper --malloc-fail)
+add_test(NAME testmemwrapper_calloc_fail COMMAND testmemwrapper --calloc-fail)
+add_test(NAME testmemwrapper_realloc_fail COMMAND testmemwrapper --realloc-fail)

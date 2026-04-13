@@ -954,35 +954,59 @@ void PLSDiscriminantAnalysisStatistics(matrix *my_true,
 }
 
 /*
- * VIP: VARIABLE IMPORTANCE
- * VIP are calculated according to the formula:
- * VIP[j][pc] = sqrt(n_predvars * Sum( (b[pc]^2*t[pc]*t^[pc]) * (w[j][pc]/||w[pc]||) ^2 ) / Sum((b[pc]^2*t[pc]*t^[pc])))
+ * VIP: VARIABLE IMPORTANCE IN PROJECTION
+ * VIP scores summarize the influence of individual X variables on the PLS model.
+ * The VIP score for the jth variable is:
+ * VIP_j = sqrt( (J * sum_{f=1}^{F} (w_jf^2 * SSY_f)) / (SSY_total * F) )
+ * where:
+ * - J is the total number of X variables.
+ * - F is the total number of components.
+ * - w_jf is the weight of variable j for component f.
+ * - SSY_f = b_f^2 * t_f' * t_f is the explained Y variance by component f.
+ * - SSY_total = sum(SSY_f) is the total explained Y variance.
  */
 void PLSVIP(PLSMODEL *model, matrix *vip)
 {
-  size_t nlv = model->xscores->col;
-  size_t npred = model->xloadings->row;
-  size_t i, j, k;
-  ResizeMatrix(vip, npred, nlv);
-  for(i = 0; i < nlv; i++){
-    for(j = 0; j < i; j++){
-      double n = 0.f;
-      double d = 0.f;
-      double b = model->b->data[j];
-      dvector *t = getMatrixColumn(model->xscores, i);
-      double dot_t = DVectorDVectorDotProd(t, t);
-      dvector *w = getMatrixColumn(model->xweights, i);
-      double w_mod = DvectorModule(w);
-      for(k = 0; k < npred; k++){
-        /*HIGHLY EXPERIMENTAL! NOT TESTED! MAY NOT WORK!! */
-        n += (b*b*dot_t) * square(w->data[k]/w_mod);
-        d += (b*b*dot_t);
-      }
-      DelDVector(&t);
-      DelDVector(&w);
-      vip->data[j][i] = sqrt(npred*(n/d));
-    }
+  size_t nlv = model->xscores->col;    /* F */
+  size_t npred = model->xweights->row; /* J */
+  size_t f, j;
+  double ssy_total = 0.0;
+  dvector *ssy_f;
+
+  if (nlv == 0 || npred == 0) return;
+
+  NewDVector(&ssy_f, nlv);
+  ResizeMatrix(vip, npred, 1); /* VIP is a single vector for all components */
+
+  /* 1. Calculate SSY_f for each component and SSY_total */
+  for (f = 0; f < nlv; f++) {
+    double bf = model->b->data[f];
+    dvector *tf = getMatrixColumn(model->xscores, f);
+    double tf_tf = DVectorDVectorDotProd(tf, tf);
+    double ssy = bf * bf * tf_tf;
+    
+    setDVectorValue(ssy_f, f, ssy);
+    ssy_total += ssy;
+    DelDVector(&tf);
   }
+
+  if (ssy_total <= EPSILON) {
+    DelDVector(&ssy_f);
+    MatrixSet(vip, 0.0);
+    return;
+  }
+
+  /* 2. Calculate VIP_j for each variable */
+  for (j = 0; j < npred; j++) {
+    double weighted_sum_w2 = 0.0;
+    for (f = 0; f < nlv; f++) {
+      double w_jf = model->xweights->data[j][f];
+      weighted_sum_w2 += (w_jf * w_jf * ssy_f->data[f]);
+    }
+    vip->data[j][0] = sqrt((double)npred * weighted_sum_w2 / (ssy_total * (double)nlv));
+  }
+
+  DelDVector(&ssy_f);
 }
 
 int GetLVCCutoff_(matrix *rq2y){
@@ -1013,28 +1037,32 @@ int GetLVCCutoff_(matrix *rq2y){
   return cutoff;
 }
 
+
 int GetLVCCutoff(matrix *coeff){
   size_t i, j, cutoff = 0;
   double prec;
   dvector *coeff_avg;
   NewDVector(&coeff_avg, coeff->row);
+
   for(i = 0; i < coeff->row; i++){
     for(j = 0; j < coeff->col; j++){
       coeff_avg->data[i] += coeff->data[i][j];
     }
   }
-
   prec = coeff_avg->data[0];
-  for(i = 1; i < coeff_avg->size-1; i++){
-    if(prec < coeff_avg->data[i] && coeff_avg->data[i] < coeff_avg->data[i+1]){
-      prec = coeff_avg->data[i];
-      cutoff = i+1;
-      continue;
+  for(i = 1; i < coeff_avg->size; i++){
+    double current = coeff_avg->data[i];
+    // Check if strictly increasing AND improvement is > 3%
+    if(current > prec && ((current - prec) / current) > 0.03){
+      prec = current;
+      cutoff = i;
     }
     else{
+      // If the improvement drops below 3%, stop looking
       break;
     }
   }
+
   DelDVector(&coeff_avg);
   return cutoff;
 }

@@ -43,7 +43,7 @@ void *xcalloc(size_t nmemb, size_t size)
 	if (nmemb == 0 || size == 0) { nmemb = 1; size = 1; }
 	void *ptr = calloc(nmemb, size);
 	if (!ptr) {
-		fprintf(stderr, "[Libscientific] Memory exhausted allocating %zu bytes\n", nmemb * size);
+		fprintf(stderr, "[Libscientific] Memory exhausted allocating %zu elements of %zu bytes each\n", nmemb, size);
 		abort();
 	}
 	return ptr;

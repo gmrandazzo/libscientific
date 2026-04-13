@@ -982,6 +982,37 @@ void test21()
   DelMatrix(&m);
 }
 
+void test22()
+{
+  puts("Test Clustering 22: MaxDis on a huge dataset");
+  size_t i, j, maxrow, maxcol;
+  matrix *m;
+  uivector *sel_fast, *sel_par;
+  clock_t start, end;
+  double t_fast;
+
+  maxrow = 200000;
+  maxcol = 2;
+  size_t n_select = 200;
+  
+  NewMatrix(&m, maxrow, maxcol);
+  srand(42);
+  for(i=0; i<maxrow; i++)
+    for(j=0; j<maxcol; j++)
+      setMatrixValue(m, i, j, (double)(rand()%100));
+  initUIVector(&sel_fast);
+  initUIVector(&sel_par);
+
+  puts("Running MaxDis_Fast (New Memory Efficient)...");
+  start = clock();
+  MaxDis_Fast(m, n_select, 0, sel_fast, 8);
+  end = clock();
+  t_fast = ((double)(end-start))/CLOCKS_PER_SEC;
+  printf("Time: %f s\n", t_fast);
+  DelUIVector(&sel_fast);
+  DelMatrix(&m);
+}
+
 int main(void){
   /* Selection Tests */
   test1();
@@ -1006,5 +1037,6 @@ int main(void){
   test19();
   test20();
   test21();
+  test22();
   return 0;
 }
