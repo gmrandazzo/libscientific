@@ -39,6 +39,7 @@ extern "C" {
 #include <scientific/cpca.h>
 #include <scientific/pls.h>
 #include <scientific/epls.h>
+#include <scientific/ica.h>
 #include <scientific/upca.h>
 #include <scientific/upls.h>
 #include <scientific/mlr.h>
