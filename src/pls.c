@@ -848,13 +848,8 @@ void PLSRegressionStatistics(matrix *my_true,
       initDVector(&yt);
       initDVector(&yp);
       for(i = 0; i < my_true->row; i++){
-        if(FLOAT_EQ(my_true->data[i][j], MISSING, 1e-1)){
-          continue;
-        }
-        else{
-          DVectorAppend(yt, my_true->data[i][j]);
-          DVectorAppend(yp, my_pred->data[i][my_true->col*lv+j]);
-        }
+        DVectorAppend(yt, my_true->data[i][j]);
+        DVectorAppend(yp, my_pred->data[i][my_true->col*lv+j]);
       }
 
       if(bias != NULL){

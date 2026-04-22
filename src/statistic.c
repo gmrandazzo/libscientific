@@ -48,14 +48,9 @@ double R2_deprecated(dvector *ytrue, dvector *ypred)
   yavg = ypredavg = 0.f;
   ny = 0;
   for(i = 0; i < ytrue->size; i++){
-    if(FLOAT_EQ(ytrue->data[i], MISSING, 1e-1)){
-      continue;
-    }
-    else{
-      yavg += ytrue->data[i];
-      ypredavg += ypred->data[i];
-      ny+=1;
-    }
+    yavg += ytrue->data[i];
+    ypredavg += ypred->data[i];
+    ny+=1;
   }
 
   if (ny < 2) return 0.f;
@@ -64,16 +59,11 @@ double R2_deprecated(dvector *ytrue, dvector *ypred)
 
   num = den1 = den2 = 0.f;
   for(i = 0; i < ytrue->size; i++){
-    if(FLOAT_EQ(ytrue->data[i], MISSING, 1e-1)){
-      continue;
-    }
-    else{
-      double diff_y = ytrue->data[i] - yavg;
-      double diff_ypred = ypred->data[i] - ypredavg;
-      num += diff_y * diff_ypred;
-      den1 += square(diff_y);
-      den2 += square(diff_ypred);
-    }
+    double diff_y = ytrue->data[i] - yavg;
+    double diff_ypred = ypred->data[i] - ypredavg;
+    num += diff_y * diff_ypred;
+    den1 += square(diff_y);
+    den2 += square(diff_ypred);
   }
 
   if (den1 <= 0.f || den2 <= 0.f) return 0.f;
@@ -94,14 +84,9 @@ double R2(dvector *ytrue, dvector *ypred)
   ssreg = sstot = yavg = ypredavg = 0.f;
   ny = 0;
   for(i = 0; i < ytrue->size; i++){
-    if(FLOAT_EQ(ytrue->data[i], MISSING, 1e-1)){
-      continue;
-    }
-    else{
-      yavg += ytrue->data[i];
-      ypredavg += ypred->data[i];
-      ny+=1;
-    }
+    yavg += ytrue->data[i];
+    ypredavg += ypred->data[i];
+    ny+=1;
   }
 
   if (ny == 0) return 0.f;
@@ -113,16 +98,11 @@ double R2(dvector *ytrue, dvector *ypred)
   int has_intercept = (fabs(yavg - ypredavg) < 1e-5);
 
   for(i = 0; i < ytrue->size; i++){
-    if(FLOAT_EQ(ytrue->data[i], MISSING, 1e-1)){
-      continue;
-    }
-    else{
-      ssreg += square(ypred->data[i] - ytrue->data[i]);
-      if (has_intercept)
-        sstot += square(ytrue->data[i] - yavg);
-      else
-        sstot += square(ytrue->data[i]);
-    }
+    ssreg += square(ypred->data[i] - ytrue->data[i]);
+    if (has_intercept)
+      sstot += square(ytrue->data[i] - yavg);
+    else
+      sstot += square(ytrue->data[i]);
   }
 
   if (sstot <= 0.f) return 0.f;
@@ -140,13 +120,8 @@ double MAE(dvector *ytrue, dvector *ypred)
   mae = 0.f;
   ny = 0;
   for(i = 0; i < ytrue->size; i++){
-    if(FLOAT_EQ(ytrue->data[i], MISSING, 1e-1)){
-      continue;
-    }
-    else{
-      mae += fabs(ypred->data[i] - ytrue->data[i]);
-      ny += 1;
-    }
+    mae += fabs(ypred->data[i] - ytrue->data[i]);
+    ny += 1;
   }
   mae /= (double)ny;
   return mae;
@@ -162,13 +137,8 @@ double MSE_deprecated(dvector *ytrue, dvector *ypred)
   mse = 0.f;
   ny = 0;
   for(i = 0; i < ytrue->size; i++){
-    if(FLOAT_EQ(ytrue->data[i], MISSING, 1e-1)){
-      continue;
-    }
-    else{
-      mse += square(ypred->data[i] - ytrue->data[i]);
-      ny += 1;
-    }
+    mse += square(ypred->data[i] - ytrue->data[i]);
+    ny += 1;
   }
   mse /= (double)ny;
   return mse;
@@ -196,25 +166,20 @@ double MSE(dvector *ytrue, dvector *ypred)
   b2 = sqrt(DBL_MAX * DBL_EPSILON);
 
   for(i = 0; i < ytrue->size; i++){
-    if(FLOAT_EQ(ytrue->data[i], MISSING, 1e-1)){
-      continue;
-    }
-    else{
-      diff = ypred->data[i] - ytrue->data[i];
-      abs_diff = fabs(diff);
-      ny += 1;
+    diff = ypred->data[i] - ytrue->data[i];
+    abs_diff = fabs(diff);
+    ny += 1;
 
-      if (abs_diff < b1) {
-        if (abs_diff > 0) {
-            sum_small += square(diff / b1);
-        }
+    if (abs_diff < b1) {
+      if (abs_diff > 0) {
+          sum_small += square(diff / b1);
       }
-      else if (abs_diff > b2) {
-        sum_large += square(diff / b2);
-      }
-      else {
-        sum_medium += square(diff);
-      }
+    }
+    else if (abs_diff > b2) {
+      sum_large += square(diff / b2);
+    }
+    else {
+      sum_medium += square(diff);
     }
   }
 
@@ -248,25 +213,15 @@ double BIAS(dvector *ytrue, dvector *ypred)
   sum_yi = sum_xi = yavg = 0.f;
   ny = 0;
   for(i = 0; i < ytrue->size; i++){
-    if(FLOAT_EQ(ytrue->data[i], MISSING, 1e-1)){
-      continue;
-    }
-    else{
-      yavg += ytrue->data[i];
-      ny+=1;
-    }
+    yavg += ytrue->data[i];
+    ny+=1;
   }
   yavg /= (double)ny;
 
   /*ypredaverage /= (double)my->row;*/
   for(i = 0; i < ytrue->size; i++){
-    if(FLOAT_EQ(ytrue->data[i], MISSING, 1e-1)){
-      continue;
-    }
-    else{
-      sum_yi+=(ypred->data[i]*(ytrue->data[i]-yavg));
-      sum_xi+=(ytrue->data[i]*(ytrue->data[i]-yavg));
-    }
+    sum_yi+=(ypred->data[i]*(ytrue->data[i]-yavg));
+    sum_xi+=(ytrue->data[i]*(ytrue->data[i]-yavg));
   }
   /*sum_yi/sum_xi = m */
   return fabs(1 - sum_yi/sum_xi);
@@ -297,17 +252,12 @@ void Sensitivity(dvector *dtp,
     tp = fn = 0;
 
     for(i = 0; i < dtp->size; i++){
-      if(FLOAT_EQ(dtp->data[i], MISSING, 1e-1)){
-        continue;
-      }
-      else{
-        if(dtp->data[i] < dx)
-          tp++;
-        else if(FLOAT_EQ(dtp->data[i], dx, EPSILON))
-          tp++;
-        else
-          fn++;
-      }
+      if(dtp->data[i] < dx)
+        tp++;
+      else if(FLOAT_EQ(dtp->data[i], dx, EPSILON))
+        tp++;
+      else
+        fn++;
     }
 
     if(tp == 0){
@@ -349,27 +299,17 @@ void PositivePredictedValue(dvector* dtp,
     tp = fp = 0;
 
     for(i = 0; i < dtp->size; i++){
-      if(FLOAT_EQ(dtp->data[i], MISSING, 1e-1)){
-        continue;
-      }
-      else{
-        if(dtp->data[i] < dx)
-          tp++;
-        else if(FLOAT_EQ(dtp->data[i], dx, EPSILON))
-          tp++;
-      }
+      if(dtp->data[i] < dx)
+        tp++;
+      else if(FLOAT_EQ(dtp->data[i], dx, EPSILON))
+        tp++;
     }
 
     for(i = 0; i < dtn->size; i++){
-      if(FLOAT_EQ(dtn->data[i], MISSING, 1e-1)){
-        continue;
-      }
-      else{
-        if(getDVectorValue(dtn, i) < dx)
-          fp++;
-        else if(FLOAT_EQ(getDVectorValue(dtn, i), dx, EPSILON))
-          fp++;
-      }
+      if(getDVectorValue(dtn, i) < dx)
+        fp++;
+      else if(FLOAT_EQ(getDVectorValue(dtn, i), dx, EPSILON))
+        fp++;
     }
 
     if(tp == 0){
@@ -402,16 +342,11 @@ void MatrixCode(matrix* inmx, matrix* outmx)
     min = max = nmin = nmax = getMatrixValue(inmx, 0, j);
     for(i = 0; i < inmx->row; i++){
       tmp = getMatrixValue(inmx, i, j);
-      if(FLOAT_EQ(tmp, MISSING, 1e-1)){
-        continue;
+      if(tmp < min){
+        min = tmp;
       }
-      else{
-        if(tmp < min){
-          min = tmp;
-        }
-        if(tmp > max){
-          max = getMatrixValue(inmx, i, j);
-        }
+      if(tmp > max){
+        max = getMatrixValue(inmx, i, j);
       }
     }
 
@@ -419,17 +354,12 @@ void MatrixCode(matrix* inmx, matrix* outmx)
 
     for(i = 0; i < inmx->row; i++){
       tmp = getMatrixValue(inmx, i, j);
-      if(FLOAT_EQ(tmp, MISSING, 1e-1)){
-        continue;
+      if(tmp > min && tmp < mid && tmp < nmin){
+        nmin = tmp;
       }
-      else{
-        if(tmp > min && tmp < mid && tmp < nmin){
-          nmin = tmp;
-        }
 
-        if(tmp < max && tmp > mid && tmp > nmax){
-          nmax = getMatrixValue(inmx, i, j);
-        }
+      if(tmp < max && tmp > mid && tmp > nmax){
+        nmax = getMatrixValue(inmx, i, j);
       }
     }
 
@@ -444,12 +374,7 @@ void MatrixCode(matrix* inmx, matrix* outmx)
 
     for(i = 0; i < inmx->row; i++){
       tmp = getMatrixValue(inmx, i, j);
-      if(FLOAT_EQ(tmp, MISSING, 1e-1)){
-        continue;
-      }
-      else{
-        setMatrixValue(outmx, i, j, (tmp - mid) / step);
-      }
+      setMatrixValue(outmx, i, j, (tmp - mid) / step);
     }
   }
 }
@@ -522,35 +447,25 @@ void ROC(dvector *y_true, dvector *y_score,  matrix *roc, double *auc)
   size_t n_tp = 0;
   size_t n_tn = 0;
   for(i = 0; i < yy->row; i++){
-    if(FLOAT_EQ(yy->data[i][0], MISSING, 1e-1)){
-      continue;
+    if(FLOAT_EQ(yy->data[i][0], 1.0, 1e-1) == 1){
+      n_tp += 1;
     }
-    else{
-      if(FLOAT_EQ(yy->data[i][0], 1.0, 1e-1) == 1){
-        n_tp += 1;
-      }
-      else
-        n_tn += 1;
-    }
+    else
+      n_tn += 1;
   }
 
   size_t tp = 0;
   size_t fp = 0;
   for(i = 0; i < yy->row; i++){
-    if(FLOAT_EQ(yy->data[i][0], MISSING, 1e-1)){
-      continue;
+    if(FLOAT_EQ(yy->data[i][0], 1.0, 1e-1) == 1){
+      tp += 1;
     }
     else{
-      if(FLOAT_EQ(yy->data[i][0], 1.0, 1e-1) == 1){
-        tp += 1;
-      }
-      else{
-        fp += 1;
-      }
-      roc_row->data[0] = (double)fp/(double)n_tn;
-      roc_row->data[1] = (double)tp/(double)n_tp;
-      MatrixAppendRow(roc, roc_row);
+      fp += 1;
     }
+    roc_row->data[0] = (double)fp/(double)n_tn;
+    roc_row->data[1] = (double)tp/(double)n_tp;
+    MatrixAppendRow(roc, roc_row);
   }
   DelDVector(&roc_row);
   DelMatrix(&yy);
@@ -588,33 +503,23 @@ void PrecisionRecall(dvector *y_true,
   size_t n_tp = 0;
 
   for(i = 0; i < yy->row; i++){
-    if(FLOAT_EQ(yy->data[i][0], MISSING, 1e-1)){
-      continue;
-    }
-    else{
-      if(FLOAT_EQ(yy->data[i][0], 1.0, 1e-1) == 1){
-        n_tp += 1;
-      }
+    if(FLOAT_EQ(yy->data[i][0], 1.0, 1e-1) == 1){
+      n_tp += 1;
     }
   }
 
   size_t tp = 0;
   size_t fp = 0;
   for(i = 0; i < yy->row; i++){
-    if(FLOAT_EQ(yy->data[i][0], MISSING, 1e-1)){
-      continue;
+    if(FLOAT_EQ(yy->data[i][0], 1.0, 1e-1) == 1){
+      tp += 1;
     }
     else{
-      if(FLOAT_EQ(yy->data[i][0], 1.0, 1e-1) == 1){
-        tp += 1;
-      }
-      else{
-        fp += 1;
-      }
-      pr_row->data[0] = (double)tp/(double)n_tp;
-      pr_row->data[1] = (double)tp/(double)(tp+fp);
-      MatrixAppendRow(pr, pr_row);
+      fp += 1;
     }
+    pr_row->data[0] = (double)tp/(double)n_tp;
+    pr_row->data[1] = (double)tp/(double)(tp+fp);
+    MatrixAppendRow(pr, pr_row);
   }
   DelDVector(&pr_row);
   DelMatrix(&yy);
