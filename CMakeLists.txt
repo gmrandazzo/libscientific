@@ -11,7 +11,7 @@ endif()
 set(AUTHOR "Giuseppe Marco Randazzo")
 set(VERSION_MAJOR 1)
 set(VERSION_MINOR 7)
-set(VERSION_PATCH 2)
+set(VERSION_PATCH 3)
 configure_file(src/scientificconfig.h.in scientificconfig.h)
 
 if(NOT CMAKE_BUILD_TYPE)

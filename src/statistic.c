@@ -74,35 +74,24 @@ double R2_deprecated(dvector *ytrue, dvector *ypred)
 /**
  * Calculate R^2 (Coefficient of Determination) as 1 - RSS/SST.
  * This is sensitive to bias and is often used for model validation (Q^2).
- * It automatically detects if the model has an intercept by checking if
- * the mean of predicted values is close to the mean of true values.
  */
 double R2(dvector *ytrue, dvector *ypred)
 {
   size_t i, ny;
-  double ssreg, sstot, yavg, ypredavg;
-  ssreg = sstot = yavg = ypredavg = 0.f;
+  double ssreg, sstot, yavg;
+  ssreg = sstot = yavg = 0.f;
   ny = 0;
   for(i = 0; i < ytrue->size; i++){
     yavg += ytrue->data[i];
-    ypredavg += ypred->data[i];
     ny+=1;
   }
 
   if (ny == 0) return 0.f;
   yavg /= (double)ny;
-  ypredavg /= (double)ny;
-
-  /* Check for intercept presence: in OLS with intercept, the mean of predicted values 
-     should equal the mean of true values (sum of residuals is zero). */
-  int has_intercept = (fabs(yavg - ypredavg) < 1e-5);
 
   for(i = 0; i < ytrue->size; i++){
     ssreg += square(ypred->data[i] - ytrue->data[i]);
-    if (has_intercept)
-      sstot += square(ytrue->data[i] - yavg);
-    else
-      sstot += square(ytrue->data[i]);
+    sstot += square(ytrue->data[i] - yavg);
   }
 
   if (sstot <= 0.f) return 0.f;

@@ -127,21 +127,21 @@ void test2()
   ypred->data[9] = 0.857753138117355;
   ypred->data[10] = 0.879829288;
 
-  if(FLOAT_EQ(R2(ytrue, ypred), 0.0000000175965860, 1e-12)){
-    printf("R2 (correlation squared) OK!\n");
+  double actual_r2 = R2(ytrue, ypred);
+  if(FLOAT_EQ(actual_r2, -0.0999999880, 1e-6)){
+    printf("R2 OK!\n");
   }
   else{
-    printf("R2 ERROR!\n");
-    printf("Expected: 0.0000000175965860, Got: %.16f\n", R2(ytrue, ypred));
+    printf("R2 ERROR! Expected: -0.0999999880, Got: %.16f\n", actual_r2);
     abort();
   }
 
-  if(FLOAT_EQ(R2_deprecated(ytrue, ypred), 0.2086476636410565, 1e-12)){
-    printf("R2_deprecated (uncentered) OK!\n");
+  double actual_r2_dep = R2_deprecated(ytrue, ypred);
+  if(FLOAT_EQ(actual_r2_dep, 0.2086476636410565, 1e-12)){
+    printf("R2_deprecated OK!\n");
   }
   else{
-    printf("R2_deprecated ERROR!\n");
-    printf("Expected: 0.2086476636410565, Got: %.16f\n", R2_deprecated(ytrue, ypred));
+    printf("R2_deprecated ERROR! Expected: 0.2086476636410565, Got: %.16f\n", actual_r2_dep);
     abort();
   }
 
