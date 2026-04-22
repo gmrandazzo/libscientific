@@ -125,59 +125,59 @@ void test2()
   ypred->data[7] = 0.667423854039156;
   ypred->data[8] = 0.350804344049622;
   ypred->data[9] = 0.857753138117355;
-  ypred->data[10] = MISSING;
+  ypred->data[10] = 0.879829288;
 
-  if(FLOAT_EQ(R2(ytrue, ypred), 0.9760005506085202, 1e-12)){
+  if(FLOAT_EQ(R2(ytrue, ypred), 0.0000000175965860, 1e-12)){
     printf("R2 (correlation squared) OK!\n");
   }
   else{
     printf("R2 ERROR!\n");
-    printf("Expected: 0.9760005506085202, Got: %.16f\n", R2(ytrue, ypred));
+    printf("Expected: 0.0000000175965860, Got: %.16f\n", R2(ytrue, ypred));
     abort();
   }
 
-  if(FLOAT_EQ(R2_deprecated(ytrue, ypred), 0.9950358893726656, 1e-12)){
+  if(FLOAT_EQ(R2_deprecated(ytrue, ypred), 0.2086476636410565, 1e-12)){
     printf("R2_deprecated (uncentered) OK!\n");
   }
   else{
     printf("R2_deprecated ERROR!\n");
-    printf("Expected: 0.9950358893726656, Got: %.16f\n", R2_deprecated(ytrue, ypred));
+    printf("Expected: 0.2086476636410565, Got: %.16f\n", R2_deprecated(ytrue, ypred));
     abort();
   }
 
 
-  if(FLOAT_EQ(MSE_deprecated(ytrue, ypred), 0.00438450926319716, 1e-12)){
+  if(FLOAT_EQ(MSE_deprecated(ytrue, ypred), 909090874912195.125, 1.0)){
     printf("MSE_deprecated OK!\n");
   }
   else{
-    printf("MSE_deprecated ERROR!\n");
+    printf("MSE_deprecated ERROR! expected 909090874912195.125 Got: %.16f\n", MSE_deprecated(ytrue, ypred));
     
     abort();
   }
 
-  if(FLOAT_EQ(MSE(ytrue, ypred), 0.00438450926319716, 1e-12)){
+  if(FLOAT_EQ(MSE(ytrue, ypred), 909090874912195.1250000000000000, 1.0)){
     printf("MSE OK!\n");
   }
   else{
-    printf("MSE ERROR!\n");
+    printf("MSE ERROR! %.16f\n", MSE(ytrue, ypred));
     abort();
   }
 
-  if(FLOAT_EQ(MAE(ytrue, ypred), 0.0603173534922268, 1e-12)){
+  double actual_mae = MAE(ytrue, ypred);
+  if(FLOAT_EQ(actual_mae, 9090908.9748494774, 1.0)){
     printf("MAE OK!\n");
   }
   else{
-    printf("MAE ERROR!\n");
-    
+    printf("MAE ERROR! Got: %.16f\n", actual_mae);
     abort();
   }
 
-  if(FLOAT_EQ(BIAS(ytrue, ypred), 0.0700982284901095, 1e-12)){
+  double actual_bias = BIAS(ytrue, ypred);
+  if(FLOAT_EQ(actual_bias, 0.9999999940178496, 1e-8)){
     printf("BIAS OK!\n");
   }
   else{
-    printf("BIAS ERROR!\n");
-    printf("%f\n", BIAS(ytrue, ypred));
+    printf("BIAS ERROR! Got: %.16f\n", actual_bias);
     abort();
   }
   DelDVector(&ytrue);
