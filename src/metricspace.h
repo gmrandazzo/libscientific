@@ -27,9 +27,9 @@
 enum cmethod {EUCLIDEAN = 0,
               SQUARE_EUCLIDEAN,
               MANHATTAN,
-              COSINE}; 
+              COSINE};
 
-void CalculateDistance(matrix *m1, 
+void CalculateDistance(matrix *m1,
                        matrix *m2,
                        matrix *distances,
                        size_t nthreads,

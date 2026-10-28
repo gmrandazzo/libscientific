@@ -28,7 +28,7 @@ void test9()
   puts("Test 9 - Test TensorColAverage, TensorColSDEV");
   size_t i, j;
   tensor *t1;
-  matrix *m; 
+  matrix *m;
   matrix *r;
   NewMatrix(&m, 3, 3);
   m->data[0][0] = 1; m->data[0][1] = 1; m->data[0][2] = 1;
@@ -50,7 +50,7 @@ void test9()
       else{
         puts("TensorColAverage ERROR!");
         abort();
-      }  
+      }
     }
   }
   DelMatrix(&r);
@@ -64,11 +64,11 @@ void test9()
       else{
         puts("TensorColAverage ERROR!");
         abort();
-      }  
+      }
     }
   }
   DelMatrix(&r);
-  
+
   puts("Test 9: OK.");
   DelMatrix(&m);
   DelTensor(&t1);
@@ -78,7 +78,7 @@ void test8()
   puts("Test 8 - Test MeanCenteredTensor");
   size_t i, j, k;
   tensor *t1, *tc;
-  matrix *m; 
+  matrix *m;
   NewMatrix(&m, 3, 3);
   m->data[0][0] = 1; m->data[0][1] = 1; m->data[0][2] = 1;
   m->data[1][0] = 2; m->data[1][1] = 2; m->data[1][2] = 2;
@@ -101,7 +101,7 @@ void test8()
         else{
           puts("MeanCenteredTensor ERROR!");
           abort();
-        }  
+        }
       }
     }
   }
@@ -155,7 +155,7 @@ void test7()
         else{
           puts("TensorSet ERROR!");
           abort();
-        }  
+        }
       }
     }
   }
@@ -275,7 +275,7 @@ void test4()
 
   puts(">>>>>>>> Test 4: Create a Tensor of order 4 with 5 objects, meancentering and autoscaling this by using NewTensor()");
 
-  srand(time(0));
+  srand((unsigned int)time(0));
   NewTensor(&t, 4);
   NewTensor(&tc, 4);
 
@@ -310,7 +310,7 @@ void test3()
 
   puts(">>>>>>>> Test 3: Create a Tensor of order 4 with 5 objects and meancentering this by using NewTensor()");
 
-  srand(time(0));
+  srand((unsigned int)time(0));
   NewTensor(&t, 4);
   NewTensor(&tc, 4);
 
@@ -342,7 +342,7 @@ void test2()
 
   puts(">>>>>>>> Test 2: Create a Tensor of order 4 with 20 objects by using NewTensor()");
 
-  srand(time(0));
+  srand((unsigned int)time(0));
   NewTensor(&t, 4);
 
   for(i = 0; i < t->order; i ++){
@@ -367,7 +367,7 @@ void test1_2()
 
   puts(">>>>>>>> Test 1: Create a Tensor of order 4 with 10 objects by using initTensor()");
 
-  srand(time(0));
+  srand((unsigned int)time(0));
   initTensor(&t);
   NewMatrix(&m, 10, 5);
 
@@ -395,7 +395,7 @@ void test1_1()
 
   puts(">>>>>>>> Test 1: Create a Tensor of order 4 with 10 objects by using NewTensor()");
 
-  srand(time(0));
+  srand((unsigned int)time(0));
   NewTensor(&t, 4);
 
   for(i = 0; i < 4; i ++){
@@ -426,7 +426,7 @@ void test1()
 
   puts(">>>>>>>> Test 1: Create a Tensor of order 4 with 10 objects by using initTensor()");
 
-  srand(time(0));
+  srand((unsigned int)time(0));
   initTensor(&t);
 
   for(i = 0; i < 4; i ++){
@@ -456,7 +456,7 @@ void test10()
   NewTensorMatrix(t, 0, 2, 2);
   NewTensorMatrix(t, 1, 2, 2);
   NewTensorMatrix(t, 2, 2, 2);
-  
+
   if(t->order != 3){
     puts("ClearTensor initial state ERROR!");
     abort();
@@ -468,7 +468,7 @@ void test10()
     puts("ClearTensor final state ERROR!");
     abort();
   }
-  
+
   /* Test clearing an already empty tensor */
   ClearTensor(t);
   if(t->order != 0 || t->m != NULL){
@@ -480,7 +480,7 @@ void test10()
   ClearTensor(NULL);
 
   puts("Test 10: OK.");
-  free(t); 
+  free(t);
 }
 
 int main(void)

@@ -21,7 +21,7 @@
 
 int main(int argc, char **argv)
 {
-    matrix *m; // Definition of the input matrix 
+    matrix *m; // Definition of the input matrix
     PCAMODEL *model; // Definition of the PCA model
     int i, j;
     int nobj = atoi(argv[1]);
@@ -35,10 +35,10 @@ int main(int argc, char **argv)
             m->data[i][j] = randDouble(0,20);
         }
     }
-    
+
     gettimeofday(&tv1, NULL);
     NewPCAModel(&model); // Allocation of the PCA model
-    PCA(m, 1, 5, model, NULL); // Calculation of the PCA on matrix m using unit variance scaling (1) and the extraction of 5 principal components 
+    PCA(m, 1, 5, model, NULL); // Calculation of the PCA on matrix m using unit variance scaling (1) and the extraction of 5 principal components
     gettimeofday(&tv2, NULL);
     fprintf( stdout, "Total time (sec): %f\n",
         (double) (tv2.tv_usec - tv1.tv_usec) / 1000000 +
@@ -46,5 +46,3 @@ int main(int argc, char **argv)
     DelPCAModel(&model);
     DelMatrix(&m);
 }
-
-

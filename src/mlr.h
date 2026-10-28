@@ -23,14 +23,14 @@
 
 /**
  * Multiple Linear Regression data structure
- * 
+ *
  * - **b** beta coefficients
  * - **recalculated_y** y recalculated
  * - **predicted_y** y predicted
  * - **recalc_residuals** residuals using recalculated values
  * - **pred_residuals** residuals using predicted values
  * - **ymean** y averages
- * - **r2y_model** model r-squared using y recalculated 
+ * - **r2y_model** model r-squared using y recalculated
  * - **q2y** model q-squared using y predicted
  * - **sdep** standard deviation over prediction
  * - **sdec** standard deviation over recalculation
@@ -59,17 +59,17 @@ typedef struct{
 void NewMLRModel(MLRMODEL **m);
 
 /**
- * Delete a MLR model 
+ * Delete a MLR model
  */
 void DelMLRModel(MLRMODEL **m);
 
 /**
  * Calculate a MLR model using OLS algorithm
- * 
+ *
  * @param [in] mx x independent variables input
- * @param [in] my y dependent variables input 
+ * @param [in] my y dependent variables input
  * @param [out] model initialized model using NewMLRModel(...). The datastructure will be populated with results
- * 
+ *
  */
 void MLR(matrix *mx,
          matrix *my,
@@ -78,7 +78,7 @@ void MLR(matrix *mx,
 
 /**
  * Predict Y targets using a MLR model
- * 
+ *
  * @param [in] mx x independent variables input
  * @param [in] my y dependent variables input (if known)
  * @param [in] model computed MLRMODEL
@@ -86,7 +86,7 @@ void MLR(matrix *mx,
  * @param [out] predicted_residuals residuals using y predicted
  * @param [out] r2y r-squared of the prediction if my known
  * @param [out] sdep standard deviation over prediction if my known
- * 
+ *
  */
 void MLRPredictY(matrix* mx,
                  matrix *my,
@@ -101,10 +101,10 @@ void MLRPredictY(matrix* mx,
  * the standard deviation of the prediction (stdev),
  * the bias of the prediction (bias) in a regression model.
  * mx and my could be the training or the test datasets.
- * 
+ *
  * @param [in] my_true input matrix of y true values
  * @param [in] my_pred input matrix of y predicted or recalculated values
- * @param [out] ccoeff output - correlation coefficients q-squared or r-squared if my_pred is respectivelly predicted or recalculated 
+ * @param [out] ccoeff output - correlation coefficients q-squared or r-squared if my_pred is respectivelly predicted or recalculated
  * @param [out] rmse output - root mean square error
  * @param [out] bias output - bias defined as how distant are we from the diagonal
  */

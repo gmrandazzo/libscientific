@@ -29,7 +29,7 @@
  */
 
 /**
- * Tensor data structure 
+ * Tensor data structure
  *
  * - **m** list of matrix
  * - **order** number of matrix layers
@@ -51,8 +51,8 @@ void NewTensor(tensor** t, size_t order_);
 
 /**
  * Create into an empty tensor a matrix of "row x col" at position "order"
- * 
- * @param [in] t input tensor 
+ *
+ * @param [in] t input tensor
  * @param [in] order point where to add the matrix
  * @param [in] row number of rows of the matrix
  * @param [in] col number of columns of the matrix
@@ -61,8 +61,8 @@ void NewTensorMatrix(tensor *t, size_t order, size_t row, size_t col);
 
 /**
  * Append to a tensor a matrix at the end of it.
- * 
- * @param [in] t input tensor 
+ *
+ * @param [in] t input tensor
  * @param [in] row number of rows of the matrix
  * @param [in] col number of columns of the matrix
  */
@@ -84,7 +84,7 @@ void ClearTensor(tensor* t);
 void PrintTensor(tensor *t);
 
 /**
- * Set a value into a tensor 
+ * Set a value into a tensor
  */
 void setTensorValue(tensor *t, size_t order, size_t row, size_t col, double val);
 
@@ -143,14 +143,14 @@ void TensorColSDEV(tensor *t, matrix *colsdev);
 
 /**
  * Transpose a tensor
- * 
+ *
  */
 void TensorTranspose(tensor *t1, tensor *t2);
 
 /**
  * Calculate the transposed tensor x vector product.
  * The result is a matrix.
- * 
+ *
  */
 void TransposedTensorDVectorProduct(tensor *t, dvector *v, matrix *p);
 

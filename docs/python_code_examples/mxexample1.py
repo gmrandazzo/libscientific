@@ -2,7 +2,7 @@
 import libscientific
 from random import random
 
-# Create a random list of list 
+# Create a random list of list
 a = [[random() for j in range(2)] for i in range(10)]
 
 # Convert the list of list matrix into a libscientific matrix

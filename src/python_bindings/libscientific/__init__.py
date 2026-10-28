@@ -21,13 +21,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 Submodules
 ----------
 - info : Module providing information about the LibScientific library.
+- misc : Module for miscellaneous library utilities and missing value definitions.
 - vector : Module for handling vector-related operations.
 - matrix : Module for handling matrix-related operations.
 - tensor : Module for handling tensor-related operations.
 - pca : Module for Principal Component Analysis (PCA).
 - pls : Module for Partial Least Squares (PLS).
+- cpca : Module for Consensus Principal Component Analysis (CPCA).
+- interpolate : Module for cubic spline interpolation.
 - vectlist : Module for handling lists of double vectors.
 - clustering : Module for clustering algorithms.
+- model_io : Module for high-performance zero-dependency model serialization.
 
 Attributes
 ----------
@@ -52,14 +56,53 @@ This module serves as the main entry point for using the LibScientific library.
 Users can import submodules and access various functionalities provided by the library.
 """
 
-from . import info
-from . import vector
-from . import matrix
-from . import tensor
-from . import pca
-from . import pls
-from . import vectlist
-from . import clustering
+from . import (
+    clustering,
+    cpca,
+    info,
+    interpolate,
+    matrix,
+    misc,
+    model_io,
+    pca,
+    pls,
+    tensor,
+    vectlist,
+    vector,
+)
+from .cpca import CPCA
+from .interpolate import CubicSplineInterpolation
+from .matrix import Matrix
+from .pca import PCA
+from .pls import PLS
+from .tensor import Tensor
+from .vectlist import DVectorList
+from .vector import DVector, UIVector
+
+__all__ = [
+    "info",
+    "misc",
+    "vector",
+    "matrix",
+    "tensor",
+    "pca",
+    "pls",
+    "cpca",
+    "interpolate",
+    "vectlist",
+    "clustering",
+    "model_io",
+    "Matrix",
+    "DVector",
+    "UIVector",
+    "Tensor",
+    "DVectorList",
+    "PCA",
+    "PLS",
+    "CPCA",
+    "CubicSplineInterpolation",
+]
+
 
 # __version__ = info.Scientific().__version__
-__version__ = "1.6.1"
+__version__ = "1.8.0"

@@ -40,16 +40,16 @@ void testmemwrapper_xmalloc_success()
 void testmemwrapper_xcalloc_success()
 {
     puts("Testing xcalloc success path...");
-    
+
     size_t nmemb = 10;
     size_t size = sizeof(int);
     int *ptr = xcalloc(nmemb, size);
-    
+
     if (ptr == NULL) {
         puts("xcalloc returned NULL!");
         abort();
     }
-    
+
     /* Verify zero initialization */
     for (size_t i = 0; i < nmemb; i++) {
         if (ptr[i] != 0) {
@@ -57,7 +57,7 @@ void testmemwrapper_xcalloc_success()
             abort();
         }
     }
-    
+
     xfree(ptr);
     puts("xcalloc success path passed.");
 }
@@ -67,16 +67,16 @@ void testmemwrapper_xrealloc_success()
     puts("Testing xrealloc success path...");
     size_t initial_size = 50;
     size_t new_size = 150;
-    
+
     void *ptr = xmalloc(initial_size);
     memset(ptr, 0xBB, initial_size);
-    
+
     void *new_ptr = xrealloc(ptr, new_size);
     if (new_ptr == NULL) {
         puts("xrealloc returned NULL!");
         abort();
     }
-    
+
     /* Verify original data is preserved (first 50 bytes) */
     unsigned char *cptr = (unsigned char *)new_ptr;
     for (size_t i = 0; i < initial_size; i++) {
@@ -85,7 +85,7 @@ void testmemwrapper_xrealloc_success()
             abort();
         }
     }
-    
+
     xfree(new_ptr);
     puts("xrealloc success path passed.");
 }
@@ -95,7 +95,7 @@ void testmemwrapper_xfree()
     puts("Testing xfree...");
     void *ptr = xmalloc(10);
     xfree(ptr);
-    
+
     /* xfree(NULL) should be safe according to standard free() behavior */
     xfree(NULL);
     puts("xfree tests passed.");
@@ -106,15 +106,15 @@ void testmemwrapper_getnprocessor()
     puts("Testing GetNProcessor...");
     size_t n_online = 0;
     size_t n_max = 0;
-    
+
     GetNProcessor(&n_online, &n_max);
-    
+
     printf("Processors: Online=%zu, Max=%zu\n", n_online, n_max);
-    
+
     if (n_online == 0) {
         puts("Warning: GetNProcessor returned 0 online processors.");
     }
-    
+
     puts("GetNProcessor test passed.");
 }
 
@@ -179,6 +179,6 @@ int main(int argc, char **argv)
     testmemwrapper_xrealloc_success();
     testmemwrapper_xfree();
     testmemwrapper_getnprocessor();
-    
+
     return 0;
 }

@@ -32,7 +32,7 @@ void calcVarExpressed(double total_ss, dvector *eval, dvector *varexp);
 
 /**
  * Calculate R^2 as the square of the Pearson correlation coefficient.
- * This is appropriate for models with or without intercept, 
+ * This is appropriate for models with or without intercept,
  * but ignores bias in predicted values.
  */
 double R2_deprecated(dvector *ytrue, dvector *ypred);

@@ -68,7 +68,7 @@ void test9()
   UPLS(ax, ay, 3, 1, 1, m, NULL);
   initMatrix(&ps);
   UPLSScorePredictor(ax, m, 3, ps);
-  
+
   for(i = 0; i < m->xscores->row; i++){
     for(j = 0; j < m->xscores->col; j++){
       if(FLOAT_EQ(m->xscores->data[i][j], ps->data[i][j], 1E-6)){
@@ -79,7 +79,7 @@ void test9()
       }
     }
   }
-  
+
   DelMatrix(&ps);
   DelUPLSModel(&m);
   DelTensor(&ay);
@@ -671,7 +671,7 @@ void test2()
   for(i = 0; i < ax->order; i++)
     NewTensorMatrix(ax, i, 30, 10);
 
-  srand(time(0));
+  srand((unsigned int)time(0));
   for(i = 0; i < ax->order; i++){
     for(j = 0; j < ax->m[i]->row; j++){
       for(k = 0; k < ax->m[i]->col; k++)
@@ -684,7 +684,7 @@ void test2()
   NewTensor(&ay, 1);
   NewTensorMatrix(ay, 0, 30, 1);
 
-  srand(time(0));
+  srand((unsigned int)time(0));
   for(i = 0; i < ay->order; i++){
     for(j = 0; j < ay->m[i]->row; j++){
       for(k = 0; k < ay->m[i]->col; k++)
@@ -771,7 +771,7 @@ int main(void)
   test3();
   test4();
   test5();*/
-  /* test 6-8 
+  /* test 6-8
   test6();
   test7();
   test8();

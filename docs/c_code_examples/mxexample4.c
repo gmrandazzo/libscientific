@@ -17,7 +17,7 @@ int main(void)
     MatrixTranspose(m, m_T);
     PrintMatrix(m); // Print to video the original matrix content
     puts("Transposed matrix");
-    PrintMatrix(m_T); // Print to video the transposed matrix 
+    PrintMatrix(m_T); // Print to video the transposed matrix
     // Free the memory spaces
     DelMatrix(&m);
     DelMatrix(&m_T);

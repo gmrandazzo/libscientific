@@ -12,7 +12,7 @@ jobs:
   build_and_analyze:
     name: SonarQube Analysis (C & Python)
     runs-on: ubuntu-latest
-    
+
     strategy:
       matrix:
         python-version: ['3.12']

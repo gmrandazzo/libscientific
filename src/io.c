@@ -30,22 +30,20 @@
 #include "upca.h"
 #include "upls.h"
 
-static void serialize_uivector(uivector *v, dvector *serialized)
+static void serialize_uivector(const uivector *v, dvector *serialized)
 {
-    size_t i;
     DVectorResize(serialized, v->size + 1);
     serialized->data[0] = (double)v->size;
-    for(i = 0; i < v->size; i++) {
+    for(size_t i = 0; i < v->size; i++) {
         serialized->data[i+1] = (double)v->data[i];
     }
 }
 
-static void deserialize_uivector(dvector *serialized, uivector *v)
+static void deserialize_uivector(const dvector *serialized, uivector *v)
 {
-    size_t i;
     size_t size = (size_t)serialized->data[0];
     UIVectorResize(v, size);
-    for(i = 0; i < size; i++) {
+    for(size_t i = 0; i < size; i++) {
         v->data[i] = (size_t)serialized->data[i+1];
     }
 }
@@ -55,14 +53,14 @@ static void serialize_tensor(tensor *tx, dvector *tensor_serialized)
     size_t i, j, k, c;
     size_t tot_size = 1;
     for(k = 0; k < tx->order; k++){
-        tot_size += 2+(tx->m[k]->row*tx->m[k]->col);        
+        tot_size += 2+(tx->m[k]->row*tx->m[k]->col);
     }
     DVectorResize(tensor_serialized, tot_size);
     c = 0;
-    tensor_serialized->data[c++] = tx->order;
+    tensor_serialized->data[c++] = (double)tx->order;
     for(k = 0; k < tx->order; k++){
-        tensor_serialized->data[c++] = tx->m[k]->row;
-        tensor_serialized->data[c++] = tx->m[k]->col;
+        tensor_serialized->data[c++] = (double)tx->m[k]->row;
+        tensor_serialized->data[c++] = (double)tx->m[k]->col;
         for(i = 0; i < tx->m[k]->row; i++){
             for(j = 0; j < tx->m[k]->col; j++){
                 tensor_serialized->data[c++] = tx->m[k]->data[i][j];
@@ -74,11 +72,11 @@ static void serialize_tensor(tensor *tx, dvector *tensor_serialized)
 static void deserialize_tensor(dvector *tensor_serialized, tensor *tx)
 {
     size_t i, j, k, c = 0;
-    size_t order = tensor_serialized->data[c++];
+    size_t order = (size_t)tensor_serialized->data[c++];
     size_t nrow, ncol;
     for(k = 0; k < order; k++){
-        nrow = tensor_serialized->data[c++];
-        ncol = tensor_serialized->data[c++];
+        nrow = (size_t)tensor_serialized->data[c++];
+        ncol = (size_t)tensor_serialized->data[c++];
         AddTensorMatrix(tx, nrow, ncol);
         for(i = 0; i < nrow; i++){
             for(j = 0; j < ncol; j++){
@@ -92,8 +90,8 @@ static void serialize_matrix(matrix *mx, dvector *matrix_serialized)
 {
     size_t i, j, c = 0;
     DVectorResize(matrix_serialized, 2+mx->row*mx->col);
-    matrix_serialized->data[c++]= mx->row;
-    matrix_serialized->data[c++]= mx->col;
+    matrix_serialized->data[c++]= (double)mx->row;
+    matrix_serialized->data[c++]= (double)mx->col;
     for(i = 0; i < mx->row; i++){
         for(j = 0; j < mx->col; j++){
             matrix_serialized->data[c++] = mx->data[i][j];
@@ -105,7 +103,7 @@ static void deserialize_matrix(dvector *matrix_serialized, matrix *mx)
 {
     size_t i, j, c = 0;
     size_t nrow = (size_t)matrix_serialized->data[c++];
-    size_t ncol = (size_t)matrix_serialized->data[c++]; 
+    size_t ncol = (size_t)matrix_serialized->data[c++];
     ResizeMatrix(mx, nrow, ncol);
     for(i = 0; i < mx->row; i++){
         for(j = 0; j < mx->col; j++){
@@ -123,7 +121,7 @@ static void serialize_dvectorlist(dvectorlist *dvlst, dvector *dlst_serialized)
     }
     DVectorResize(dlst_serialized, tot_size);
     for(i = 0; i < dvlst->size; i++){
-        dlst_serialized->data[c++] = dvlst->d[i]->size;
+        dlst_serialized->data[c++] = (double)dvlst->d[i]->size;
         for(j = 0; j < dvlst->d[i]->size; j++){
             dlst_serialized->data[c++] = dvlst->d[i]->data[j];
         }
@@ -146,6 +144,10 @@ static void deserialize_dvectorlist(dvector *dlst_serialized, dvectorlist *dlst)
 }
 
 static int callback(void *data, int argc, char **argv, char **azColName){
+    (void)data;
+    (void)argc;
+    (void)argv;
+    (void)azColName;
     #ifdef DEBUG
     int i;
     fprintf(stderr, "%s: ", (const char*)data);
@@ -162,15 +164,15 @@ static int callback(void *data, int argc, char **argv, char **azColName){
 
 static void write_vector_into_sqltable(sqlite3 *db, char *tabname, dvector *vect)
 {
-    size_t i;
     int rc;
-    int length;
+    size_t length;
     char *err_msg = 0;
     char *sql;
     sqlite3_stmt* stmt;
 
     /* Create SQL statement */
-    length = snprintf(NULL, 0, "CREATE TABLE IF NOT EXISTS %s (id INTEGER PRIMARY KEY AUTOINCREMENT, value REAL);", tabname);
+    int n = snprintf(NULL, 0, "CREATE TABLE IF NOT EXISTS %s (id INTEGER PRIMARY KEY AUTOINCREMENT, value REAL);", tabname);
+    length = (n > 0) ? (size_t)n : 0;
     sql = xmalloc(length+1);
     snprintf(sql, length+1, "CREATE TABLE IF NOT EXISTS %s (id INTEGER PRIMARY KEY AUTOINCREMENT, value REAL);", tabname);
     #ifdef DEBUG
@@ -193,10 +195,11 @@ static void write_vector_into_sqltable(sqlite3 *db, char *tabname, dvector *vect
     xfree(sql);
 
     /* Prepare INSERT statement once */
-    length = snprintf(NULL, 0, "INSERT INTO %s (value) VALUES (?);", tabname);
+    n = snprintf(NULL, 0, "INSERT INTO %s (value) VALUES (?);", tabname);
+    length = (n > 0) ? (size_t)n : 0;
     sql = xmalloc(length+1);
     snprintf(sql, length+1, "INSERT INTO %s (value) VALUES (?);", tabname);
-    
+
     rc = sqlite3_prepare_v2(db, sql, -1, &stmt, 0);
     xfree(sql);
 
@@ -205,7 +208,7 @@ static void write_vector_into_sqltable(sqlite3 *db, char *tabname, dvector *vect
         return;
     }
 
-    for (i = 0; i < vect->size; i++){
+    for (size_t i = 0; i < vect->size; i++){
         sqlite3_bind_double(stmt, 1, vect->data[i]);
         rc = sqlite3_step(stmt);
         if (rc != SQLITE_DONE) {
@@ -221,12 +224,13 @@ static void read_vector(sqlite3 *db, char *tabname, dvector *vect)
  /* SQL query to select the column data */
     int rc;
     char *sql;
-    int lenght;
+    size_t length;
     sqlite3_stmt* stmt;
 
-    lenght = snprintf(NULL, 0, "SELECT value FROM %s;", tabname);
-    sql = xmalloc(lenght+1);
-    snprintf(sql,lenght+1, "SELECT value FROM %s;", tabname);
+    int n = snprintf(NULL, 0, "SELECT value FROM %s;", tabname);
+    length = (n > 0) ? (size_t)n : 0;
+    sql = xmalloc(length+1);
+    snprintf(sql, length+1, "SELECT value FROM %s;", tabname);
     #ifdef DEBUG
     printf("%s\n", sql);
     #endif
@@ -303,10 +307,10 @@ void WritePCA(char *dbpath, PCAMODEL *pca)
     DropAllTables(db);
     /**
      * PCA model data structure.
-     * 
+     *
      * - **scores** matrix of scores
      * - **loadings** matrix of loadings
-     * - **varexp** vector of explained variance by every component 
+     * - **varexp** vector of explained variance by every component
      * - **colaverage** input matrix column average
      * - **colscaling** input matrix column scaling
      */
@@ -314,7 +318,7 @@ void WritePCA(char *dbpath, PCAMODEL *pca)
     write_vector_into_sqltable(db, "colaverage", pca->colaverage);
     write_vector_into_sqltable(db, "colscaling", pca->colscaling);
     write_vector_into_sqltable(db, "varexp", pca->varexp);
-    
+
     initDVector(&serial_vect);
     serialize_matrix(pca->scores, serial_vect);
     write_vector_into_sqltable(db, "scores", serial_vect);
@@ -324,7 +328,7 @@ void WritePCA(char *dbpath, PCAMODEL *pca)
     serialize_matrix(pca->loadings, serial_vect);
     write_vector_into_sqltable(db, "loadings", serial_vect);
     DelDVector(&serial_vect);
-    
+
     sqlite3_exec(db, "COMMIT;", NULL, NULL, &err_msg);
     CloseDB(db);
 }
@@ -365,7 +369,7 @@ void WriteCPCA(char *dbpath, CPCAMODEL *cpca)
 
     /*
      * CPCA model data structure.
-     * 
+     *
      * - **block_scores** matrix of scores
      * - **block_loadings** matrix of loadings
      * - **super_scores** matrix of super scores
@@ -378,7 +382,7 @@ void WriteCPCA(char *dbpath, CPCAMODEL *cpca)
      */
     write_vector_into_sqltable(db, "scaling_factor", cpca->scaling_factor);
     write_vector_into_sqltable(db, "total_expvar", cpca->total_expvar);
-    
+
     initDVector(&serial_vect);
     serialize_tensor(cpca->block_scores, serial_vect);
     write_vector_into_sqltable(db, "block_scores", serial_vect);
@@ -388,7 +392,7 @@ void WriteCPCA(char *dbpath, CPCAMODEL *cpca)
     serialize_tensor(cpca->block_loadings, serial_vect);
     write_vector_into_sqltable(db, "block_loadings", serial_vect);
     DelDVector(&serial_vect);
-    
+
     initDVector(&serial_vect);
     serialize_matrix(cpca->super_scores, serial_vect);
     write_vector_into_sqltable(db, "super_scores", serial_vect);
@@ -478,7 +482,7 @@ void WritePLS(char *dbpath, PLSMODEL *pls)
     DropAllTables(db);
     /*
      * PLS model data structure to write
-     * 
+     *
      * - **xscores** x space scores
      * - **xloadings** x space loadings
      * - **xweights** x space weights
@@ -492,16 +496,16 @@ void WritePLS(char *dbpath, PLSMODEL *pls)
      * - **ycolscaling** y independent variable column scaling
      * - **recalculated_y** y recalculated
      * - **recalc_residuals** y recalculated residuals
-     * - **predicted_y** y predicted 
-     * - **pred_residuals** y predicted residuals 
+     * - **predicted_y** y predicted
+     * - **pred_residuals** y predicted residuals
      * - **r2y_recalculated** r squared using y recalculated values
      * - **r2y_validation**
      * - **q2y** q squared using y predicted values
      * - **sdep** standard deviation over prediction using y predictions
      * - **sdec** standard deviation over recalculation using y recalculated
      * - **bias** bias
-     * - **roc_recalculated** receiver operating characteristic using y recalculated 
-     * - **roc_validation** receiver operating characteristic using y predicted 
+     * - **roc_recalculated** receiver operating characteristic using y recalculated
+     * - **roc_validation** receiver operating characteristic using y predicted
      * - **roc_auc_recalculated** receiver operating characteristic area under the curve using y recalculated
      * - **roc_auc_validation** receiver operating characteristic area under the curve using y predicted
      * - **precision_recall_recalculated** precision-recall curve using y recalculated
@@ -556,17 +560,17 @@ void WritePLS(char *dbpath, PLSMODEL *pls)
     serialize_matrix(pls->predicted_y, serial_vect);
     write_vector_into_sqltable(db, "predicted_y", serial_vect);
     DelDVector(&serial_vect);
-    
+
     initDVector(&serial_vect);
     serialize_matrix(pls->pred_residuals, serial_vect);
     write_vector_into_sqltable(db, "pred_residuals", serial_vect);
     DelDVector(&serial_vect);
-    
+
     initDVector(&serial_vect);
     serialize_matrix(pls->r2y_validation, serial_vect);
     write_vector_into_sqltable(db, "r2y_validation", serial_vect);
     DelDVector(&serial_vect);
-    
+
     initDVector(&serial_vect);
     serialize_matrix(pls->r2y_recalculated, serial_vect);
     write_vector_into_sqltable(db, "r2y_recalculated", serial_vect);
@@ -576,12 +580,12 @@ void WritePLS(char *dbpath, PLSMODEL *pls)
     serialize_matrix(pls->q2y, serial_vect);
     write_vector_into_sqltable(db, "q2y", serial_vect);
     DelDVector(&serial_vect);
-    
+
     initDVector(&serial_vect);
     serialize_matrix(pls->sdep, serial_vect);
     write_vector_into_sqltable(db, "sdep", serial_vect);
     DelDVector(&serial_vect);
-    
+
     initDVector(&serial_vect);
     serialize_matrix(pls->sdec, serial_vect);
     write_vector_into_sqltable(db, "sdec", serial_vect);
@@ -636,7 +640,7 @@ void WritePLS(char *dbpath, PLSMODEL *pls)
     serialize_tensor(pls->precision_recall_validation, serial_vect);
     write_vector_into_sqltable(db, "precision_recall_validation", serial_vect);
     DelDVector(&serial_vect);
-    
+
     sqlite3_exec(db, "COMMIT;", NULL, NULL, &err_msg);
     CloseDB(db);
 }
@@ -693,12 +697,12 @@ void ReadPLS(char *dbpath, PLSMODEL *pls)
     read_vector(db, "predicted_y", serial_vect);
     deserialize_matrix(serial_vect, pls->predicted_y);
     DelDVector(&serial_vect);
-    
+
     initDVector(&serial_vect);
     read_vector(db, "pred_residuals", serial_vect);
     deserialize_matrix(serial_vect, pls->pred_residuals);
     DelDVector(&serial_vect);
-    
+
     initDVector(&serial_vect);
     read_vector(db, "r2y_validation", serial_vect);
     deserialize_matrix(serial_vect, pls->r2y_validation);
@@ -708,7 +712,7 @@ void ReadPLS(char *dbpath, PLSMODEL *pls)
     read_vector(db, "r2y_recalculated", serial_vect);
     deserialize_matrix(serial_vect, pls->r2y_recalculated);
     DelDVector(&serial_vect);
-    
+
     initDVector(&serial_vect);
     read_vector(db, "q2y", serial_vect);
     deserialize_matrix(serial_vect, pls->q2y);
@@ -723,12 +727,12 @@ void ReadPLS(char *dbpath, PLSMODEL *pls)
     read_vector(db, "sdec", serial_vect);
     deserialize_matrix(serial_vect, pls->sdec);
     DelDVector(&serial_vect);
-    
+
     initDVector(&serial_vect);
     read_vector(db, "bias", serial_vect);
     deserialize_matrix(serial_vect, pls->bias);
     DelDVector(&serial_vect);
-    
+
     initDVector(&serial_vect);
     read_vector(db, "roc_auc_recalculated", serial_vect);
     deserialize_matrix(serial_vect, pls->roc_auc_recalculated);
@@ -763,12 +767,12 @@ void ReadPLS(char *dbpath, PLSMODEL *pls)
     read_vector(db, "roc_validation", serial_vect);
     deserialize_tensor(serial_vect, pls->roc_validation);
     DelDVector(&serial_vect);
-    
+
     initDVector(&serial_vect);
     read_vector(db, "precision_recall_recalculated", serial_vect);
     deserialize_tensor(serial_vect, pls->precision_recall_recalculated);
     DelDVector(&serial_vect);
- 
+
     initDVector(&serial_vect);
     read_vector(db, "precision_recall_validation", serial_vect);
     deserialize_tensor(serial_vect, pls->precision_recall_validation);
@@ -777,16 +781,15 @@ void ReadPLS(char *dbpath, PLSMODEL *pls)
     CloseDB(db);
 }
 
-void WriteMatrixCSV(char *path, matrix *m)
+void WriteMatrixCSV(const char *path, const matrix *m)
 {
   FILE *f = fopen(path, "w");
   if(!f){
     fprintf(stderr, "Error: Unable to open file %s for writing\n", path);
     return;
   }
-  size_t i, j;
-  for(i = 0; i < m->row; i++){
-    for(j = 0; j < m->col; j++){
+  for(size_t i = 0; i < m->row; i++){
+    for(size_t j = 0; j < m->col; j++){
       fprintf(f, "%f%s", m->data[i][j], (j == m->col - 1) ? "" : ",");
     }
     fprintf(f, "\n");
@@ -799,7 +802,7 @@ void WriteMLR(char *dbpath, MLRMODEL *mlr)
     dvector *serial_vect;
     sqlite3 *db = NULL;
     char *err_msg = 0;
-    
+
     OpenDB(dbpath, &db);
     sqlite3_exec(db, "BEGIN TRANSACTION;", NULL, NULL, &err_msg);
     DropAllTables(db);
@@ -896,7 +899,7 @@ void WriteLDA(char *dbpath, LDAMODEL *lda)
     dvector *serial_vect;
     sqlite3 *db = NULL;
     char *err_msg = 0;
-    
+
     OpenDB(dbpath, &db);
     sqlite3_exec(db, "BEGIN TRANSACTION;", NULL, NULL, &err_msg);
     DropAllTables(db);
@@ -1096,7 +1099,7 @@ void WriteICA(char *dbpath, ICAMODEL *ica)
     dvector *serial_vect;
     sqlite3 *db = NULL;
     char *err_msg = 0;
-    
+
     OpenDB(dbpath, &db);
     sqlite3_exec(db, "BEGIN TRANSACTION;", NULL, NULL, &err_msg);
     DropAllTables(db);
@@ -1155,7 +1158,7 @@ void WriteUPCA(char *dbpath, UPCAMODEL *upca)
     dvector *serial_vect;
     sqlite3 *db = NULL;
     char *err_msg = 0;
-    
+
     OpenDB(dbpath, &db);
     sqlite3_exec(db, "BEGIN TRANSACTION;", NULL, NULL, &err_msg);
     DropAllTables(db);
@@ -1222,7 +1225,7 @@ void WriteUPLS(char *dbpath, UPLSMODEL *upls)
     dvector *serial_vect;
     sqlite3 *db = NULL;
     char *err_msg = 0;
-    
+
     OpenDB(dbpath, &db);
     sqlite3_exec(db, "BEGIN TRANSACTION;", NULL, NULL, &err_msg);
     DropAllTables(db);

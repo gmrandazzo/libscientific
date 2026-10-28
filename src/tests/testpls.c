@@ -42,11 +42,11 @@ void TestPLS15()
   boston_house_price(x1, y1);
   NewMatrix(&x2, x1->row, x1->col);
   NewMatrix(&y2, y1->row, y1->col);
-  srand_(time(NULL));
+  srand_((uint32_t)time(NULL));
   initUIVector(&ids);
   i = 0;
   while( i < x1->row){
-    id = randInt(0, x1->row);
+    id = (size_t)randInt(0, (int)x1->row);
     if(UIVectorHasValue(ids, id) == 0){
       continue;
     }
@@ -80,7 +80,7 @@ void TestPLS15()
     }
   }
   printf("OK.\n");
-  
+
   DelUIVector(&ids);
   DelPLSModel(&mod1);
   DelPLSModel(&mod2);
@@ -177,7 +177,7 @@ void TestPLS13()
   NewMatrix(&y, nobj, ntarg);
   NewUIVector(&groups, nobj);
 
-  srand_(nobj+nfeats+ntarg);
+  srand_((uint32_t)(nobj+nfeats+ntarg));
   for(size_t i = 0; i < nobj; i++){
     for(size_t j = 0; j < nfeats; j++){
       setMatrixValue(x, i, j, randDouble(-100,100));
@@ -193,7 +193,7 @@ void TestPLS13()
       setMatrixValue(y, i, j, y_);
       //setMatrixValue(y, i, j, randDouble(0, 2));
     }
-    groups->data[i] = randInt(0, 6);
+    groups->data[i] = (size_t)randInt(0, 6);
     //groups->data[i] = randInt(0, 6);
   }
 
@@ -286,7 +286,7 @@ void TestPLS12()
   NewMatrix(&xpred, nobj_to_pred, nfeats);
   NewMatrix(&y, nobj, ntarg);
 
-  srand_(nobj+nfeats+ntarg);
+  srand_((uint32_t)(nobj+nfeats+ntarg));
   for(size_t i = 0; i < nobj; i++){
     for(size_t j = 0; j < nfeats; j++){
       setMatrixValue(x, i, j, randDouble(-100,100));
@@ -332,7 +332,7 @@ void TestPLS12()
                                     m->roc_auc_validation,
                                     m->precision_recall_validation,
                                     m->precision_recall_ap_validation);
-  
+
   PrintPLSModel(m);
 
   puts("ROC AUC's for Trainig set");
@@ -376,7 +376,7 @@ void TestPLS11()
   NewMatrix(&mx, nobj, 128);
   NewMatrix(&my, nobj, 1);
 
-  srand_(nobj);
+  srand_((uint32_t)nobj);
   for(size_t i = 0; i < nobj; i++){
     for(size_t j = 0; j < 128; j++){
       setMatrixValue(mx, i, j, randDouble(0,20));
@@ -1075,7 +1075,7 @@ void TestPLS1()
   PLS(x, y, 3, 1, 0, m, NULL);
 
   PrintPLSModel(m);
-  
+
   /*VALIDATE THE MODEL */
   MODELINPUT minpt = initModelInput();
   minpt.mx = x;
@@ -1107,7 +1107,7 @@ void TestPLS1()
   puts("BETA COEFFICIENTS");
   initDVector(&betas);
 
-  PLSBetasCoeff(m, GetLVCCutoff(m->q2y)+1, betas);
+  PLSBetasCoeff(m, (size_t)(GetLVCCutoff(m->q2y)+1), betas);
   PrintDVector(betas);
 
   puts("PREDICTED Y");
@@ -1127,7 +1127,7 @@ void TestPLSGetLVCCutoff()
   printf("Test PLS GetLVCCutoff: ");
   matrix *m;
   NewMatrix(&m, 4, 1);
-  /* 
+  /*
    * Rows are compared in pairs (0 vs 1, 2 vs 3).
    * Logic in GetLVCCutoff:
    * i=0: prev = m[0][0], next = m[1][0].
@@ -1168,7 +1168,7 @@ void TestPLSVIP()
   PLS(x, y, 1, 1, 1, m, NULL);
   PLSVIP(m, vip);
 
-  /* 
+  /*
    * With 1 component perfectly explaining Y using only first variable:
    * VIP[0] should be >> VIP[1]
    * Average squared VIP should be 1.0

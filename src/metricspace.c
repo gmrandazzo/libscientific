@@ -91,7 +91,7 @@ void *CalcWorker(void *arg_)
 }
 
 
-void CalculateDistance(matrix *m1, 
+void CalculateDistance(matrix *m1,
                        matrix *m2,
                        matrix *distances,
                        size_t nthreads,
@@ -252,10 +252,10 @@ void CovarianceDistanceMap(matrix* mi, matrix *mo)
   dvector *colavg;
   matrix *covmx;
   matrix *inv_cov;
-  
+
   initDVector(&colavg);
   MatrixColAverage(mi, colavg);
-  
+
   initMatrix(&covmx);
   MatrixCovariance(mi, covmx);
 

@@ -24,7 +24,7 @@ int main(void)
 
 
     NewCPCAModel(&model); // Allocation of the CPCA model
-    CPCA(t, 1, 5, model); // Calculation of the CPCA on matrix m using unit variance scaling (1) and the extraction of 5 super principal components 
+    CPCA(t, 1, 5, model); // Calculation of the CPCA on matrix m using unit variance scaling (1) and the extraction of 5 super principal components
 
     PrintCPCA(model); // Print to video the CPCA results
 
@@ -39,4 +39,3 @@ int main(void)
     DelCPCAModel(&model);
     DelTensor(&t);
 }
-

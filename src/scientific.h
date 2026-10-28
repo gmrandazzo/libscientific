@@ -46,6 +46,8 @@ extern "C" {
 #include <scientific/lda.h>
 
 #include <scientific/modelvalidation.h>
+#include <scientific/io.h>
+#include <scientific/model_io.h>
 
 
 #ifdef __cplusplus

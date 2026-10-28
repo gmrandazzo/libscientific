@@ -30,7 +30,7 @@ void SolveLSE(matrix *mx, dvector *solution)
   size_t i;
   size_t j;
   size_t k;
-  long int l;
+  size_t l;
   double tmp;
   matrix *X;
   initMatrix(&X);
@@ -143,23 +143,24 @@ void SolveLSE(matrix *mx, dvector *solution)
    DVectorResize(solution, X->row);
   }
 
-  l = (*X).row-1;
-
-  while(l > -1){
-    double b = 0.f;
-    for(i = 0; i < (*X).col-1; i++){
-      if(i != l){
-        b += X->data[l][i] * solution->data[i];
+  if(X->row > 0){
+    l = (*X).row;
+    while(l > 0){
+      l--;
+      double b = 0.0;
+      for(i = 0; i < (*X).col-1; i++){
+        if(i != l){
+          b += X->data[l][i] * solution->data[i];
+        }
+        else
+          continue;
       }
-      else
-        continue;
-    }
 
-    if(FLOAT_EQ(X->data[l][l], 0, 1e-4) == 1)
-      solution->data[l] = 0.f;
-    else
-      solution->data[l] = (X->data[l][X->col-1] -b) / X->data[l][l];
-    l--;
+      if(FLOAT_EQ(X->data[l][l], 0.0, 1e-4) == 1)
+        solution->data[l] = 0.0;
+      else
+        solution->data[l] = (X->data[l][X->col-1] -b) / X->data[l][l];
+    }
   }
   DelMatrix(&X);
 }

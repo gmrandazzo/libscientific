@@ -37,11 +37,11 @@ First you need to install the C library following these instructions:
 Then, if you want to use the library in python, you have also to install the python package.
 
 .. code-block::
-   
+
    cd ../src/python_bindings
    python3 setup.py install
 
-   or 
+   or
 
    pip3 install libscientific
 
@@ -49,7 +49,7 @@ Then, if you want to use the library in python, you have also to install the pyt
 If you have installed the library in a non-standard path and you want to use the python bindings
 please export the LIBSCIENTIFIC_LIB_DIR variable pointing to the libscientific.so installation path.
 
-For example, if the library is installed in /home/<user>/mylocalenv, then you need to export the 
+For example, if the library is installed in /home/<user>/mylocalenv, then you need to export the
 following variable
 
 .. code-block::
@@ -62,10 +62,6 @@ Packages
 On macOS you can install libscientific via homebrew
 
 .. code-block::
-   
+
    brew install --HEAD libscientific
    brew install --HEAD libscientific-python3
-
-
-
-

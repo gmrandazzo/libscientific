@@ -62,7 +62,7 @@ int main() {
 
     // 3. Print results and cleanup
     PrintPCA(model);
-    
+
     DelPCAModel(&model);
     DelMatrix(&m);
     return 0;

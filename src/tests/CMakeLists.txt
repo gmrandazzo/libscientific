@@ -29,6 +29,7 @@ set(INTERPOLATETest_SRC testinterpolate.c)
 set(GRAPHSTest_SRC testgraphs.c)
 set(OptimizationTest_SRC testoptimization.c)
 set(IOTests_SRC testio.c)
+set(ModelIOTest_SRC testmodelio.c)
 set(MemWrapperTest_SRC testmemwrapper.c)
 
 add_executable(testscientificinfo ${TestScientificInfo_SRC})
@@ -138,6 +139,10 @@ add_test(NAME testoptimization COMMAND testoptimization)
 add_executable(testio ${IOTests_SRC})
 target_link_libraries(testio libscientific)
 add_test(NAME testio COMMAND testio)
+
+add_executable(testmodelio ${ModelIOTest_SRC})
+target_link_libraries(testmodelio libscientific)
+add_test(NAME testmodelio COMMAND testmodelio)
 
 add_executable(testmemwrapper ${MemWrapperTest_SRC})
 target_link_libraries(testmemwrapper libscientific)

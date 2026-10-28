@@ -30,7 +30,7 @@ typedef struct{
 
 /**
  *  Most Descriptive Compound Method
- * 
+ *
  *  @param [in] m matrix of data in coordinate
  *  @param [in] n number of object to select.
  *  @param [in] metric metric type: 0 euclidean, 1 manhattan, 2 cosine distances
@@ -46,7 +46,7 @@ void MDC(matrix* m,
 /**
  *  Most Descriptive Compound Method (Fast Implementation)
  *  Uses memory-efficient parallelization for large datasets.
- * 
+ *
  *  @param [in] m matrix of data in coordinate
  *  @param [in] n number of object to select.
  *  @param [in] metric metric type: 0 euclidean, 1 manhattan, 2 cosine distances
@@ -61,14 +61,14 @@ void MDC_Fast(matrix* m,
 
 
 /**
- * MaxMin Dissimilarity Selection Method 
+ * MaxMin Dissimilarity Selection Method
  *
  * @param [in] m matrix of data in coordinate
  * @param [in] n number of object to select.
  * @param [in] metric metric type: 0 euclidean, 1 manhattan, 2 cosine distances
  * @param [out] selections initialised uivector. This variable will be filled up with the selected object ids.
  * @param [in] nthreads number of threads to use
- * 
+ *
  * WARNING: SLOW IMPLEMENTATION!!!
  */
 void MaxDis(matrix* m,
@@ -119,7 +119,7 @@ void DelHyperGridMap(HyperGridModel **hgm);
  * @param [in] m N-Dimensional matrix of objects
  * @param [in] grid_size grid size
  * @param [out] bins_id initialized hgmbins struct. For each object we define the hyper grid bin of appartenaince
- * @param [out] model HyperGridModel 
+ * @param [out] model HyperGridModel
  *
  * Bins numbering:
  *   ___ ___ ___ ___

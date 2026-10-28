@@ -1,20 +1,20 @@
-from setuptools import setup
 import platform
 
-if platform.system() == 'Windows':
-    library = '*.dll'
-elif platform.system() == 'Darwin':
-    library = '*.dylib'
+from setuptools import setup
+
+if platform.system() == "Windows":
+    library = "*.dll"
+elif platform.system() == "Darwin":
+    library = "*.dylib"
 else:
-    library = '*.so*'
+    library = "*.so*"
 
 arch = platform.machine()
 
 setup(
     name="libscientific",
-    version="1.6.1",
+    version="1.8.0",
     packages=["libscientific"],
     package_data={"": [library]},
     platforms=[arch],
 )
-

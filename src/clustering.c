@@ -114,7 +114,7 @@ void MDC(matrix* m,
   for(th = 0; th < nthreads; th++){
     args[th].m = m;
     args[th].tmprank = tmprank;
-    args[th].metric = metric;
+    args[th].metric = (size_t)metric;
   }
 
   /* MULTI THREAD IMPLEMENTATION */
@@ -175,8 +175,8 @@ void MDC(matrix* m,
     /*now mdc is the MDC */
 
     UIVectorAppend(selections, mdc);
-    /*Recalculate the disances of the MDC to all the other compounds 
-      * and the reciprocal ranks as aboce subtract these reciprocal 
+    /*Recalculate the disances of the MDC to all the other compounds
+      * and the reciprocal ranks as aboce subtract these reciprocal
       * ranks from 1 and store in the rank vector R
       */
     /* MULTITHREAD IMPLEMENTATION */
@@ -303,7 +303,7 @@ static void *MDCFastInitialWorker(void *arg_) {
         pairs[j].dist = 0.0;
         continue;
       }
-      
+
       double dist = 0.0;
       /* Inline distance calculation for speed */
       if (arg->metric == 0) { /* Euclidean */
@@ -330,30 +330,30 @@ static void *MDCFastInitialWorker(void *arg_) {
             pairs[j].dist = 0.0; /* Handle zero vectors */
       }
     }
-    
+
     /* Sort distances */
     qsort(pairs, arg->m->row, sizeof(mdc_pair), compare_mdc_pair);
-    
+
     /* Update local_vectinfo (accumulate votes) */
     d = 2.0;
     for (j = 0; j < arg->m->row; j++) {
        size_t idx = pairs[j].index;
        if (idx == i) {
-         arg->local_vectinfo->data[idx] += 1.0; 
+         arg->local_vectinfo->data[idx] += 1.0;
        } else {
          arg->local_vectinfo->data[idx] += 1.0 / d;
          d += 1.0;
        }
     }
   }
-  
+
   xfree(pairs);
   return NULL;
 }
 
 typedef struct {
   matrix *m;
-  mdc_pair *distances; 
+  mdc_pair *distances;
   size_t mdc_idx;
   size_t from, to;
   int metric;
@@ -428,7 +428,7 @@ void MDC_Fast(matrix* m,
   /* PHASE 1: Initial Scoring (Parallel & Memory Efficient) */
   size_t step = (size_t)ceil((double)m->row / (double)nthreads);
   size_t from = 0;
-  
+
   for (th = 0; th < nthreads; th++) {
     init_args[th].m = m;
     init_args[th].from = from;
@@ -436,9 +436,9 @@ void MDC_Fast(matrix* m,
     init_args[th].metric = metric;
     NewDVector(&init_args[th].local_vectinfo, m->row);
     DVectorSet(init_args[th].local_vectinfo, 0.0);
-    
+
     pthread_create(&threads[th], NULL, MDCFastInitialWorker, (void*)&init_args[th]);
-    
+
     from = init_args[th].to;
   }
 
@@ -473,7 +473,7 @@ void MDC_Fast(matrix* m,
 
     /* Break if we have enough */
     if (n > 0 && nmdc >= n) break;
-    
+
     /* Stop if all scores are <= 1 and we want "auto" selection (n=0 logic from original code) */
     if (n == 0) {
         k = 0; l = 0;
@@ -496,7 +496,7 @@ void MDC_Fast(matrix* m,
         dist_args[th].from = from;
         dist_args[th].to = (from + step > m->row) ? m->row : from + step;
         dist_args[th].metric = metric;
-        
+
         pthread_create(&threads[th], NULL, MDCFastDistWorker, (void*)&dist_args[th]);
         from = dist_args[th].to;
     }
@@ -707,7 +707,7 @@ static void *MaxDisUpdateWorker(void *arg_) {
   maxdis_worker_args *arg = (maxdis_worker_args*)arg_;
   size_t i, k;
   double d, val_i, val_last;
-  
+
   /* Pointers for faster access */
   double **data = arg->m->data;
   double *dists = arg->min_dists->data;
@@ -776,7 +776,7 @@ void MaxDis_Fast(matrix* m,
 
   is_selected = xmalloc(sizeof(unsigned char) * m->row);
   memset(is_selected, 0, sizeof(unsigned char) * m->row);
-  
+
   threads = xmalloc(sizeof(pthread_t) * nthreads);
   args = xmalloc(sizeof(maxdis_worker_args) * nthreads);
 
@@ -791,7 +791,7 @@ void MaxDis_Fast(matrix* m,
 
   far_away = 0;
   double max_d = -1.0;
-  
+
   /* This loop is O(N*D), can be parallelized but fast enough usually. keeping serial for simplicity of Phase 1 */
   for(i = 0; i < m->row; i++){
     double d = 0.0;
@@ -817,7 +817,7 @@ void MaxDis_Fast(matrix* m,
   size_t last_selected = far_away;
 
   for (nobj = 1; nobj < n && nobj < m->row; nobj++) {
-      
+
       /* Phase 2a: Update min_dists in parallel */
       size_t step = (size_t)ceil((double)m->row / (double)nthreads);
       size_t from = 0;
@@ -830,7 +830,7 @@ void MaxDis_Fast(matrix* m,
           args[k].from = from;
           args[k].to = (from + step > m->row) ? m->row : from + step;
           args[k].metric = metric;
-          
+
           pthread_create(&threads[k], NULL, MaxDisUpdateWorker, (void*)&args[k]);
           from = args[k].to;
       }
@@ -1078,17 +1078,15 @@ void KMeansppCenters(matrix *m,
                      uivector *selections,
                      int nthreads)
 {
-  size_t i;
-  size_t j;
-  double y;
-  double A;
-  double B;
+  size_t i, j;
+  double A, B, y;
   dvector *D;
   dvector *D_square;
   size_t q = n; /*get the number of clusters*/
+  size_t num_threads = (nthreads > 0) ? (size_t)nthreads : 1;
 
-  pthread_t *threads = xmalloc(sizeof(pthread_t)*nthreads);
-  kmpp_th_args *arg = xmalloc(sizeof(kmpp_th_args)*nthreads);
+  pthread_t *threads = xmalloc(sizeof(pthread_t) * num_threads);
+  kmpp_th_args *arg = xmalloc(sizeof(kmpp_th_args) * num_threads);
 
   NewDVector(&D, m->row); /* vettore distanza di tutti i punti. Per ogni punto c'è un valore di distanza */
   NewDVector(&D_square, m->row); /* vettore distanza di tutti i punti al quadrato.*/
@@ -1097,9 +1095,9 @@ void KMeansppCenters(matrix *m,
 
   /* Step 2 */
   while(q > 1){
-    size_t nobj = ceil((double)m->row/(double)nthreads);
+    size_t nobj = (size_t)ceil((double)m->row / (double)num_threads);
     size_t from = 0;
-    for(i = 0; i < nthreads; i++){
+    for(i = 0; i < num_threads; i++){
       arg[i].m = m;
       arg[i].selections = selections;
       arg[i].D = D;
@@ -1114,7 +1112,7 @@ void KMeansppCenters(matrix *m,
       pthread_create(&threads[i], NULL, kmppDistanceWorker, (void*) &arg[i]);
     }
 
-    for(i = 0; i < nthreads; i++){
+    for(i = 0; i < num_threads; i++){
       pthread_join(threads[i], NULL);
     }
 
@@ -1207,31 +1205,43 @@ void PruneResults(matrix *m,
     }
 
     initMatrix(&distmx);
-    CalculateDistance(subcentroid, submx, distmx, nthreads, EUCLIDEAN); 
+    CalculateDistance(subcentroid, submx, distmx, nthreads, EUCLIDEAN);
 
-    /* type == 0 = Near Object else Faar object */
-    float (*compare_func)(float, float) = (type == 0) ? fminf : fmaxf;
+    if (ids->size == 0 || distmx->row == 0) {
+      DelMatrix(&distmx);
+      DelMatrix(&subcentroid);
+      DelUIVector(&ids);
+      DelMatrix(&submx);
+      continue;
+    }
+
+    /* type == 0 = Near Object else Far object */
     for (j = 0; j < nmaxobj; j++) {
       l = 0;
       k = ids->data[0];
       var = distmx->data[0][0];
-      for (int i = 1; i < distmx->row; i++) {
-        if (compare_func(distmx->data[i][0], var) == distmx->data[i][0]){
-          var = distmx->data[i][0];
-          k = ids->data[i];
-          l = i;
+      for (size_t row_idx = 1; row_idx < distmx->row; row_idx++) {
+        if (type == 0) {
+          if (distmx->data[row_idx][0] <= var) {
+            var = distmx->data[row_idx][0];
+            k = ids->data[row_idx];
+            l = row_idx;
+          }
+        } else {
+          if (distmx->data[row_idx][0] >= var) {
+            var = distmx->data[row_idx][0];
+            k = ids->data[row_idx];
+            l = row_idx;
+          }
         }
       }
 
-      if(FLOAT_EQ(var, MISSING, EPSILON)){
-        distmx->data[l][0] = MISSING;
-      }
-      else{
-        distmx->data[l][0] = MISSING;
+      distmx->data[l][0] = MISSING;
+      if (!FLOAT_EQ(var, MISSING, EPSILON)) {
         clusters_->data[k] = n+1;
       }
     }
-  
+
     DelMatrix(&distmx);
     DelMatrix(&subcentroid);
     DelUIVector(&ids);
@@ -1285,7 +1295,7 @@ int shouldStop(matrix *centroids,
 typedef struct{
   matrix *m;
   matrix *centroids;
-  int from, to;
+  size_t from, to;
   uivector *labels;
 } labels_th_arg;
 
@@ -1295,20 +1305,22 @@ void *getLabelsWorker(void *arg_)
   size_t i;
   size_t j;
   size_t k;
-  int c_point; /*closest centroid id*/
-  double c_dst; /* closest centroid distance */
+  size_t c_point = 0; /*closest centroid id*/
+  int has_point = 0;
+  double c_dst = 0.0; /* closest centroid distance */
   /* parallelize this part! */
   for(i = a->from; i < a->to; i++){
-    c_point = -1;
+    has_point = 0;
     for(k = 0; k < a->centroids->row; k++){
-      double t_dst = 0.f;
+      double t_dst = 0.0;
       for(j = 0; j < a->m->col; j++){
         t_dst += (a->m->data[i][j]-a->centroids->data[k][j])*(a->m->data[i][j]-a->centroids->data[k][j]);
       }
       t_dst = sqrt(t_dst);
-      if(c_point == -1){
-        c_point = 0;
+      if(!has_point){
+        c_point = k;
         c_dst = t_dst;
+        has_point = 1;
       }
       else{
         if(t_dst < c_dst){
@@ -1332,11 +1344,12 @@ void getLabels_(matrix *m, matrix *centroids, uivector *labels, int nthreads)
 {
   size_t i;
   size_t from;
-  pthread_t *threads = xmalloc(sizeof(pthread_t)*nthreads);
-  labels_th_arg *arg = xmalloc(sizeof(labels_th_arg)*nthreads);
-  int nobj = ceil((double)m->row/(double)nthreads);
+  size_t num_threads = (nthreads > 0) ? (size_t)nthreads : 1;
+  pthread_t *threads = xmalloc(sizeof(pthread_t) * num_threads);
+  labels_th_arg *arg = xmalloc(sizeof(labels_th_arg) * num_threads);
+  size_t nobj = (size_t)ceil((double)m->row / (double)num_threads);
   from = 0;
-  for(i = 0; i < nthreads; i++){
+  for(i = 0; i < num_threads; i++){
     arg[i].m = m;
     arg[i].centroids = centroids;
     arg[i].labels = labels;
@@ -1351,7 +1364,7 @@ void getLabels_(matrix *m, matrix *centroids, uivector *labels, int nthreads)
     pthread_create(&threads[i], NULL, getLabelsWorker, (void*) &arg[i]);
   }
 
-  for(i = 0; i < nthreads; i++){
+  for(i = 0; i < num_threads; i++){
     pthread_join(threads[i], NULL);
   }
 
@@ -1368,20 +1381,24 @@ void getLabels(matrix *m, matrix *centroids, uivector *labels)
   size_t i;
   size_t j;
   size_t k;
-  int c_point; /*closest centroid id*/
+  size_t c_point; /*closest centroid id*/
+  int has_point;
   double c_dst; /* closest centroid distance */
   /* parallelize this part! */
   for(i = 0; i < m->row; i++){
-    c_point = -1;
+    has_point = 0;
+    c_point = 0;
+    c_dst = 0.0;
     for(k = 0; k < centroids->row; k++){
-      double t_dst = 0.f;
+      double t_dst = 0.0;
       for(j = 0; j < m->col; j++){
         t_dst += (m->data[i][j]-centroids->data[k][j])*(m->data[i][j]-centroids->data[k][j]);
       }
       t_dst = sqrt(t_dst);
-      if(c_point == -1){
-        c_point = 0;
+      if(!has_point){
+        c_point = k;
         c_dst = t_dst;
+        has_point = 1;
       }
       else{
         if(t_dst < c_dst){
@@ -1470,11 +1487,11 @@ void KMeans(matrix* m,
   if(initializer == 0){ /* Random */
     for(i = 0; i < nclusters; i++){
       //srand_(m->col+m->row+nclusters+i);
-      UIVectorAppend(pre_centroids, randInt(0, m->row));
+      UIVectorAppend(pre_centroids, (size_t)randInt(0, (int)m->row));
     }
   }
   else if(initializer == 1){ /* KMeansppCenters */
-    KMeansppCenters(m, nclusters, pre_centroids, nthreads);
+    KMeansppCenters(m, nclusters, pre_centroids, (int)nthreads);
   }
   else if(initializer == 2){ /* MDC */
     MDC(m, nclusters, 0, pre_centroids, nthreads);
@@ -1482,7 +1499,7 @@ void KMeans(matrix* m,
   else{ /*if(initializer == 3){  MaxDis */
     MaxDis(m, nclusters, 0, pre_centroids, nthreads);
   }
-  
+
   /* else personal centroid configuration */
 
   for(i = 0; i < pre_centroids->size; i++){
@@ -1494,7 +1511,7 @@ void KMeans(matrix* m,
   DelUIVector(&pre_centroids);
 
   UIVectorResize(cluster_labels, m->row);
-  
+
   it = 0;
   while(shouldStop(centroids, oldcentroids, it, 100) == 0)
   {
@@ -1509,9 +1526,9 @@ void KMeans(matrix* m,
     printf("Matrix copy: %f\n", ((double)t)/CLOCKS_PER_SEC);
     t = clock();
     #endif
-    
+
     //getLabels(m, centroids, cluster_labels);
-    getLabels_(m, centroids, cluster_labels, nthreads);
+    getLabels_(m, centroids, cluster_labels, (int)nthreads);
     #ifdef DEBUG
     t = clock() - t;
     #endif
@@ -1559,7 +1576,7 @@ void KMeansRandomGroupsCV(matrix* m,
 
   NewMatrix(&gid, groups, (size_t)ceil((double)m->row/(double)groups));
 
-  srand_(groups*m->row*iterations);
+  srand_((uint32_t)(groups * m->row * iterations));
 
   DVectorResize(ssdist, maxnclusters);
 
@@ -1573,10 +1590,10 @@ void KMeansRandomGroupsCV(matrix* m,
     for(i = 0; i <  gid->row; i++){
       for(j = 0; j <  gid->col; j++){
         do{
-          n = (size_t)randInt(0, m->row);
-        } while(ValInMatrix(gid, n) == 1 && k < (m->row));
+          n = (size_t)randInt(0, (int)m->row);
+        } while(ValInMatrix(gid, (double)n) == 1 && k < (m->row));
         if(k < m->row){
-          gid->data[i][j] = n;
+          gid->data[i][j] = (double)n;
           k++;
         }
         else
@@ -1629,7 +1646,7 @@ void KMeansRandomGroupsCV(matrix* m,
         if(i != g){
           for(j = 0; j < gid->col; j++){
             a = (int)gid->data[i][j]; /* get the row index */
-            if(a != -1){ 
+            if(a != -1){
               for(n = 0; n < m->col; n++){
                 subm->data[k][n] = m->data[a][n];
               }
@@ -1794,8 +1811,8 @@ void KMeansJumpMethod(matrix* m,
 
 /* Helper struct for the optimized tree */
 typedef struct {
-    int left;
-    int right;
+    size_t left;
+    size_t right;
     double dist;
     size_t size;
 } HClusterNode;
@@ -1811,16 +1828,16 @@ void HierarchicalClustering(matrix* _m,
   size_t n = _m->row;
   size_t min_i, min_j;
   double min_dist;
-  
+
   matrix *distmx;
   HClusterNode *tree;     /* Stores nodes N to 2N-2 */
-  int *node_map;          /* Maps row index to tree node index */
-  int *cluster_size;      /* Size of cluster at row i */
+  size_t *node_map;       /* Maps row index to tree node index */
+  size_t *cluster_size;   /* Size of cluster at row i */
   unsigned char *active;  /* 1 if row is active, 0 otherwise */
-  
+
   /* Caching for speed optimization */
   double *row_min_val;    /* Minimum distance for row i */
-  int *row_min_idx;       /* Index of minimum distance for row i */
+  size_t *row_min_idx;    /* Index of minimum distance for row i */
 
   if (n == 0) return;
   if (nclusters > n) nclusters = n;
@@ -1828,7 +1845,7 @@ void HierarchicalClustering(matrix* _m,
 
   /* 1. Initialization */
   NewMatrix(&distmx, n, n);
-  
+
   /* Use Squared Euclidean for Ward, else Euclidean */
   if(linktype == ward_linkage){
     CalculateDistance(_m, _m, distmx, nthreads, SQUARE_EUCLIDEAN);
@@ -1840,20 +1857,20 @@ void HierarchicalClustering(matrix* _m,
   for(i=0; i<n; i++) distmx->data[i][i] = DBL_MAX;
 
   tree = xmalloc(sizeof(HClusterNode) * (n - 1));
-  node_map = xmalloc(sizeof(int) * n);
-  cluster_size = xmalloc(sizeof(int) * n);
+  node_map = xmalloc(sizeof(size_t) * n);
+  cluster_size = xmalloc(sizeof(size_t) * n);
   active = xmalloc(sizeof(unsigned char) * n);
   row_min_val = xmalloc(sizeof(double) * n);
-  row_min_idx = xmalloc(sizeof(int) * n);
+  row_min_idx = xmalloc(sizeof(size_t) * n);
 
   for(i=0; i<n; i++) {
       node_map[i] = i; /* Initial leaves are 0..n-1 */
       cluster_size[i] = 1;
       active[i] = 1;
-      
+
       /* Initialize row mins */
       double min_v = DBL_MAX;
-      int min_k = -1;
+      size_t min_k = 0;
       for(j=0; j<n; j++) {
           if (i==j) continue;
           if (distmx->data[i][j] < min_v) {
@@ -1869,7 +1886,7 @@ void HierarchicalClustering(matrix* _m,
   for (k = 0; k < n - 1; k++) {
       /* Find global minimum among active rows */
       min_dist = DBL_MAX;
-      min_i = 0; 
+      min_i = 0;
       min_j = 0;
 
       for(i = 0; i < n; i++) {
@@ -1882,25 +1899,25 @@ void HierarchicalClustering(matrix* _m,
       }
 
       /* Ensure min_i < min_j for consistent indexing */
-      /* Note: row_min_idx might point to inactive if we didn't update perfectly, 
+      /* Note: row_min_idx might point to inactive if we didn't update perfectly,
          but our update logic below ensures validity. */
-      
+
       /* Record Merge */
       tree[k].left = node_map[min_i];
       tree[k].right = node_map[min_j];
       tree[k].dist = min_dist;
       tree[k].size = cluster_size[min_i] + cluster_size[min_j];
-      
+
       /* Update active sets */
       active[min_j] = 0; /* min_j is merged into min_i */
       node_map[min_i] = n + k; /* New node index */
-      
+
       /* Update distances for min_i (the merged row) */
       /* We effectively move the new cluster into row min_i */
-      
+
       for (i = 0; i < n; i++) {
           if (!active[i] || i == min_i) continue;
-          
+
           double d_iu = distmx->data[i][min_i];
           double d_iv = distmx->data[i][min_j];
           double d_new = 0.0;
@@ -1911,7 +1928,7 @@ void HierarchicalClustering(matrix* _m,
               d_new = (d_iu > d_iv) ? d_iu : d_iv;
           } else if (linktype == average_linkage) {
               /* Standard UPGMA: weighted average */
-              /* d_new = (size_i*d_iu + size_j*d_iv) / (size_i + size_j) 
+              /* d_new = (size_i*d_iu + size_j*d_iv) / (size_i + size_j)
                  Using indices min_i and min_j for u and v */
               /* Wait, i is external. u is min_i, v is min_j */
               double n_u = (double)cluster_size[min_i];
@@ -1926,20 +1943,20 @@ void HierarchicalClustering(matrix* _m,
               d_new = ((n_i_ + n_u) * d_iu + (n_i_ + n_v) * d_iv - n_i_ * min_dist) / n_sum;
           } else {
               /* Fallback Average */
-              d_new = (d_iu + d_iv) / 2.0; 
+              d_new = (d_iu + d_iv) / 2.0;
           }
-          
+
           /* Update Symmetric Matrix */
           distmx->data[i][min_i] = d_new;
           distmx->data[min_i][i] = d_new;
       }
-      
+
       cluster_size[min_i] += cluster_size[min_j];
 
       /* Update row_min cache */
       /* 1. Update row min_i: requires full scan of its new values */
       double best_val = DBL_MAX;
-      int best_idx = -1;
+      size_t best_idx = 0;
       for(j=0; j<n; j++) {
           if(!active[j] || min_i == j) continue;
           if(distmx->data[min_i][j] < best_val) {
@@ -1953,18 +1970,18 @@ void HierarchicalClustering(matrix* _m,
       /* 2. Update other rows: Check if they pointed to min_j (invalid) or min_i (value changed) */
       for(i=0; i<n; i++) {
           if(!active[i] || i == min_i) continue;
-          
-          int old_target = row_min_idx[i];
-          
+
+          size_t old_target = row_min_idx[i];
+
           /* If the new distance to min_i is smaller than old min, update */
           if (distmx->data[i][min_i] < row_min_val[i]) {
               row_min_val[i] = distmx->data[i][min_i];
               row_min_idx[i] = min_i;
-          } 
+          }
           /* If it pointed to min_j (now gone) or min_i (value increased?), we must rescan */
           else if (old_target == min_j || old_target == min_i) {
               double m_v = DBL_MAX;
-              int m_k = -1;
+              size_t m_k = 0;
               for(j=0; j<n; j++) {
                   if(!active[j] || i==j) continue;
                   if(distmx->data[i][j] < m_v) {
@@ -1980,32 +1997,30 @@ void HierarchicalClustering(matrix* _m,
 
   /* 3. Extract Flat Clusters */
   UIVectorResize(_clusters, n);
-  
-  /* We have a tree structure. 
+
+  /* We have a tree structure.
      Root is at tree[n-2] (last merge).
      We need to perform a cut.
      Strategy:
      - Assign Cluster ID 1 to Root.
      - While number of clusters < nclusters:
-       - Find cluster with highest merge distance? 
+       - Find cluster with highest merge distance?
        - Actually, the merges are ordered by distance (agglomerative).
        - The last (nclusters-1) merges form the top of the tree.
        - If we undo the last (nclusters-1) merges, we get nclusters.
   */
-  
-  /* Array to map Tree Node ID (0..2n-2) to Final Cluster ID (1..nclusters) */
-  /* Initialize leaves with 0 */
-  int *membership = xcalloc(2 * n, sizeof(int));
-  
+
+
+
   /* The last merge created node (2n-2).
      Iterate backwards from the last merge.
      We start with 1 cluster (the root).
      Each step backwards splits one cluster into two.
      We stop when we have enough clusters.
   */
-  
+
   /* Label the top nodes */
-  /* The nodes kept are those that were NOT children of the last (nclusters-1) merges? 
+  /* The nodes kept are those that were NOT children of the last (nclusters-1) merges?
      No.
      We process the tree from top (last merge) down.
      Assign label 1 to root (node 2n-2).
@@ -2013,61 +2028,51 @@ void HierarchicalClustering(matrix* _m,
      While queue size < nclusters:
        Take node with highest distance (last merges) from queue?
        Split it: Assign label X to left child, label Y to right child.
-       
+
      Simpler:
      Mark the "cut" nodes.
      The nodes formed by merges [n-2 ... n-nclusters] are the top nodes.
      The children of these top nodes that are NOT in the top set are the roots of our final clusters.
   */
-  
-  int *is_cluster_root = xcalloc(2 * n, sizeof(int));
-  
+
+  unsigned char *is_cluster_root = xcalloc(2 * n, sizeof(unsigned char));
+
   /* Valid active nodes at the cut level */
   /* Root is valid */
   is_cluster_root[2 * n - 2] = 1;
-  
+
   /* We need to perform (nclusters - 1) splits to get nclusters */
-  /* We iterate k from n-2 down to n-nclusters.
-     For each k, node (n+k) is a merge. If it is marked as a cluster root, 
-     we unmark it and mark its children.
-  */
-  
-  /* Merge indices in tree array are 0..n-2. 
-     tree[k] creates node (n+k).
-     Last merge is index n-2. 
-  */
-  
   size_t splits_needed = nclusters - 1;
   for (k = 0; k < splits_needed; k++) {
-      int merge_idx = (n - 2) - k; /* Go backwards from last merge */
-      int node_id = n + merge_idx;
-      
+      size_t merge_idx = (n - 2) - k; /* Go backwards from last merge */
+      size_t node_id = n + merge_idx;
+
       if (is_cluster_root[node_id]) {
           is_cluster_root[node_id] = 0;
           is_cluster_root[tree[merge_idx].left] = 1;
           is_cluster_root[tree[merge_idx].right] = 1;
       }
   }
-  
+
   /* Now assign IDs to leaves by traversing down from marked roots */
   /* Assign sequential IDs 1..nclusters to the marked roots */
-  int current_label = 1;
+  size_t current_label = 1;
   for (i = 0; i < 2*n-1; i++) {
       if (is_cluster_root[i]) {
           /* Perform BFS/DFS to mark all leaves under this node with current_label */
           /* Simple stack for DFS */
-          int *stack = xmalloc(sizeof(int) * n); 
-          int top = 0;
+          size_t *stack = xmalloc(sizeof(size_t) * (2 * n));
+          size_t top = 0;
           stack[top++] = i;
-          
+
           while(top > 0) {
-              int curr = stack[--top];
+              size_t curr = stack[--top];
               if (curr < n) {
                   /* Leaf */
                   _clusters->data[curr] = current_label;
               } else {
                   /* Internal node - index in tree is curr - n */
-                  int t_idx = curr - n;
+                  size_t t_idx = curr - n;
                   stack[top++] = tree[t_idx].left;
                   stack[top++] = tree[t_idx].right;
               }
@@ -2076,58 +2081,43 @@ void HierarchicalClustering(matrix* _m,
           current_label++;
       }
   }
-  
+
   /* 4. Generate Dendrogram Strings (if requested) */
-  /* Format: "Name1;Name2;Dist" for each merge step k=0..n-2 */
   if (dendogram != NULL) {
-      /* We need to reconstruct the names used in original code logic?
-         Original code: merged "Name1;Name2;"
-         We can just output indices or reconstruct.
-         Since dendogram is just a string list, let's output "LeftID;RightID;Dist"
-         Note: The original code accumulated names recursively: "1;2;5;"
-         We can do that if we really want, but it's expensive. 
-         Let's output simple "ID1;ID2;Dist" where IDs refer to leaves or cluster indices?
-         Original format: "clustername\tdistance". 
-         Where clustername was "leaf1;leaf2;leaf3...".
-         
-         Let's replicate that behavior efficiently.
-         We maintain an array of strings for each active node.
-         Only create them if dendogram != NULL.
-      */
       char **node_names = xcalloc(2 * n, sizeof(char*));
       for(i=0; i<n; i++) {
-          size_t len = snprintf(NULL, 0, "%zu;", i);
+          int len_i = snprintf(NULL, 0, "%zu;", i);
+          size_t len = (len_i > 0) ? (size_t)len_i : 0;
           node_names[i] = xmalloc(len + 1);
           snprintf(node_names[i], len + 1, "%zu;", i); /* Original appended ';' */
       }
-      
+
       for(k=0; k<n-1; k++) {
-          int left = tree[k].left;
-          int right = tree[k].right;
-          int new_id = n + k;
-          
+          size_t left = tree[k].left;
+          size_t right = tree[k].right;
+          size_t new_id = n + k;
+
           /* Combine names */
-          /* Name = "LeftNameRightName" (Original logic did simple concat) */
-          size_t len = snprintf(NULL, 0, "%s%s", node_names[left], node_names[right]);
+          int len_lr = snprintf(NULL, 0, "%s%s", node_names[left], node_names[right]);
+          size_t len = (len_lr > 0) ? (size_t)len_lr : 0;
           node_names[new_id] = xmalloc(len + 1);
           snprintf(node_names[new_id], len + 1, "%s%s", node_names[left], node_names[right]);
-          
+
           /* Add to dendogram vector */
-          /* Format: Name + Distance */
-          size_t len_entry = snprintf(NULL, 0, "%s%f", node_names[new_id], tree[k].dist);
+          int len_e = snprintf(NULL, 0, "%s%f", node_names[new_id], tree[k].dist);
+          size_t len_entry = (len_e > 0) ? (size_t)len_e : 0;
           char *entry = xmalloc(len_entry + 1);
           snprintf(entry, len_entry + 1, "%s%f", node_names[new_id], tree[k].dist);
           StrVectorAppend(dendogram, entry);
           xfree(entry);
       }
-      
+
       for(i=0; i<2*n-1; i++) if(node_names[i]) xfree(node_names[i]);
       xfree(node_names);
   }
 
   /* Cleanup */
   xfree(is_cluster_root);
-  xfree(membership);
   xfree(row_min_idx);
   xfree(row_min_val);
   xfree(active);
@@ -2136,4 +2126,3 @@ void HierarchicalClustering(matrix* _m,
   xfree(tree);
   DelMatrix(&distmx);
 }
-

@@ -25,7 +25,7 @@
  * A dynamic array of strings.
  * The strvector struct is a dynamic array of strings represented
  * by a pointer to a character pointer (char data) and its size (size_t size).
- * 
+ *
  * - **data** A pointer to a character pointer representing the array of strings.
  * - **size** The size of the array of strings.
  */
@@ -40,7 +40,7 @@ typedef struct{
 void NewStrVector(strvector **s, size_t size);
 
 /**
- * initialize an empty strvector 
+ * initialize an empty strvector
  */
 void initStrVector(strvector **s);
 
@@ -78,7 +78,7 @@ char* getStr(strvector *s, size_t i);
 strvector *StrVectorExtend(strvector *s1, strvector *s2);
 
 /**
- * Print to video a strvector 
+ * Print to video a strvector
  */
 void PrintStrVector(strvector *s);
 
@@ -99,7 +99,7 @@ void SplitString(char *str, char *sep, strvector *tokens);
  * A dynamic array of doubles.
  * The dvector struct is a dynamic array of double represented
  * by a pointer to a double and its size (size_t size).
- * 
+ *
  * - **data** A pointer to a double type.
  * - **size** The size of the array of strings.
  */
@@ -114,7 +114,7 @@ typedef struct{
 void NewDVector(dvector **d, size_t size);
 
 /**
- * initialize an empty dvector 
+ * initialize an empty dvector
  */
 void initDVector(dvector **d);
 
@@ -183,7 +183,7 @@ void DVectorSort(dvector *v);
  * A dynamic array of integers.
  * The dvector struct is a dynamic array of integers represented
  * by a pointer to a integers and its size (size_t size).
- * 
+ *
  * - **data** A pointer to a double type.
  * - **size** The size of the array of strings.
  */
@@ -238,7 +238,7 @@ void IVectorSet(ivector *d, int val);
  * A dynamic array of unsigned integers.
  * The dvector struct is a dynamic array of unsigned integers represented
  * by a pointer to a unsigned integers and its size (size_t size).
- * 
+ *
  * - **data** A pointer to unsigned integer type.
  * - **size** The size of the array of strings.
  */
@@ -268,7 +268,7 @@ void DelUIVector(uivector **d);
 void UIVectorResize(uivector *d, size_t size_);
 
 /**
- * Print an uivector 
+ * Print an uivector
  */
 void PrintUIVector(uivector *v);
 

@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import ctypes
+
 import libscientific.matrix as mx
 import libscientific.vector as vect
 from libscientific.loadlibrary import load_libscientific_library
@@ -28,20 +29,21 @@ class PCAMODEL(ctypes.Structure):
     """
     PCA model data structure
     """
+
     _fields_ = [
         ("scores", ctypes.POINTER(mx.MATRIX)),
         ("loadings", ctypes.POINTER(mx.MATRIX)),
         ("dmodx", ctypes.POINTER(mx.MATRIX)),
         ("varexp", ctypes.POINTER(vect.DVECTOR)),
         ("colaverage", ctypes.POINTER(vect.DVECTOR)),
-        ("colscaling", ctypes.POINTER(vect.DVECTOR))]
+        ("colscaling", ctypes.POINTER(vect.DVECTOR)),
+    ]
 
     def __repr__(self):
         return self.__class__.__name__
 
     def __str__(self):
         return self.__class__.__name__
-
 
 
 lsci.NewPCAModel.argtypes = [ctypes.POINTER(ctypes.POINTER(PCAMODEL))]
@@ -68,11 +70,13 @@ def del_pca_model(mpca):
     lsci.DelPCAModel(ctypes.pointer(mpca))
 
 
-lsci.PCA.argtypes = [ctypes.POINTER(mx.MATRIX),
-                     ctypes.c_size_t,
-                     ctypes.c_size_t,
-                     ctypes.POINTER(PCAMODEL),
-                     ctypes.POINTER(ctypes.c_int)]
+lsci.PCA.argtypes = [
+    ctypes.POINTER(mx.MATRIX),
+    ctypes.c_int,
+    ctypes.c_size_t,
+    ctypes.POINTER(PCAMODEL),
+    ctypes.POINTER(ctypes.c_int),
+]
 lsci.PCA.restype = None
 
 
@@ -84,10 +88,12 @@ def pca_algorithm(m_input, scaling, npc, mpca):
     lsci.PCA(m_input, scaling, npc, mpca, scisignal)
 
 
-lsci.PCAScorePredictor.argtypes = [ctypes.POINTER(mx.MATRIX),
-                                   ctypes.POINTER(PCAMODEL),
-                                   ctypes.c_size_t,
-                                   ctypes.POINTER(mx.MATRIX)]
+lsci.PCAScorePredictor.argtypes = [
+    ctypes.POINTER(mx.MATRIX),
+    ctypes.POINTER(PCAMODEL),
+    ctypes.c_size_t,
+    ctypes.POINTER(mx.MATRIX),
+]
 lsci.PCAScorePredictor.restype = None
 
 
@@ -95,34 +101,34 @@ def pca_score_predictor(m_input, mpca, npc, pscores):
     """
     pca_score_predictor: Predict scores for a matrix m in the computed PCA modes
     """
-    lsci.PCAScorePredictor(m_input,
-                           mpca,
-                           npc,
-                           pscores)
+    lsci.PCAScorePredictor(m_input, mpca, npc, pscores)
 
 
-lsci.PCAIndVarPredictor.argtypes = [ctypes.POINTER(mx.MATRIX),
-                                    ctypes.POINTER(mx.MATRIX),
-                                    ctypes.POINTER(vect.DVECTOR),
-                                    ctypes.POINTER(vect.DVECTOR),
-                                    ctypes.c_size_t,
-                                    ctypes.POINTER(mx.MATRIX)]
+lsci.PCAIndVarPredictor.argtypes = [
+    ctypes.POINTER(mx.MATRIX),
+    ctypes.POINTER(mx.MATRIX),
+    ctypes.POINTER(vect.DVECTOR),
+    ctypes.POINTER(vect.DVECTOR),
+    ctypes.c_size_t,
+    ctypes.POINTER(mx.MATRIX),
+]
 lsci.PCAIndVarPredictor.restype = None
 
-def pca_ind_var_predictor(scores_input,
-                          pca_model,
-                          npc,
-                          ind_vars_out):
+
+def pca_ind_var_predictor(scores_input, pca_model, npc, ind_vars_out):
     """
     pca_ind_var_predictor: Reconstruct the original matrix
                            from PCA model using scores and loadings
     """
-    lsci.PCAIndVarPredictor(scores_input,
-                            pca_model.contents.loadings,
-                            pca_model.contents.colaverage,
-                            pca_model.contents.colscaling,
-                            npc,
-                            ind_vars_out)
+    lsci.PCAIndVarPredictor(
+        scores_input,
+        pca_model.contents.loadings,
+        pca_model.contents.colaverage,
+        pca_model.contents.colscaling,
+        npc,
+        ind_vars_out,
+    )
+
 
 lsci.PrintPCA.argtypes = [ctypes.POINTER(PCAMODEL)]
 lsci.PrintPCA.restype = None
@@ -134,10 +140,8 @@ def print_pca(mpca):
     """
     lsci.PrintPCA(mpca)
 
-lsci.WritePCA.argtypes = [
-    ctypes.c_char_p,
-    ctypes.POINTER(PCAMODEL)
-]
+
+lsci.WritePCA.argtypes = [ctypes.c_char_p, ctypes.POINTER(PCAMODEL)]
 lsci.WritePCA.restype = None
 
 
@@ -156,16 +160,14 @@ def write_pca(dbpath: str, pca: PCAMODEL):
     Returns:
         None
     """
-    encoded_string = dbpath.encode('utf-8')
+    encoded_string = dbpath.encode("utf-8")
     ctypes_string = ctypes.c_char_p(encoded_string)
     lsci.WritePCA(ctypes_string, pca)
 
 
-lsci.ReadPCA.argtypes = [
-    ctypes.c_char_p,
-    ctypes.POINTER(PCAMODEL)
-]
+lsci.ReadPCA.argtypes = [ctypes.c_char_p, ctypes.POINTER(PCAMODEL)]
 lsci.ReadPCA.restype = None
+
 
 def read_pca(dbpath: str, pca: PCAMODEL):
     """
@@ -182,11 +184,12 @@ def read_pca(dbpath: str, pca: PCAMODEL):
     Returns:
         None
     """
-    encoded_string = dbpath.encode('utf-8')
+    encoded_string = dbpath.encode("utf-8")
     ctypes_string = ctypes.c_char_p(encoded_string)
     lsci.ReadPCA(ctypes_string, pca)
 
-class PCA():
+
+class PCA:
     """
     Principal Component Analysis (PCA) Model
 
@@ -221,11 +224,14 @@ class PCA():
         self.scaling = scaling
         self.npc = npc
 
+    def __repr__(self):
+        return f"PCA(scaling={self.scaling}, npc={self.npc})"
+
     def __del__(self):
         """
         Clean up resources associated with the PCA instance.
         """
-        if self.model is not None:
+        if getattr(self, "model", None) is not None:
             del_pca_model(self.model)
             del self.model
         self.model = None
@@ -237,11 +243,20 @@ class PCA():
         Args:
             m_input (Matrix or List[List]): Input matrix for fitting the PCA model.
         """
-        if "Matrix" in str(type(m_input)):
-            pca_algorithm(m_input.mtx, self.scaling, self.npc, self.model)
+        alloc = False
+        if isinstance(m_input, mx.Matrix):
+            m_input_ = m_input.mtx
+        elif isinstance(m_input, ctypes.POINTER(mx.MATRIX)):
+            m_input_ = m_input
+        elif "numpy" in str(type(m_input)):
+            m_input_ = mx.matrix_from_numpy(m_input)
+            alloc = True
         else:
             m_input_ = mx.new_matrix(m_input)
-            pca_algorithm(m_input_, self.scaling, self.npc, self.model)
+            alloc = True
+
+        pca_algorithm(m_input_, self.scaling, self.npc, self.model)
+        if alloc:
             mx.del_matrix(m_input_)
             del m_input_
 
@@ -282,18 +297,26 @@ class PCA():
         Returns:
             List[List[float]]: Projected scores using the PCA model.
         """
-        pscores_ = mx.init_matrix()
-        if "Matrix" in str(type(m_input)):
+        alloc = False
+        if isinstance(m_input, mx.Matrix):
+            m_input_ = m_input.mtx
+        elif isinstance(m_input, ctypes.POINTER(mx.MATRIX)):
             m_input_ = m_input
-            pca_score_predictor(m_input.mtx, self.model, self.npc, pscores_)
+        elif "numpy" in str(type(m_input)):
+            m_input_ = mx.matrix_from_numpy(m_input)
+            alloc = True
         else:
             m_input_ = mx.new_matrix(m_input)
-            pca_score_predictor(m_input_, self.model, self.npc, pscores_)
-            mx.del_matrix(m_input_)
-            del m_input_
+            alloc = True
+
+        pscores_ = mx.init_matrix()
+        pca_score_predictor(m_input_, self.model, self.npc, pscores_)
         pscores = mx.matrix_to_list(pscores_)
         mx.del_matrix(pscores_)
         del pscores_
+        if alloc:
+            mx.del_matrix(m_input_)
+            del m_input_
         return pscores
 
     def reconstruct_original_matrix(self, npc_input=None, scores_input=None):
@@ -320,34 +343,52 @@ class PCA():
             scores_ = scores_input
 
         ind_vars = mx.init_matrix()
-        pca_ind_var_predictor(scores_,
-                              self.model,
-                              npc_,
-                              ind_vars)
+        pca_ind_var_predictor(scores_, self.model, npc_, ind_vars)
         omx = mx.matrix_to_list(ind_vars)
         mx.del_matrix(ind_vars)
         del ind_vars
         return omx
 
-    def save(self, dbpath):
+    def save(self, filepath):
         """
-        Save PCA model to a sqlite3 file
+        Save PCA model to a file (.lsm binary container or legacy .sqlite3).
 
         Parameters
         ----------
-        dbpath (str): The path to the SQLite database file where the PCA
-            model will be stored.
+        filepath (str): Destination file path. If ending in .sqlite3 or .db,
+            uses legacy SQLite format; otherwise uses the fast zero-dependency .lsm format.
         """
-        write_pca(dbpath, self.model)
+        if filepath.endswith(".sqlite3") or filepath.endswith(".db"):
+            write_pca(filepath, self.model)
+        else:
+            from libscientific.model_io import SavePCAModel
 
-    def load(self, dbpath):
+            st = SavePCAModel(filepath.encode("utf-8"), self.model)
+            if st != 0:
+                raise OSError(f"SavePCAModel failed with error code {st}")
+
+    def load(self, filepath):
         """
-        Load PCA model from a sqlite3 file
+        Load PCA model from a file (.lsm binary container or legacy .sqlite3).
 
         Parameters
         ----------
-        dbpath (str): The path to the SQLite database file where the PCA
-            model will be stored.
+        filepath (str): Source file path. Auto-detects container format.
         """
-        read_pca(dbpath, self.model)
+        is_lscm = False
+        try:
+            with open(filepath, "rb") as f:
+                if f.read(4) == b"LSCM":
+                    is_lscm = True
+        except Exception:
+            pass
+
+        if is_lscm or filepath.endswith(".lsm") or filepath.endswith(".lsb"):
+            from libscientific.model_io import ImportPCAModel
+
+            st = ImportPCAModel(filepath.encode("utf-8"), self.model)
+            if st != 0:
+                raise OSError(f"ImportPCAModel failed with error code {st}")
+        else:
+            read_pca(filepath, self.model)
         self.npc = self.model.contents.scores[0].col

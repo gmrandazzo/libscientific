@@ -23,42 +23,41 @@
 
 void calcVarExpressed(double total_ss, dvector *eval, dvector *varexp)
 {
-    size_t i;
     DVectorResize(varexp, eval->size);
     if (total_ss <= 0.0) {
         DVectorSet(varexp, 0.0);
         return;
     }
-    for(i = 0; i < eval->size; i++) {
+    for(size_t i = 0; i < eval->size; i++) {
         varexp->data[i] = (eval->data[i] / total_ss) * 100.0;
     }
 }
 
 /**
  * Calculate R^2 as the square of the Pearson correlation coefficient.
- * This is appropriate for models with or without intercept, 
+ * This is appropriate for models with or without intercept,
  * but ignores bias in predicted values.
  */
 double R2_deprecated(dvector *ytrue, dvector *ypred)
 {
-  size_t i, ny;
-  double yavg, ypredavg;
-  double num, den1, den2;
+  size_t ny = 0;
+  double yavg = 0.0;
+  double ypredavg = 0.0;
+  double num = 0.0;
+  double den1 = 0.0;
+  double den2 = 0.0;
 
-  yavg = ypredavg = 0.f;
-  ny = 0;
-  for(i = 0; i < ytrue->size; i++){
+  for(size_t i = 0; i < ytrue->size; i++){
     yavg += ytrue->data[i];
     ypredavg += ypred->data[i];
-    ny+=1;
+    ny += 1;
   }
 
-  if (ny < 2) return 0.f;
+  if (ny < 2) return 0.0;
   yavg /= (double)ny;
   ypredavg /= (double)ny;
 
-  num = den1 = den2 = 0.f;
-  for(i = 0; i < ytrue->size; i++){
+  for(size_t i = 0; i < ytrue->size; i++){
     double diff_y = ytrue->data[i] - yavg;
     double diff_ypred = ypred->data[i] - ypredavg;
     num += diff_y * diff_ypred;
@@ -66,7 +65,7 @@ double R2_deprecated(dvector *ytrue, dvector *ypred)
     den2 += square(diff_ypred);
   }
 
-  if (den1 <= 0.f || den2 <= 0.f) return 0.f;
+  if (den1 <= 0.0 || den2 <= 0.0) return 0.0;
 
   return square(num / sqrt(den1 * den2));
 }
@@ -77,26 +76,27 @@ double R2_deprecated(dvector *ytrue, dvector *ypred)
  */
 double R2(dvector *ytrue, dvector *ypred)
 {
-  size_t i, ny;
-  double ssreg, sstot, yavg;
-  ssreg = sstot = yavg = 0.f;
-  ny = 0;
-  for(i = 0; i < ytrue->size; i++){
+  size_t ny = 0;
+  double ssreg = 0.0;
+  double sstot = 0.0;
+  double yavg = 0.0;
+
+  for(size_t i = 0; i < ytrue->size; i++){
     yavg += ytrue->data[i];
-    ny+=1;
+    ny += 1;
   }
 
-  if (ny == 0) return 0.f;
+  if (ny == 0) return 0.0;
   yavg /= (double)ny;
 
-  for(i = 0; i < ytrue->size; i++){
+  for(size_t i = 0; i < ytrue->size; i++){
     ssreg += square(ypred->data[i] - ytrue->data[i]);
     sstot += square(ytrue->data[i] - yavg);
   }
 
-  if (sstot <= 0.f) return 0.f;
+  if (sstot <= 0.0) return 0.0;
 
-  return 1.f - (ssreg/sstot);
+  return 1.0 - (ssreg / sstot);
 }
 
 /*
@@ -104,14 +104,14 @@ double R2(dvector *ytrue, dvector *ypred)
  */
 double MAE(dvector *ytrue, dvector *ypred)
 {
-  size_t i, ny;
-  double mae;
-  mae = 0.f;
-  ny = 0;
-  for(i = 0; i < ytrue->size; i++){
+  size_t ny = 0;
+  double mae = 0.0;
+
+  for(size_t i = 0; i < ytrue->size; i++){
     mae += fabs(ypred->data[i] - ytrue->data[i]);
     ny += 1;
   }
+  if (ny == 0) return 0.0;
   mae /= (double)ny;
   return mae;
 }
@@ -121,14 +121,14 @@ double MAE(dvector *ytrue, dvector *ypred)
  */
 double MSE_deprecated(dvector *ytrue, dvector *ypred)
 {
-  size_t i, ny;
-  double mse;
-  mse = 0.f;
-  ny = 0;
-  for(i = 0; i < ytrue->size; i++){
+  size_t ny = 0;
+  double mse = 0.0;
+
+  for(size_t i = 0; i < ytrue->size; i++){
     mse += square(ypred->data[i] - ytrue->data[i]);
     ny += 1;
   }
+  if (ny == 0) return 0.0;
   mse /= (double)ny;
   return mse;
 }
@@ -139,22 +139,21 @@ double MSE_deprecated(dvector *ytrue, dvector *ypred)
  */
 double MSE(dvector *ytrue, dvector *ypred)
 {
-  size_t i, ny;
-  double sum_small, sum_medium, sum_large;
-  double b1, b2;
-  double diff, abs_diff;
-
-  sum_small = sum_medium = sum_large = 0.0;
-  ny = 0;
+  size_t ny = 0;
+  double sum_small = 0.0;
+  double sum_medium = 0.0;
+  double sum_large = 0.0;
+  double diff = 0.0;
+  double abs_diff = 0.0;
 
   /* Constants for Blue's algorithm
    * b1: values smaller than this may underflow when squared
    * b2: values larger than this may overflow when squared
    */
-  b1 = sqrt(DBL_MIN / DBL_EPSILON);
-  b2 = sqrt(DBL_MAX * DBL_EPSILON);
+  const double b1 = sqrt(DBL_MIN / DBL_EPSILON);
+  const double b2 = sqrt(DBL_MAX * DBL_EPSILON);
 
-  for(i = 0; i < ytrue->size; i++){
+  for(size_t i = 0; i < ytrue->size; i++){
     diff = ypred->data[i] - ytrue->data[i];
     abs_diff = fabs(diff);
     ny += 1;
@@ -196,24 +195,26 @@ double RMSE(dvector *ytrue, dvector *ypred)
  */
 double BIAS(dvector *ytrue, dvector *ypred)
 {
-  size_t i, ny;
-  double sum_yi, sum_xi;
-  double yavg;
-  sum_yi = sum_xi = yavg = 0.f;
-  ny = 0;
-  for(i = 0; i < ytrue->size; i++){
+  size_t ny = 0;
+  double sum_yi = 0.0;
+  double sum_xi = 0.0;
+  double yavg = 0.0;
+
+  for(size_t i = 0; i < ytrue->size; i++){
     yavg += ytrue->data[i];
-    ny+=1;
+    ny += 1;
   }
+  if (ny == 0) return 0.0;
   yavg /= (double)ny;
 
   /*ypredaverage /= (double)my->row;*/
-  for(i = 0; i < ytrue->size; i++){
-    sum_yi+=(ypred->data[i]*(ytrue->data[i]-yavg));
-    sum_xi+=(ytrue->data[i]*(ytrue->data[i]-yavg));
+  for(size_t i = 0; i < ytrue->size; i++){
+    sum_yi += (ypred->data[i] * (ytrue->data[i] - yavg));
+    sum_xi += (ytrue->data[i] * (ytrue->data[i] - yavg));
   }
+  if (sum_xi == 0.0) return 0.0;
   /*sum_yi/sum_xi = m */
-  return fabs(1 - sum_yi/sum_xi);
+  return fabs(1.0 - (sum_yi / sum_xi));
 }
 
 /*k = Y-(X*b);*/

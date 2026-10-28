@@ -31,14 +31,14 @@ int main(int argc, char **argv)
     NewMatrix(&x, nobj, nvars);
     NewMatrix(&y, nobj, 1);
     srand_(time(0));
-    
+
     for(size_t i = 0; i < nobj; i++){
         for(size_t j = 0; j < nvars; j++){
             x->data[i][j] = randDouble(0,20);
         }
         y->data[i][0] = 0.5*x->data[i][0] -3.4*x->data[i][1] +1.2*x->data[i][2]+2*x->data[i][3]+4.2;
      }
-    
+
     gettimeofday(&tv1, NULL);
     NewPLSModel(&model);
     PLS(x, y, 5, 1, 0, model, NULL);
@@ -58,5 +58,3 @@ int main(int argc, char **argv)
     DelMatrix(&x);
     DelMatrix(&y);
 }
-
-

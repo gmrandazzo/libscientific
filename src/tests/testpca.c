@@ -85,7 +85,7 @@ void test11()
     }
   }
   printf("OK.\n");
-  
+
   DelDVector(&spe_ground_truth);
   DelDVector(&spe);
   DelMatrix(&contributions);
@@ -105,10 +105,10 @@ void test10(){
 
   NewPCAModel(&model);
   PCA(m, 1, 4, model, NULL);
-  
+
   initMatrix(&rm);
   PCAIndVarPredictor(model->scores, model->loadings, model->colaverage, model->colscaling, 4, rm);
-  
+
   for(i = 0; i < m->row; i++){
     for(j = 0; j < m->col; j++){
       if(FLOAT_EQ(m->data[i][j], rm->data[i][j], 1E-6)){
@@ -138,14 +138,14 @@ void test9()
   PCAMODEL *mod2;
   NewMatrix(&m1, 20, 3);
   for(i = 0; i < 20; i++){
-    m1->data[i][0] = i+1; m1->data[i][1] = i+1; m1->data[i][2] = i+1; 
+    m1->data[i][0] = (double)(i+1); m1->data[i][1] = (double)(i+1); m1->data[i][2] = (double)(i+1);
   }
-  srand_(time(NULL));
+  srand_((uint32_t)time(NULL));
   NewMatrix(&m2, m1->row, m1->col);
   initUIVector(&ids);
   i = 0;
   while( i < 20){
-    id = randInt(0, 20);
+    id = (size_t)randInt(0, 20);
     if(UIVectorHasValue(ids, id) == 0){
       continue;
     }
@@ -195,8 +195,8 @@ void test8()
   PCA(m, 1, 2, model, NULL);
   initMatrix(&p);
   PCAScorePredictor(m, model, 2, p);
-  
-  
+
+
   for(i = 0; i < model->scores->row; i++){
     for(j = 0; j < model->scores->col; j++){
       if(FLOAT_EQ(model->scores->data[i][j], p->data[i][j], 1E-6)){

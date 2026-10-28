@@ -22,7 +22,7 @@ bibliography: paper.bib
 Multivariate analysis is a powerful technique that allows researchers to analyze and interpret data with multiple variables.
 In today's data-driven world, multivariate analysis has become essential for the exploration of complex data sets.
 libscientific is a powerful library written in C that provides a comprehensive set of multivariate analysis tools based on the NIPALS algorithm.
-The library includes several multivariate analysis algorithms, such as principal component analysis (PCA), 
+The library includes several multivariate analysis algorithms, such as principal component analysis (PCA),
 partial least squares regression (PLS), consensus principal component analysis (CPCA), multiblock principal component analysis,
 and multiblock partial least squares (UPLS). libscientific also includes several other tools to analyze data, such as
 cluster analysis using KMeans Hierarchical clustering and other methods to run linear algebra calculations.

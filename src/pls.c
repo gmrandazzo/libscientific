@@ -155,7 +155,7 @@ void LVCalc(matrix *X,
   double dot_t;
   double dot_u;
   double dot_w;
-  
+
   /* Make a copy of variables for memory reasons... */
   matrix *X_;
   matrix *Y_;
@@ -574,7 +574,7 @@ void PLS(matrix *mx, matrix *my, size_t nlv, int xautoscaling, int yautoscaling,
       ResizeMatrix(model->recalc_residuals, my->row, my->col*nlv);
       for(i = 0; i < model->recalculated_y->row; i++){
         for(j = 0; j < model->recalculated_y->col; j++){
-          model->recalc_residuals->data[i][j] = model->recalculated_y->data[i][j] - my->data[i][(size_t)floor(j/nlv)];
+          model->recalc_residuals->data[i][j] = model->recalculated_y->data[i][j] - my->data[i][j / nlv];
         }
       }
 
@@ -748,7 +748,7 @@ void PLSYPredictor(matrix *tscore, PLSMODEL *model, size_t nlv, matrix *y)
 
   if(nlv > tscore->col)
     nlv = tscore->col;
-  
+
   if(nlv > model->b->size)
     nlv = model->b->size;
 
@@ -964,9 +964,8 @@ void PLSVIP(PLSMODEL *model, matrix *vip)
 {
   size_t nlv = model->xscores->col;    /* F */
   size_t npred = model->xweights->row; /* J */
-  size_t f, j;
   double ssy_total = 0.0;
-  dvector *ssy_f;
+  dvector *ssy_f = NULL;
 
   if (nlv == 0 || npred == 0) return;
 
@@ -974,12 +973,12 @@ void PLSVIP(PLSMODEL *model, matrix *vip)
   ResizeMatrix(vip, npred, 1); /* VIP is a single vector for all components */
 
   /* 1. Calculate SSY_f for each component and SSY_total */
-  for (f = 0; f < nlv; f++) {
+  for (size_t f = 0; f < nlv; f++) {
     double bf = model->b->data[f];
     dvector *tf = getMatrixColumn(model->xscores, f);
     double tf_tf = DVectorDVectorDotProd(tf, tf);
     double ssy = bf * bf * tf_tf;
-    
+
     setDVectorValue(ssy_f, f, ssy);
     ssy_total += ssy;
     DelDVector(&tf);
@@ -992,9 +991,9 @@ void PLSVIP(PLSMODEL *model, matrix *vip)
   }
 
   /* 2. Calculate VIP_j for each variable */
-  for (j = 0; j < npred; j++) {
+  for (size_t j = 0; j < npred; j++) {
     double weighted_sum_w2 = 0.0;
-    for (f = 0; f < nlv; f++) {
+    for (size_t f = 0; f < nlv; f++) {
       double w_jf = model->xweights->data[j][f];
       weighted_sum_w2 += (w_jf * w_jf * ssy_f->data[f]);
     }
@@ -1009,7 +1008,7 @@ int GetLVCCutoff_(matrix *rq2y){
   double prev, next, max = MISSING;
 
   for(i = 0; i < rq2y->row-1; i += 2){
-    prev = next = 0.f;
+    prev = next = 0.0;
     for(j = 0; j < rq2y->col; j++){
       prev += rq2y->data[i][j];
       next += rq2y->data[i+1][j];
@@ -1029,7 +1028,7 @@ int GetLVCCutoff_(matrix *rq2y){
       }
     }
   }
-  return cutoff;
+  return (int)cutoff;
 }
 
 
@@ -1059,7 +1058,7 @@ int GetLVCCutoff(matrix *coeff){
   }
 
   DelDVector(&coeff_avg);
-  return cutoff;
+  return (int)cutoff;
 }
 
 void PrintPLSModel(PLSMODEL* model)

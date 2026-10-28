@@ -120,15 +120,16 @@ void LDA(matrix *mx, matrix *my, LDAMODEL *lda)
   lda->nclass = 0;
 
 
-  imin = imax = (int)my->data[0][0];
+  imin = imax = (size_t)my->data[0][0];
 
   for(i = 1; i < my->row; i++){
-    if((int)my->data[i][0] > imax){
-      imax = (int)my->data[i][0];
+    size_t val = (size_t)my->data[i][0];
+    if(val > imax){
+      imax = val;
     }
 
-    if((int)my->data[i][0] < imin){
-      imin = (int)my->data[i][0];
+    if(val < imin){
+      imin = val;
     }
   }
 
@@ -164,7 +165,7 @@ void LDA(matrix *mx, matrix *my, LDAMODEL *lda)
     for(k = 0; k < lda->nclass; k++){
       cc = 0;
       for(i = 0; i < X->row; i++){
-        if((int)my->data[i][0] == k)
+        if((size_t)my->data[i][0] == k)
           cc++;
         else
           continue;
@@ -173,7 +174,7 @@ void LDA(matrix *mx, matrix *my, LDAMODEL *lda)
 
       cc = 0;
       for(i = 0; i < X->row; i++){
-        if((int)my->data[i][0] == k){
+        if((size_t)my->data[i][0] == k){
           for(l = 0; l < X->col; l++){
             classes->m[k]->data[cc][l] = X->data[i][l];
           }
@@ -191,7 +192,7 @@ void LDA(matrix *mx, matrix *my, LDAMODEL *lda)
     for(k = 0; k < lda->nclass; k++){
       cc = 0;
       for(i = 0; i < X->row; i++){
-        if((int)my->data[i][0] == k+1)
+        if((size_t)my->data[i][0] == k+1)
           cc++;
         else
           continue;
@@ -200,7 +201,7 @@ void LDA(matrix *mx, matrix *my, LDAMODEL *lda)
 
       cc = 0;
       for(i = 0; i < X->row; i++){
-        if((int)my->data[i][0] == k+1){
+        if((size_t)my->data[i][0] == k+1){
           for(l = 0; l < X->col; l++){
             classes->m[k]->data[cc][l] = X->data[i][l];
           }
@@ -219,7 +220,7 @@ void LDA(matrix *mx, matrix *my, LDAMODEL *lda)
 
   /* Compute the prior probability */
   for(k = 0; k < classes->order; k++){
-    DVectorAppend(lda->pprob, (classes->m[k]->row/(double)X->row));
+    DVectorAppend(lda->pprob, ((double)classes->m[k]->row / (double)X->row));
   }
 
   /*
@@ -291,11 +292,11 @@ void LDA(matrix *mx, matrix *my, LDAMODEL *lda)
 
     for(i = 0; i < covmx->row; i++){
       for(j = 0; j < covmx->col; j++){
-        covmx->data[i][j] /= classes->m[k]->row;
+        covmx->data[i][j] /= (double)classes->m[k]->row;
       }
     }
     TensorAppendMatrix(S, covmx);
-    MatrixSet(covmx, 0.f);
+    MatrixSet(covmx, 0.0);
     DelMatrix(&m_T);
   }
   /*
@@ -311,7 +312,7 @@ void LDA(matrix *mx, matrix *my, LDAMODEL *lda)
   for(k = 0; k < S->order; k++){
     for(i = 0; i  < S->m[k]->row; i++){
       for(j = 0; j  < S->m[k]->col; j++){
-        Sw->data[i][j] += (double)(classes->m[k]->row/(double)X->row) *  S->m[k]->data[i][j];
+        Sw->data[i][j] += ((double)classes->m[k]->row / (double)X->row) *  S->m[k]->data[i][j];
       }
     }
   }
@@ -326,7 +327,7 @@ void LDA(matrix *mx, matrix *my, LDAMODEL *lda)
     cc = classes->m[k]->row;
     for(i = 0; i < Sb->row; i++){
       for(j = 0; j < Sb->col; j++){
-        Sb->data[i][j] += cc * (lda->mu->data[k][i] - mutot->data[i]) * (lda->mu->data[k][j] - mutot->data[j]);
+        Sb->data[i][j] += (double)cc * (lda->mu->data[k][i] - mutot->data[i]) * (lda->mu->data[k][j] - mutot->data[j]);
       }
     }
   }
@@ -516,7 +517,7 @@ void LDAPrediction(matrix *mx,
         continue;
       }
     }
-    prediction->data[i][0] = (argmax+pos);
+    prediction->data[i][0] = (double)argmax + (double)pos;
   }
 
   /* Predict the the new projection in the feature space */
@@ -581,7 +582,8 @@ void LDAError(matrix *mx,
   for(k = 0; k < lda->nclass; k++){ /*for each class*/
     for(i = 0; i < my->row; i++){
       /*printf("class %d  object class %d  predicted class %d\n", (int)k, (int)(my->data[i] + pos), (int)(classprediction->data[i] + pos));*/
-      if(k == ((int)(my->data[i][0] + pos))){ /* oggetto della stessa classe */
+      int target_cls = (int)(my->data[i][0] + (double)pos);
+      if(target_cls >= 0 && k == (size_t)target_cls){ /* oggetto della stessa classe */
         if((int)my->data[i][0] == (int)classprediction->data[i][0]){
           tp->data[k]++;
           /*puts("TP");*/
@@ -592,7 +594,8 @@ void LDAError(matrix *mx,
         }
       }
       else{ /*oggetto di diversa classe dal quella cercata*/
-        if((int)(classprediction->data[i][0] + pos) == k){ /*false positive!*/
+        int pred_cls = (int)(classprediction->data[i][0] + (double)pos);
+        if(pred_cls >= 0 && (size_t)pred_cls == k){ /*false positive!*/
           fp->data[k]++;
           /*puts("FP");*/
         }
@@ -621,45 +624,45 @@ void LDAError(matrix *mx,
 
   for(i = 0; i < tp->size; i++){ /* for each class*/
     /* sensitivity calculation */
-    d = tp->data[i] + fn->data[i];
-    if(FLOAT_EQ(d, 0, 1e-4)){
+    d = (double)(tp->data[i] + fn->data[i]);
+    if(FLOAT_EQ(d, 0.0, 1e-4)){
       sens->data[i] = 0;
     }
     else{
-      sens->data[i] = tp->data[i] / d;
+      sens->data[i] = (double)tp->data[i] / d;
     }
 
     /* specificity calculation */
-    d = tn->data[i] + fp->data[i];
-    if(FLOAT_EQ(d, 0, 1e-4)){
+    d = (double)(tn->data[i] + fp->data[i]);
+    if(FLOAT_EQ(d, 0.0, 1e-4)){
       spec->data[i] = 0;
     }
     else{
-      spec->data[i] = tn->data[i] / d;
+      spec->data[i] = (double)tn->data[i] / d;
     }
 
     /* ppv calculation */
-    d = tp->data[i] + fp->data[i];
-    if(FLOAT_EQ(d, 0, 1e-4)){
+    d = (double)(tp->data[i] + fp->data[i]);
+    if(FLOAT_EQ(d, 0.0, 1e-4)){
       ppv->data[i] = 0;
     }
     else{
-      ppv->data[i] = tp->data[i] / d;
+      ppv->data[i] = (double)tp->data[i] / d;
     }
 
     /* npv calculation */
-    d = fn->data[i] + tn->data[i];
-    if(FLOAT_EQ(d, 0, 1e-4)){
+    d = (double)(fn->data[i] + tn->data[i]);
+    if(FLOAT_EQ(d, 0.0, 1e-4)){
       npv->data[i] = 0;
     }
     else{
-      npv->data[i] = tn->data[i] / d;
+      npv->data[i] = (double)tn->data[i] / d;
     }
 
     /* acc calculation */
-    p = tp->data[i] + fn->data[i];
-    n = tn->data[i] + fp->data[i];
-    acc->data[i] = (tp->data[i] + tn->data[i]) / (double)(p+n);
+    p = (double)(tp->data[i] + fn->data[i]);
+    n = (double)(tn->data[i] + fp->data[i]);
+    acc->data[i] = (double)(tp->data[i] + tn->data[i]) / (p+n);
   }
 
   DelUIVector(&tp);
@@ -707,21 +710,22 @@ void LDAMulticlassStatistics(matrix *y_true,
   NewDVector(&ytrue, y_true->row);
   NewDVector(&ypred, y_true->row);
 
-  n_classes = getNClasses(y_pred);
+  int nc = getNClasses(y_pred);
+  n_classes = (nc > 0) ? (size_t)nc : 0;
   if(n_classes == 2){
     n_classes = 1;
   }
 
   for(j = 0; j < n_classes; j++){
     for(i = 0; i < y_true->row; i++){
-      if((int)y_true->data[i][0] == j){
+      if((size_t)y_true->data[i][0] == j){
         ytrue->data[i] = 1;
       }
       else{
         ytrue->data[i] = 0;
       }
 
-      if((int)y_pred->data[i][0] == j){
+      if((size_t)y_pred->data[i][0] == j){
         ytrue->data[i] = 1;
       }
       else{
@@ -762,14 +766,14 @@ int getNClasses(matrix *my)
   int numclasses;
   initUIVector(&nclasses);
   for(i = 0; i < my->row; i++){
-    if(UIVectorHasValue(nclasses, (int)my->data[i][0]) == 0){
+    if(UIVectorHasValue(nclasses, (size_t)my->data[i][0]) == 0){
       continue;
     }
     else{
-        UIVectorAppend(nclasses, (int)my->data[i][0]);
+        UIVectorAppend(nclasses, (size_t)my->data[i][0]);
     }
   }
-  numclasses = nclasses->size;
+  numclasses = (int)nclasses->size;
   DelUIVector(&nclasses);
   return numclasses;
 }

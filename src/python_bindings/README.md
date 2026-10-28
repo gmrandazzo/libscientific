@@ -9,13 +9,13 @@ This library is capable to run:
 - Principal component analysis using the NIPALS algorithm
 - Partial Least Squares using the NIPALS algorithm
 - Multiple Linear Regression using the Ordinary Least Squares algorithm
-- Fisher Linear Discrimnant Analysis 
+- Fisher Linear Discrimnant Analysis
 - KMeans and Hierarchical clustering
 - Matrix/vector/tensor operations (products, matrix inversions using the Gauss-Jordan algorithm, and so on)
 - Descriptive statistics for regression and classification problems.
 - Model validation with leave-one-out and Bootstrap random kfold cross validation
 - Variable selection using genetic and metaheuristic algorithms
-- Solve linear system of equations 
+- Solve linear system of equations
 - Interpolate curves usin the natural cubic spline algorithm
 
 

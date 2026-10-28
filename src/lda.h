@@ -70,7 +70,7 @@ void PrintLDAModel(LDAMODEL *m);
 
 /**
  * Calculate and LDA Fisher discriminant analyisis model
- * 
+ *
  * @param [in] mx input matrix of independent variables
  * @param [in] my input matrix of classes
  * @param [out] lda initialized model using NewLDAModel(...). The datastructure will be populated with results
@@ -78,14 +78,14 @@ void PrintLDAModel(LDAMODEL *m);
 void LDA(matrix *mx, matrix *my, LDAMODEL *lda);
 
 /** Predict classes using an LDA fisher discriminant analysis model
- * 
+ *
  * @param [in] mx input matrix of independent variables
  * @param [in] lda computed LDAMODEL
  * @param [out] pfeatures predicted features
  * @param [out] probabilities
  * @param [out] multivariate normal probability distribution of features
  * @param [out] predicted classes
- * 
+ *
  */
 void LDAPrediction(matrix *mx,
                    LDAMODEL *lda,

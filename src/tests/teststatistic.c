@@ -23,7 +23,7 @@
 #include <float.h>
 
 /*
- * 
+ *
 void MatrixCode(matrix *inmx, matrix *outmx);
 void BifactorialMatrixExpansion(matrix* inmx, matrix* outmx);
 void YatesVarEffect(matrix *mx, dvector *veff);
@@ -42,7 +42,7 @@ void test3()
      But (x^2 + 0) / 2 = 1.125e308 (< DBL_MAX)
   */
   ytrue->data[0] = 0.0;
-  ypred->data[0] = 1.5e154; 
+  ypred->data[0] = 1.5e154;
   ytrue->data[1] = 0.0;
   ypred->data[1] = 0.0;
 
@@ -78,8 +78,8 @@ void test3()
 
   printf("Small values - Blue: %e, Normal: %e\n", m_blue, m_normal);
 
-  /* Note: on many systems m_normal might still be subnormal at 1e-320. 
-     Blue's algorithm is more about preventing intermediate underflow 
+  /* Note: on many systems m_normal might still be subnormal at 1e-320.
+     Blue's algorithm is more about preventing intermediate underflow
      when many small values are summed. */
 
   if (m_blue > 0 && m_blue < 1e-300) {
@@ -151,7 +151,7 @@ void test2()
   }
   else{
     printf("MSE_deprecated ERROR! expected 909090874912195.125 Got: %.16f\n", MSE_deprecated(ytrue, ypred));
-    
+
     abort();
   }
 

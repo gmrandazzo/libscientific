@@ -5,12 +5,12 @@ int main(void)
 {
     int i, j;
     matrix *mx; // Definition of the matrix variable as a pointer
-    dvector *cvect; // Definition of the column vector as a pointer 
+    dvector *cvect; // Definition of the column vector as a pointer
     dvector *result; // Definition of the result vector between the matrix and the column vector
 
     NewDVector(&cvect, 15);
     for(i = 0; i < cvect->size; i++){
-        cvect->data[i] = (double)i; // Fill one time the row vector 
+        cvect->data[i] = (double)i; // Fill one time the row vector
     }
 
     NewMatrix(&mx, 23, 15); // Initialize a matrix with 23 rows and 15 columns
@@ -31,9 +31,7 @@ int main(void)
 
     PrintDVector(result); // Print to video the result
     // Free the memory spaces
-    DelDVector(&result); 
+    DelDVector(&result);
     DelDVector(&cvect);
     DelMatrix(&mx);
 }
-
-

@@ -62,6 +62,7 @@ void DelMLRModel(MLRMODEL** m)
 
 void MLR(matrix* mx, matrix* my, MLRMODEL* model, scisignal *s)
 {
+  (void)s;
   size_t i, j;
   matrix *mx_;
   dvector *y_;
@@ -75,7 +76,7 @@ void MLR(matrix* mx, matrix* my, MLRMODEL* model, scisignal *s)
   /*Adding constant coefcient for polinomial equation */
   for(j = 1; j < mx_->col; j++){
     for(i = 0; i < mx_->row; i++){
-      mx_->data[i][j] = mx->data[i][j-1]; 
+      mx_->data[i][j] = mx->data[i][j-1];
     }
   }
 
@@ -164,7 +165,7 @@ void MLRPredictY(matrix* mx,
         }
 
         if(sdep != 0){
-          DVectorAppend(sdep, sqrt(rss/my->row));
+          DVectorAppend(sdep, sqrt(rss / (double)my->row));
         }
       }
     }

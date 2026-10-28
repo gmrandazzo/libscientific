@@ -90,7 +90,7 @@ void test2()
     k = 1;
     for(i = 0 ; i < 4; i++){
       for(j = 0; j < 3; j++){
-        m->data[i][j] = k;
+        m->data[i][j] = (double)k;
         k++;
       }
     }
@@ -100,7 +100,7 @@ void test2()
     initDVector(&cstdev);
     MatrixPreprocess(m, 3, cavg, cstdev, p);
     for(i = 0; i < cavg->size; i++){
-      if(FLOAT_EQ(cavg->data[i], 5.5+i, 1e-2)){
+      if(FLOAT_EQ(cavg->data[i], 5.5 + (double)i, 1e-2)){
         continue;
       }
       else{
@@ -114,9 +114,9 @@ void test2()
       }
       else{
         abort();
-      }   
+      }
     }
-    
+
     for(i = 0; i < 4; i++){
       if(i == 0){
         v = -2.287;
@@ -162,7 +162,7 @@ void test1()
     k = 1;
     for(i = 0 ; i < 4; i++){
       for(j = 0; j < 3; j++){
-        m->data[i][j] = k;
+        m->data[i][j] = (double)k;
         k++;
       }
     }
@@ -173,7 +173,7 @@ void test1()
     MatrixPreprocess(m, 1, cavg, cstdev, p);
 
     for(i = 0; i < cavg->size; i++){
-      if(FLOAT_EQ(cavg->data[i], 5.5+i, 1e-2)){
+      if(FLOAT_EQ(cavg->data[i], 5.5 + (double)i, 1e-2)){
         continue;
       }
       else{
@@ -187,9 +187,9 @@ void test1()
       }
       else{
         abort();
-      }   
+      }
     }
-    
+
     for(i = 0; i < 4; i++){
       if(i == 0){
         v = -1.162;

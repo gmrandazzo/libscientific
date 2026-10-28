@@ -47,3 +47,14 @@ __pycache__/*
 
 *.kdev4
 
+# Test artifacts and databases
+*.sqlite3
+*.db
+*.lsm
+*.lsb
+
+# Tool caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pre-commit-cache/

@@ -26,7 +26,7 @@
 
 /**
  * PLS model data structure
- * 
+ *
  * - **xscores** x space scores
  * - **xloadings** x space loadings
  * - **xweights** x space weights
@@ -40,16 +40,16 @@
  * - **ycolscaling** y independent variable column scaling
  * - **recalculated_y** y recalculated
  * - **recalc_residuals** y recalculated residuals
- * - **predicted_y** y predicted 
- * - **pred_residuals** y predicted residuals 
+ * - **predicted_y** y predicted
+ * - **pred_residuals** y predicted residuals
  * - **r2y_recalculated** r squared using y recalculated values
  * - **r2y_validation**
  * - **q2y** q squared using y predicted values
  * - **sdep** standard deviation over prediction using y predictions
  * - **sdec** standard deviation over recalculation using y recalculated
  * - **bias** bias
- * - **roc_recalculated** receiver operating characteristic using y recalculated 
- * - **roc_validation** receiver operating characteristic using y predicted 
+ * - **roc_recalculated** receiver operating characteristic using y recalculated
+ * - **roc_validation** receiver operating characteristic using y predicted
  * - **roc_auc_recalculated** receiver operating characteristic area under the curve using y recalculated
  * - **roc_auc_validation** eceiver operating characteristic area under the curve using y predicted
  * - **precision_recall_recalculated** precision-recall curve using y recalculated
@@ -123,13 +123,13 @@ void LVCalc(matrix *X, matrix *Y, dvector *t, dvector *u, dvector *p, dvector *q
  * @brief Calculate a partial least squares model using the NIPALS algorithm.
  *
  * @param [in] mx libscientific matrix data input: x independent variables
- * @param [in] my libscientific matrix data input: y dependent variables 
+ * @param [in] my libscientific matrix data input: y dependent variables
  * @param [in] nlv number of desired latent variables
  * @param [in] xautoscaling scaling typeon the x independent variables expressed as unsigned int type
  * @param [in] yautoscaling scaling typeon the y dependent variables expressed as unsigned int type
  * @param [out] PLSMODEL output -initialized model using NewPLSAModel(...). The datastructure will be populated with results
  * @param [in] scisignal libscientific signal. Default value is NULL.
- * 
+ *
  * Available scalings:
  *
  * - 0: No scaling. Only mean centering
@@ -180,7 +180,7 @@ void PLSScorePredictor(matrix *mx,
 
 /**
  * Calculate the Y values at a specific lv number (nlv).
- * 
+ *
  * N.B.: The output of y will be: [y->row][y-col]
  * @param [in] tscore input matrix of scores calculated using PLSScorePredictor
  * @param [in] model PLSMODEL
@@ -194,7 +194,7 @@ void PLSYPredictor(matrix *tscore,
 
 /**
  * Calculate the Y values at all the lv.
- * 
+ *
  * N.B.: The output of y will be: [y->row][y->col*nlv]
  * @param [in] mx input matrix of scores calculated using PLSScorePredictor
  * @param [in] model PLSMODEL
@@ -215,7 +215,7 @@ void PLSYPredictorAllLV(matrix *mx,
  *
  * @param [in] my_true input matrix of y true values
  * @param [in] my_pred input matrix of y predicted or recalculated values
- * @param [out] ccoeff output - correlation coefficients q-squared or r-squared if my_pred is respectivelly predicted or recalculated 
+ * @param [out] ccoeff output - correlation coefficients q-squared or r-squared if my_pred is respectivelly predicted or recalculated
  * @param [out] rmse output - root mean square error
  * @param [out] bias output - bias defined as how distant are we from the diagonal
  */
@@ -229,7 +229,7 @@ void PLSRegressionStatistics(matrix *my_true,
  * Calculate the roc curve, the auc, the precision recall curve,
  * the precision_recall_auc of a classification model.
  * mx and my could be the training or the test datasets.
- * 
+ *
  * @param [in] my_true input matrix of y true values
  * @param [in] my_scores input matrix of y predicted or recalculated class scores/probabilities
  * @param [out] roc output - roc curves

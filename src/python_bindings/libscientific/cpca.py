@@ -17,9 +17,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import ctypes
-import libscientific.vectlist as vlst
+
 import libscientific.matrix as mx
 import libscientific.tensor as tns
+import libscientific.vectlist as vlst
 import libscientific.vector as vect
 from libscientific.loadlibrary import load_libscientific_library
 
@@ -30,6 +31,7 @@ class CPCAMODEL(ctypes.Structure):
     """
     CPCA model data structure
     """
+
     _fields_ = [
         ("block_scores", ctypes.POINTER(tns.TENSOR)),
         ("block_loadings", ctypes.POINTER(tns.TENSOR)),
@@ -39,14 +41,14 @@ class CPCAMODEL(ctypes.Structure):
         ("total_expvar", ctypes.POINTER(vect.DVECTOR)),
         ("block_expvar", ctypes.POINTER(vlst.DVECTLIST)),
         ("colaverage", ctypes.POINTER(vlst.DVECTLIST)),
-        ("colscaling", ctypes.POINTER(vlst.DVECTLIST))]
+        ("colscaling", ctypes.POINTER(vlst.DVECTLIST)),
+    ]
 
     def __repr__(self):
         return self.__class__.__name__
 
     def __str__(self):
         return self.__class__.__name__
-
 
 
 lsci.NewCPCAModel.argtypes = [ctypes.POINTER(ctypes.POINTER(CPCAMODEL))]
@@ -73,27 +75,29 @@ def del_cpca_model(mpca):
     lsci.DelCPCAModel(ctypes.pointer(mpca))
 
 
-lsci.CPCA.argtypes = [ctypes.POINTER(tns.TENSOR),
-                     ctypes.c_size_t,
-                     ctypes.c_size_t,
-                     ctypes.POINTER(CPCAMODEL),
-                     ctypes.POINTER(ctypes.c_int)]
+lsci.CPCA.argtypes = [
+    ctypes.POINTER(tns.TENSOR),
+    ctypes.c_int,
+    ctypes.c_size_t,
+    ctypes.POINTER(CPCAMODEL),
+]
 lsci.CPCA.restype = None
 
 
 def cpca_algorithm(t_input, scaling, npc, mpca):
     """
-    CPCA: Calculate the CPCA model for a matrix m using the NIPALS algorithm
+    CPCA: Calculate the CPCA model for a tensor using the NIPALS algorithm
     """
-    scisignal = ctypes.c_int(0)
-    lsci.CPCA(t_input, scaling, npc, mpca, scisignal)
+    lsci.CPCA(t_input, scaling, npc, mpca)
 
 
-lsci.CPCAScorePredictor.argtypes = [ctypes.POINTER(tns.TENSOR),
-                                   ctypes.POINTER(CPCAMODEL),
-                                   ctypes.c_size_t,
-                                   ctypes.POINTER(mx.MATRIX),
-                                   ctypes.POINTER(tns.TENSOR)]
+lsci.CPCAScorePredictor.argtypes = [
+    ctypes.POINTER(tns.TENSOR),
+    ctypes.POINTER(CPCAMODEL),
+    ctypes.c_size_t,
+    ctypes.POINTER(mx.MATRIX),
+    ctypes.POINTER(tns.TENSOR),
+]
 lsci.CPCAScorePredictor.restype = None
 
 
@@ -101,15 +105,12 @@ def cpca_score_predictor(t_input, model, npc, p_super_scores, p_block_scores):
     """
     cpca_score_predictor: Predict scores for a matrix m in the computed CPCA modes
     """
-    lsci.CPCAScorePredictor(t_input,
-                            model,
-                            npc,
-                            p_super_scores,
-                            p_block_scores)
+    lsci.CPCAScorePredictor(t_input, model, npc, p_super_scores, p_block_scores)
 
 
 lsci.PrintCPCA.argtypes = [ctypes.POINTER(CPCAMODEL)]
 lsci.PrintCPCA.restype = None
+
 
 def print_cpca(mpca):
     """
@@ -117,11 +118,10 @@ def print_cpca(mpca):
     """
     lsci.PrintCPCA(mpca)
 
-lsci.WriteCPCA.argtypes = [
-    ctypes.POINTER(ctypes.c_char),
-    ctypes.POINTER(CPCAMODEL)
-]
+
+lsci.WriteCPCA.argtypes = [ctypes.POINTER(ctypes.c_char), ctypes.POINTER(CPCAMODEL)]
 lsci.WriteCPCA.restype = None
+
 
 def write_cpca(dbpath: str, cpca: CPCAMODEL):
     """
@@ -139,16 +139,14 @@ def write_cpca(dbpath: str, cpca: CPCAMODEL):
     Returns:
         None
     """
-    encoded_string = dbpath.encode('utf-8')
+    encoded_string = dbpath.encode("utf-8")
     ctypes_string = ctypes.c_char_p(encoded_string)
     lsci.WriteCPCA(ctypes_string, cpca)
 
 
-lsci.ReadCPCA.argtypes = [
-    ctypes.POINTER(ctypes.c_char),
-    ctypes.POINTER(CPCAMODEL)
-]
+lsci.ReadCPCA.argtypes = [ctypes.POINTER(ctypes.c_char), ctypes.POINTER(CPCAMODEL)]
 lsci.ReadCPCA.restype = None
+
 
 def read_cpca(dbpath: str, cpca: CPCAMODEL):
     """
@@ -166,9 +164,10 @@ def read_cpca(dbpath: str, cpca: CPCAMODEL):
     Returns:
         None
     """
-    encoded_string = dbpath.encode('utf-8')
+    encoded_string = dbpath.encode("utf-8")
     ctypes_string = ctypes.c_char_p(encoded_string)
     lsci.ReadCPCA(ctypes_string, cpca)
+
 
 class CPCA:
     """
@@ -218,11 +217,17 @@ class CPCA:
         self.scaling = scaling
         self.npc = npc
 
+    def __repr__(self):
+        return f"CPCA(scaling={self.scaling}, npc={self.npc})"
+
+    def __str__(self):
+        return f"CPCA(scaling={self.scaling}, npc={self.npc})"
+
     def __del__(self):
         """
         Clean up resources associated with the CPCA instance.
         """
-        if self.model is not None:
+        if getattr(self, "model", None) is not None:
             del_cpca_model(self.model)
             del self.model
         self.model = None
@@ -232,19 +237,26 @@ class CPCA:
         Fit the consensus PCA model.
 
         Args:
-            t_input : Tensor
+            t_input : Tensor, List[List[List]], or ctypes.POINTER(TENSOR)
                 The input tensor.
 
         Returns:
             CPCA : The fitted CPCA model instance.
         """
-        if "Tensor" in str(type(t_input)):
-            cpca_algorithm(t_input.tns, self.scaling, self.npc, self.model)
+        alloc = False
+        if isinstance(t_input, tns.Tensor):
+            t_input_ = t_input.tns
+        elif isinstance(t_input, ctypes.POINTER(tns.TENSOR)):
+            t_input_ = t_input
         else:
             t_input_ = tns.new_tensor(t_input)
-            cpca_algorithm(t_input_, self.scaling, self.npc, self.model)
+            alloc = True
+
+        cpca_algorithm(t_input_, self.scaling, self.npc, self.model)
+        if alloc:
             tns.del_tensor(t_input_)
             del t_input_
+        return self
 
     def get_super_scores(self):
         """
@@ -305,7 +317,7 @@ class CPCA:
         Predict super scores and block scores using the CPCA model.
 
         Args:
-            t_input : Tensor
+            t_input : Tensor, List[List[List]], or ctypes.POINTER(TENSOR)
                 The input tensor.
 
         Returns:
@@ -314,15 +326,19 @@ class CPCA:
             p_block_scores : List[List[List]]
                 CPCA predicted block scores.
         """
-        t_input_ = tns.new_tensor(t_input)
+        alloc = False
+        if isinstance(t_input, tns.Tensor):
+            t_input_ = t_input.tns
+        elif isinstance(t_input, ctypes.POINTER(tns.TENSOR)):
+            t_input_ = t_input
+        else:
+            t_input_ = tns.new_tensor(t_input)
+            alloc = True
+
         p_super_scores_ = mx.init_matrix()
         p_block_scores_ = tns.init_tensor()
 
-        cpca_score_predictor(t_input_,
-                             self.model,
-                             self.npc,
-                             p_super_scores_,
-                             p_block_scores_)
+        cpca_score_predictor(t_input_, self.model, self.npc, p_super_scores_, p_block_scores_)
         p_super_scores = mx.matrix_to_list(p_super_scores_)
         p_block_scores = tns.tensor_tolist(p_block_scores_)
         mx.del_matrix(p_super_scores_)
@@ -331,8 +347,9 @@ class CPCA:
         tns.del_tensor(p_block_scores_)
         del p_block_scores_
 
-        tns.del_tensor(t_input_)
-        del t_input_
+        if alloc:
+            tns.del_tensor(t_input_)
+            del t_input_
         return p_super_scores, p_block_scores
 
     def save(self, dbpath):

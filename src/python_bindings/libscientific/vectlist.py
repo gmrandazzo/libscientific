@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import ctypes
+
 from libscientific import vector as vect
 from libscientific.loadlibrary import load_libscientific_library
 
@@ -27,9 +28,11 @@ class DVECTLIST(ctypes.Structure):
     """
     DVECTLIST data structure
     """
+
     _fields_ = [
         ("dvector", ctypes.POINTER(ctypes.POINTER(vect.DVECTOR))),
-        ("size", ctypes.c_size_t)]
+        ("size", ctypes.c_size_t),
+    ]
 
     def __repr__(self):
         return self.__class__.__name__
@@ -46,7 +49,7 @@ def init_dvector_list():
     """
     init_dvector_list: Allocate in memory an empty libscientific double vector list
     """
-    dvl = ctypes.POINTER((DVECTLIST))()
+    dvl = ctypes.POINTER(DVECTLIST)()
     lsci.initDVectorList(ctypes.pointer(dvl))
     return dvl
 
@@ -73,15 +76,17 @@ def del_dvector_list(dvl):
     lsci.DelDVectorList(ctypes.pointer(dvl))
 
 
-lsci.DVectorListAppend.argtypes = [ctypes.POINTER(DVECTLIST),
-                                   ctypes.POINTER(vect.DVECTOR)]
+lsci.DVectorListAppend.argtypes = [ctypes.POINTER(DVECTLIST), ctypes.POINTER(vect.DVECTOR)]
 lsci.DVectorListAppend.restype = None
+
 
 def dvector_list_append(dvl, dvect):
     """
     dvector_list_append: Append a double vector to a DvectorList
     """
-    if isinstance(dvect, list):
+    if isinstance(dvect, vect.DVector):
+        lsci.DVectorListAppend(dvl, dvect.dvect)
+    elif isinstance(dvect, list):
         dvect_ = vect.new_dvector(dvect)
         lsci.DVectorListAppend(dvl, dvect_)
         vect.del_dvector(dvect_)
@@ -124,22 +129,45 @@ class DVectorList:
         debug(self)
     """
 
-    def __init__(self, dvl_):
+    def __init__(self, dvl_=None):
         """
         Initialize a DVectorList instance.
 
         Args:
-            dvl_ : list of DVECTOR or None
+            dvl_ : list of DVECTOR, list of lists, or None
                 The initial double vector list. If None, initializes an empty list.
         """
-        self.dvl = new_dvector_list(dvl_)
+        if dvl_ is None:
+            self.dvl = init_dvector_list()
+        else:
+            self.dvl = new_dvector_list(dvl_)
 
     def __del__(self):
         """
         Clean up resources associated with the DVectorList instance.
         """
-        del_dvector_list(self.dvl)
-        del self.dvl
+        if getattr(self, "dvl", None) is not None:
+            del_dvector_list(self.dvl)
+            del self.dvl
+            self.dvl = None
+
+    def __repr__(self):
+        return f"DVectorList({self.tolist()})"
+
+    def __str__(self):
+        return f"DVectorList({self.tolist()})"
+
+    def __len__(self):
+        """
+        Return the number of vectors in the list.
+        """
+        return self.size()
+
+    def __iter__(self):
+        """
+        Iterate over the double vectors as lists.
+        """
+        return iter(self.tolist())
 
     def __getitem__(self, key):
         """
@@ -194,16 +222,10 @@ class DVectorList:
         Append a value to the double vector list.
 
         Args:
-            v_lst : DVECTOR or list
-                DVECTOR or list of values to append to the double vector list.
+            v_lst : DVector, DVECTOR, or list
+                Vector or list of values to append to the double vector list.
         """
-        if isinstance(v_lst, vect.DVECTOR):
-            dvector_list_append(self.dvl, v_lst)
-        else:
-            dv_lst = vect.new_dvector(v_lst)
-            dvector_list_append(self.dvl, dv_lst)
-            vect.del_dvector(dv_lst)
-            del dv_lst
+        dvector_list_append(self.dvl, v_lst)
         return 0
 
     def tolist(self):

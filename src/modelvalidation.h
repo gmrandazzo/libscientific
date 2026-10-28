@@ -92,7 +92,7 @@ void kfold_group_train_test_split(matrix *x,
 
 /*
  * Description: Generate random train/test splits
- * 
+ *
  * Usage:
  * matrix *x_train, *y_train, *x_test, *y_test;
  * initMatrix(&x_train);
@@ -125,8 +125,8 @@ void train_test_split(matrix *x,
 
 /*
  * Description: Calculate the Bootstrap Random group cross validation.
- *              Every method has its model function. 
- * 
+ *              Every method has its model function.
+ *
  *              Available methods:
  *              - PLS: partial least squares
  *              - PLS_DA: partial least squares discriminant analysis
@@ -148,8 +148,8 @@ void BootstrapRandomGroupsCV(MODELINPUT *input,
 
 /*
  * Description: Calculate the Leave-One-Out cross validation.
- *              Every method has its model function. 
- * 
+ *              Every method has its model function.
+ *
  *              Available methods:
  *              - PLS: partial least squares
  *              - PLS_DA: partial least squares discriminant analysis
@@ -169,8 +169,8 @@ void LeaveOneOut(MODELINPUT *input,
 
 /*
  * Description: Calculate the k-fold cross validation.
- *              Every method has its model function. 
- * 
+ *              Every method has its model function.
+ *
  *              Available methods:
  *              - PLS: partial least squares
  *              - PLS_DA: partial least squares discriminant analysis
@@ -191,8 +191,8 @@ void KFoldCV(MODELINPUT *input,
 
 /*
  * Description: Calculate the Y-scrambling cross validation test.
- *              Every method has its model function. 
- * 
+ *              Every method has its model function.
+ *
  *              Available methods:
  *              - PLS: partial least squares
  *              - PLS_DA: partial least squares discriminant analysis

@@ -1,7 +1,9 @@
-from libscientific.vector import * 
 import random
-from utils import (vector_sum,
-                   raw_vector_sum)
+
+from utils import raw_vector_sum, vector_sum
+
+from libscientific.vector import *
+
 
 def test_double_vector():
     # Create a random vector of 10 elements
@@ -9,7 +11,7 @@ def test_double_vector():
     random.seed(42)
     a = [random.random() for j in range(10)]
     d = DVector(a)
-    
+
     # check the get function
     assert abs(d[1] - 0.0250) <= 1e-4
 
@@ -21,21 +23,21 @@ def test_double_vector():
     # check for something wrong
     check_value_2 = 1.9816749960203515
     assert abs(vector_sum(d) - check_value_2) <= 1e-14
-    
+
     # Convert to list
     dlst = d.tolist()
     # check for something wrong
     assert abs(sum(dlst) - check_value_2) <= 1e-14
 
-    # Append value -123 at the end 
+    # Append value -123 at the end
     dvector_append(d.dvect, -123)
     # check for something wrong
-    assert abs(d[d.size()-1] - (-123)) <= 1e-3
+    assert abs(d[d.size() - 1] - (-123)) <= 1e-3
 
-    #Append value -123 at the end in a different way
+    # Append value -123 at the end in a different way
     d.append(-123)
     # check for something wrong
-    assert abs(d[d.size()-1] - (-123)) <= 1e-3
+    assert abs(d[d.size() - 1] - (-123)) <= 1e-3
 
     # remove the value -2 at index 1
     dvector_remove_at(d.dvect, 1)
@@ -53,23 +55,35 @@ def test_double_vector():
     # Create a copy of d.d in q
     q = dvector_copy(d.dvect)
     # check for something wrong
-    assert abs(raw_vector_sum(q)- check_value_4) <= 1e-14
+    assert abs(raw_vector_sum(q) - check_value_4) <= 1e-14
     # delete q vector
     q_size = q.contents.size
     del_dvector(q)
     # check for something wrong
     assert q.contents.size != q_size
-    
+
     # check if the double vector d have the value -123
     assert dvector_has_value(d.dvect, -123.0000) == 0
 
     # check if the double vector d have not the value -13
     assert dvector_has_value(d.dvect, -13.0000) == 1
+
+    # check len, iter, copy constructor, repr
+    assert len(d) == d.size()
+    elements = list(d)
+    assert len(elements) == len(d)
+    assert elements[0] == d[0]
+    d_copy = DVector(d)
+    assert len(d_copy) == len(d)
+    assert d_copy[0] == d[0]
+    assert "DVector(" in repr(d)
+    assert str(d) == repr(d)
     del d
+
 
 def test_uivector():
     # Create a vector of integers from 0 to 6
-    a = [0,1,2,3,4,5,6]
+    a = [0, 1, 2, 3, 4, 5, 6]
     u = UIVector(a)
 
     # check the get function
@@ -77,7 +91,7 @@ def test_uivector():
 
     # check for something worng
     assert abs(vector_sum(u) - sum(a)) <= 1e-14
-    
+
     # set value 2 in poistion 1
     a[1] = 2
     u[1] = 2
@@ -113,3 +127,15 @@ def test_uivector():
     u.extend(b)
     # check for something worng
     assert abs(vector_sum(u) - sum(a)) <= 1e-14
+
+    # check len, iter, copy constructor, repr
+    assert len(u) == u.size()
+    u_elems = list(u)
+    assert len(u_elems) == len(u)
+    u_copy = UIVector(u)
+    assert len(u_copy) == len(u)
+    assert u_copy[0] == u[0]
+    u_empty = UIVector()
+    assert len(u_empty) == 0
+    assert "UIVector(" in repr(u)
+    assert str(u) == repr(u)

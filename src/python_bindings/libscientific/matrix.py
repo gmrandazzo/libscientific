@@ -16,22 +16,25 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import ctypes
 import csv
+import ctypes
+
+from libscientific import misc, vector
 from libscientific.loadlibrary import load_libscientific_library
-from libscientific import misc
-from libscientific import vector
 
 lsci = load_libscientific_library()
+
 
 class MATRIX(ctypes.Structure):
     """
     matrix data structure
     """
+
     _fields_ = [
-        ("data",    ctypes.POINTER(ctypes.POINTER(ctypes.c_double))),
-        ("row",     ctypes.c_size_t),
-        ("col",     ctypes.c_size_t)]
+        ("data", ctypes.POINTER(ctypes.POINTER(ctypes.c_double))),
+        ("row", ctypes.c_size_t),
+        ("col", ctypes.c_size_t),
+    ]
 
     def __repr__(self):
         return self.__class__.__name__
@@ -54,17 +57,16 @@ def init_matrix():
     return mtx
 
 
-lsci.NewMatrix.argtypes = [ctypes.POINTER(ctypes.POINTER(MATRIX)),
-                           ctypes.c_size_t,
-                           ctypes.c_size_t]
+lsci.NewMatrix.argtypes = [ctypes.POINTER(ctypes.POINTER(MATRIX)), ctypes.c_size_t, ctypes.c_size_t]
 lsci.NewMatrix.restype = None
+
 
 def new_matrix_from_list(mx_lst):
     """
     Import a matrix from a list
     """
-    nrows = None
-    ncols = None
+    nrows = 0
+    ncols = 0
     try:
         nrows = len(mx_lst)
         try:
@@ -73,12 +75,10 @@ def new_matrix_from_list(mx_lst):
             ncols = 1
         except IndexError:
             ncols = 0
-    except IndexError:
+    except (IndexError, TypeError):
         nrows = 0
     mtx = ctypes.POINTER(MATRIX)()
-    lsci.NewMatrix(ctypes.pointer(mtx),
-                   nrows,
-                   ncols)
+    lsci.NewMatrix(ctypes.pointer(mtx), nrows, ncols)
 
     for i in range(nrows):
         for j in range(ncols):
@@ -96,18 +96,20 @@ def new_matrix_from_list(mx_lst):
                 lsci.setMatrixValue(mtx, i, j, val)
     return mtx
 
+
 def new_matrix_from_csv(fcsv):
     """
     Import a matrix directly from CSV file
     """
     mtx = init_matrix()
-    with open(fcsv, "r", encoding='utf-8') as fcsv_:
-        reader = csv.reader(fcsv_, delimiter=',', quotechar='"')
+    with open(fcsv, encoding="utf-8") as fcsv_:
+        reader = csv.reader(fcsv_, delimiter=",", quotechar='"')
         for csvrow in reader:
             row_lst = vector.DVector(csvrow)
             matrix_append_row(mtx, row_lst)
             del row_lst
     return mtx
+
 
 def new_matrix(mtx_input_):
     """
@@ -118,9 +120,7 @@ def new_matrix(mtx_input_):
     return new_matrix_from_list(mtx_input_)
 
 
-lsci.ResizeMatrix.argtypes = [ctypes.POINTER(MATRIX),
-                              ctypes.c_size_t,
-                              ctypes.c_size_t]
+lsci.ResizeMatrix.argtypes = [ctypes.POINTER(MATRIX), ctypes.c_size_t, ctypes.c_size_t]
 lsci.ResizeMatrix.restype = None
 
 
@@ -187,8 +187,7 @@ def matrix_set(mtx, val):
     lsci.MatrixSet(mtx, val)
 
 
-lsci.MatrixCopy.argtypes = [ctypes.POINTER(MATRIX),
-                            ctypes.POINTER(ctypes.POINTER(MATRIX))]
+lsci.MatrixCopy.argtypes = [ctypes.POINTER(MATRIX), ctypes.POINTER(ctypes.POINTER(MATRIX))]
 lsci.MatrixCopy.restype = None
 
 
@@ -199,10 +198,12 @@ def matrix_copy(msrc, mdst):
     lsci.MatrixCopy(msrc, ctypes.pointer(mdst))
 
 
-lsci.setMatrixValue.argtypes = [ctypes.POINTER(MATRIX),
-                                ctypes.c_size_t,
-                                ctypes.c_size_t,
-                                ctypes.c_double]
+lsci.setMatrixValue.argtypes = [
+    ctypes.POINTER(MATRIX),
+    ctypes.c_size_t,
+    ctypes.c_size_t,
+    ctypes.c_double,
+]
 lsci.setMatrixValue.restype = None
 
 
@@ -213,9 +214,7 @@ def set_matrix_value(mtx, irow, jcol, value):
     lsci.setMatrixValue(mtx, irow, jcol, value)
 
 
-lsci.getMatrixValue.argtypes = [ctypes.POINTER(MATRIX),
-                                ctypes.c_size_t,
-                                ctypes.c_size_t]
+lsci.getMatrixValue.argtypes = [ctypes.POINTER(MATRIX), ctypes.c_size_t, ctypes.c_size_t]
 lsci.getMatrixValue.restype = ctypes.c_double
 
 
@@ -280,32 +279,57 @@ def set_missing_matrix_value(mtx, row_id, col_id):
     mtx[0].data[row_id][col_id] = misc.missing_value()
 
 
-lsci.MatrixAppendRow.argtypes = [ctypes.POINTER(MATRIX),
-                                 ctypes.POINTER(vector.DVECTOR)]
+lsci.MatrixAppendRow.argtypes = [ctypes.POINTER(MATRIX), ctypes.POINTER(vector.DVECTOR)]
 lsci.MatrixAppendRow.restype = None
+
 
 def matrix_append_row(mtx, row_vect):
     """
-    Append to a libscientific matrix a row list
+    Append to a libscientific matrix a row vector or list
     """
-    return lsci.MatrixAppendRow(mtx, row_vect.dvect)
+    alloc = False
+    if isinstance(row_vect, vector.DVector):
+        row_ptr = row_vect.dvect
+    elif isinstance(row_vect, list):
+        row_ptr = vector.new_dvector(row_vect)
+        alloc = True
+    else:
+        row_ptr = row_vect
+    res = lsci.MatrixAppendRow(mtx, row_ptr)
+    if alloc:
+        vector.del_dvector(row_ptr)
+    return res
 
 
-lsci.MatrixAppendCol.argtypes = [ctypes.POINTER(MATRIX),
-                                 ctypes.POINTER(vector.DVECTOR)]
+lsci.MatrixAppendCol.argtypes = [ctypes.POINTER(MATRIX), ctypes.POINTER(vector.DVECTOR)]
 lsci.MatrixAppendCol.restype = None
+
 
 def matrix_append_col(mtx, col_vect):
     """
-    Append to a libscientific matrix a column list
+    Append to a libscientific matrix a column vector or list
     """
-    return lsci.MatrixAppendCol(mtx, col_vect.dvect)
+    alloc = False
+    if isinstance(col_vect, vector.DVector):
+        col_ptr = col_vect.dvect
+    elif isinstance(col_vect, list):
+        col_ptr = vector.new_dvector(col_vect)
+        alloc = True
+    else:
+        col_ptr = col_vect
+    res = lsci.MatrixAppendCol(mtx, col_ptr)
+    if alloc:
+        vector.del_dvector(col_ptr)
+    return res
 
 
-lsci.MatrixDVectorDotProduct.argtypes = [ctypes.POINTER(MATRIX),
-                                         ctypes.POINTER(vector.DVECTOR),
-                                         ctypes.POINTER(vector.DVECTOR)]
+lsci.MatrixDVectorDotProduct.argtypes = [
+    ctypes.POINTER(MATRIX),
+    ctypes.POINTER(vector.DVECTOR),
+    ctypes.POINTER(vector.DVECTOR),
+]
 lsci.MatrixDVectorDotProduct.restype = None
+
 
 def matrix_dvector_dot_product(mtx, dvect, res):
     """
@@ -314,9 +338,11 @@ def matrix_dvector_dot_product(mtx, dvect, res):
     return lsci.MatrixDVectorDotProduct(mtx, dvect, res)
 
 
-lsci.MT_MatrixDVectorDotProduct.argtypes = [ctypes.POINTER(MATRIX),
-                                            ctypes.POINTER(vector.DVECTOR),
-                                            ctypes.POINTER(vector.DVECTOR)]
+lsci.MT_MatrixDVectorDotProduct.argtypes = [
+    ctypes.POINTER(MATRIX),
+    ctypes.POINTER(vector.DVECTOR),
+    ctypes.POINTER(vector.DVECTOR),
+]
 lsci.MT_MatrixDVectorDotProduct.restype = None
 
 
@@ -327,10 +353,13 @@ def mt_matrix_dvector_dot_product(mtx, dvect, res):
     return lsci.MT_MatrixDVectorDotProduct(mtx, dvect, res)
 
 
-lsci.DVectorMatrixDotProduct.argtypes = [ctypes.POINTER(MATRIX),
-                                         ctypes.POINTER(vector.DVECTOR),
-                                         ctypes.POINTER(vector.DVECTOR)]
+lsci.DVectorMatrixDotProduct.argtypes = [
+    ctypes.POINTER(MATRIX),
+    ctypes.POINTER(vector.DVECTOR),
+    ctypes.POINTER(vector.DVECTOR),
+]
 lsci.DVectorMatrixDotProduct.restype = None
+
 
 def dvector_matrix_dot_product(mtx, dvect, res):
     """
@@ -339,11 +368,13 @@ def dvector_matrix_dot_product(mtx, dvect, res):
     return lsci.DVectorMatrixDotProduct(mtx, dvect, res)
 
 
-
-lsci.MT_DVectorMatrixDotProduct.argtypes = [ctypes.POINTER(MATRIX),
-                                            ctypes.POINTER(vector.DVECTOR),
-                                            ctypes.POINTER(vector.DVECTOR)]
+lsci.MT_DVectorMatrixDotProduct.argtypes = [
+    ctypes.POINTER(MATRIX),
+    ctypes.POINTER(vector.DVECTOR),
+    ctypes.POINTER(vector.DVECTOR),
+]
 lsci.MT_DVectorMatrixDotProduct.restype = None
+
 
 def mt_dvector_matrix_dot_product(mtx, dvect, res):
     """
@@ -352,22 +383,28 @@ def mt_dvector_matrix_dot_product(mtx, dvect, res):
     return lsci.MT_DVectorMatrixDotProduct(mtx, dvect, res)
 
 
-lsci.DVectorTrasposedDVectorDotProduct.argtypes = [ctypes.POINTER(vector.DVECTOR),
-                                                   ctypes.POINTER(vector.DVECTOR),
-                                                   ctypes.POINTER(MATRIX)]
+lsci.DVectorTrasposedDVectorDotProduct.argtypes = [
+    ctypes.POINTER(vector.DVECTOR),
+    ctypes.POINTER(vector.DVECTOR),
+    ctypes.POINTER(MATRIX),
+]
 lsci.DVectorTrasposedDVectorDotProduct.restype = None
 
-def dvector_transposed_dvector_dot_product(mtx, dvect, res):
+
+def dvector_transposed_dvector_dot_product(dvect1, dvect2, res):
     """
-    Calculate a dvector transposed dvector dot product
+    Calculate a dvector transposed dvector dot product: res = dvect1 * dvect2^T
     """
-    return lsci.DVectorTrasposedDVectorDotProduct(mtx, dvect, res)
+    return lsci.DVectorTrasposedDVectorDotProduct(dvect1, dvect2, res)
 
 
-lsci.DVectorTransposedMatrixDivision.argtypes = [ctypes.POINTER(vector.DVECTOR),
-                                                 ctypes.POINTER(MATRIX),
-                                                 ctypes.POINTER(vector.DVECTOR)]
+lsci.DVectorTransposedMatrixDivision.argtypes = [
+    ctypes.POINTER(vector.DVECTOR),
+    ctypes.POINTER(MATRIX),
+    ctypes.POINTER(vector.DVECTOR),
+]
 lsci.DVectorTransposedMatrixDivision.restype = None
+
 
 def dvector_transposed_matrix_division(dvect, mtx, res):
     """
@@ -376,10 +413,13 @@ def dvector_transposed_matrix_division(dvect, mtx, res):
     return lsci.DVectorTransposedMatrixDivision(dvect, mtx, res)
 
 
-lsci.MatrixDotProduct.argtypes = [ctypes.POINTER(MATRIX),
-                                  ctypes.POINTER(MATRIX),
-                                  ctypes.POINTER(MATRIX)]
+lsci.MatrixDotProduct.argtypes = [
+    ctypes.POINTER(MATRIX),
+    ctypes.POINTER(MATRIX),
+    ctypes.POINTER(MATRIX),
+]
 lsci.MatrixDotProduct.restype = None
+
 
 def matrix_dot_product(mtx_t, mtx, res):
     """
@@ -388,10 +428,13 @@ def matrix_dot_product(mtx_t, mtx, res):
     return lsci.MatrixDotProduct(mtx_t, mtx, res)
 
 
-lsci.RowColOuterProduct.argtypes = [ctypes.POINTER(vector.DVECTOR),
-                                    ctypes.POINTER(vector.DVECTOR),
-                                    ctypes.POINTER(MATRIX)]
+lsci.RowColOuterProduct.argtypes = [
+    ctypes.POINTER(vector.DVECTOR),
+    ctypes.POINTER(vector.DVECTOR),
+    ctypes.POINTER(MATRIX),
+]
 lsci.RowColOuterProduct.restype = None
+
 
 def row_col_outer_product(dvect_a, dvect_b, res):
     """
@@ -400,9 +443,9 @@ def row_col_outer_product(dvect_a, dvect_b, res):
     return lsci.RowColOuterProduct(dvect_a, dvect_b, res)
 
 
-lsci.MatrixTranspose.argtypes = [ctypes.POINTER(MATRIX),
-                                 ctypes.POINTER(MATRIX)]
+lsci.MatrixTranspose.argtypes = [ctypes.POINTER(MATRIX), ctypes.POINTER(MATRIX)]
 lsci.MatrixTranspose.restype = None
+
 
 def matrix_transpose(mtx, mtx_t):
     """
@@ -411,10 +454,9 @@ def matrix_transpose(mtx, mtx_t):
     return lsci.MatrixTranspose(mtx, mtx_t)
 
 
-
-lsci.MatrixInversion.argtypes = [ctypes.POINTER(MATRIX),
-                                 ctypes.POINTER(MATRIX)]
+lsci.MatrixInversion.argtypes = [ctypes.POINTER(MATRIX), ctypes.POINTER(MATRIX)]
 lsci.MatrixInversion.restype = None
+
 
 def matrix_inversion(mtx, mtx_inv):
     """
@@ -423,23 +465,33 @@ def matrix_inversion(mtx, mtx_inv):
     return lsci.MatrixInversion(mtx, mtx_inv)
 
 
-lsci.EVectEval.argtypes = [ctypes.POINTER(MATRIX),
-                           ctypes.POINTER(vector.DVECTOR),
-                           ctypes.POINTER(MATRIX)]
+lsci.EVectEval.argtypes = [
+    ctypes.POINTER(MATRIX),
+    ctypes.POINTER(vector.DVECTOR),
+    ctypes.POINTER(MATRIX),
+]
 lsci.EVectEval.restype = None
 
-def evect_eval(mtx, mtx_e_vect, mtx_e_val):
+
+def evect_eval(mtx, evals, evects):
     """
-    Eigenvectors and Eigenvalues using lapack
+    Eigenvalues and Eigenvectors using lapack.
+    Args:
+        mtx: input square matrix
+        evals: dvector to receive eigenvalues
+        evects: matrix to receive eigenvectors
     """
-    return lsci.EVectEval(mtx, mtx_e_vect, mtx_e_val)
+    return lsci.EVectEval(mtx, evals, evects)
 
 
-lsci.SVD.argtypes = [ctypes.POINTER(MATRIX),
-                     ctypes.POINTER(MATRIX),
-                     ctypes.POINTER(MATRIX),
-                     ctypes.POINTER(MATRIX)]
+lsci.SVD.argtypes = [
+    ctypes.POINTER(MATRIX),
+    ctypes.POINTER(MATRIX),
+    ctypes.POINTER(MATRIX),
+    ctypes.POINTER(MATRIX),
+]
 lsci.SVD.restype = None
+
 
 def svd(mtx, u_mtx, s_mtx, vt_mtx):
     """
@@ -448,11 +500,14 @@ def svd(mtx, u_mtx, s_mtx, vt_mtx):
     lsci.SVD(mtx, u_mtx, s_mtx, vt_mtx)
 
 
-lsci.SVDlapack.argtypes = [ctypes.POINTER(MATRIX),
-                           ctypes.POINTER(MATRIX),
-                           ctypes.POINTER(MATRIX),
-                           ctypes.POINTER(MATRIX)]
+lsci.SVDlapack.argtypes = [
+    ctypes.POINTER(MATRIX),
+    ctypes.POINTER(MATRIX),
+    ctypes.POINTER(MATRIX),
+    ctypes.POINTER(MATRIX),
+]
 lsci.SVDlapack.restype = None
+
 
 def svd_lapack(mtx, u_mtx, s_mtx, vt_mtx):
     """
@@ -461,7 +516,7 @@ def svd_lapack(mtx, u_mtx, s_mtx, vt_mtx):
     lsci.SVDlapack(mtx, u_mtx, s_mtx, vt_mtx)
 
 
-class Matrix():
+class Matrix:
     """
     A class for working with libscientific matrices.
 
@@ -489,15 +544,25 @@ class Matrix():
         get_evect_evals(self)
         svd(self)
     """
+
     def __init__(self, mx_=None):
         """
         Initialize a Matrix instance.
 
         Args:
-            mx_ (list[list]): A list of lists representing the initial matrix data. Default is None.
+            mx_ (list[list], Matrix, or None): A list of lists representing the initial matrix data,
+                another Matrix instance to copy, or None for an empty matrix. Default is None.
         """
         if mx_ is None:
             self.mtx = init_matrix()
+        elif isinstance(mx_, Matrix):
+            self.mtx = init_matrix()
+            matrix_copy(mx_.mtx, self.mtx)
+        elif isinstance(mx_, ctypes.POINTER(MATRIX)):
+            self.mtx = init_matrix()
+            matrix_copy(mx_, self.mtx)
+        elif "numpy" in str(type(mx_)):
+            self.mtx = matrix_from_numpy(mx_)
         else:
             self.mtx = new_matrix(mx_)
 
@@ -505,22 +570,52 @@ class Matrix():
         """
         Clean up resources associated with the Matrix instance.
         """
-        del_matrix(self.mtx)
-        del self.mtx
-        self.mtx = None
+        if getattr(self, "mtx", None) is not None:
+            del_matrix(self.mtx)
+            del self.mtx
+            self.mtx = None
+
+    def __repr__(self):
+        return f"Matrix({self.tolist()})"
+
+    def __str__(self):
+        return f"Matrix({self.tolist()})"
+
+    def __len__(self):
+        """
+        Return the number of rows in the matrix.
+        """
+        return self.nrow()
+
+    def __iter__(self):
+        """
+        Iterate over the rows of the matrix as lists.
+        """
+        return iter(self.tolist())
+
+    @property
+    def shape(self):
+        """
+        Return the shape (nrows, ncols) of the matrix.
+        """
+        return (self.nrow(), self.ncol())
 
     def __getitem__(self, keys):
         """
-        Get a value from the matrix using row and column indices.
+        Get a value or row from the matrix using indices.
 
         Args:
-            keys (tuple): A tuple containing two integers representing the row and column indices.
+            keys (tuple or int): A tuple (i, j) for an element, or an int i for a row.
 
         Returns:
-            float: The value at the specified row and column in the matrix.
+            float or list: The value at (i, j) or the row at i.
         """
-        i, j = keys
-        return self.data_ptr()[i][j]
+        if isinstance(keys, tuple):
+            i, j = keys
+            return self.data_ptr()[i][j]
+        elif isinstance(keys, int):
+            return get_matrix_row(self.mtx, keys)
+        raise TypeError(f"Invalid index type: {type(keys)}")
 
     def __setitem__(self, keys, value):
         """
@@ -596,22 +691,18 @@ class Matrix():
         Append a row to the matrix.
 
         Args:
-            row_lst_ (list): A list representing the row to be appended.
+            row_lst_ (DVector or list): A row vector or list to be appended.
         """
-        row_lst = vector.DVector(row_lst_)
-        matrix_append_row(self.mtx, row_lst)
-        del row_lst
+        matrix_append_row(self.mtx, row_lst_)
 
     def appendcol(self, col_lst_):
         """
         Append a column vector to the matrix.
 
         Args:
-            col_lst_ (list): A list representing the column vector to be appended.
+            col_lst_ (DVector or list): A column vector or list to be appended.
         """
-        col_lst = vector.DVector(col_lst_)
-        matrix_append_col(self.mtx, col_lst)
-        del col_lst
+        matrix_append_col(self.mtx, col_lst_)
 
     def transpose(self):
         """
@@ -626,19 +717,19 @@ class Matrix():
 
     def get_evect_evals(self):
         """
-        Get the eigenvectors and eigenvalues of the matrix.
+        Get the eigenvalues and eigenvectors of the matrix.
 
         Returns:
-            tuple: A tuple containing two lists - eigenvectors and eigenvalues.
+            tuple: A tuple containing two lists - eigenvalues (1D list) and eigenvectors (2D list).
         """
-        mtx_e_vect_ = vector.init_dvector()
-        mtx_e_vals_ = init_matrix()
-        evect_eval(self.mtx,  mtx_e_vect_, mtx_e_vals_)
-        mtx_e_vect = vector.dvector_tolist(mtx_e_vect_)
-        mtx_e_vals = matrix_to_list(mtx_e_vals_)
-        del_matrix(mtx_e_vals_)
-        vector.del_dvector(mtx_e_vect_)
-        return mtx_e_vect, mtx_e_vals
+        evals_ = vector.init_dvector()
+        evects_ = init_matrix()
+        evect_eval(self.mtx, evals_, evects_)
+        evals = vector.dvector_tolist(evals_)
+        evects = matrix_to_list(evects_)
+        del_matrix(evects_)
+        vector.del_dvector(evals_)
+        return evals, evects
 
     def svd(self):
         """

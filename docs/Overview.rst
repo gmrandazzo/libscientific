@@ -16,7 +16,7 @@ and supports Windows, Linux, macOS, and embedded systems.
 Python bindings are available using ctypes to avoid dependencies.
 The library is distributed under GPLv3 license.
 
-The project has been published in the Journal of Open Source Software (JOSS): 
+The project has been published in the Journal of Open Source Software (JOSS):
 `Randazzo, (2023). libscientific: A C framework for multivariate and statistical analysis. Journal of Open Source Software, 8(90), 5420 <https://doi.org/10.21105/joss.05420>`_.
 
 The significant advantage of libscientific is that it does not require dependencies
@@ -99,6 +99,11 @@ What can I do with libscientific?
         * Particle Swarm Optimization variable selection for PLS only
         * Spearman Ranking variable selection for PLS only
 
+* Model persistence and serialization:
+        * Zero-dependency binary container format (.lsm) for standalone models (PCA, PLS, CPCA, MLR, LDA, ICA, UPCA, UPLS)
+        * Multi-model project bundle container (.lsb) with Table of Contents (TOC) for managing complete modeling pipelines
+        * CRC32 data integrity verification and header inspection without full payload decompression
+
 History
 -------
 
@@ -120,5 +125,3 @@ Licensing
 This documentation is copiright (C) 2011-2020 by Giuseppe Marco Randazzo
 
 This work is licensed under the Creative Commons Attribution-ShareAlike 4.0 License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/4.0/ or send a letter to Creative Commons, 543 Howard Street, 5th Floor, San Francisco, California, 94105, USA.
-
-

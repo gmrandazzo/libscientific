@@ -37,12 +37,12 @@ void test1()
  size_t i, j;
   strvector *s;
   char *letters = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm123456789";
-  int num_of_letters = strlen(letters);
+  int num_of_letters = (int)strlen(letters);
   char *buffer = NULL;
   buffer = malloc(sizeof(char)*101);
 
   NewStrVector(&s, 100);
-  srand(time(0));
+  srand((unsigned int)time(0));
 
   for(i = 0; i < s->size; i++){
     memset(buffer, 0, 101);

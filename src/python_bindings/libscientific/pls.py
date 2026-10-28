@@ -15,10 +15,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
+
 import ctypes
+
 import libscientific.matrix as mx
-import libscientific.vector as vect
 import libscientific.tensor as t
+import libscientific.vector as vect
 from libscientific.loadlibrary import load_libscientific_library
 
 lsci = load_libscientific_library()
@@ -28,6 +30,7 @@ class PLSMODEL(ctypes.Structure):
     """
     PLSMODEL data structure
     """
+
     _fields_ = [
         ("xscores", ctypes.POINTER(mx.MATRIX)),
         ("xloadings", ctypes.POINTER(mx.MATRIX)),
@@ -58,7 +61,8 @@ class PLSMODEL(ctypes.Structure):
         ("precision_recall_validation", ctypes.POINTER(t.TENSOR)),
         ("precision_recall_ap_recalculated", ctypes.POINTER(mx.MATRIX)),
         ("precision_recall_ap_validation", ctypes.POINTER(mx.MATRIX)),
-        ("yscrambling", ctypes.POINTER(mx.MATRIX))]
+        ("yscrambling", ctypes.POINTER(mx.MATRIX)),
+    ]
 
     def __repr__(self):
         return self.__class__.__name__
@@ -91,20 +95,19 @@ def del_pls_model(mpls):
     lsci.DelPLSModel(ctypes.pointer(mpls))
 
 
-lsci.PLS.argtypes = [ctypes.POINTER(mx.MATRIX),
-                     ctypes.POINTER(mx.MATRIX),
-                     ctypes.c_size_t,
-                     ctypes.c_size_t,
-                     ctypes.c_size_t,
-                     ctypes.POINTER(PLSMODEL),
-                     ctypes.POINTER(ctypes.c_int)]
+lsci.PLS.argtypes = [
+    ctypes.POINTER(mx.MATRIX),
+    ctypes.POINTER(mx.MATRIX),
+    ctypes.c_size_t,
+    ctypes.c_int,
+    ctypes.c_int,
+    ctypes.POINTER(PLSMODEL),
+    ctypes.POINTER(ctypes.c_int),
+]
 lsci.PLS.restype = None
 
 
-def pls_algorithm(x_input,
-                  y_input,
-                  mpls,
-                  **kwargs):
+def pls_algorithm(x_input, y_input, mpls, **kwargs):
     """
     PLS: Calculate the PLS model using a matrix x and a matrix y according to the NIPALS algorithm
     """
@@ -112,17 +115,14 @@ def pls_algorithm(x_input,
     x_scaling = kwargs["x_scaling"]
     y_scaling = kwargs["y_scaling"]
     scisignal = ctypes.c_int(0)
-    lsci.PLS(x_input,
-             y_input,
-             nlv,
-             x_scaling,
-             y_scaling,
-             mpls,
-             ctypes.pointer(scisignal))
+    lsci.PLS(x_input, y_input, nlv, x_scaling, y_scaling, mpls, ctypes.pointer(scisignal))
 
-lsci.PLSBetasCoeff.argtypes = [ctypes.POINTER(PLSMODEL),
-                               ctypes.c_size_t,
-                               ctypes.POINTER(vect.DVECTOR)]
+
+lsci.PLSBetasCoeff.argtypes = [
+    ctypes.POINTER(PLSMODEL),
+    ctypes.c_size_t,
+    ctypes.POINTER(vect.DVECTOR),
+]
 lsci.PLSBetasCoeff.restype = None
 
 
@@ -133,11 +133,12 @@ def pls_beta_coefficients(mpls, nlv, bcoeff):
     lsci.PLSBetasCoeff(mpls, nlv, bcoeff)
 
 
-
-lsci.PLSScorePredictor.argtypes = [ctypes.POINTER(mx.MATRIX),
-                                   ctypes.POINTER(PLSMODEL),
-                                   ctypes.c_size_t,
-                                   ctypes.POINTER(mx.MATRIX)]
+lsci.PLSScorePredictor.argtypes = [
+    ctypes.POINTER(mx.MATRIX),
+    ctypes.POINTER(PLSMODEL),
+    ctypes.c_size_t,
+    ctypes.POINTER(mx.MATRIX),
+]
 lsci.PLSScorePredictor.restype = None
 
 
@@ -145,50 +146,43 @@ def pls_score_predictor(x_input, mpls, nlv, p_scores):
     """
     PLSScorePredictor: Predict scores for a matrix m in the computed PLS modes
     """
-    lsci.PLSScorePredictor(x_input,
-                           mpls,
-                           nlv,
-                           p_scores)
+    lsci.PLSScorePredictor(x_input, mpls, nlv, p_scores)
 
 
-lsci.PLSYPredictor.argtypes = [ctypes.POINTER(mx.MATRIX),
-                               ctypes.POINTER(PLSMODEL),
-                               ctypes.c_size_t,
-                               ctypes.POINTER(mx.MATRIX)]
+lsci.PLSYPredictor.argtypes = [
+    ctypes.POINTER(mx.MATRIX),
+    ctypes.POINTER(PLSMODEL),
+    ctypes.c_size_t,
+    ctypes.POINTER(mx.MATRIX),
+]
 lsci.PLSYPredictor.restype = None
 
 
 def pls_y_predictor(x_scores, mpls, nlv, predicted_y):
     """
-    PLSYPredictor: Predict the Y according the predicted scores and the calculated pls model.
+    PLSYPredictor: Predict the Y according to predicted scores and the calculated pls model.
     """
-    lsci.PLSYPredictor(x_scores,
-                       mpls,
-                       nlv,
-                       ctypes.pointer(ctypes.pointer(predicted_y)))
+    x_scores_ = x_scores.mtx if isinstance(x_scores, mx.Matrix) else x_scores
+    predicted_y_ = predicted_y.mtx if isinstance(predicted_y, mx.Matrix) else predicted_y
+    lsci.PLSYPredictor(x_scores_, mpls, nlv, predicted_y_)
 
 
-lsci.PLSYPredictorAllLV.argtypes = [ctypes.POINTER(mx.MATRIX),
-                                    ctypes.POINTER(PLSMODEL),
-                                    ctypes.POINTER(mx.MATRIX),
-                                    ctypes.POINTER(mx.MATRIX)]
+lsci.PLSYPredictorAllLV.argtypes = [
+    ctypes.POINTER(mx.MATRIX),
+    ctypes.POINTER(PLSMODEL),
+    ctypes.POINTER(mx.MATRIX),
+    ctypes.POINTER(mx.MATRIX),
+]
 lsci.PLSYPredictorAllLV.restype = None
 
 
-def pls_y_predictor_all_lv(x_input,
-                           mpls,
-                           predicted_scores,
-                           predicted_y):
+def pls_y_predictor_all_lv(x_input, mpls, predicted_scores, predicted_y):
     """
     PLSYPredictorAllLV: Predict the Y according the original feature
     matrix and the calculated pls model.
     This function is NOT dependent on PLSScorePredictor.
     """
-    lsci.PLSYPredictorAllLV(x_input,
-                            mpls,
-                            predicted_scores,
-                            predicted_y)
-
+    lsci.PLSYPredictorAllLV(x_input, mpls, predicted_scores, predicted_y)
 
 
 lsci.PrintPLSModel.argtypes = [ctypes.POINTER(PLSMODEL)]
@@ -201,30 +195,32 @@ def print_pls(mpls):
     """
     lsci.PrintPLSModel(mpls)
 
+
 def apply_scaling(x_input, x_avg, x_scal):
     """Apply scaling to a matrix"""
-    x_scaled = []
+    x_scaled: list[list[float]] = []
     for _, x_row in enumerate(x_input):
         x_scaled.append([])
         for j, x_val in enumerate(x_row):
-            x_scaled[-1].append(((x_val - x_avg[j])/x_scal[j]))
+            x_scaled[-1].append((x_val - x_avg[j]) / x_scal[j])
     return x_scaled
+
 
 def revert_scaling(x_input, x_avg, x_scal):
     """Revert scaling to a matrix"""
-    x_revert = []
+    x_revert: list[list[float]] = []
     for _, x_row in enumerate(x_input):
         x_rever_row = []
         if isinstance(x_row, list):
             for j, x_val in enumerate(x_row):
-                x_rever_row.append(x_val*x_scal[j]+x_avg[j])
+                x_rever_row.append(x_val * x_scal[j] + x_avg[j])
         else:
-            x_rever_row.append(x_row*x_scal[0]+x_avg[0])
+            x_rever_row.append(x_row * x_scal[0] + x_avg[0])
         x_revert.append(x_rever_row)
     return x_revert
 
-def pls_beta_inference(x_input,
-                       **kwargs):
+
+def pls_beta_inference(x_input, **kwargs):
     """
     Predict using PLS beta coefficients and not the whole PLS model.
 
@@ -272,11 +268,9 @@ def pls_beta_inference(x_input,
     return revert_scaling(pby, y_avg, y_scal)
 
 
-lsci.WritePLS.argtypes = [
-    ctypes.POINTER(ctypes.c_char),
-    ctypes.POINTER(PLSMODEL)
-]
+lsci.WritePLS.argtypes = [ctypes.POINTER(ctypes.c_char), ctypes.POINTER(PLSMODEL)]
 lsci.WritePLS.restype = None
+
 
 def write_pls(dbpath: str, pls: PLSMODEL):
     """
@@ -294,16 +288,14 @@ def write_pls(dbpath: str, pls: PLSMODEL):
     Returns:
         None
     """
-    encoded_string = dbpath.encode('utf-8')
+    encoded_string = dbpath.encode("utf-8")
     ctypes_string = ctypes.c_char_p(encoded_string)
     lsci.WritePLS(ctypes_string, pls)
 
 
-lsci.ReadPLS.argtypes = [
-    ctypes.POINTER(ctypes.c_char),
-    ctypes.POINTER(PLSMODEL)
-]
+lsci.ReadPLS.argtypes = [ctypes.POINTER(ctypes.c_char), ctypes.POINTER(PLSMODEL)]
 lsci.ReadPLS.restype = None
+
 
 def read_pls(dbpath: str, pls: PLSMODEL):
     """
@@ -320,11 +312,12 @@ def read_pls(dbpath: str, pls: PLSMODEL):
     Returns:
         None
     """
-    encoded_string = dbpath.encode('utf-8')
+    encoded_string = dbpath.encode("utf-8")
     ctypes_string = ctypes.c_char_p(encoded_string)
     lsci.ReadPLS(ctypes_string, pls)
 
-class PLS():
+
+class PLS:
     """
     Partial Least Squares (PLS) Model
 
@@ -387,11 +380,17 @@ class PLS():
         self.xscaling = xscaling
         self.yscaling = yscaling
 
+    def __repr__(self):
+        return f"PLS(nlv={self.nlv}, xscaling={self.xscaling}, yscaling={self.yscaling})"
+
+    def __str__(self):
+        return f"PLS(nlv={self.nlv}, xscaling={self.xscaling}, yscaling={self.yscaling})"
+
     def __del__(self):
         """
         Clean up resources associated with the PLS instance.
         """
-        if self.model is not None:
+        if getattr(self, "model", None) is not None:
             del_pls_model(self.model)
             del self.model
         self.model = None
@@ -402,33 +401,45 @@ class PLS():
 
         Parameters
         ----------
-        x_input : Matrix or List[List]
+        x_input : Matrix, List[List], or numpy array
             Input x matrix for fitting the PLS model.
-        y_input : Matrix or List[List]
+        y_input : Matrix, List[List], or numpy array
             Input y matrix for fitting the PLS model.
         """
         x_input_ = None
         xalloc = False
-        if "Matrix" not in str(type(x_input)):
-            x_input_ = mx.new_matrix(x_input)
+        if isinstance(x_input, mx.Matrix):
+            x_input_ = x_input.mtx
+        elif isinstance(x_input, ctypes.POINTER(mx.MATRIX)):
+            x_input_ = x_input
+        elif "numpy" in str(type(x_input)):
+            x_input_ = mx.matrix_from_numpy(x_input)
             xalloc = True
         else:
-            x_input_ = x_input.mtx
+            x_input_ = mx.new_matrix(x_input)
+            xalloc = True
 
         y_input_ = None
         yalloc = False
-        if "Matrix" not in str(type(y_input)):
-            y_input_ = mx.new_matrix(y_input)
+        if isinstance(y_input, mx.Matrix):
+            y_input_ = y_input.mtx
+        elif isinstance(y_input, ctypes.POINTER(mx.MATRIX)):
+            y_input_ = y_input
+        elif "numpy" in str(type(y_input)):
+            y_input_ = mx.matrix_from_numpy(y_input)
             yalloc = True
         else:
-            y_input_ = y_input.mtx
+            y_input_ = mx.new_matrix(y_input)
+            yalloc = True
 
-        pls_algorithm(x_input_,
-                      y_input_,
-                      self.model,
-                      nlv=self.nlv,
-                      x_scaling=self.xscaling,
-                      y_scaling=self.yscaling)
+        pls_algorithm(
+            x_input_,
+            y_input_,
+            self.model,
+            nlv=self.nlv,
+            x_scaling=self.xscaling,
+            y_scaling=self.yscaling,
+        )
 
         if xalloc is True:
             mx.del_matrix(x_input_)
@@ -584,7 +595,17 @@ class PLS():
         List[List[float]], List[List[float]]
             The predicted y values and T-Scores.
         """
-        x_input_ = mx.new_matrix(x_input)
+        xalloc = False
+        if isinstance(x_input, mx.Matrix):
+            x_input_ = x_input.mtx
+        elif isinstance(x_input, ctypes.POINTER(mx.MATRIX)):
+            x_input_ = x_input
+        elif "numpy" in str(type(x_input)):
+            x_input_ = mx.matrix_from_numpy(x_input)
+            xalloc = True
+        else:
+            x_input_ = mx.new_matrix(x_input)
+            xalloc = True
         p_scores_ = mx.init_matrix()
         p_y_ = mx.init_matrix()
 
@@ -595,34 +616,56 @@ class PLS():
         if nlv_ is None:
             p_y = mx.matrix_to_list(p_y_)
         else:
-            p_y = [[row[nlv_-1]] for row in mx.matrix_to_list(p_y_)]
-        mx.del_matrix(x_input_)
-        del x_input_
+            p_y = [[row[nlv_ - 1]] for row in mx.matrix_to_list(p_y_)]
+        if xalloc:
+            mx.del_matrix(x_input_)
+            del x_input_
         mx.del_matrix(p_scores_)
         del p_scores_
         mx.del_matrix(p_y_)
         del p_y_
         return p_y, p_scores
 
-    def save(self, dbpath):
+    def save(self, filepath):
         """
-        Save PLS model to a sqlite3 file
+        Save PLS model to a file (.lsm binary container or legacy .sqlite3).
 
         Parameters
         ----------
-        dbpath (str): The path to the SQLite database file where the PLS
-            model will be stored.
+        filepath (str): Destination file path. If ending in .sqlite3 or .db,
+            uses legacy SQLite format; otherwise uses the fast zero-dependency .lsm format.
         """
-        write_pls(dbpath, self.model)
+        if filepath.endswith(".sqlite3") or filepath.endswith(".db"):
+            write_pls(filepath, self.model)
+        else:
+            from libscientific.model_io import SavePLSModel
 
-    def load(self, dbpath):
+            st = SavePLSModel(filepath.encode("utf-8"), self.model)
+            if st != 0:
+                raise OSError(f"SavePLSModel failed with error code {st}")
+
+    def load(self, filepath):
         """
-        Load PLS model from a sqlite3 file
+        Load PLS model from a file (.lsm binary container or legacy .sqlite3).
 
         Parameters
         ----------
-        dbpath (str): The path to the SQLite database file where the PLS
-            model will be stored.
+        filepath (str): Source file path. Auto-detects container format.
         """
-        read_pls(dbpath, self.model)
+        is_lscm = False
+        try:
+            with open(filepath, "rb") as f:
+                if f.read(4) == b"LSCM":
+                    is_lscm = True
+        except Exception:
+            pass
+
+        if is_lscm or filepath.endswith(".lsm") or filepath.endswith(".lsb"):
+            from libscientific.model_io import ImportPLSModel
+
+            st = ImportPLSModel(filepath.encode("utf-8"), self.model)
+            if st != 0:
+                raise OSError(f"ImportPLSModel failed with error code {st}")
+        else:
+            read_pls(filepath, self.model)
         self.nlv = self.model.contents.xscores[0].col

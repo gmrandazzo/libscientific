@@ -25,10 +25,10 @@
 
 /**
  * PCA model data structure.
- * 
+ *
  * - **scores** matrix of scores
  * - **loadings** matrix of loadings
- * - **varexp** vector of explained variance by every component 
+ * - **varexp** vector of explained variance by every component
  * - **dmodx** object distance from the model
  * - **colaverage** input matrix column average
  * - **colscaling** input matrix column scaling
@@ -43,12 +43,12 @@ typedef struct{
 } PCAMODEL;
 
 /**
- * Initialize an empty PCAMODEL 
+ * Initialize an empty PCAMODEL
  */
 void NewPCAModel(PCAMODEL **m);
 
 /**
- * Delete a PCAMODEL 
+ * Delete a PCAMODEL
  */
 void DelPCAModel(PCAMODEL **m);
 
@@ -61,7 +61,7 @@ void calcVarExpressed(double ss, dvector *eval, dvector *varexp);
 double calcObjectDistance(matrix *m);
 
 /*
- * Calculate convergence criteria as described in 
+ * Calculate convergence criteria as described in
  * DOI: 10.1002/cem.1180010107 page 51 d = ...
  * THIS METHOD IS USED INSIDE THE PCA/CPCA/PLS ALGORITHM
  */
@@ -71,12 +71,12 @@ double calcConvergence(dvector *t_new, dvector *t_old);
 /**
  * @brief Calculate a principal component analysis using the NIPALS algorithm.
  *
- * @param [in] mx libscientific matrix data input 
+ * @param [in] mx libscientific matrix data input
  * @param [in] scaling scaling type expressed as unsigned int type
  * @param [in] npc number of desired principal components
  * @param [out] PCAMODEL initialized model using NewPCAModel(...). The datastructure will be populated with results
  * @param [in] scisignal libscientific signal. Default value is NULL
- * 
+ *
  * Available scalings:
  *
  * - 0: No scaling. Only mean centering
@@ -104,10 +104,10 @@ void PCA(matrix *mx,
 /**
  * @brief Predict scores given a principal component analysis and a matrix as input.
  *
- * @param [in] mx libscientific matrix data input 
+ * @param [in] mx libscientific matrix data input
  * @param [in] PCAMODEL pca model input
  * @param [in] npc number of desired principal components
- * @param [in] pscores predicted scores 
+ * @param [in] pscores predicted scores
  *
  * @par Returns
  *    Nothing.

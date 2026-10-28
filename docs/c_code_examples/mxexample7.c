@@ -10,9 +10,9 @@ int main(void)
     matrix *S; // Definition of the rectangular diagnonal matrix with non-negative real numbers on diagonal
     matrix *Vt; // Definition of conjugate transpose of a complex unitary matrix
 
-    NewMatrix(&m, 10, 10); // Allocate the matrix to invert 
+    NewMatrix(&m, 10, 10); // Allocate the matrix to invert
     MatrixInitRandomFloat(m, -3., 3.); // Random fill the matrix with values within a range -3 < x < 3
-    PrintMatrix(m); // Print to video the matrix 
+    PrintMatrix(m); // Print to video the matrix
 
     // Initialize the variables
     initMatrix(&U);
@@ -31,5 +31,3 @@ int main(void)
     DelMatrix(&Vt);
     DelMatrix(&m);
 }
-
-
