@@ -9,9 +9,9 @@ int main(void)
     dvector *eval; // Definition the variable to store the eigenvalues
     matrix *evect; // Definition of the variable were to store the eigenvectors
 
-    NewMatrix(&m, 10, 10); // Allocate the matrix to invert 
+    NewMatrix(&m, 10, 10); // Allocate the matrix to invert
     MatrixInitRandomFloat(m, -3., 3.); // Random fill the matrix with values within a range -3 < x < 3
-    PrintMatrix(m); // Print to video the matrix 
+    PrintMatrix(m); // Print to video the matrix
 
     // Initialize the variables
     initDVector(&eval);
@@ -27,5 +27,3 @@ int main(void)
     DelMatrix(&evect);
     DelMatrix(&m);
 }
-
-

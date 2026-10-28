@@ -26,7 +26,12 @@
 #include "ica.h"
 #include "upca.h"
 #include "upls.h"
+#include "model_io.h"
 
+/* Legacy SQLite Model Serialization Functions
+ * Note: These SQLite-based routines are retained for 1-year backward compatibility.
+ * Prefer the zero-dependency LSCM container APIs: SaveModel / ImportModel (.lsm / .lsb).
+ */
 void WritePCA(char *dbpath, PCAMODEL *pca);
 void ReadPCA(char *dbpath, PCAMODEL *pca);
 
@@ -53,7 +58,7 @@ void ReadUPLS(char *dbpath, UPLSMODEL *upls);
 
 /**
  * Save a matrix to a CSV file
- * 
+ *
  * @param [in] path output path of the CSV file
  * @param [in] m matrix to save
  */

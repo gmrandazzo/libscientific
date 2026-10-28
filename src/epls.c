@@ -97,8 +97,8 @@ void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautos
   if(eparm.algorithm == Bagging){
     matrix *x_train, *y_train, *x_test, *y_test, *y_test_predicted;
     uivector *testids;
-    double testsize = 1 - eparm.trainsize;
-    unsigned int srand_init = mx->row *testsize + xautoscaling + yautoscaling + mx->col + my->col;
+    double testsize = 1.0 - eparm.trainsize;
+    unsigned int srand_init = (unsigned int)((double)mx->row * testsize + (double)(xautoscaling + yautoscaling + mx->col + my->col));
     for(it = 0; it < eparm.n_models; it++){
       initMatrix(&x_train);
       initMatrix(&y_train);
@@ -117,7 +117,7 @@ void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautos
                        &srand_init);
       srand_init++;
       NewPLSModel(&m->models[it]);
-      PLS(x_train, y_train, nlv, xautoscaling, yautoscaling, m->models[it], s);
+      PLS(x_train, y_train, nlv, (int)xautoscaling, (int)yautoscaling, m->models[it], s);
       /*
        * MODEL SDEP will be used to apply a future prediction weight for the model
        */
@@ -138,8 +138,8 @@ void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautos
      */
      matrix *x_train, *x_subspace, *y_train, *x_test, *y_test, *x_test_subspace, *y_test_predicted;
      uivector *testids;
-     double testsize = 1;
-     unsigned int srand_init = mx->row *testsize + xautoscaling + yautoscaling + mx->col + my->col;
+     double testsize = 1.0;
+     unsigned int srand_init = (unsigned int)((double)mx->row * testsize + (double)(xautoscaling + yautoscaling + mx->col + my->col));
 
      /*Create a vector with all the columns id*/
      uivector *featureids;
@@ -165,8 +165,8 @@ void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautos
        i = featureids->size;
        while(i > 1){
          i = i - 1;
-         j = randInt(0, i);
-         double tmp = featureids->data[j];
+         j = (size_t)randInt(0, (int)i);
+         size_t tmp = featureids->data[j];
          featureids->data[j] = featureids->data[i];
          featureids->data[i] = tmp;
        }
@@ -180,7 +180,7 @@ void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautos
        if(eparm.algorithm == FixedRandomSubspaceMethod){
          SubspaceMatrix(mx, m->model_feature_ids[it], &x_subspace);
          NewPLSModel(&m->models[it]);
-         PLS(x_subspace, my, nlv, xautoscaling, yautoscaling, m->models[it], s);
+         PLS(x_subspace, my, nlv, (int)xautoscaling, (int)yautoscaling, m->models[it], s);
        }
        else{
          initMatrix(&x_train);
@@ -202,7 +202,7 @@ void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautos
          srand_init++;
          SubspaceMatrix(x_train, m->model_feature_ids[it], &x_subspace);
          NewPLSModel(&m->models[it]);
-         PLS(x_subspace, y_train, nlv, xautoscaling, yautoscaling, m->models[it], s);
+         PLS(x_subspace, y_train, nlv, (int)xautoscaling, (int)yautoscaling, m->models[it], s);
          /* MODEL SDEP will be used to apply a future prediction weight for the model */
          SubspaceMatrix(x_test, m->model_feature_ids[it], &x_test_subspace);
          PLSYPredictorAllLV(x_test_subspace, m->models[it], NULL, y_test_predicted);
@@ -221,12 +221,12 @@ void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautos
   }
 }
 
-void EPLSGetSXScore(EPLSMODEL *m, CombinationRule crule, matrix *sxscores){}
-void EPLSGetSXLoadings(EPLSMODEL *m, CombinationRule crule, matrix *sxloadings){}
-void EPLSGetSYScore(EPLSMODEL *m, CombinationRule crule, matrix *syscores){}
-void EPLSGetSYLoadings(EPLSMODEL *m, CombinationRule crule, matrix *syloadings){}
-void EPLSGetSWeights(EPLSMODEL *m, CombinationRule crule, matrix *sweights){}
-void EPLSGetSBetaCoefficients(EPLSMODEL *m, CombinationRule crule, matrix *sbetas){}
+void EPLSGetSXScore(EPLSMODEL *m, CombinationRule crule, matrix *sxscores){ (void)m; (void)crule; (void)sxscores; }
+void EPLSGetSXLoadings(EPLSMODEL *m, CombinationRule crule, matrix *sxloadings){ (void)m; (void)crule; (void)sxloadings; }
+void EPLSGetSYScore(EPLSMODEL *m, CombinationRule crule, matrix *syscores){ (void)m; (void)crule; (void)syscores; }
+void EPLSGetSYLoadings(EPLSMODEL *m, CombinationRule crule, matrix *syloadings){ (void)m; (void)crule; (void)syloadings; }
+void EPLSGetSWeights(EPLSMODEL *m, CombinationRule crule, matrix *sweights){ (void)m; (void)crule; (void)sweights; }
+void EPLSGetSBetaCoefficients(EPLSMODEL *m, CombinationRule crule, matrix *sbetas){ (void)m; (void)crule; (void)sbetas; }
 
 void EPLSYPRedictorAllLV(matrix *mx, EPLSMODEL *m, CombinationRule crule, tensor **tscores, matrix **py)
 {

@@ -39,11 +39,11 @@ void gen_centroids(matrix *x, dvector *c)
    */
   size_t i, j;
   for(j = 0; j < x->col-1; j++){
-    c->data[j] = 0.f;
+    c->data[j] = 0.0;
     for(i = 0; i < x->row-1; i++){
       c->data[j] += x->data[i][j];
     }
-    c->data[j] /= (double)(x->row-1.0);
+    c->data[j] /= (double)(x->row - 1);
   }
 }
 

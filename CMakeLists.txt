@@ -10,8 +10,8 @@ endif()
 
 set(AUTHOR "Giuseppe Marco Randazzo")
 set(VERSION_MAJOR 1)
-set(VERSION_MINOR 7)
-set(VERSION_PATCH 3)
+set(VERSION_MINOR 8)
+set(VERSION_PATCH 0)
 configure_file(src/scientificconfig.h.in scientificconfig.h)
 
 if(NOT CMAKE_BUILD_TYPE)
@@ -71,7 +71,7 @@ else(NOT WIN32)
   endif()
 endif(WIN32)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Werror")
 
 message(STATUS "Build Type: ${CMAKE_BUILD_TYPE}")
 

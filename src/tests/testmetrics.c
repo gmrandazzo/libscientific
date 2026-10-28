@@ -107,7 +107,7 @@ void test12()
         val = dist_condensed->data[indx];
       }
 
-      if(FLOAT_EQ(val, dist_st->data[i][j], EPSILON) && 
+      if(FLOAT_EQ(val, dist_st->data[i][j], EPSILON) &&
         FLOAT_EQ(val, dist_mt->data[i][j], EPSILON)){
         continue;
       }
@@ -357,10 +357,10 @@ void test6()
 
   maxrow = 600;
   maxcol = 10;
-  srand_(maxrow);
+  srand_((uint32_t)maxrow);
   NewMatrix(&m, maxrow, maxcol);
 
-  srand(maxrow+maxcol);
+  srand((unsigned int)(maxrow+maxcol));
   for(i = 0; i < maxrow; i++){
     for(j = 0; j < maxcol; j++){
       setMatrixValue(m, i, j, rand() % 100);
@@ -383,10 +383,10 @@ void test5()
 
   maxrow = 600;
   maxcol = 10;
-  srand_(maxrow);
+  srand_((uint32_t)maxrow);
   NewMatrix(&m, maxrow, maxcol);
 
-  srand(maxrow+maxcol);
+  srand((unsigned int)(maxrow+maxcol));
   for(i = 0; i < maxrow; i++){
     for(j = 0; j < maxcol; j++){
       setMatrixValue(m, i, j, rand() % 100);
@@ -552,10 +552,10 @@ void test2()
 
   maxrow = 100;
   maxcol = 50;
-  srand_(maxrow);
+  srand_((uint32_t)maxrow);
   NewMatrix(&m, maxrow, maxcol);
 
-  srand(maxrow+maxcol);
+  srand((unsigned int)(maxrow+maxcol));
   for(i = 0; i < maxrow; i++){
     for(j = 0; j < maxcol; j++){
       setMatrixValue(m, i, j, rand() % 100);

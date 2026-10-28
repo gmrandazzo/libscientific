@@ -202,7 +202,7 @@ void UPLS(tensor* X_,
           UPLSMODEL* m,
           scisignal *s)
 {
-
+  (void)s;
   if(CheckTensors(X_, Y_) == 0 && npc >= 1){
     size_t pc, i, j, k, order, column;
     double a, ssx;
@@ -228,7 +228,7 @@ void UPLS(tensor* X_,
       NewTensorMatrix(X, k, X_->m[k]->row, X_->m[k]->col);
     }
 
-    TensorPreprocess(X_, xautoscaling, m->xcolaverage, m->xcolscaling, X);
+    TensorPreprocess(X_, (int)xautoscaling, m->xcolaverage, m->xcolscaling, X);
 
     if(X->m[0]->col < 1){
       fprintf(stderr, "Unable to run UPLS Calculation.\n The number of independent variables (X) is 0\n");
@@ -241,7 +241,7 @@ void UPLS(tensor* X_,
 
     ClearTensor(m->recalculated_y);
 
-    ssx = 0.f;
+    ssx = 0.0;
     for(k = 0; k < X->order; k++)
       for(i = 0; i < X->m[k]->row; i++)
         for(j = 0; j < X->m[k]->col; j++)
@@ -264,7 +264,7 @@ void UPLS(tensor* X_,
       NewTensorMatrix(Y, k, Y_->m[k]->row, Y_->m[k]->col);
     }
 
-    TensorPreprocess(Y_, yautoscaling, m->ycolaverage, m->ycolscaling, Y);
+    TensorPreprocess(Y_, (int)yautoscaling, m->ycolaverage, m->ycolscaling, Y);
     /*END Disable */
 
     #ifdef DEBUG
@@ -546,7 +546,7 @@ void UPLS(tensor* X_,
       for(r = 0; r < P->row; r++)
         for(c = 0; c < P->col; c++)
           p_sq += square(P->data[r][c]);
-      
+
       setDVectorValue(xeval, pc, t_sq * p_sq);
 
       /*Reset all*/
@@ -589,7 +589,7 @@ void UPLS(tensor* X_,
       AddTensorMatrix(m->recalc_residuals, m->recalculated_y->m[k]->row, m->recalculated_y->m[k]->col);
       for(i = 0; i < m->recalculated_y->m[k]->row; i++){
         for(j = 0; j < m->recalculated_y->m[k]->col; j++){
-          setTensorValue(m->recalc_residuals, k, i, j, getTensorValue(m->recalculated_y, k, i, j) - getTensorValue(Y_, k, i, (size_t)floor(j/npc)));
+          setTensorValue(m->recalc_residuals, k, i, j, getTensorValue(m->recalculated_y, k, i, j) - getTensorValue(Y_, k, i, j / npc));
         }
       }
     }
@@ -729,7 +729,7 @@ void UPLSYPredictor(matrix *tscores, UPLSMODEL *m, size_t npc, tensor *py)
 
   if (m->b->size < npc)
       npc = m->b->size;
-  
+
   if (m->yloadings->order < npc)
       npc = m->yloadings->order;
 
@@ -810,7 +810,7 @@ void UPLSRSquared(tensor *X_,
           n += square(recalcy->m[k]->data[i][j] - Y_->m[k]->data[i][j]);
           d += square(Y_->m[k]->data[i][j] - m->ycolaverage->d[k]->data[j]);
         }
-        setMatrixValue(sdec_, j, k, sqrt(n/Y_->m[k]->row));
+        setMatrixValue(sdec_, j, k, sqrt(n / (double)Y_->m[k]->row));
         setMatrixValue(r2y_, j, k, 1 - (n/d));
       }
     }
@@ -950,7 +950,7 @@ void UPLSYScrambling(tensor *X_, tensor *Y_,
   tensor *randomY, *sorted_y_id;
   tensor *tmpq2, *tmpsdep;
 
-  srand_(X_->order*X_->m[0]->row*X_->m[0]->col*block);
+  srand_((uint32_t)(X_->order*X_->m[0]->row*X_->m[0]->col*block));
   NewTensor(&randomY, Y_->order);
   NewTensor(&sorted_y_id, Y_->order);
   for(i = 0; i < Y_->order; i++){
@@ -963,7 +963,7 @@ void UPLSYScrambling(tensor *X_, tensor *Y_,
     for(j = 0; j < Y_->m[order]->col; j++){
       for(i = 0; i < Y_->m[order]->row; i++){
         sorty->data[i][0] = Y_->m[order]->data[i][j];
-        sorty->data[i][1] = i;
+        sorty->data[i][1] = (double)i;
       }
       MatrixSort(sorty, 0);
 
@@ -975,8 +975,8 @@ void UPLSYScrambling(tensor *X_, tensor *Y_,
   DelMatrix(&sorty);
 
   /*calcualte the block size for the rotate matrix*/
-  blocksize = (size_t)ceil(Y_->m[0]->row/(double)block);
-  blocksize += (size_t)ceil((float)((blocksize*block) - Y_->m[0]->row)/  block);
+  blocksize = (size_t)ceil((double)Y_->m[0]->row / (double)block);
+  blocksize += (size_t)ceil((double)((blocksize*block) - Y_->m[0]->row) / (double)block);
 
   NewMatrix(&gid, block, blocksize);
   MatrixSet(gid, -2);
@@ -1065,10 +1065,10 @@ void UPLSYScrambling(tensor *X_, tensor *Y_,
             n = 0;
             for(i = 0; i < gid->row; i++){
               for(j = 0; j < gid->col; j++){
-                id = gid->data[i][j];
+                id = (int)gid->data[i][j];
                 if(id > -1){
                   for(k = 0; k < Y_->m[q]->col; k++){
-                    randomY->m[q]->data[n][k] = Y_->m[q]->data[id][k];
+                    randomY->m[q]->data[n][k] = Y_->m[q]->data[(size_t)id][k];
                   }
                   n++;
                 }
@@ -1170,7 +1170,7 @@ void UPLSRandomGroupsCV(tensor *X_, tensor *Y_, size_t xautoscaling, size_t yaut
     initTensor(&sumyss_err);
     initTensor(&sumyss_tot);
 
-    NewMatrix(&gid, group, (size_t)ceil(X_->m[0]->row/(double)group));
+    NewMatrix(&gid, group, (size_t)ceil((double)X_->m[0]->row / (double)group));
 
     if(npc > X_->m[0]->col){
       npc = X_->m[0]->col;
@@ -1193,7 +1193,7 @@ void UPLSRandomGroupsCV(tensor *X_, tensor *Y_, size_t xautoscaling, size_t yaut
     }
 
     /*srand(time(NULL));*/
-    srand_(group*X_->m[0]->row*iterations);
+    srand_((uint32_t)(group*X_->m[0]->row*iterations));
     iterations_ = 0;
     while(iterations_ <  iterations){
       if(s != NULL && (*s) == SIGSCIENTIFICSTOP){
@@ -1209,10 +1209,10 @@ void UPLSRandomGroupsCV(tensor *X_, tensor *Y_, size_t xautoscaling, size_t yaut
         for(i = 0; i <  gid->row; i++){
           for(j = 0; j <  gid->col; j++){
             do{
-              n = randInt(0, X_->m[0]->row);
-            } while(ValInMatrix(gid, n) == 1 && k < (X_->m[0]->row));
+              n = (size_t)randInt(0, (int)X_->m[0]->row);
+            } while(ValInMatrix(gid, (double)n) == 1 && k < (X_->m[0]->row));
             if(k < X_->m[0]->row){
-              setMatrixValue(gid, i, j, n);
+              setMatrixValue(gid, i, j, (double)n);
               k++;
             }
             else
@@ -1286,13 +1286,13 @@ void UPLSRandomGroupsCV(tensor *X_, tensor *Y_, size_t xautoscaling, size_t yaut
                 if(a != -1){
                   for(k = 0; k < subX->order; k++){
                     for(n = 0; n < X_->m[k]->col; n++){
-                      setTensorValue(subX, k, l, n, getTensorValue(X_, k, a, n));
+                      setTensorValue(subX, k, l, n, getTensorValue(X_, k, (size_t)a, n));
                     }
                   }
 
                   for(k = 0; k < subY->order; k++){
                     for(n = 0; n < Y_->m[k]->col; n++){
-                      setTensorValue(subY, k, l, n, getTensorValue(Y_, k, a, n));
+                      setTensorValue(subY, k, l, n, getTensorValue(Y_, k, (size_t)a, n));
                     }
                   }
                   l++;
@@ -1312,13 +1312,13 @@ void UPLSRandomGroupsCV(tensor *X_, tensor *Y_, size_t xautoscaling, size_t yaut
             if(a != -1){
               for(k = 0; k < predictX->order; k++){
                 for(n = 0; n < X_->m[k]->col; n++){
-                  setTensorValue(predictX, k, l, n, getTensorValue(X_, k, a, n));
+                  setTensorValue(predictX, k, l, n, getTensorValue(X_, k, (size_t)a, n));
                 }
               }
               /* copy the real value Y_ to realY */
               for(k = 0; k < realY->order; k++){
                 for(n = 0; n < Y_->m[k]->col; n++){
-                  setTensorValue(realY, k, l, n, getTensorValue(Y_, k, a, n));
+                  setTensorValue(realY, k, l, n, getTensorValue(Y_, k, (size_t)a, n));
                 }
               }
               l++;
@@ -1371,7 +1371,7 @@ void UPLSRandomGroupsCV(tensor *X_, tensor *Y_, size_t xautoscaling, size_t yaut
             for(k = 0; k < predictyss_err->order; k++){
               for(j = 0; j < predictyss_err->m[k]->col; j++){
                 for(i = 0; i < predictyss_err->m[k]->row; i++){
-                  setTensorValue((*sdep), k, i, j, getTensorValue((*sdep), k, i, j)/l);
+                  setTensorValue((*sdep), k, i, j, getTensorValue((*sdep), k, i, j) / (double)l);
                 }
               }
             }
@@ -1380,10 +1380,10 @@ void UPLSRandomGroupsCV(tensor *X_, tensor *Y_, size_t xautoscaling, size_t yaut
               for(j = 0, l = 0; j < gid->col; j++){
                 int a = (int)getMatrixValue(gid, g, j);
                 if(a != -1){
-                  setUIVectorValue(predictcount, a, getUIVectorValue(predictcount, a)+1);
+                  setUIVectorValue(predictcount, (size_t)a, getUIVectorValue(predictcount, (size_t)a)+1);
                   for(k = 0; k < predicty->order; k++){
                     for(n = 0; n < predicty->m[k]->col; n++){
-                      setTensorValue((*predicted_y), k, a, n, (getTensorValue((*predicted_y), k, a, n) + getTensorValue(predicty, k, l, n)));
+                      setTensorValue((*predicted_y), k, (size_t)a, n, (getTensorValue((*predicted_y), k, (size_t)a, n) + getTensorValue(predicty, k, l, n)));
                     }
                   }
                   l++;
@@ -1413,7 +1413,7 @@ void UPLSRandomGroupsCV(tensor *X_, tensor *Y_, size_t xautoscaling, size_t yaut
             for(k = 0; k < predictyss_err->order; k++){
               for(j = 0; j < predictyss_err->m[k]->col; j++){
                 for(i = 0; i < predictyss_err->m[k]->row; i++){
-                  setTensorValue((*sdep), k, i, j, getTensorValue((*sdep), k, i, j) + (getTensorValue(predictyss_err, k, i, j)/l));
+                  setTensorValue((*sdep), k, i, j, getTensorValue((*sdep), k, i, j) + (getTensorValue(predictyss_err, k, i, j) / (double)l));
                 }
               }
             }
@@ -1422,10 +1422,10 @@ void UPLSRandomGroupsCV(tensor *X_, tensor *Y_, size_t xautoscaling, size_t yaut
               for(j = 0, l = 0; j < gid->col; j++){
                 int a = (int)getMatrixValue(gid, g, j);
                 if(a != -1){
-                  setUIVectorValue(predictcount, a, getUIVectorValue(predictcount, a)+1);
+                  setUIVectorValue(predictcount, (size_t)a, getUIVectorValue(predictcount, (size_t)a)+1);
                   for(k = 0; k < predicty->order; k++){
                     for(n = 0; n < predicty->m[k]->col; n++){
-                      setTensorValue((*predicted_y), k, a, n, (getTensorValue((*predicted_y), k, a, n) + getTensorValue(predicty,k, l, n)));
+                      setTensorValue((*predicted_y), k, (size_t)a, n, (getTensorValue((*predicted_y), k, (size_t)a, n) + getTensorValue(predicty,k, l, n)));
                     }
                   }
                   l++;
@@ -1477,7 +1477,7 @@ void UPLSRandomGroupsCV(tensor *X_, tensor *Y_, size_t xautoscaling, size_t yaut
       for(j = 0; j < (*sdep)->m[k]->col; j++){
         for(i = 0; i < (*sdep)->m[k]->row; i++){
           /*setTensorValue((*sdep), k, i, j, sqrt(getTensorValue((*sdep), k, i, j)/(group*iterations)));*/
-          setTensorValue((*sdep), k, i, j, sqrt(getTensorValue((*sdep), k, i, j)/(iterations)));
+          setTensorValue((*sdep), k, i, j, sqrt(getTensorValue((*sdep), k, i, j) / (double)iterations));
         }
       }
     }
@@ -1488,8 +1488,8 @@ void UPLSRandomGroupsCV(tensor *X_, tensor *Y_, size_t xautoscaling, size_t yaut
         for(k = 0; k < (*predicted_y)->order; k++){
           for(j = 0; j < (*predicted_y)->m[k]->col; j++){
             for(i = 0; i < (*predicted_y)->m[k]->row; i++){
-              setTensorValue((*predicted_y), k, i, j, getTensorValue((*predicted_y), k, i, j)/getUIVectorValue(predictcount, i));
-              setTensorValue((*pred_residuals), k, i, j, getTensorValue((*predicted_y), k, i, j) - getTensorValue(Y_, k, i, (size_t)floor(j/npc)));
+              setTensorValue((*predicted_y), k, i, j, getTensorValue((*predicted_y), k, i, j) / (double)getUIVectorValue(predictcount, i));
+              setTensorValue((*pred_residuals), k, i, j, getTensorValue((*predicted_y), k, i, j) - getTensorValue(Y_, k, i, j / npc));
             }
           }
         }
@@ -1498,7 +1498,7 @@ void UPLSRandomGroupsCV(tensor *X_, tensor *Y_, size_t xautoscaling, size_t yaut
         for(k = 0; k < (*predicted_y)->order; k++){
           for(j = 0; j < (*predicted_y)->m[k]->col; j++){
             for(i = 0; i < (*predicted_y)->m[k]->row; i++){
-              setTensorValue((*predicted_y), k, i, j, getTensorValue((*predicted_y), k, i, j)/getUIVectorValue(predictcount, i));
+              setTensorValue((*predicted_y), k, i, j, getTensorValue((*predicted_y), k, i, j) / (double)getUIVectorValue(predictcount, i));
             }
           }
         }
@@ -1652,7 +1652,7 @@ void UPLSLOOCV(tensor* X_, tensor* Y_, size_t xautoscaling, size_t yautoscaling,
           for(k = 0; k < predictyss_err->order; k++){
             for(j = 0; j < predictyss_err->m[k]->col; j++){
               for(i = 0; i < predictyss_err->m[k]->row; i++){
-                setTensorValue((*sdep), k, i, j, getTensorValue((*sdep), k, i, j)/l);
+                setTensorValue((*sdep), k, i, j, getTensorValue((*sdep), k, i, j) / (double)l);
               }
             }
           }
@@ -1663,7 +1663,7 @@ void UPLSLOOCV(tensor* X_, tensor* Y_, size_t xautoscaling, size_t yautoscaling,
                 /*for(i = 0; i < predicty->m[k]->row; i++){*/
                 for(j = 0; j < predicty->m[k]->col; j++){
                   setTensorValue((*predicted_y), k, model, j, getTensorValue(predicty, k, 0, j));
-                  setTensorValue((*pred_residuals), k, model, j, getTensorValue(predicty, k, 0, j) - getTensorValue(Y_, k, model, (size_t)floor(j/npc)));
+                  setTensorValue((*pred_residuals), k, model, j, getTensorValue(predicty, k, 0, j) - getTensorValue(Y_, k, model, j / npc));
                 }
                 /*}*/
               }
@@ -1698,7 +1698,7 @@ void UPLSLOOCV(tensor* X_, tensor* Y_, size_t xautoscaling, size_t yautoscaling,
           for(k = 0; k < predictyss_err->order; k++){
             for(j = 0; j < predictyss_err->m[k]->col; j++){
               for(i = 0; i < predictyss_err->m[k]->row; i++){
-                setTensorValue((*sdep), k, i, j, getTensorValue((*sdep), k, i, j) + (getTensorValue(predictyss_err, k, i, j)/l));
+                setTensorValue((*sdep), k, i, j, getTensorValue((*sdep), k, i, j) + (getTensorValue(predictyss_err, k, i, j) / (double)l));
               }
             }
           }
@@ -1709,7 +1709,7 @@ void UPLSLOOCV(tensor* X_, tensor* Y_, size_t xautoscaling, size_t yautoscaling,
                 /*for(i = 0; i < predicty->m[k]->row; i++){*/
                 for(j = 0; j < predicty->m[k]->col; j++){
                   setTensorValue((*predicted_y), k, model, j, getTensorValue(predicty, k, 0, j));
-                  setTensorValue((*pred_residuals), k, model, j, getTensorValue(predicty, k, 0, j) - getTensorValue(Y_, k, model, (size_t)floor(j/npc)));
+                  setTensorValue((*pred_residuals), k, model, j, getTensorValue(predicty, k, 0, j) - getTensorValue(Y_, k, model, j / npc));
                 }
                 /*}*/
               }
@@ -1758,7 +1758,7 @@ void UPLSLOOCV(tensor* X_, tensor* Y_, size_t xautoscaling, size_t yautoscaling,
     for(k = 0; k < (*sdep)->order; k++){
       for(j = 0; j < (*sdep)->m[k]->col; j++){
         for(i = 0; i < (*sdep)->m[k]->row; i++){
-          setTensorValue((*sdep), k, i, j, sqrt(getTensorValue((*sdep), k, i, j)/X_->m[0]->row));
+          setTensorValue((*sdep), k, i, j, sqrt(getTensorValue((*sdep), k, i, j) / (double)X_->m[0]->row));
         }
       }
     }
@@ -1801,7 +1801,7 @@ size_t UPLSGetPCModelCutOff(tensor *rq2)
 
   for(i = 0; i < rq2mean->row; i++){
     for(j = 0; j < rq2mean->col; j++){
-      setMatrixValue(rq2mean, i, j, getMatrixValue(rq2mean, i, j)/rq2->m[0]->col);
+      setMatrixValue(rq2mean, i, j, getMatrixValue(rq2mean, i, j) / (double)rq2->m[0]->col);
     }
   }
 
@@ -1829,7 +1829,7 @@ size_t UPLSGetPCModelCutOff(tensor *rq2)
         continue;
       }
     }
-    
+
   }
 
   DelMatrix(&rq2mean);
@@ -1978,10 +1978,10 @@ void UPLSCostPopulation(tensor *ax, tensor *ay,
           cc++;
         }
       }
-      r2_ /=cc;
+      r2_ /= (double)cc;
     }
     else{
-      r2_ = 0.f;
+      r2_ = 0.0;
     }
 
     (*r2) = (*q2) = r2_;
@@ -2010,7 +2010,7 @@ void UPLSCostPopulation(tensor *ax, tensor *ay,
     if(q2y->order > 0){
       cutoff = UPLSGetPCModelCutOff(q2y);
 
-      q2_ = 0.f;
+      q2_ = 0.0;
       cc = 0;
       for(i = 0; i < q2y->m[cutoff]->row; i++){
         for(j = 0; j < q2y->m[cutoff]->col; j++){
@@ -2018,9 +2018,9 @@ void UPLSCostPopulation(tensor *ax, tensor *ay,
           cc++;
         }
       }
-      q2_ /=cc;
+      q2_ /= (double)cc;
 
-      r2_ = 0.f;
+      r2_ = 0.0;
       cc = 0;
       for(i = 0; i < m->r2y_model->m[cutoff]->row; i++){
         for(j = 0; j < m->r2y_model->m[cutoff]->col; j++){
@@ -2028,10 +2028,10 @@ void UPLSCostPopulation(tensor *ax, tensor *ay,
           cc++;
         }
       }
-      r2_ /=cc;
+      r2_ /= (double)cc;
     }
     else{
-      r2_ = q2_ = 0.f;
+      r2_ = q2_ = 0.0;
     }
 
     (*q2) = q2_;
@@ -2058,7 +2058,7 @@ void UPLSCostPopulation(tensor *ax, tensor *ay,
     if(q2y->order > 0){
       cutoff = UPLSGetPCModelCutOff(q2y);
 
-      q2_ = 0.f;
+      q2_ = 0.0;
       cc = 0;
       for(i = 0; i < q2y->m[cutoff]->row; i++){
         for(j = 0; j < q2y->m[cutoff]->col; j++){
@@ -2066,9 +2066,9 @@ void UPLSCostPopulation(tensor *ax, tensor *ay,
           cc++;
         }
       }
-      q2_ /=cc;
+      q2_ /= (double)cc;
 
-      r2_ = 0.f;
+      r2_ = 0.0;
       cc = 0;
       for(i = 0; i < m->r2y_model->m[cutoff]->row; i++){
         for(j = 0; j < m->r2y_model->m[cutoff]->col; j++){
@@ -2076,10 +2076,10 @@ void UPLSCostPopulation(tensor *ax, tensor *ay,
           cc++;
         }
       }
-      r2_ /=cc;
+      r2_ /= (double)cc;
     }
     else{
-      r2_ = q2_ = 0.f;
+      r2_ = q2_ = 0.0;
     }
 
     (*q2) = q2_;

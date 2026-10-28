@@ -11,11 +11,11 @@ int main(void)
     NewMatrix(&m, 10, 7); // Create of a matrix with 10 rows and 7 columns
     TensorAppendMatrix(t, m); // Append this matrix to the tensor t
     DelMatrix(&m); // Delete the matrix
-    
+
     NewMatrix(&m, 10, 10); // Create of a second matrix with 10 rows and 10 columns
     TensorAppendMatrix(t, m); // Append this new matrix to the tensor t
     DelMatrix(&m);
-    
+
     for(k = 0; k < t->order; k++){
         for(i = 0; i < t->m[k]->row; i++){
             for(j = 0; j < t->m[k]->col; j++){

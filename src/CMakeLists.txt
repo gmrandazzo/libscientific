@@ -24,6 +24,7 @@ set(Scientific_C_SRCS memwrapper.c
                    mlr.c
                    datasets.c
                    modelvalidation.c
+                   model_io.c
                    io.c)
 
 set(Scientific_C_H
@@ -52,6 +53,7 @@ set(Scientific_C_H
                 mlr.h
                 datasets.h
                 modelvalidation.h
+                model_io.h
                 io.h)
 
 if(WIN32)
@@ -77,7 +79,7 @@ else()
 endif()
 
 if(PORTABLE_PYTHON_PACKAGE)
-  # Copy the compiled library with the dependencies 
+  # Copy the compiled library with the dependencies
   # into the python_binding library
   function(copy_library TARGET_NAME DESTINATION_DIR LIBRARY_SRC)
         get_filename_component(libname ${LIBRARY_SRC} NAME)
@@ -118,14 +120,14 @@ if(PORTABLE_PYTHON_PACKAGE)
       /usr/lib
       /usr/local/lib
       /usr/lib64
-      /usr/local/lib64 
+      /usr/local/lib64
       /usr/lib/x86_64-linux-gnu
       /usr/lib/gcc/x86_64-linux-gnu
       /usr/lib/gcc/x86_64-redhat-linux
     )
     copy_library(libscientific ${dst_dir} ${LAPACK_LIBRARIES})
     copy_library(libscientific ${dst_dir} ${BLAS_LIBRARIES})
-    find_file(GFORTRAN_SO NAMES libgfortran.so.3 libgfortran.so.4 libgfortran.so.5 PATHS ${lib_paths} NO_DEFAULT_PATH REQUIRED)    
+    find_file(GFORTRAN_SO NAMES libgfortran.so.3 libgfortran.so.4 libgfortran.so.5 PATHS ${lib_paths} NO_DEFAULT_PATH REQUIRED)
     copy_library(libscientific ${dst_dir} ${GFORTRAN_SO})
     find_file(QUADMATH_SO NAMES libquadmath.so.0.0.0 PATHS ${lib_paths} NO_DEFAULT_PATH)
     if(QUADMATH_SO)

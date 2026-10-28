@@ -30,7 +30,7 @@
  */
 void test1()
 {
-  int i, j;
+  size_t i, j;
   dvector *v;
   dvectorlist *lst;
 
@@ -38,7 +38,7 @@ void test1()
   NewDVector(&v, 100);
 
   for(i = 0; i < 100; i++){
-    v->data[i] = i;
+    v->data[i] = (double)i;
   }
 
   printf("Appending dvector to dvectorlist\n");

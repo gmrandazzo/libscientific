@@ -102,7 +102,7 @@ modify its content and convert it again to a list of lists.
 .. literalinclude:: python_code_examples/tnsexample1.py
    :language: python
    :linenos:
-   
+
 Multivariate analysis algorithms
 ================================
 
@@ -147,7 +147,7 @@ Here is an example that shows how to compute a consenus principal component anal
    :linenos:
 
 
-   
+
 Partial Least Squares (PLS)
 ---------------------------
 
@@ -158,5 +158,3 @@ Here is a simple example that shows how to calculate a PLS model.
 .. literalinclude:: python_code_examples/plsexample1.py
    :language: python
    :linenos:
-
-

@@ -17,15 +17,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import ctypes
+
 from libscientific.loadlibrary import load_libscientific_library
 
 lsci = load_libscientific_library()
 
-lsci.GetScientificVersion.argtypes = None
+lsci.GetScientificVersion.argtypes = []
 lsci.GetScientificVersion.restype = ctypes.c_char_p
 
 
-class Scientific():
+class Scientific:
     """
     Libscientific Information
 
@@ -47,11 +48,12 @@ class Scientific():
     >>> print(ver)
     1.0.0
     """
+
     def __init__(self):
         """
         Initialize the Scientific class and retrieve the libscientific version.
         """
-        self.__version__ = str(lsci.GetScientificVersion().decode('UTF-8'))
+        self.__version__ = str(lsci.GetScientificVersion().decode("UTF-8"))
 
     def print_version(self):
         """
@@ -69,6 +71,6 @@ class Scientific():
         return self.__version__
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     libscientific = Scientific()
     print(libscientific.__version__)

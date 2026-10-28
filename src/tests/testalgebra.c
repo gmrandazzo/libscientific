@@ -281,7 +281,7 @@ void TestPolyFit()
 
 void testOLS1()
 {
-  long int i;
+  size_t i;
   matrix *x;
   dvector *y; /* this vector represent the dependent value associated for each row of the x matrix */
   dvector *b; /* this vector represent the polynomial coefficients. */
@@ -317,7 +317,7 @@ void testOLS1()
 
 void testLESolv4()
 {
-  long int i;
+  size_t i;
   matrix *equation;
   dvector *c; /*coefficients results*/
   puts(">>>>>>>> Test4");
@@ -349,7 +349,7 @@ void testLESolv4()
 
 void testLESolv3()
 {
-  long int i;
+  size_t i;
   matrix *equation;
   dvector *c; /*coefficients results*/
   puts(">>>>>>>> Test3");
@@ -382,7 +382,7 @@ void testLESolv3()
 
 void testLESolv2()
 {
-  long int i;
+  size_t i;
   matrix *equation;
   dvector *c; /*coefficients results*/
   puts(">>>>>>>> Test2");
@@ -413,7 +413,7 @@ void testLESolv2()
 
 void testLESolv1()
 {
-  long int i;
+  size_t i;
   matrix *equation;
   dvector *c; /*coefficients results*/
   puts("Test1");

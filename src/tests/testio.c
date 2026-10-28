@@ -107,7 +107,7 @@ void testLDA() {
     if(m1->nclass != m2->nclass) printf("FAIL: nclass mismatch\n");
     check_vector(m1->eval, m2->eval, "eval");
     check_matrix(m1->mu, m2->mu, "mu");
-    
+
     if(m1->classid->size != m2->classid->size) printf("FAIL: classid size\n");
     else if(m1->classid->data[1] != m2->classid->data[1]) printf("FAIL: classid data\n");
     else printf("classid OK\n");
@@ -149,7 +149,7 @@ void testUPCA() {
     NewTensor(&m1->loadings, 1); /* 1 component for test */
     NewTensorMatrix(m1->loadings, 0, 3, 3);
     m1->loadings->m[0]->data[0][0] = 7.7;
-    
+
     WriteUPCA("test_upca.db", m1);
     ReadUPCA("test_upca.db", m2);
 
@@ -189,7 +189,7 @@ void Test1() { puts("Test 1 - PLS (Original Skipped)"); }
 void Test2() { puts("Test 2 - PCA (Original Skipped)"); }
 void Test3() { puts("Test 3 - CPCA (Original Skipped)"); }
 
-int main(int argc, char **argv)
+int main(void)
 {
     Test1();
     Test2();

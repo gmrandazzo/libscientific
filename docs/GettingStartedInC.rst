@@ -7,7 +7,7 @@ Getting started in C
 ====================
 
 
-Every data type object in libscientific is stored in the HEAP and then supports 
+Every data type object in libscientific is stored in the HEAP and then supports
 dynamic memory allocation.
 
 Hence, every data object such as matrix, vectors, tensors, models, in general,
@@ -197,8 +197,8 @@ Then print it to the terminal using "PrintTensor();"
 Initialize an empty tensor and append different matrix to it
 ------------------------------------------------------------
 
-An empty tensor is an object with matrix equal to 0. In that 
-object we can add dynamically different matrix with different 
+An empty tensor is an object with matrix equal to 0. In that
+object we can add dynamically different matrix with different
 rows and columns.
 
 In this example we will initialize an empty tensor and we add different matrix to it

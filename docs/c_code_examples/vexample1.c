@@ -5,7 +5,7 @@
 int main(void){
   int i;
   /* Define the variable vector, which in this case is a double vector.
-   * If we would like to use an integer or an unsigned integer or a 
+   * If we would like to use an integer or an unsigned integer or a
    * string vector instead this construct became
    * ivector *v; or uivector *v; or strvector *v;
    */
@@ -24,4 +24,3 @@ int main(void){
   // Free the memory space
   DelDVector(&v);
 }
-

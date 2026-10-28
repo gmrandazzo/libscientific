@@ -6,11 +6,11 @@ int main(void)
 {
     int i;
     matrix *m; // Definition of the matrix variable as a pointer
-    matrix *m_inv; // Definition of the inverted matrix variable as a pointer 
+    matrix *m_inv; // Definition of the inverted matrix variable as a pointer
 
-    NewMatrix(&m, 10, 10); // Allocate the matrix to invert 
+    NewMatrix(&m, 10, 10); // Allocate the matrix to invert
     MatrixInitRandomFloat(m, -3., 3.); // Random fill the matrix with values within a range -3 < x < 3
-    PrintMatrix(m); // Print to video the matrix 
+    PrintMatrix(m); // Print to video the matrix
 
     initMatrix(&m_inv); // Initialize the matrix to invert
     MatrixInversion(m, m_inv); // Invert the matrix
@@ -24,5 +24,3 @@ int main(void)
     DelMatrix(&m_inv);
     DelMatrix(&m);
 }
-
-

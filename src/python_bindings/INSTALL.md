@@ -21,7 +21,7 @@ cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local/ ..
 make -j5
 sudo make install
 cd ../src/python_bindings
-python3 setup.py install --user 
+python3 setup.py install --user
 ```
 
 Create portable linux/osx python package

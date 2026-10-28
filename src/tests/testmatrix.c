@@ -60,13 +60,13 @@ void Test61()
   matrix *b;
   matrix *r1;
   matrix *r2;
-  int nrow = 500;
-  int ncol = 500;
+  size_t nrow = 500;
+  size_t ncol = 500;
   NewMatrix(&a, nrow, ncol);
   NewMatrix(&b, nrow, ncol);
   NewMatrix(&r1, nrow, ncol);
   NewMatrix(&r2, nrow, ncol);
-  srand(time(0));
+  srand((unsigned int)time(0));
   for(i = 0; i < nrow; i++){
     for(j = 0; j < ncol; j++){
       a->data[i][j] = randDouble(-1, 1);
@@ -162,11 +162,11 @@ void Test58()
   m->data[2][0] = 5; m->data[2][1] = 7;
   initMatrix(&mv);
   MatrixRowCenterScaling(m, mv);
-  if(!FLOAT_EQ(mv->data[0][0], -1, 1e-2) || 
+  if(!FLOAT_EQ(mv->data[0][0], -1, 1e-2) ||
      !FLOAT_EQ(mv->data[0][1],  2, 1e-2) ||
-     !FLOAT_EQ(mv->data[1][0], 3, 1e-2) || 
+     !FLOAT_EQ(mv->data[1][0], 3, 1e-2) ||
      !FLOAT_EQ(mv->data[1][1], -2, 1e-2) ||
-     !FLOAT_EQ(mv->data[2][0], 0.417, 1e-2) || 
+     !FLOAT_EQ(mv->data[2][0], 0.417, 1e-2) ||
      !FLOAT_EQ(mv->data[2][1], 0.583, 1e-2)){
     puts("Error Test58");
     abort();
@@ -174,7 +174,7 @@ void Test58()
   puts("MatrixRowCenterScaling: OK");
   DelMatrix(&mv);
   DelMatrix(&m);
-} 
+}
 
 void Test57()
 {
@@ -187,7 +187,7 @@ void Test57()
   m->data[2][0] = 5; m->data[2][1] = 7;
   initDVector(&v);
   MatrixRowAverage(m, v);
-  if(!FLOAT_EQ(v->data[0], 0.5, 1e-2) || 
+  if(!FLOAT_EQ(v->data[0], 0.5, 1e-2) ||
      !FLOAT_EQ(v->data[1], 0.5, 1e-2) ||
      !FLOAT_EQ(v->data[2], 6, 1e-2)){
     puts("Error Test57");
@@ -196,7 +196,7 @@ void Test57()
   puts("MatrixRowAverage: OK");
   DelDVector(&v);
   DelMatrix(&m);
-} 
+}
 
 void Test56()
 {
@@ -232,11 +232,11 @@ void Test55()
   m->data[2][0] = 5; m->data[2][1] = 7;
   NewMatrix(&mn, 3, 2);
   MatrixNorm(m, mn);
-  if(!FLOAT_EQ(mn->data[0][0], -0.104, 1e-2) || 
+  if(!FLOAT_EQ(mn->data[0][0], -0.104, 1e-2) ||
      !FLOAT_EQ(mn->data[0][1],  0.209, 1e-2) ||
-     !FLOAT_EQ(mn->data[1][0], 0.313, 1e-2) || 
+     !FLOAT_EQ(mn->data[1][0], 0.313, 1e-2) ||
      !FLOAT_EQ(mn->data[1][1], -0.209, 1e-2) ||
-     !FLOAT_EQ(mn->data[2][0], 0.521, 1e-2) || 
+     !FLOAT_EQ(mn->data[2][0], 0.521, 1e-2) ||
      !FLOAT_EQ(mn->data[2][1], 0.730, 1e-2)){
     puts("Error Test55");
     abort();
@@ -395,10 +395,10 @@ void Test48()
   size_t j;
   NewMatrix(&m, 3, 3);
   NewUIVector(&v, 3);
-  v->data[0] = 0; v->data[1] = 1; v->data[2] = 2; 
+  v->data[0] = 0; v->data[1] = 1; v->data[2] = 2;
   MatrixAppendUIRow(m, v);
   for(j = 0; j < m->col; j++){
-    if(FLOAT_EQ(m->data[m->row-1][j], v->data[j], EPSILON)){
+    if(FLOAT_EQ(m->data[m->row-1][j], (double)v->data[j], EPSILON)){
       continue;
     }
     else{
@@ -443,7 +443,7 @@ void Test46()
   m->data[0][0] = 1; m->data[0][1] = 0; m->data[0][2] = 3;
   m->data[1][0] = 11.; m->data[1][1] = 5; m->data[1][2] = 2;
   m->data[2][0] = 6; m->data[2][1] = 12; m->data[2][2] = 5;
-  
+
   MatrixColumnMinMax(m, 0, &min, &max);
   if(!FLOAT_EQ(min, 1.f, 1e-4) ||
      !FLOAT_EQ(max, 11.f, 1e-4)){
@@ -728,7 +728,7 @@ void Test35()
   m->data[0][0] = 1.23; m->data[0][1] = 0.412; m->data[0][2] = 3.123;
   m->data[1][0] = 11.95; m->data[1][1] = 5.14; m->data[1][2] = 2.3112313234234123;
   m->data[2][0] = 6.32; m->data[2][1] = 12.42; m->data[2][2] = -5.423;
-  
+
   if(ValInMatrix(m, 2.3112313234234123) == 1 &&
      ValInMatrix(m, 2.3212313234234123) == 0){
     puts("ValInMatrix: OK");
@@ -852,11 +852,11 @@ void Test30(){
   srand_(123456);
   matrix *mx;
   matrix *ds;
-  int nrow = 356123;
-  int ncol = 33;
+  size_t nrow = 356123;
+  size_t ncol = 33;
   NewMatrix(&mx, nrow, ncol);
-  int i, j;
-  srand(nrow+ncol);
+  size_t i, j;
+  srand((unsigned int)(nrow+ncol));
   for(i = 0; i < nrow; i++){
     for(j = 0; j < ncol; j++){
       mx->data[i][j] = randDouble(-1, 1);
@@ -957,7 +957,7 @@ void Test26_bis()
   k = 1;
   for(i = 0; i < 2; i++){
     for(j = 0; j < 4; j++){
-      m->data[i][j] = k;
+      m->data[i][j] = (double)k;
       k++;
     }
   }
@@ -978,8 +978,8 @@ void Test26_bis()
   V_Tr->data[1][0] = 0.758981; V_Tr->data[1][1] = 0.321242; V_Tr->data[1][1] = -0.116498; V_Tr->data[1][1] = -0.554238;
 
   int ok = 1;
-  for(int i = 0; i < 2; i++){
-    for(int j = 0; j < 2; j++){
+  for(i = 0; i < 2; i++){
+    for(j = 0; j < 2; j++){
       if(FLOAT_EQ(U->data[i][j], Ur->data[i][j], 1e-2) &&
          FLOAT_EQ(S->data[i][j], Sr->data[i][j], 1e-2) &&
          FLOAT_EQ(V_T->data[i][j], V_Tr->data[i][j], 1e-2)){
@@ -1440,7 +1440,7 @@ void Test17()
   NewMatrix(&m, 10, 4);
   for(i = 0; i < 10; i++){
     for(j = 0; j < 4; j++){
-      srand(i+j);
+      srand((unsigned int)(i+j));
       setMatrixValue(m, i, j, randDouble(1, 24));
     }
   }
@@ -1535,7 +1535,7 @@ void Test14()
 
   for(i = 0; i < nrow; i++){
     for(j = 0; j < ncol; j++){
-      srand(i+j);
+      srand((unsigned int)(i+j));
       setMatrixValue(m1, i, j, randDouble(1, 24));
     }
   }
@@ -1586,7 +1586,7 @@ void Test13()
 
   for(i = 0; i < nrow; i++){
     for(j = 0; j < ncol; j++){
-      srand(i+j);
+      srand((unsigned int)(i+j));
       setMatrixValue(m, i, j, randDouble(-19, 24));
     }
   }
@@ -1640,7 +1640,7 @@ void Test11()
 
   for(i = 0; i < n; i++){
     for(j = 0; j < n; j++){
-      srand(i+j);
+      srand((unsigned int)(i+j));
       setMatrixValue(m1, i, j, randDouble(-19, 24));
     }
   }
@@ -1732,7 +1732,7 @@ void Test8()
   ResizeMatrix(m, 10, 4);
   for(i = 0; i < m->row; i++){
     for(j = 0; j < m->col; j++){
-      setMatrixValue(m, i, j, i+j);
+      setMatrixValue(m, i, j, (double)(i+j));
     }
   }
 
@@ -1745,7 +1745,7 @@ void Test8()
 
   for(i = 0; i < m->row; i++){
     for(j = 0; j < m->col; j++){
-      setMatrixValue(m, i, j, i+j);
+      setMatrixValue(m, i, j, (double)(i+j));
     }
   }
 
@@ -1847,7 +1847,7 @@ void Test5_bis()
   NewDVector(&r, rowsize);
   NewDVector(&r_bis, rowsize);
 
-  srand(rowsize+colsize);
+  srand((unsigned int)(rowsize+colsize));
   for(i = 0; i < rowsize; i++){
     for(j = 0; j < colsize; j++){
       m->data[i][j] = rand() % 100;
@@ -1942,7 +1942,7 @@ void Test4()
   srand(12);
   for(i = 0; i < 10; i++){
     for(j = 0; j < 15; j++){
-      setMatrixValue(m, i, j, i+j);
+      setMatrixValue(m, i, j, (double)(i+j));
     }
   }
   printf("Original Matrix\n");
@@ -1959,7 +1959,7 @@ void Test4()
 
 void Test3()
 {
-  long int i, j;
+  size_t i, j;
   matrix *m;
   dvector *col;
 
@@ -1971,7 +1971,7 @@ void Test3()
 
   for(i = 0; i < 10; i++){
     for(j = 0; j < 15; j++){
-      m->data[i][j] = i+j;
+      m->data[i][j] = (double)(i+j);
     }
   }
 
@@ -1997,7 +1997,7 @@ void Test3()
 
 void Test2()
 {
-  long int i, j;
+  size_t i, j;
   matrix *m;
   dvector *row;
 
@@ -2009,7 +2009,7 @@ void Test2()
 
   for(i = 0; i < 10; i++){
     for(j = 0; j < 15; j++){
-      m->data[i][j] = i+j;
+      m->data[i][j] = (double)(i+j);
     }
   }
 
@@ -2039,14 +2039,14 @@ void Test1()
   double a = sqrt(-1);
   double b = 1/2.;
   double c = 1/0.;
-  long int i, j;
+  size_t i, j;
   matrix *m;
 
   printf("Test 1: Create a Matrix\n");
   NewMatrix(&m, 10, 15);
   for(i = 0; i < 10; i++){
     for(j = 0; j < 15; j++){
-      m->data[i][j] = i+j;
+      m->data[i][j] = (double)(i+j);
     }
   }
 

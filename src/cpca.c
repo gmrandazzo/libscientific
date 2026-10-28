@@ -346,7 +346,7 @@ void CPCA(tensor *x, int scaling, size_t npc, CPCAMODEL *model)
               t_new->data[i] += T_T->data[k][i] * w;
           }
       }
-     
+
       /* check for convergence */
       if(calcConvergence(t_new, t) < CPCACONVERGENCE){
         #ifdef DEBUG
@@ -360,10 +360,10 @@ void CPCA(tensor *x, int scaling, size_t npc, CPCAMODEL *model)
         DVectorCopy(t_new, t);
       }
     }
-    
+
     for(k=0; k<Eb->order; k++) DelDVector(&p_b_list[k]);
     xfree(p_b_list);
-    
+
     DelDVector(&t);
   }
 

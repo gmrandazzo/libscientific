@@ -28,7 +28,7 @@ typedef struct{
 } node;
 
 typedef struct{
-  int size_nodes;
+  size_t size_nodes;
   int **adjmx;
   double **adjweight;
   node *nodes;
@@ -52,7 +52,7 @@ void GenerateAdjMX(matrix *dmx, double radius, G **graph);
 
 void ConvertAdjMXtoSquareMX(G *graph, matrix **adj);
  */
- 
+
 /*
  * Generate the node position according to the FRUCHTERMAN-REINGOLD Algorithm.
  *

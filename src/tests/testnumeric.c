@@ -68,7 +68,7 @@ void test3()
   size_t i;
   double v;
   puts("Test3: Generate 10M random numbers between -2.8 and 3.8");
-  srand_(time(NULL));
+  srand_((uint32_t)time(NULL));
   for(i = 0; i < 10000000; i++){
     v = randDouble(-2.8, 3.8);
     if(v > -2.8 && v < 3.8){

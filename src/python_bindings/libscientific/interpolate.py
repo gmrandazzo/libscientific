@@ -17,15 +17,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import ctypes
-from libscientific.loadlibrary import load_libscientific_library
+
 import libscientific.matrix as mx
 import libscientific.vector as vect
+from libscientific.loadlibrary import load_libscientific_library
 
 lsci = load_libscientific_library()
 
 
-lsci.cubic_spline_interpolation.argtypes = [ctypes.POINTER(mx.MATRIX),
-                                            ctypes.POINTER(mx.MATRIX)]
+lsci.cubic_spline_interpolation.argtypes = [ctypes.POINTER(mx.MATRIX), ctypes.POINTER(mx.MATRIX)]
 lsci.cubic_spline_interpolation.restype = None
 
 
@@ -36,22 +36,24 @@ def cubic_spline_interpolation(x_y, s_interp):
     """
     x_y_ = None
     if isinstance(x_y, mx.Matrix):
-        x_y_ = x_y.mx
+        x_y_ = x_y.mtx
     else:
         x_y_ = x_y
 
     s_interp_ = None
     if isinstance(s_interp, mx.Matrix):
-        s_interp_ = s_interp.mx
+        s_interp_ = s_interp.mtx
     else:
         s_interp_ = s_interp
 
     lsci.cubic_spline_interpolation(x_y_, s_interp_)
 
 
-lsci.cubic_spline_predict.argtypes = [ctypes.POINTER(vect.DVECTOR),
-                                      ctypes.POINTER(mx.MATRIX),
-                                      ctypes.POINTER(vect.DVECTOR)]
+lsci.cubic_spline_predict.argtypes = [
+    ctypes.POINTER(vect.DVECTOR),
+    ctypes.POINTER(mx.MATRIX),
+    ctypes.POINTER(vect.DVECTOR),
+]
 lsci.cubic_spline_predict.restype = None
 
 
@@ -67,17 +69,18 @@ def cubic_spline_predict(x_cc, s_interp, y_pred):
 
     s_interp_ = None
     if isinstance(s_interp, mx.Matrix):
-        s_interp_ = s_interp.mx
+        s_interp_ = s_interp.mtx
     else:
         s_interp_ = s_interp
 
     y_pred_ = None
     if isinstance(y_pred, vect.DVector):
-        y_pred_ = y_pred.d
+        y_pred_ = y_pred.dvect
     else:
         y_pred_ = y_pred
 
     lsci.cubic_spline_predict(x_cc_, s_interp_, y_pred_)
+
 
 class CubicSplineInterpolation:
     """
@@ -123,6 +126,12 @@ class CubicSplineInterpolation:
         """
         self.s_interp = None
 
+    def __repr__(self):
+        return f"CubicSplineInterpolation(fitted={self.s_interp is not None})"
+
+    def __str__(self):
+        return f"CubicSplineInterpolation(fitted={self.s_interp is not None})"
+
     def __del__(self):
         """
         Clean up resources associated with the CubicSplineInterpolation instance.
@@ -146,12 +155,17 @@ class CubicSplineInterpolation:
         None
         """
         self.s_interp = mx.init_matrix()
+        xalloc = False
         if isinstance(x_y_, mx.Matrix):
-            x_y = x_y_.mx
+            x_y = x_y_.mtx
+        elif isinstance(x_y_, ctypes.POINTER(mx.MATRIX)):
+            x_y = x_y_
         else:
             x_y = mx.new_matrix(x_y_)
+            xalloc = True
         cubic_spline_interpolation(x_y, self.s_interp)
-        mx.del_matrix(x_y)
+        if xalloc:
+            mx.del_matrix(x_y)
 
     def predict(self, x_pred_):
         """
@@ -159,21 +173,27 @@ class CubicSplineInterpolation:
 
         Parameters
         ----------
-        x_pred_ : Matrix or List[float]
-            Matrix or list of x values for prediction.
+        x_pred_ : DVector, Matrix or List[float]
+            DVector or list of x values for prediction.
 
         Returns
         -------
         List[float]
             Predicted y values for the given x values.
         """
-        if isinstance(x_pred_, mx.Matrix):
-            x_pred = x_pred_.d
+        xalloc = False
+        if isinstance(x_pred_, vect.DVector):
+            x_pred = x_pred_.dvect
+        elif isinstance(x_pred_, ctypes.POINTER(vect.DVECTOR)):
+            x_pred = x_pred_
         else:
             x_pred = vect.new_dvector(x_pred_)
+            xalloc = True
 
         ypred_ = vect.init_dvector()
         cubic_spline_predict(x_pred, self.s_interp, ypred_)
         ypred = vect.dvector_tolist(ypred_)
-        vect.del_dvector(x_pred)
+        vect.del_dvector(ypred_)
+        if xalloc:
+            vect.del_dvector(x_pred)
         return ypred

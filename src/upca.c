@@ -127,7 +127,7 @@ void UPCA(tensor *X_, size_t npc, size_t autoscaling, UPCAMODEL *m, scisignal *s
     for(k = 0; k < X_->order; k++){
       NewTensorMatrix(X, k, X_->m[k]->row, X_->m[k]->col);
     }
-    TensorPreprocess(X_, autoscaling, m->colaverage, m->colscaling, X);
+    TensorPreprocess(X_, (int)autoscaling, m->colaverage, m->colscaling, X);
 
    /* END Disable */
 

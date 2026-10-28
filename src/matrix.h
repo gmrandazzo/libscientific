@@ -24,7 +24,7 @@
 #include "vector.h"
 
 /**
- * Matrix data structure 
+ * Matrix data structure
  *
  * - **data** two dimensional array of double
  * - **row** number of rows
@@ -43,7 +43,7 @@ void initMatrix(matrix **m);
 
 /**
  * Allocate a matrix in memory with dimension "row" and "col"
- * 
+ *
  * @param [in] m matrix data structure
  * @param [in] row number of rows
  * @param [in] col number of columns
@@ -274,7 +274,7 @@ void MatrixColVar(matrix *m, dvector *colvar);
 
 /**
  *  Calculate the matrix descriptive statistics:
- * 
+ *
  *  - Column Average
  *  - Column Median
  *  - Column Armonic Average

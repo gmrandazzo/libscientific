@@ -66,7 +66,7 @@ double calcObjectDistance(matrix *m)
 }
 
 /*
- * Calculate convergence criteria as described in 
+ * Calculate convergence criteria as described in
  * DOI: 10.1002/cem.1180010107 page 51 d = ...
  */
 double calcConvergence(dvector *t_new, dvector *t_old)
@@ -325,13 +325,13 @@ void PCAScorePredictor(matrix *mx, PCAMODEL *model, size_t npc, matrix *pscores)
   ResizeMatrix(pscores, mx->row, npc);
 
   NewMatrix(&E, mx->row, mx->col);
-  
+
   MatrixPreprocess(mx,
                    -1,
                    model->colaverage,
                    model->colscaling,
                    E);
-  
+
   NewDVector(&t, E->row);
   NewDVector(&p, model->loadings->row);
 
@@ -495,9 +495,9 @@ void PCARankValidation(matrix *mx,
   matrix *predictX;
   dvector *predictr2x;
 
-  NewMatrix(&gid, group, (size_t)ceil(mx->row/(double)group));
+  NewMatrix(&gid, group, (size_t)ceil((double)mx->row / (double)group));
 
-  srand_(group*mx->row*iterations);
+  srand_((uint32_t)(group * mx->row * iterations));
 
   iterations_ = 0;
   while(iterations_ <  iterations){
@@ -514,9 +514,9 @@ void PCARankValidation(matrix *mx,
         for(j = 0; j <  gid->col; j++){
           do{
             n = (size_t)rand_() % (mx->row);
-          } while(ValInMatrix(gid, n) == 1 && k < (mx->row));
+          } while(ValInMatrix(gid, (double)n) == 1 && k < (mx->row));
           if(k < mx->row){
-            gid->data[i][j] = n;
+            gid->data[i][j] = (double)n;
             k++;
           }
           else
@@ -607,7 +607,7 @@ void PCARankValidation(matrix *mx,
 
         NewPCAModel(&subm);
 
-        PCA(subX, scaling, npc, subm, s);
+        PCA(subX, (int)scaling, npc, subm, s);
 
 
         initDVector(&predictr2x);
@@ -637,7 +637,7 @@ void PCARankValidation(matrix *mx,
 
   /*Finalize the output by dividing for the number of iterations*/
   for(i = 0; i < r2->size; i++){
-    r2->data[i] /= group*iterations;
+    r2->data[i] /= (double)(group * iterations);
   }
 }
 

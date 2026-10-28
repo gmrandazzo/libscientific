@@ -15,9 +15,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
+
 import ctypes
-from libscientific.loadlibrary import load_libscientific_library
+
 from libscientific import misc
+from libscientific.loadlibrary import load_libscientific_library
 
 lsci = load_libscientific_library()
 
@@ -26,9 +28,8 @@ class STRVECTOR(ctypes.Structure):
     """
     string vector data structure
     """
-    _fields_ = [
-        ("data", ctypes.POINTER(ctypes.POINTER(ctypes.c_char))),
-        ("size", ctypes.c_size_t)]
+
+    _fields_ = [("data", ctypes.POINTER(ctypes.POINTER(ctypes.c_char))), ("size", ctypes.c_size_t)]
 
     def __repr__(self):
         return self.__class__.__name__
@@ -41,9 +42,8 @@ class DVECTOR(ctypes.Structure):
     """
     double vector data structure
     """
-    _fields_ = [
-        ("data", ctypes.POINTER(ctypes.c_double)),
-        ("size", ctypes.c_size_t)]
+
+    _fields_ = [("data", ctypes.POINTER(ctypes.c_double)), ("size", ctypes.c_size_t)]
 
     def __repr__(self):
         return self.__class__.__name__
@@ -56,9 +56,8 @@ class UIVECTOR(ctypes.Structure):
     """
     unsigned int vector data structure
     """
-    _fields_ = [
-        ("data", ctypes.POINTER(ctypes.c_size_t)),
-        ("size", ctypes.c_size_t)]
+
+    _fields_ = [("data", ctypes.POINTER(ctypes.c_size_t)), ("size", ctypes.c_size_t)]
 
     def __repr__(self):
         return self.__class__.__name__
@@ -71,9 +70,8 @@ class IVECTOR(ctypes.Structure):
     """
     unsigned int vector data structure
     """
-    _fields_ = [
-        ("data", ctypes.POINTER(ctypes.c_int)),
-        ("size", ctypes.c_size_t)]
+
+    _fields_ = [("data", ctypes.POINTER(ctypes.c_int)), ("size", ctypes.c_size_t)]
 
     def __repr__(self):
         return self.__class__.__name__
@@ -95,6 +93,7 @@ def xvector_tolist(dvect):
             d_lst.append(dvect.data[i])
     return d_lst
 
+
 lsci.initDVector.argtypes = [ctypes.POINTER(ctypes.POINTER(DVECTOR))]
 lsci.initDVector.restype = None
 
@@ -108,8 +107,7 @@ def init_dvector():
     return d_vect
 
 
-lsci.NewDVector.argtypes = [ctypes.POINTER(ctypes.POINTER(DVECTOR)),
-                            ctypes.c_size_t]
+lsci.NewDVector.argtypes = [ctypes.POINTER(ctypes.POINTER(DVECTOR)), ctypes.c_size_t]
 lsci.NewDVector.restype = None
 
 
@@ -133,8 +131,10 @@ def new_dvector(v_lst):
             lsci.setDVectorValue(d_vect, i, val)
     return d_vect
 
+
 lsci.DelDVector.argtypes = [ctypes.POINTER(ctypes.POINTER(DVECTOR))]
 lsci.DelDVector.restype = None
+
 
 def del_dvector(dvect):
     """
@@ -142,8 +142,8 @@ def del_dvector(dvect):
     """
     lsci.DelDVector(ctypes.pointer(dvect))
 
-lsci.DVectorResize.argtypes = [ctypes.POINTER(DVECTOR),
-                               ctypes.c_size_t]
+
+lsci.DVectorResize.argtypes = [ctypes.POINTER(DVECTOR), ctypes.c_size_t]
 lsci.DVectorResize.restype = None
 
 
@@ -189,9 +189,7 @@ def dvector_set(dvect, val):
     lsci.DVectorSet(dvect, val)
 
 
-lsci.setDVectorValue.argtypes = [ctypes.POINTER(DVECTOR),
-                                 ctypes.c_size_t,
-                                 ctypes.c_double]
+lsci.setDVectorValue.argtypes = [ctypes.POINTER(DVECTOR), ctypes.c_size_t, ctypes.c_double]
 lsci.setDVectorValue.restype = None
 
 
@@ -203,8 +201,7 @@ def set_dvector_value(dvect, indx, val):
     lsci.setDVectorValue(dvect, indx, val)
 
 
-lsci.getDVectorValue.argtypes = [ctypes.POINTER(DVECTOR),
-                                 ctypes.c_size_t]
+lsci.getDVectorValue.argtypes = [ctypes.POINTER(DVECTOR), ctypes.c_size_t]
 lsci.getDVectorValue.restype = ctypes.c_double
 
 
@@ -216,9 +213,9 @@ def get_dvector_value(dvect, indx):
     return lsci.getDVectorValue(dvect, indx)
 
 
-lsci.DVectorAppend.argtypes = [ctypes.POINTER(DVECTOR),
-                               ctypes.c_double]
+lsci.DVectorAppend.argtypes = [ctypes.POINTER(DVECTOR), ctypes.c_double]
 lsci.DVectorAppend.restype = None
+
 
 def dvector_append(dvect, val):
     """
@@ -234,9 +231,9 @@ def dvector_tolist(dvect):
     return xvector_tolist(dvect)
 
 
-lsci.DVectorRemoveAt.argtypes = [ctypes.POINTER(DVECTOR),
-                                 ctypes.c_size_t]
+lsci.DVectorRemoveAt.argtypes = [ctypes.POINTER(DVECTOR), ctypes.c_size_t]
 lsci.DVectorRemoveAt.restype = None
+
 
 def dvector_remove_at(dvect, indx):
     """
@@ -244,9 +241,10 @@ def dvector_remove_at(dvect, indx):
     """
     return lsci.DVectorRemoveAt(dvect, indx)
 
-lsci.DVectorCopy.argtypes = [ctypes.POINTER(DVECTOR),
-                             ctypes.POINTER(DVECTOR)]
+
+lsci.DVectorCopy.argtypes = [ctypes.POINTER(DVECTOR), ctypes.POINTER(DVECTOR)]
 lsci.DVectorCopy.restype = None
+
 
 def dvector_copy(dvect_src):
     """
@@ -270,8 +268,7 @@ def init_uivector():
     return uivect
 
 
-lsci.NewUIVector.argtypes = [ctypes.POINTER(ctypes.POINTER(UIVECTOR)),
-                              ctypes.c_size_t]
+lsci.NewUIVector.argtypes = [ctypes.POINTER(ctypes.POINTER(UIVECTOR)), ctypes.c_size_t]
 lsci.NewUIVector.restype = None
 
 
@@ -295,8 +292,10 @@ def new_uivector(v_lst):
             lsci.setUIVectorValue(uivect, i, val)
     return uivect
 
+
 lsci.DelUIVector.argtypes = [ctypes.POINTER(ctypes.POINTER(UIVECTOR))]
 lsci.DelUIVector.restype = None
+
 
 def del_uivector(uivect):
     """
@@ -304,8 +303,8 @@ def del_uivector(uivect):
     """
     lsci.DelUIVector(ctypes.pointer(uivect))
 
-lsci.UIVectorResize.argtypes = [ctypes.POINTER(UIVECTOR),
-                                ctypes.c_size_t]
+
+lsci.UIVectorResize.argtypes = [ctypes.POINTER(UIVECTOR), ctypes.c_size_t]
 lsci.UIVectorResize.restype = None
 
 
@@ -328,9 +327,7 @@ def print_uivector(uivect):
     lsci.PrintUIVector(uivect)
 
 
-lsci.setUIVectorValue.argtypes = [ctypes.POINTER(UIVECTOR),
-                                  ctypes.c_size_t,
-                                  ctypes.c_size_t]
+lsci.setUIVectorValue.argtypes = [ctypes.POINTER(UIVECTOR), ctypes.c_size_t, ctypes.c_size_t]
 lsci.setUIVectorValue.restype = None
 
 
@@ -342,8 +339,7 @@ def set_uivector_value(uivect, indx, val):
     lsci.setUIVectorValue(uivect, indx, val)
 
 
-lsci.getUIVectorValue.argtypes = [ctypes.POINTER(UIVECTOR),
-                                  ctypes.c_size_t]
+lsci.getUIVectorValue.argtypes = [ctypes.POINTER(UIVECTOR), ctypes.c_size_t]
 lsci.getUIVectorValue.restype = ctypes.c_size_t
 
 
@@ -354,9 +350,10 @@ def get_uivector_value(uivect, indx):
     """
     return lsci.getUIVectorValue(uivect, indx)
 
-lsci.UIVectorAppend.argtypes = [ctypes.POINTER(UIVECTOR),
-                                ctypes.c_size_t]
+
+lsci.UIVectorAppend.argtypes = [ctypes.POINTER(UIVECTOR), ctypes.c_size_t]
 lsci.UIVectorAppend.restype = None
+
 
 def uivector_append(uivect, val):
     """
@@ -364,21 +361,31 @@ def uivector_append(uivect, val):
     """
     return lsci.UIVectorAppend(uivect, val)
 
+
 def uivector_tolist(uivect):
     """
     Unsigned int vector to python list
     """
     return xvector_tolist(uivect)
 
-lsci.UIVectorRemoveAt.argtypes = [ctypes.POINTER(UIVECTOR),
-                                  ctypes.c_size_t]
+
+lsci.UIVectorRemoveAt.argtypes = [ctypes.POINTER(UIVECTOR), ctypes.c_size_t]
 lsci.UIVectorRemoveAt.restype = None
+
 
 def uivector_remove_at(uivect, indx):
     """
     Remove a value from an unsigned int vector at index indx
     """
     return lsci.UIVectorRemoveAt(uivect, indx)
+
+
+def uivector_copy(uivect_src):
+    """
+    Create a copy of an unsigned int vector
+    """
+    return new_uivector(xvector_tolist(uivect_src))
+
 
 lsci.initIVector.argtypes = [ctypes.POINTER(ctypes.POINTER(IVECTOR))]
 lsci.initIVector.restype = None
@@ -393,8 +400,7 @@ def init_ivector():
     return ivect
 
 
-lsci.NewIVector.argtypes = [ctypes.POINTER(ctypes.POINTER(IVECTOR)),
-                              ctypes.c_size_t]
+lsci.NewIVector.argtypes = [ctypes.POINTER(ctypes.POINTER(IVECTOR)), ctypes.c_size_t]
 lsci.NewIVector.restype = None
 
 
@@ -430,20 +436,18 @@ def del_ivector(ivect):
     lsci.DelIVector(ctypes.pointer(ivect))
 
 
-#lsci.PrintIVector.argtypes = [ctypes.POINTER(IVECTOR)]
-#lsci.PrintIVector.restype = None
+# lsci.PrintIVector.argtypes = [ctypes.POINTER(IVECTOR)]
+# lsci.PrintIVector.restype = None
 
 
-#def print_ivector(dvect):
+# def print_ivector(dvect):
 #    """
 #    PrintIVector: Print to video a libscientific int vector
 #    """
 #    lsci.PrintIVector(dvect)
 
 
-lsci.setIVectorValue.argtypes = [ctypes.POINTER(IVECTOR),
-                                  ctypes.c_size_t,
-                                  ctypes.c_size_t]
+lsci.setIVectorValue.argtypes = [ctypes.POINTER(IVECTOR), ctypes.c_size_t, ctypes.c_size_t]
 lsci.setIVectorValue.restype = None
 
 
@@ -455,8 +459,7 @@ def set_ivector_value(ivect, indx, val):
     lsci.setIVectorValue(ivect, indx, val)
 
 
-lsci.getIVectorValue.argtypes = [ctypes.POINTER(IVECTOR),
-                                  ctypes.c_size_t]
+lsci.getIVectorValue.argtypes = [ctypes.POINTER(IVECTOR), ctypes.c_size_t]
 lsci.getIVectorValue.restype = ctypes.c_size_t
 
 
@@ -474,9 +477,10 @@ def ivector_tolist(ivect):
     """
     return xvector_tolist(ivect)
 
-lsci.IVectorAppend.argtypes = [ctypes.POINTER(IVECTOR),
-                                ctypes.c_size_t]
+
+lsci.IVectorAppend.argtypes = [ctypes.POINTER(IVECTOR), ctypes.c_size_t]
 lsci.IVectorAppend.restype = None
+
 
 def ivector_append(ivect, val):
     """
@@ -485,9 +489,9 @@ def ivector_append(ivect, val):
     return lsci.IVectorAppend(ivect, val)
 
 
-lsci.IVectorRemoveAt.argtypes = [ctypes.POINTER(IVECTOR),
-                                  ctypes.c_size_t]
+lsci.IVectorRemoveAt.argtypes = [ctypes.POINTER(IVECTOR), ctypes.c_size_t]
 lsci.IVectorRemoveAt.restype = None
+
 
 def ivector_remove_at(ivect, indx):
     """
@@ -519,16 +523,20 @@ class DVector:
         debug(self)
     """
 
-    def __init__(self, dvect_ = None):
+    def __init__(self, dvect_=None):
         """
         Initialize a DVector instance.
 
         Args:
-            dvect_ : list or None
+            dvect_ : list, DVector, or None
                 The initial values for the double vector. If None, initializes an empty vector.
         """
         if dvect_ is None:
             self.dvect = init_dvector()
+        elif isinstance(dvect_, DVector):
+            self.dvect = dvector_copy(dvect_.dvect)
+        elif isinstance(dvect_, ctypes.POINTER(DVECTOR)):
+            self.dvect = dvector_copy(dvect_)
         else:
             self.dvect = new_dvector(dvect_)
 
@@ -536,8 +544,28 @@ class DVector:
         """
         Clean up resources associated with the DVector instance.
         """
-        del_dvector(self.dvect)
-        del self.dvect
+        if getattr(self, "dvect", None) is not None:
+            del_dvector(self.dvect)
+            del self.dvect
+            self.dvect = None
+
+    def __repr__(self):
+        return f"DVector({self.tolist()})"
+
+    def __str__(self):
+        return f"DVector({self.tolist()})"
+
+    def __len__(self):
+        """
+        Return the size of the double vector.
+        """
+        return self.size()
+
+    def __iter__(self):
+        """
+        Iterate over the elements of the double vector.
+        """
+        return iter(self.tolist())
 
     def __getitem__(self, key):
         """
@@ -657,22 +685,49 @@ class UIVector:
         debug(self)
     """
 
-    def __init__(self, uivect_):
+    def __init__(self, uivect_=None):
         """
         Initialize a UIVector instance.
 
         Args:
-            uivect_ : list
-                The initial values for the unsigned int vector.
+            uivect_ : list, UIVector, or None
+                The initial values for the unsigned int vector. If None, initializes an empty vector.
         """
-        self.uivect = new_uivector(uivect_)
+        if uivect_ is None:
+            self.uivect = init_uivector()
+        elif isinstance(uivect_, UIVector):
+            self.uivect = uivector_copy(uivect_.uivect)
+        elif isinstance(uivect_, ctypes.POINTER(UIVECTOR)):
+            self.uivect = uivector_copy(uivect_)
+        else:
+            self.uivect = new_uivector(uivect_)
 
     def __del__(self):
         """
         Clean up resources associated with the UIVector instance.
         """
-        del_uivector(self.uivect)
-        del self.uivect
+        if getattr(self, "uivect", None) is not None:
+            del_uivector(self.uivect)
+            del self.uivect
+            self.uivect = None
+
+    def __repr__(self):
+        return f"UIVector({self.tolist()})"
+
+    def __str__(self):
+        return f"UIVector({self.tolist()})"
+
+    def __len__(self):
+        """
+        Return the size of the unsigned int vector.
+        """
+        return self.size()
+
+    def __iter__(self):
+        """
+        Iterate over the elements of the unsigned int vector.
+        """
+        return iter(self.tolist())
 
     def __getitem__(self, key):
         """

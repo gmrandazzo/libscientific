@@ -111,8 +111,9 @@ void StrVectorAppendInt(strvector *s, int val)
   size_t size = s->size+1;
   s->data = xrealloc(s->data, sizeof(char*)*size);
   s->size += 1;
-  size_t length = snprintf(NULL, 0, "%d", val);
-  s->data[s->size-1] = xmalloc(sizeof(char)*length+1);
+  int n = snprintf(NULL, 0, "%d", val);
+  size_t length = (n > 0) ? (size_t)n : 0;
+  s->data[s->size-1] = xmalloc((length + 1) * sizeof(char));
   snprintf(s->data[s->size-1], length + 1, "%d", val);
 }
 
@@ -121,8 +122,9 @@ void StrVectorAppendDouble(strvector *s, double val)
   size_t size = s->size+1;
   s->data = xrealloc(s->data, sizeof(char*)*size);
   s->size += 1;
-  size_t length = snprintf(NULL, 0, "%f", val);
-  s->data[s->size-1] = xmalloc(sizeof(char)*length+1);
+  int n = snprintf(NULL, 0, "%f", val);
+  size_t length = (n > 0) ? (size_t)n : 0;
+  s->data[s->size-1] = xmalloc((length + 1) * sizeof(char));
   snprintf(s->data[s->size-1], length + 1, "%f", val);
 }
 
@@ -261,7 +263,7 @@ void DVectorRemoveAt(dvector *d, size_t indx)
 {
   if(indx < d->size){
     // assuming that sizeOfArray is the count of valid elements in the array
-    int elements_to_move = d->size - indx - 1;
+    size_t elements_to_move = d->size - indx - 1;
     memmove( &d->data[indx], &d->data[indx+1], elements_to_move * sizeof(double));
     d->size -=1;
   }
@@ -494,10 +496,10 @@ void DVectorMedian(dvector* d, double *median)
 void DVectorMean(dvector* d, double* mean)
 {
   size_t i;
-  (*mean) = +0.f;
+  (*mean) = 0.0;
   for(i = 0; i < d->size; i++)
     (*mean) += d->data[i];
-  (*mean) /= d->size;
+  (*mean) /= (double)d->size;
 }
 
 void DVectorSDEV(dvector* d, double* sdev)
@@ -506,10 +508,10 @@ void DVectorSDEV(dvector* d, double* sdev)
   double mean;
   DVectorMean(d, &mean);
 
-  (*sdev) = +0.f;
+  (*sdev) = 0.0;
   for(i = 0; i < d->size; i++)
     (*sdev) += square(d->data[i] - mean);
-  (*sdev) /= d->size;
+  (*sdev) /= (double)d->size;
   (*sdev) = sqrt((*sdev));
 }
 
@@ -527,7 +529,7 @@ void initIVector(ivector **d){
 
 void NewIVector(ivector **d, size_t size)
 {
-  long int i;
+  size_t i;
   (*d) = xmalloc(sizeof(ivector));
   (*d)->size = size;
   (*d)->data = xmalloc(sizeof(int)*size);
@@ -555,7 +557,7 @@ void PrintIVector(ivector* v)
 
 void IVectorAppend(ivector *d, int val)
 {
-  long int size = d->size+1;
+  size_t size = d->size+1;
   d->data = xrealloc(d->data, sizeof(int)*size);
   d->size += 1;
   d->data[d->size-1] = val;
@@ -565,7 +567,7 @@ void IVectorRemoveAt(ivector *d, size_t indx)
 {
   if(indx < d->size){
     // assuming that sizeOfArray is the count of valid elements in the array
-    int elements_to_move = d->size - indx - 1;
+    size_t elements_to_move = d->size - indx - 1;
     memmove(&d->data[indx], &d->data[indx+1], elements_to_move * sizeof(int));
     d->size -=1;
   }
@@ -576,7 +578,7 @@ void IVectorRemoveAt(ivector *d, size_t indx)
 
 ivector *IVectorExtend(ivector *d1, ivector *d2)
 {
-  int i;
+  size_t i;
   ivector *dext;
   NewIVector(&dext, (*d1).size+(*d2).size);
   for(i = 0; i < (*d1).size; i++){
@@ -693,7 +695,7 @@ void UIVectorAppend(uivector *d, size_t val)
 void UIVectorRemoveAt(uivector *d, size_t indx)
 {
   if(indx < d->size){
-    int elements_to_move = d->size - indx - 1;
+    size_t elements_to_move = d->size - indx - 1;
     memmove( &d->data[indx], &d->data[indx+1], elements_to_move * sizeof(size_t));
     d->size -=1;
   }
@@ -757,7 +759,7 @@ int UIVectorIndexOf(uivector *u, size_t id)
   size_t i;
   for(i = 0; i < u->size; i++){
     if(u->data[i] == id){
-      return i;
+      return (int)i;
     }
     else{
       continue;

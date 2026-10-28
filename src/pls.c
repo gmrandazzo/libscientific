@@ -155,7 +155,7 @@ void LVCalc(matrix *X,
   double dot_t;
   double dot_u;
   double dot_w;
-  
+
   /* Make a copy of variables for memory reasons... */
   matrix *X_;
   matrix *Y_;
@@ -574,7 +574,7 @@ void PLS(matrix *mx, matrix *my, size_t nlv, int xautoscaling, int yautoscaling,
       ResizeMatrix(model->recalc_residuals, my->row, my->col*nlv);
       for(i = 0; i < model->recalculated_y->row; i++){
         for(j = 0; j < model->recalculated_y->col; j++){
-          model->recalc_residuals->data[i][j] = model->recalculated_y->data[i][j] - my->data[i][(size_t)floor(j/nlv)];
+          model->recalc_residuals->data[i][j] = model->recalculated_y->data[i][j] - my->data[i][j / nlv];
         }
       }
 
@@ -748,7 +748,7 @@ void PLSYPredictor(matrix *tscore, PLSMODEL *model, size_t nlv, matrix *y)
 
   if(nlv > tscore->col)
     nlv = tscore->col;
-  
+
   if(nlv > model->b->size)
     nlv = model->b->size;
 
@@ -978,7 +978,7 @@ void PLSVIP(PLSMODEL *model, matrix *vip)
     dvector *tf = getMatrixColumn(model->xscores, f);
     double tf_tf = DVectorDVectorDotProd(tf, tf);
     double ssy = bf * bf * tf_tf;
-    
+
     setDVectorValue(ssy_f, f, ssy);
     ssy_total += ssy;
     DelDVector(&tf);
@@ -1008,7 +1008,7 @@ int GetLVCCutoff_(matrix *rq2y){
   double prev, next, max = MISSING;
 
   for(i = 0; i < rq2y->row-1; i += 2){
-    prev = next = 0.f;
+    prev = next = 0.0;
     for(j = 0; j < rq2y->col; j++){
       prev += rq2y->data[i][j];
       next += rq2y->data[i+1][j];
@@ -1028,7 +1028,7 @@ int GetLVCCutoff_(matrix *rq2y){
       }
     }
   }
-  return cutoff;
+  return (int)cutoff;
 }
 
 
@@ -1058,7 +1058,7 @@ int GetLVCCutoff(matrix *coeff){
   }
 
   DelDVector(&coeff_avg);
-  return cutoff;
+  return (int)cutoff;
 }
 
 void PrintPLSModel(PLSMODEL* model)

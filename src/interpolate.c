@@ -30,7 +30,7 @@
 void cubic_spline_interpolation(matrix *xy, matrix *S)
 {
   size_t i;
-  int j;
+  size_t j;
   size_t np1 = xy->row;
   size_t n = np1-1;
   double a[np1];
@@ -42,7 +42,7 @@ void cubic_spline_interpolation(matrix *xy, matrix *S)
   double l[np1];
   double u[np1];
   double z[np1];
-  
+
   for(i = 0; i < np1; i++){
     a[i] = xy->data[i][1];
     c[i] = l[i] = u[i] = z[i] = 0.f; /* initialize */
@@ -69,10 +69,14 @@ void cubic_spline_interpolation(matrix *xy, matrix *S)
   z[n] = 0.f;
   c[n] = 0.f;
 
-  for(j = n-1; j > -1; j--){
-    c[j] = z[j] - u[j]*c[j+1];
-    b[j] = (a[j+1]-a[j])/h[j] - (h[j]*(c[j+1]+2*c[j]))/3.f;
-    d[j] = (c[j+1]-c[j])/(3.f*h[j]);
+  if(n > 0){
+    j = n;
+    while(j > 0){
+      j--;
+      c[j] = z[j] - u[j]*c[j+1];
+      b[j] = (a[j+1]-a[j])/h[j] - (h[j]*(c[j+1]+2.0*c[j]))/3.0;
+      d[j] = (c[j+1]-c[j])/(3.0*h[j]);
+    }
   }
 
   /* Write SPLINE EQUATIONS

@@ -92,7 +92,7 @@ void newW(dvector *w, matrix *X, dvector *new_w, double alpha)
   MatrixDVectorDotProduct(X, w, wX);
   DVectorCopy(wX, wX_copy);/* copy of wX to calculate the derivative */
   g(wX, alpha);
-  
+
   /* X * g(w^T*X)^T in Python is X^T * g(X*w) in C */
   DVectorMatrixDotProduct(X, wX, XwX);
   for(i = 0; i < XwX->size; i++){
@@ -102,15 +102,15 @@ void newW(dvector *w, matrix *X, dvector *new_w, double alpha)
   /* Calculation of (g_der(w^T*X)*one*w)/M */
   g_der(wX_copy, alpha);
   double g_der_one = DVectorDVectorDotProd(wX_copy, one);
-  
+
   NewDVector(&g_der_one_w, w->size);
   DVectorCopy(w, g_der_one_w);
-  
+
   for(i = 0; i < w->size; i++){
     g_der_one_w->data[i] *= (g_der_one / (double)X->row);
   }
-  
-  /* Calculation of new_w = (X * g(w^T*X)^T)/M - (g_der(w^T*X)*one*w)/M 
+
+  /* Calculation of new_w = (X * g(w^T*X)^T)/M - (g_der(w^T*X)*one*w)/M
    * by using the previous calculations.
    */
   for(i = 0; i < new_w->size; i++){
@@ -128,10 +128,10 @@ void newW(dvector *w, matrix *X, dvector *new_w, double alpha)
  * FAST ica Algorithm:
  * - https://en.wikipedia.org/wiki/FastICA#Prewhitening_the_data
  * - doi:10.1016/j.trac.2013.03.013
- * 
+ *
  * Algorithm
- * 
- * inputs: 
+ *
+ * inputs:
  *     - mx M x N matrix
  *     - n_signals = number of source signals to extracts
  *     - alpha = parameter for contrast function g (default 1)
@@ -140,7 +140,7 @@ void newW(dvector *w, matrix *X, dvector *new_w, double alpha)
  * outputs:
  *     - S new signal space size  M x n_signals
  *     - W unmixing matrix size M x n_signals
- * 
+ *
  */
 void ICA(matrix *mx,
          size_t scaling,
@@ -187,12 +187,12 @@ void ICA_ext(matrix *mx,
     fprintf(stderr, "Error: Invalid input parameters to ICA\n");
     return;
   }
-  
+
   if (mx->row == 0 || mx->col == 0 || n_signals == 0) {
     fprintf(stderr, "Error: Invalid matrix dimensions or number of signals\n");
     return;
   }
-  
+
   if (n_signals > mx->col) {
     fprintf(stderr, "Error: Number of signals cannot exceed matrix columns\n");
     return;
@@ -210,7 +210,7 @@ void ICA_ext(matrix *mx,
   NewMatrix(&a, mx->row, mx->col);
   /* Center and scale the input matrix */
   MatrixPreprocess(mx,
-                   scaling,
+                   (int)scaling,
                    model->colaverage,
                    model->colscaling,
                    a);
@@ -228,13 +228,13 @@ void ICA_ext(matrix *mx,
     }
     /* Initial normalization */
     DVectNorm(w, w);
-    
+
     size_t iter_count = 0;
     double lim = 1.0;
-    
+
     while(lim > thresh && iter_count < max_iter){
       newW(w, mx_whitened, w_new, alpha);
-      
+
       if(ic >= 1){
         decorrelate_weights(model->W, w_new);
       }
@@ -248,7 +248,7 @@ void ICA_ext(matrix *mx,
 
       /* Update weights */
       DVectorCopy(w_new, w);
-      
+
       iter_count++;
     }
 
@@ -258,7 +258,7 @@ void ICA_ext(matrix *mx,
     DelDVector(&w_new);
     DelDVector(&w);
   }
-  
+
   /* S = X_whitened * W */
   ResizeMatrix(model->S, mx_whitened->row, n_signals);
   MatrixDotProduct(mx_whitened, model->W, model->S);
@@ -275,7 +275,7 @@ void ICASignalPredictor(matrix *mx,
     fprintf(stderr, "Error: Invalid input parameters to ICASignalPredictor\n");
     return;
   }
-  
+
   if (mx->col != model->colscaling->size) {
     fprintf(stderr, "Error: Input matrix columns don't match model dimensions\n");
     return;

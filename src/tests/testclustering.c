@@ -35,7 +35,7 @@ void test19()
 
   NewMatrix(&m, maxrow, maxcol);
 
-  srand(maxrow+maxcol);
+  srand((unsigned int)(maxrow+maxcol));
   for(i = 0; i < maxrow; i++){
     for(j = 0; j < maxcol; j++){
       setMatrixValue(m, i, j, rand() % 100);
@@ -66,7 +66,7 @@ void test20()
 
   NewMatrix(&m, maxrow, maxcol);
 
-  srand(maxrow+maxcol);
+  srand((unsigned int)(maxrow+maxcol));
   for(i = 0; i < maxrow; i++){
     for(j = 0; j < maxcol; j++){
       setMatrixValue(m, i, j, rand() % 100);
@@ -83,7 +83,7 @@ void test20()
   time_fast = ((double) (end - start)) / CLOCKS_PER_SEC;
   printf("MDC Fast: %f seconds. Selected %zu instances.\n", time_fast, selections->size);
   // PrintUIVector(selections);
-  
+
   puts("Running MDC (Standard)...");
   start = clock();
   MDC(m, 10, 0, selections_slow, 8);
@@ -111,7 +111,7 @@ void test18()
 
   NewMatrix(&m, maxrow, maxcol);
 
-  srand(maxrow+maxcol);
+  srand((unsigned int)(maxrow+maxcol));
   for(i = 0; i < maxrow; i++){
     for(j = 0; j < maxcol; j++){
       setMatrixValue(m, i, j, rand() % 100);
@@ -139,7 +139,7 @@ void test17()
 
   NewMatrix(&m, maxrow, maxcol);
 
-  srand(maxrow+maxcol);
+  srand((unsigned int)(maxrow+maxcol));
   for(i = 0; i < maxrow; i++){
     for(j = 0; j < maxcol; j++){
       setMatrixValue(m, i, j, rand() % 100);
@@ -304,7 +304,7 @@ void test12()
   NewMatrix(&m, 100, 2);
   for(i = 0; i < 100; i++){
     for(j = 0; j < 2; j++){
-      srand(time(0)+i+j+rand());
+      srand((unsigned int)((size_t)time(0)+i+j+(size_t)rand()));
       setMatrixValue(m, i, j, rand() % 100);
     }
   }
@@ -406,7 +406,7 @@ void test9()
   puts("Test Clustering 9: KMeans random start");
   matrix *m; /* Data matrix */
   uivector *clusters;
-  
+
   NewMatrix(&m, 100, 2);
 
   setMatrixValue(m, 0, 0, 7.651165);  setMatrixValue(m, 0, 1, 33.374403);
@@ -748,7 +748,7 @@ void test3()
   PrintMatrix(m);
   initUIVector(&selections);
 
-  MaxDis(m, floor(0.35*m->row), 0, selections, 4);
+  MaxDis(m, (size_t)floor(0.35*(double)m->row), 0, selections, 4);
 
   puts("Selections");
   PrintUIVector(selections);
@@ -914,7 +914,7 @@ void test1()
   initUIVector(&selections);
 
   /*MDC(m, 0, 0, &selections, 4);*/
-  MaxDis(m, floor(0.35*m->row), 0, selections, 4);
+  MaxDis(m, (size_t)floor(0.35*(double)m->row), 0, selections, 4);
 
   puts("Selections");
 
@@ -938,7 +938,7 @@ void test21()
   maxrow = 2000;
   maxcol = 50;
   size_t n_select = 50;
-  
+
   NewMatrix(&m, maxrow, maxcol);
   srand(42);
   for(i=0; i<maxrow; i++)
@@ -964,13 +964,13 @@ void test21()
   printf("Time: %f s\n", t_fast);
 
   printf("Speedup Fast vs Original: %.2fx\n", t_orig/t_fast);
-    
+
   int match = 1;
   if(sel_fast->size != sel_par->size) match = 0;
   else {
       for(i=0; i<sel_fast->size; i++) {
           if(sel_fast->data[i] != sel_par->data[i]) {
-             match = 0; break; 
+             match = 0; break;
           }
       }
   }
@@ -994,7 +994,7 @@ void test22()
   maxrow = 200000;
   maxcol = 2;
   size_t n_select = 200;
-  
+
   NewMatrix(&m, maxrow, maxcol);
   srand(42);
   for(i=0; i<maxrow; i++)

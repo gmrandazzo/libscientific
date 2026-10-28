@@ -28,10 +28,10 @@
 
 /**
  * UPCA model data structure.
- * 
+ *
  * - **scores** matrix of scores
  * - **loadings** tesnor of loadings
- * - **varexp** vector of explained variance by every component 
+ * - **varexp** vector of explained variance by every component
  * - **colaverage** vector list of column average
  * - **colaverage** vector list of column scaling
  */
@@ -44,12 +44,12 @@ typedef struct{
 } UPCAMODEL;
 
 /**
- *  Initialize an empty UPCAMODEL 
+ *  Initialize an empty UPCAMODEL
  */
 void NewUPCAModel(UPCAMODEL **m);
 
 /**
- * Delete an UPCAMODEL 
+ * Delete an UPCAMODEL
  */
 void DelUPCAModel(UPCAMODEL **m);
 
@@ -57,13 +57,13 @@ int CheckTensor(tensor *X);
 
 /**
  * Unfolded Principal Component Analysis
- * 
+ *
  * @param [in] X input tensor
  * @param [in] npc number of desired principal components
  * @param [in] autoscaling
  * @param [out] m initialized model using NewUPCAModel(...). The datastructure will be populated with results
  * @param [in] scisignal libscientific signal. Default value is NULL
- * 
+ *
  * Available scalings:
  *
  * - 0: No scaling. Only mean centering
@@ -77,7 +77,7 @@ int CheckTensor(tensor *X);
  * - 4: Mean centering and min-max range scaling
  *
  * - 5: Mean centering and level scaling
- * 
+ *
  */
 void UPCA(tensor *X,
           size_t npc,
@@ -86,13 +86,13 @@ void UPCA(tensor *X,
           scisignal *s);
 
 /**
- *  Predict scores given an unfolded principal component analysis and a tensor as input. 
- * 
+ *  Predict scores given an unfolded principal component analysis and a tensor as input.
+ *
  * @param [in] X input tensor
  * @param [in] model computed UPCAMODEL
  * @param [in] npc number of desired principal components
  * @param [out] pscores predicted scores
- * 
+ *
  */
 void UPCAScorePredictor(tensor *X,
                         UPCAMODEL *model,

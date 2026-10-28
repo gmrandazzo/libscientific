@@ -39,7 +39,7 @@ void DelGraph(G **graph)
   size_t i;
   if((*graph)->adjmx != NULL){
     for(i = 0; i < (*graph)->size_nodes; i++){
-      if((*graph)->size_nodes-(i+1) > 0){
+      if((*graph)->size_nodes > i + 1){
         xfree((*graph)->adjmx[i]);
         xfree((*graph)->adjweight[i]);
       }
@@ -62,7 +62,7 @@ void GenerateAdjMX(matrix *dmx, double radius, G **graph)
   if(dmx->row == dmx->col){
     size_t i, j;
     (*graph)->size_nodes = dmx->row;
-    printf("nodes %d\n", (*graph)->size_nodes);
+    printf("nodes %zu\n", (*graph)->size_nodes);
     (*graph)->adjmx = xmalloc(sizeof(int*)*(*graph)->size_nodes);
     (*graph)->adjweight = xmalloc(sizeof(double*)*(*graph)->size_nodes);
     (*graph)->nodes = xmalloc(sizeof(node)*(*graph)->size_nodes);
@@ -70,9 +70,10 @@ void GenerateAdjMX(matrix *dmx, double radius, G **graph)
       (*graph)->nodes[i].x = 0.;
       (*graph)->nodes[i].y = 0.;
       (*graph)->nodes[i].name = strdup("No Node Name");
-      if((*graph)->size_nodes-(i+1) > 0){
-        (*graph)->adjmx[i] = xmalloc(sizeof(int)*(*graph)->size_nodes-(i+1));
-        (*graph)->adjweight[i] = xmalloc(sizeof(double)*(*graph)->size_nodes-(i+1));
+      if((*graph)->size_nodes > i + 1){
+        size_t count = (*graph)->size_nodes - (i + 1);
+        (*graph)->adjmx[i] = xmalloc(sizeof(int) * count);
+        (*graph)->adjweight[i] = xmalloc(sizeof(double) * count);
       }
     }
 
@@ -97,12 +98,13 @@ void GenerateAdjMX(matrix *dmx, double radius, G **graph)
 
 void GenerateNodePositions(G *graph)
 {
-
+  (void)graph;
 }
 
 void FindMinimumPath(G *graph, uivector **minpath)
 {
-
+  (void)graph;
+  (void)minpath;
 }
 
 void PrintGraph(G *graph){

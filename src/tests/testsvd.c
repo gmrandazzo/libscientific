@@ -29,21 +29,21 @@ void test1()
   mx->data[0][0] = 1;  mx->data[0][4] = 2;
   mx->data[1][2] = 3;
   mx->data[3][1] = 4;
-  
+
   PrintMatrix(mx);
-  
+
   initMatrix(&u);
   initMatrix(&v);
   initDVector(&w);
   svd(mx, &u, &w, &v);
-  
+
   puts("U");
   PrintMatrix(u);
   puts("W");
   PrintDVector(w);
   puts("V");
   PrintMatrix(v);
-  
+
   DelMatrix(&u);
   DelMatrix(&v);
   DelDVector(&w);

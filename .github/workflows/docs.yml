@@ -23,12 +23,12 @@ jobs:
           mkdir build
           cd build
           cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release
-          sudo make install 
+          sudo make install
       - name: Install libscientific python package
         run: |
           python -m venv lscivenv
           . lscivenv/bin/activate
-          python -m pip install --upgrade --upgrade-strategy eager --no-cache-dir ./src/python_bindings          
+          python -m pip install --upgrade --upgrade-strategy eager --no-cache-dir ./src/python_bindings
       - name: Build documentation
         run: |
           . lscivenv/bin/activate

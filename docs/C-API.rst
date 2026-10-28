@@ -141,7 +141,7 @@ CPCA Functions
 .. autocfunction:: cpca.h::CPCAScorePredictor
 
 .. autocfunction:: cpca.h::PrintCPCA
-    
+
 PLS Functions
 -------------
 
@@ -202,7 +202,7 @@ LDA Functions
 
 .. autocfunction:: lda.h::LDAStatistics
 
-.. autocfunction:: lda.h::LDAMulticlassStatistics   
+.. autocfunction:: lda.h::LDAMulticlassStatistics
 
 .. autocfunction:: lda.h::PrintLDAModel
 
@@ -222,7 +222,7 @@ UPCA Functions
 
 .. autocfunction:: upca.h::UPCAIndVarPredictor
 
-.. autocfunction:: upca.h::PrintUPCAModel   
+.. autocfunction:: upca.h::PrintUPCAModel
 
 
 Object Selection Functions

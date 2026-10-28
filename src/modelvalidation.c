@@ -52,7 +52,7 @@ void random_kfold_group_generator(matrix *gid,
                                   unsigned int *srand_init)
 {
   /*equal distribution of objects*/
-  ResizeMatrix(gid, ngroups, (size_t)ceil(nobj/(double)ngroups));
+  ResizeMatrix(gid, ngroups, (size_t)ceil((double)nobj / (double)ngroups));
   MatrixSet(gid, -1); /*default is -1*/
   size_t i;
   size_t j;
@@ -62,10 +62,10 @@ void random_kfold_group_generator(matrix *gid,
   for(i = 0; i <  gid->row; i++){
     for(j = 0; j <  gid->col; j++){
       do{
-        n = randInt(0, nobj);
-      } while(ValInMatrix(gid, n) == 1 && k < nobj);
+        n = (size_t)randInt(0, (int)nobj);
+      } while(ValInMatrix(gid, (double)n) == 1 && k < nobj);
       if(k < nobj){
-        gid->data[i][j] = n;
+        gid->data[i][j] = (double)n;
         k++;
       }
       else
@@ -165,10 +165,10 @@ void train_test_split(matrix *x,
 {
   size_t i, j, n, testsize_;
   if(testsize > 1.0 || testsize < 0.){
-    testsize_ = (int)ceil(0.2*x->row); /* default value */
+    testsize_ = (size_t)ceil(0.2 * (double)x->row); /* default value */
   }
   else{
-    testsize_ = (int)ceil(testsize*x->row);
+    testsize_ = (size_t)ceil(testsize * (double)x->row);
   }
 
   ResizeMatrix(x_train, (x->row-testsize_), x->col);
@@ -180,7 +180,7 @@ void train_test_split(matrix *x,
   srand_((uint32_t)(*srand_init));
   for(i = 0; i < testsize_; i++){
     do{
-      n = randInt(0, x->row);
+      n = (size_t)randInt(0, (int)x->row);
     } while(UIVectorHasValue(testids, n) == 0);
     UIVectorAppend(testids, n);
 
@@ -264,7 +264,7 @@ void *PLSRandomGroupCVModel(void *arg_)
 
     NewPLSModel(&subm);
 
-    PLS(x_train, y_train, arg->nlv, arg->xautoscaling, arg->yautoscaling, subm, NULL);
+    PLS(x_train, y_train, arg->nlv, (int)arg->xautoscaling, (int)arg->yautoscaling, subm, NULL);
     initMatrix(&y_test_predicted);
     PLSYPredictorAllLV(x_test, subm, NULL, y_test_predicted);
 
@@ -588,10 +588,10 @@ void BootstrapRandomGroupsCV(MODELINPUT *input,
   if(num_arg > 0){
     va_list valist;
     va_start(valist, num_arg);
-    for (i = 0; i < num_arg; i++){
-      if(i == 0)
+    for (int i_arg = 0; i_arg < num_arg; i_arg++){
+      if(i_arg == 0)
         eparm = va_arg(valist, ELearningParameters);
-      else if(i == 1)
+      else if(i_arg == 1)
         crule = va_arg(valist, CombinationRule);
       else
         continue;
@@ -644,7 +644,7 @@ void BootstrapRandomGroupsCV(MODELINPUT *input,
           arg[th].nlv = nlv;
           arg[th].xautoscaling = xautoscaling;
           arg[th].yautoscaling = yautoscaling;
-          arg[th].srand_init = (size_t) group + mx->row + my->col + iterations + th + iterations_;
+          arg[th].srand_init = (unsigned int)(group + mx->row + my->col + iterations + th + iterations_);
           NewMatrix(&arg[th].predicted_y, my->row, scol);
           NewUIVector(&arg[th].predictioncounter, my->row);
           if(algo == _PLS_ || algo == _PLS_DA_){
@@ -705,7 +705,7 @@ void BootstrapRandomGroupsCV(MODELINPUT *input,
           predicted_y->data[i][j] = sum_ypredictions->data[i][j];
 
         if(pred_residuals != NULL)
-          pred_residuals->data[i][j] = sum_ypredictions->data[i][j] - my->data[i][(size_t)floor(j/nlv)];
+          pred_residuals->data[i][j] = sum_ypredictions->data[i][j] - my->data[i][j / nlv];
       }
     }
 
@@ -766,7 +766,7 @@ void *PLSLOOModel_(void *arg_)
 
   PLSMODEL *subm;
   NewPLSModel(&subm);
-  PLS(arg->x_train, arg->y_train, arg->nlv, arg->xautoscaling, arg->yautoscaling, subm, NULL);
+  PLS(arg->x_train, arg->y_train, arg->nlv, (int)arg->xautoscaling, (int)arg->yautoscaling, subm, NULL);
   /* Predict Y for each latent variable */
   PLSYPredictorAllLV(arg->x_test, subm, NULL, arg->y_test_predicted);
   DelPLSModel(&subm);
@@ -853,10 +853,10 @@ void LeaveOneOut(MODELINPUT *input,
 
   if(num_arg > 0){
     va_start(valist, num_arg);
-    for(i = 0; i < num_arg; i++){
-      if(i == 0)
+    for(int i_arg = 0; i_arg < num_arg; i_arg++){
+      if(i_arg == 0)
         eparm = va_arg(valist, ELearningParameters);
-      else if(i == 1)
+      else if(i_arg == 1)
         crule = va_arg(valist, CombinationRule);
       else
         continue;
@@ -990,7 +990,7 @@ void LeaveOneOut(MODELINPUT *input,
       ResizeMatrix(pred_residuals, my->row, my->col*nlv); /* each component have my->col ypsilon */
       for(i = 0; i < loopredictedy->row; i++){
         for(j = 0; j < loopredictedy->col; j++){
-          pred_residuals->data[i][j] = loopredictedy->data[i][j] - my->data[i][(size_t)floor(j/nlv)];
+          pred_residuals->data[i][j] = loopredictedy->data[i][j] - my->data[i][j / nlv];
         }
       }
     }
@@ -1046,10 +1046,10 @@ void KFoldCV(MODELINPUT *input,
   if(arg > 0){
     va_list valist;
     va_start(valist, arg);
-    for(i = 0; i < arg; i++){
-      if(i == 0)
+    for(int i_arg = 0; i_arg < arg; i_arg++){
+      if(i_arg == 0)
         eparm = va_arg(valist, ELearningParameters);
-      else if(i == 1)
+      else if(i_arg == 1)
         crule = va_arg(valist, CombinationRule);
       else
         continue;
@@ -1111,7 +1111,7 @@ void KFoldCV(MODELINPUT *input,
     NewUIVector(&indx, gmax);
     for(j = 0; j < groups->size; j++){
       size_t g = groups->data[j];
-      gid->data[g][indx->data[g]] = j;
+      gid->data[g][indx->data[g]] = (double)j;
       indx->data[g] += 1;
     }
     DelUIVector(&indx);
@@ -1215,7 +1215,7 @@ void KFoldCV(MODELINPUT *input,
 
       for(i = 0; i < y_predicted->row; i++){
         for(j = 0; j < y_predicted->col; j++){
-          pred_residuals->data[i][j] = y_predicted->data[i][j] - my->data[i][(size_t)floor(j/nlv)];
+          pred_residuals->data[i][j] = y_predicted->data[i][j] - my->data[i][j / nlv];
         }
       }
     }
@@ -1281,15 +1281,15 @@ void PLSRegressionYScramblingPipeline(matrix *mx,
 
   /*Computer r2y*/
   NewPLSModel(&tmpmod);
-  PLS(mx, my, nlv, xautoscaling, yautoscaling, tmpmod, NULL);
+  PLS(mx, my, nlv, (int)xautoscaling, (int)yautoscaling, tmpmod, NULL);
 
   initMatrix(&yrec);
   PLSYPredictorAllLV(mx, tmpmod, NULL, yrec);
   PLSRegressionStatistics(my, yrec, tmpmod->r2y_recalculated, NULL, NULL);
 
   /* Calculate y real vs yscrambled and add other r2 q2 */
-  size_t r2cutoff = GetLVCCutoff(tmpmod->r2y_recalculated);
-  size_t q2cutoff = GetLVCCutoff(tmpq2);
+  size_t r2cutoff = (size_t)GetLVCCutoff(tmpmod->r2y_recalculated);
+  size_t q2cutoff = (size_t)GetLVCCutoff(tmpq2);
 
   for(i = 0; i < my->col; i++){
     r2->data[i] = tmpmod->r2y_recalculated->data[r2cutoff][i];
@@ -1342,7 +1342,7 @@ void PLSDiscriminantAnalysisYScramblingPipeline(matrix *mx,
 
   /*Computer the model in recalculation */
   NewPLSModel(&tmpmod);
-  PLS(mx, my, nlv, xautoscaling, yautoscaling, tmpmod, NULL);
+  PLS(mx, my, nlv, (int)xautoscaling, (int)yautoscaling, tmpmod, NULL);
   initMatrix(&yrec);
   initMatrix(&auc_recalc);
   PLSYPredictorAllLV(mx, tmpmod, NULL, yrec);
@@ -1353,7 +1353,7 @@ void PLSDiscriminantAnalysisYScramblingPipeline(matrix *mx,
   PLSDiscriminantAnalysisStatistics(my, py, NULL, auc_validation, NULL, NULL);
 
   /* Calculate y real vs yscrambled and add other r2 q2 */
-  size_t auc_cutoff = GetLVCCutoff(auc_validation);
+  size_t auc_cutoff = (size_t)GetLVCCutoff(auc_validation);
 
   for(i = 0; i < my->col; i++){
     auc_recalc_->data[i] = auc_recalc->data[auc_cutoff][i];
@@ -1543,6 +1543,7 @@ void YScrambling(MODELINPUT *input,
                  size_t nthreads,
                  scisignal *s)
 {
+  (void)s;
   size_t i, j, k, it, outcols;
   double ytmp;
 
@@ -1552,7 +1553,7 @@ void YScrambling(MODELINPUT *input,
   mx = input->mx;
   my = input->my;
 
-  srand_(mx->row+mx->col+my->col+iterations);
+  srand_((uint32_t)(mx->row+mx->col+my->col+iterations));
 
   initMatrix(&randomY);
   MatrixCopy(my, &randomY);
@@ -1573,10 +1574,11 @@ void YScrambling(MODELINPUT *input,
     outcols = my->col;
   }
   else{
-    int n_classes = getNClasses(input->my);
-    if(n_classes == 2){
-      n_classes = 1;
+    int nc = getNClasses(input->my);
+    if(nc == 2){
+      nc = 1;
     }
+    size_t n_classes = (nc > 0) ? (size_t)nc : 0;
     NewDVector(&corrpermobs, n_classes);
     NewDVector(&coeff_int, n_classes);
     NewDVector(&coeff_valid, n_classes);
@@ -1641,7 +1643,7 @@ void YScrambling(MODELINPUT *input,
     i = randomY->row;
     while(i > 1){
       i = i - 1;
-      j = randInt(0, i);
+      j = (size_t)randInt(0, (int)i);
       for(k = 0; k < randomY->col; k++){
         ytmp = randomY->data[j][k];
         randomY->data[j][k] = randomY->data[i][k];

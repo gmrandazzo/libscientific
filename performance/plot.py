@@ -13,7 +13,7 @@ def plot(d, savefname="input_vs_something.png", y_label='CPU time (sec)'):
     p.set_xlabel('input size (instances x features)', fontdict={'size': 15})
     p.set_ylabel(y_label, fontdict={'size': 15})
     p.get_figure().savefig(savefname)
-    
+
 def prepare_input_size_vs_cpu_time(ds):
     tp = {}
     indx = []
@@ -39,7 +39,3 @@ for i in range(1, len(sys.argv)):
     ds[sys.argv[i]] = read_csv_file(sys.argv[i])
 
 plot(prepare_input_size_vs_cpu_time(ds), "input_vs_cputime.png", 'CPU time (sec)')
-
-    
-            
-

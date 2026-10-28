@@ -53,7 +53,7 @@ void test5()
   UPCA(t, 2, 1, m, NULL);
   initMatrix(&ps);
   UPCAScorePredictor(t, m,2, ps);
-  
+
   for(i = 0; i < m->scores->row; i++){
     for(j = 0; j < m->scores->col; j++){
       if(FLOAT_EQ(m->scores->data[i][j], ps->data[i][j], 1E-6)){
@@ -189,7 +189,7 @@ void test2()
     NewTensorMatrix(t, i, 30, 10);
   }
 
-  srand(time(0));
+  srand((unsigned int)time(0));
   for(i = 0; i < t->order; i++){
     for(j = 0; j < t->m[i]->row; j++){
       for(k = 0; k < t->m[i]->col; k++)

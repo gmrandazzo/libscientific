@@ -28,7 +28,7 @@
 
 /**
  * CPCA model data structure.
- * 
+ *
  * - **block_scores** matrix of scores
  * - **block_loadings** matrix of loadings
  * - **super_scores** matrix of super scores
@@ -63,13 +63,13 @@ void DelCPCAModel(CPCAMODEL **m);
 
 /**
  * Consensus Principal Component Analysis
- * 
+ *
  * @param [in] x libscientific tensor data input
  * @param [in] scaling scaling type expressed as unsigned int type
  * @param [in] npc number of desired principal components
  * @param [out] model initialized model using NewCPCAModel(...). The datastructure will be populated with results
- * 
- * 
+ *
+ *
  * Available scalings:
  *
  * - 0: No scaling. Only mean centering
@@ -90,7 +90,7 @@ void CPCA(tensor *x, int scaling, size_t npc, CPCAMODEL *model);
 
 /**
  * Project objects in a CPCA model.
- * 
+ *
  * @param [in] x libscientific tensor data input
  * @param [in] model CPCA model
  * @param [in] npc number of desired principal components

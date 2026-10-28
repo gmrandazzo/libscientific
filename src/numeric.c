@@ -62,11 +62,11 @@ double rand_()
 {
   struct xorshift128_state state;
   if(XOR128_SEED  == 0)
-    XOR128_SEED = time(NULL);
+    XOR128_SEED = (uint32_t)time(NULL);
   state.x[0] = XOR128_SEED;
-  state.x[1] = XOR128_SEED ^ 0x5a7b96158bd42e27ULL;
-  state.x[2] = XOR128_SEED ^ 0x3a8e9f2baf7e592bULL;
-  state.x[3] = XOR128_SEED ^ 0x0b243e4b4b2aa8d3ULL;
+  state.x[1] = XOR128_SEED ^ 0x8bd42e27U;
+  state.x[2] = XOR128_SEED ^ 0xaf7e592bU;
+  state.x[3] = XOR128_SEED ^ 0x4b2aa8d3U;
   XOR128_SEED = generate_seed(XOR128_SEED);
   return xorshift128(&state);
 }
@@ -75,13 +75,14 @@ int randInt(int low, int high)
 {
   struct xorshift128_state state;
   if(XOR128_SEED  == 0)
-    XOR128_SEED = time(NULL);
+    XOR128_SEED = (uint32_t)time(NULL);
   state.x[0] = XOR128_SEED;
-  state.x[1] = XOR128_SEED ^ 0x5a7b96158bd42e27ULL;
-  state.x[2] = XOR128_SEED ^ 0x3a8e9f2baf7e592bULL;
-  state.x[3] = XOR128_SEED ^ 0x0b243e4b4b2aa8d3ULL;
+  state.x[1] = XOR128_SEED ^ 0x8bd42e27U;
+  state.x[2] = XOR128_SEED ^ 0xaf7e592bU;
+  state.x[3] = XOR128_SEED ^ 0x4b2aa8d3U;
   XOR128_SEED = generate_seed(XOR128_SEED);
-  return (int) (xorshift128(&state) % ((high) - low) + low);
+  uint32_t diff = (uint32_t)(high - low);
+  return (int)(xorshift128(&state) % diff) + low;
 }
 
 double randDouble(double low, double high)
@@ -91,11 +92,11 @@ double randDouble(double low, double high)
    */
   struct xorshift128_state state;
   if(XOR128_SEED  == 0)
-    XOR128_SEED = time(NULL);
+    XOR128_SEED = (uint32_t)time(NULL);
   state.x[0] = XOR128_SEED;
-  state.x[1] = XOR128_SEED ^ 0x5a7b96158bd42e27ULL;
-  state.x[2] = XOR128_SEED ^ 0x3a8e9f2baf7e592bULL;
-  state.x[3] = XOR128_SEED ^ 0x0b243e4b4b2aa8d3ULL;
+  state.x[1] = XOR128_SEED ^ 0x8bd42e27U;
+  state.x[2] = XOR128_SEED ^ 0xaf7e592bU;
+  state.x[3] = XOR128_SEED ^ 0x4b2aa8d3U;
   XOR128_SEED = generate_seed(XOR128_SEED);
   double range = (high - low);
   double div = 4294967296.0 / range;
@@ -143,8 +144,8 @@ void StochasticUniversalSample(dvector *fitness, size_t nselect, size_t init, ui
     }while(1);
   }
   else{*/
-    sum = 0.f;
-    srand_(init);
+    sum = 0.0;
+    srand_((uint32_t)init);
     ptr = (double)rand_()/(double)RAND_MAX;
     for(i = 0; i < fitness->size; i++){
       if(k < nselect){
@@ -168,8 +169,8 @@ void RouletteWheelselection(dvector *fitness, size_t nselect, size_t init, uivec
   size_t i, k;
   double sum, ptr;
   k = 0;
-  sum = 0.f;
-  srand_(init);
+  sum = 0.0;
+  srand_((uint32_t)init);
 
   for(k = 0; k < nselect; k++){
     ptr = (double)rand_()/(double)RAND_MAX;

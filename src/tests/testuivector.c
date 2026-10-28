@@ -22,7 +22,7 @@
 /* Extend two vector into one vector*/
 void test3()
 {
-   int i;
+  size_t i;
   uivector *v1;
   uivector *v2;
   uivector *v1v2;
@@ -62,7 +62,7 @@ void test3()
 /* Initialize the uivector by using initUIVector function and then append values with UIVectorAppend function*/
 void test2()
 {
-  int i;
+  size_t i;
   uivector *v;
 
   printf("Test 2\n");
@@ -88,7 +88,7 @@ void test2()
 /* Allocate the vector by using the NewDVector function */
 void test1()
 {
-  int i;
+  size_t i;
   uivector *v;
 
   printf("Test 1\n");

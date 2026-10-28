@@ -18,21 +18,33 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import ctypes
 import os
+
 import libscientific.matrix as mx
 import libscientific.vector as vect
 from libscientific.loadlibrary import load_libscientific_library
 
-
 lsci = load_libscientific_library()
 
-lsci.MDC.argtypes = [ctypes.POINTER(mx.MATRIX),
-                     ctypes.c_size_t,
-                     ctypes.c_int,
-                     ctypes.POINTER(vect.UIVECTOR),
-                     ctypes.c_size_t]
+lsci.MDC.argtypes = [
+    ctypes.POINTER(mx.MATRIX),
+    ctypes.c_size_t,
+    ctypes.c_int,
+    ctypes.POINTER(vect.UIVECTOR),
+    ctypes.c_size_t,
+]
 lsci.MDC.restype = None
 
-def most_descriptive_compound(x_input, nobjects):
+lsci.MDC_Fast.argtypes = [
+    ctypes.POINTER(mx.MATRIX),
+    ctypes.c_size_t,
+    ctypes.c_int,
+    ctypes.POINTER(vect.UIVECTOR),
+    ctypes.c_size_t,
+]
+lsci.MDC_Fast.restype = None
+
+
+def most_descriptive_compound(x_input, nobjects, metric=0, nthreads=None):
     """
     Most Descriptive Compound Selection Algorithm.
 
@@ -40,10 +52,14 @@ def most_descriptive_compound(x_input, nobjects):
     an input matrix based on the specified number of objects to select.
 
     Parameters:
-        x_input : List[List]
+        x_input : List[List] or Matrix
             Input matrix.
         nobjects : int
             Number of objects to select.
+        metric : int, optional
+            Metric type: 0 euclidean (default), 1 manhattan, 2 cosine distance.
+        nthreads : int, optional
+            Number of CPU threads to use. Defaults to os.cpu_count().
 
     Returns:
         List[int] : A list of selected object/row IDs.
@@ -55,15 +71,21 @@ def most_descriptive_compound(x_input, nobjects):
     >>> mdc_ids
     [74, 97, 95, 7, 35, 25, 50, 10, 32, 59]
     """
+    threads = nthreads if nthreads is not None else (os.cpu_count() or 1)
     mdcxalloc = False
-    if "Matrix" not in str(type(x_input)):
-        x_input_ = mx.new_matrix(x_input)
+    if isinstance(x_input, mx.Matrix):
+        x_input_ = x_input.mtx
+    elif isinstance(x_input, ctypes.POINTER(mx.MATRIX)):
+        x_input_ = x_input
+    elif "numpy" in str(type(x_input)):
+        x_input_ = mx.matrix_from_numpy(x_input)
         mdcxalloc = True
     else:
-        x_input_ = x_input
+        x_input_ = mx.new_matrix(x_input)
+        mdcxalloc = True
 
     obj_sel = vect.init_uivector()
-    lsci.MDC(x_input_, nobjects, 0, obj_sel, os.cpu_count())
+    lsci.MDC(x_input_, nobjects, metric, obj_sel, threads)
     obj_sel_lst = vect.uivector_tolist(obj_sel)
     vect.del_uivector(obj_sel)
 
@@ -74,15 +96,46 @@ def most_descriptive_compound(x_input, nobjects):
     return obj_sel_lst
 
 
-lsci.MaxDis_Fast.argtypes = [ctypes.POINTER(mx.MATRIX),
-                             ctypes.c_size_t,
-                             ctypes.c_int,
-                             ctypes.POINTER(vect.UIVECTOR),
-                             ctypes.c_size_t]
+def most_descriptive_compound_fast(x_input, nobjects, metric=0, nthreads=None):
+    """
+    Most Descriptive Compound Selection Algorithm (Memory-Efficient Fast Implementation).
+    """
+    threads = nthreads if nthreads is not None else (os.cpu_count() or 1)
+    mdcxalloc = False
+    if isinstance(x_input, mx.Matrix):
+        x_input_ = x_input.mtx
+    elif isinstance(x_input, ctypes.POINTER(mx.MATRIX)):
+        x_input_ = x_input
+    elif "numpy" in str(type(x_input)):
+        x_input_ = mx.matrix_from_numpy(x_input)
+        mdcxalloc = True
+    else:
+        x_input_ = mx.new_matrix(x_input)
+        mdcxalloc = True
+
+    obj_sel = vect.init_uivector()
+    lsci.MDC_Fast(x_input_, nobjects, metric, obj_sel, threads)
+    obj_sel_lst = vect.uivector_tolist(obj_sel)
+    vect.del_uivector(obj_sel)
+
+    if mdcxalloc is True:
+        mx.del_matrix(x_input_)
+        del x_input_
+
+    return obj_sel_lst
+
+
+lsci.MaxDis_Fast.argtypes = [
+    ctypes.POINTER(mx.MATRIX),
+    ctypes.c_size_t,
+    ctypes.c_int,
+    ctypes.POINTER(vect.UIVECTOR),
+    ctypes.c_size_t,
+]
 lsci.MaxDis_Fast.restype = None
 
 
-def max_dissimilarity_selection(x_input, nobjects):
+def max_dissimilarity_selection(x_input, nobjects, metric=0, nthreads=None):
     """
     Max Dissimilarity Compound Selection Algorithm.
 
@@ -91,10 +144,14 @@ def max_dissimilarity_selection(x_input, nobjects):
     number of objects to select.
 
     Parameters:
-        x_input : List[List]
+        x_input : List[List] or Matrix
             Input matrix.
         nobjects : int
             Number of objects to select.
+        metric : int, optional
+            Metric type: 0 euclidean (default), 1 manhattan, 2 cosine distance.
+        nthreads : int, optional
+            Number of CPU threads to use. Defaults to os.cpu_count().
 
     Returns:
         List[int] : A list of selected object/row IDs.
@@ -106,15 +163,21 @@ def max_dissimilarity_selection(x_input, nobjects):
     >>> mdis_ids
     [57, 89, 88, 6, 23, 94, 56, 61, 39, 24]
     """
+    threads = nthreads if nthreads is not None else (os.cpu_count() or 1)
     mdisxalloc = False
-    if "Matrix" not in str(type(x_input)):
-        x_input_ = mx.new_matrix(x_input)
+    if isinstance(x_input, mx.Matrix):
+        x_input_ = x_input.mtx
+    elif isinstance(x_input, ctypes.POINTER(mx.MATRIX)):
+        x_input_ = x_input
+    elif "numpy" in str(type(x_input)):
+        x_input_ = mx.matrix_from_numpy(x_input)
         mdisxalloc = True
     else:
-        x_input_ = x_input
+        x_input_ = mx.new_matrix(x_input)
+        mdisxalloc = True
 
     obj_sel = vect.init_uivector()
-    lsci.MaxDis_Fast(x_input_, nobjects, 0, obj_sel, os.cpu_count())
+    lsci.MaxDis_Fast(x_input_, nobjects, metric, obj_sel, threads)
     obj_sel_lst = vect.uivector_tolist(obj_sel)
     vect.del_uivector(obj_sel)
 
@@ -125,17 +188,56 @@ def max_dissimilarity_selection(x_input, nobjects):
     return obj_sel_lst
 
 
+lsci.KMeansppCenters.argtypes = [
+    ctypes.POINTER(mx.MATRIX),
+    ctypes.c_size_t,
+    ctypes.POINTER(vect.UIVECTOR),
+    ctypes.c_int,
+]
+lsci.KMeansppCenters.restype = None
 
-lsci.KMeans.argtypes = [ctypes.POINTER(mx.MATRIX),
-                        ctypes.c_size_t,
-                        ctypes.c_int,
-                        ctypes.POINTER(vect.UIVECTOR),
-                        ctypes.POINTER(mx.MATRIX),
-                        ctypes.c_size_t]
+
+def k_means_pp_centers(x_input, n_centers, nthreads=None):
+    """
+    KMeans++ Centers Method: Select n_centers diverse seeds.
+    """
+    threads = nthreads if nthreads is not None else (os.cpu_count() or 1)
+    alloc = False
+    if isinstance(x_input, mx.Matrix):
+        x_input_ = x_input.mtx
+    elif isinstance(x_input, ctypes.POINTER(mx.MATRIX)):
+        x_input_ = x_input
+    elif "numpy" in str(type(x_input)):
+        x_input_ = mx.matrix_from_numpy(x_input)
+        alloc = True
+    else:
+        x_input_ = mx.new_matrix(x_input)
+        alloc = True
+
+    obj_sel = vect.init_uivector()
+    lsci.KMeansppCenters(x_input_, n_centers, obj_sel, threads)
+    obj_sel_lst = vect.uivector_tolist(obj_sel)
+    vect.del_uivector(obj_sel)
+
+    if alloc:
+        mx.del_matrix(x_input_)
+        del x_input_
+
+    return obj_sel_lst
+
+
+lsci.KMeans.argtypes = [
+    ctypes.POINTER(mx.MATRIX),
+    ctypes.c_size_t,
+    ctypes.c_int,
+    ctypes.POINTER(vect.UIVECTOR),
+    ctypes.POINTER(mx.MATRIX),
+    ctypes.c_size_t,
+]
 lsci.KMeans.restype = None
 
 
-def k_means_plus_plus(x_input, n_clusters):
+def k_means_plus_plus(x_input, n_clusters, nthreads=None):
     """
     K-Means++ Clustering Algorithm (kmeans + David Arthur initialization).
 
@@ -143,10 +245,12 @@ def k_means_plus_plus(x_input, n_clusters):
     to create the specified number of clusters.
 
     Parameters:
-        x_input : List[List]
+        x_input : List[List] or Matrix
             Input matrix.
         n_clusters : int
             Number of clusters.
+        nthreads : int, optional
+            Number of threads to use. Defaults to os.cpu_count().
 
     Returns:
         List[int] : A list containing the cluster assignments for each input point.
@@ -158,20 +262,21 @@ def k_means_plus_plus(x_input, n_clusters):
     >>> clusters
     [1, 2, 0, 0, 0, 0, 2, 2, 0, 0, 0, 1, ..., 0, 1, 1, 2, 2]
     """
+    threads = nthreads if nthreads is not None else (os.cpu_count() or 1)
     kmppxalloc = False
-    if "Matrix" not in str(type(x_input)):
-        x_input_ = mx.new_matrix(x_input)
+    if isinstance(x_input, mx.Matrix):
+        x_input_ = x_input.mtx
+    elif isinstance(x_input, ctypes.POINTER(mx.MATRIX)):
+        x_input_ = x_input
+    elif "numpy" in str(type(x_input)):
+        x_input_ = mx.matrix_from_numpy(x_input)
         kmppxalloc = True
     else:
-        x_input_ = x_input
+        x_input_ = mx.new_matrix(x_input)
+        kmppxalloc = True
 
     labels = vect.init_uivector()
-    lsci.KMeans(x_input_,
-                n_clusters,
-                1,
-                labels,
-                None,
-                os.cpu_count())
+    lsci.KMeans(x_input_, n_clusters, 1, labels, None, threads)
     labels_lst = vect.uivector_tolist(labels)
     vect.del_uivector(labels)
     if kmppxalloc is True:

@@ -17,12 +17,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import ctypes
+
 from libscientific.loadlibrary import load_libscientific_library
 
 lsci = load_libscientific_library()
 
 
-lsci.missing_value.argtypes = None
+lsci.missing_value.argtypes = []
 lsci.missing_value.restype = ctypes.c_double
 
 

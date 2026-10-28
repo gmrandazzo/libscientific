@@ -169,13 +169,13 @@ void MatrixWhitening(matrix *X,
     NewMatrix(&D, s->col, s->col);
     for(i = 0; i < s->col; i++)
       D->data[i][i] = 1/sqrt(s->data[i][i]);
-    
+
     NewMatrix(&u_T, u->col, u->row);
     MatrixTranspose(u, u_T);
     NewMatrix(&a, D->row, u_T->col);
     MatrixDotProduct(D, u_T, a);
     DelMatrix(&u_T);
-    
+
     ResizeMatrix(whitening_matrix, u->row, a->col);
     MatrixDotProduct(u, a, whitening_matrix);
 
@@ -187,7 +187,7 @@ void MatrixWhitening(matrix *X,
     NewMatrix(&X_whiten_, X->row, X->col);
     MatrixDotProduct(X, whitening_matrix, X_whiten_);
     MatrixCopy(X_whiten_, &X_whiten);
-    
+
     DelMatrix(&X_whiten_);
     DelMatrix(&D);
     DelMatrix(&Xcov);
@@ -223,4 +223,3 @@ void TensorPreprocess(tensor *orig,
     DelDVector(&colscaling);
   }
 }
-

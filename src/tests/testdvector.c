@@ -24,7 +24,7 @@
 /* Allocate the vector by using the NewDVector function and remove element by element using DVectorRemoveAt */
 void test6()
 {
-  int i;
+  size_t i;
   dvector *v;
 
   printf("Test 6\n");
@@ -32,7 +32,7 @@ void test6()
   NewDVector(&v, 21);
 
   for(i = 0; i < 21; i++){
-    v->data[i] = i;
+    v->data[i] = (double)i;
   }
 
   printf("Appending 123.4 to vector\n");
@@ -72,7 +72,7 @@ void test5()
 {
   size_t i;
   dvector *v;
-  srand(time(0));
+  srand((unsigned int)time(0));
   NewDVector(&v, 10);
   puts("Creating vector..");
   for(i = 0; i < v->size; i++){
@@ -97,7 +97,7 @@ void test5()
 void test4_1(dvector **v1)
 {
   size_t i;
-  srand(time(0));
+  srand((unsigned int)time(0));
   NewDVector(v1, 100);
   printf("Creating v1\n");
   for(i = 0; i < (*v1)->size; i++){
@@ -107,7 +107,7 @@ void test4_1(dvector **v1)
 
 void test4()
 {
-   int i;
+  size_t i;
   dvector *v1;
   test4_1(&v1);
 
@@ -121,7 +121,7 @@ void test4()
 /* Extend two vector into one vector*/
 void test3()
 {
-   int i;
+  size_t i;
   dvector *v1;
   dvector *v2;
   dvector *v1v2;
@@ -132,8 +132,8 @@ void test3()
 
   printf("Creating v1\n");
   for(i = 1; i < 100; i++){
-    double a = i*i;
-    double val = i/(a);
+    double a = (double)(i*i);
+    double val = (double)i/(a);
     DVectorAppend(v1, val);
   }
 
@@ -143,7 +143,7 @@ void test3()
   NewDVector(&v2, 100);
 
   for(i = 0; i < v2->size; i++){
-    v2->data[i] = i;
+    v2->data[i] = (double)i;
   }
 
   printf("Appending v1 to v2\n");
@@ -162,7 +162,7 @@ void test3()
 /* Initialize the dvector by using initDVector function and then append values with DVectorAppend function*/
 void test2()
 {
-  int i;
+  size_t i;
   dvector *v;
 
   printf("Test 2\n");
@@ -171,8 +171,8 @@ void test2()
 
   printf("Appending 100 value\n");
   for(i = 1; i < 100; i++){
-    double a = i*i;
-    double val = i/(a);
+    double a = (double)(i*i);
+    double val = (double)i/(a);
 
     DVectorAppend(v, val);
   }
@@ -189,7 +189,7 @@ void test2()
 /* Allocate the vector by using the NewDVector function */
 void test1()
 {
-  int i;
+  size_t i;
   dvector *v;
 
   printf("Test 1\n");
@@ -197,7 +197,7 @@ void test1()
   NewDVector(&v, 100);
 
   for(i = 0; i < 100; i++){
-    v->data[i] = i;
+    v->data[i] = (double)i;
   }
 
   printf("Appending 123.4 to vector\n");

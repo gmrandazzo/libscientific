@@ -52,16 +52,16 @@ void PrepareMatrix4PCA(tensor *t, CPCAMODEL *model, matrix *X)
 void test4()
 {
   puts("Test 4: CPCA on 100x500x3 tensor ");
-  int i, j, k;
-  int nobj = 100;
-  int nvars = 500;
-  int norder = 3;
-  tensor *t; // Definition of the input matrix 
+  size_t i, j, k;
+  size_t nobj = 100;
+  size_t nvars = 500;
+  size_t norder = 3;
+  tensor *t; // Definition of the input matrix
   CPCAMODEL *model; // Definition of the PCA model
   NewTensor(&t, norder);
   for(k = 0; k < norder; k++){
       NewTensorMatrix(t, k, nobj, nvars);
-      srand_(time(0));
+      srand_((uint32_t)time(0));
       for(i = 0; i < nobj; i++){
           for(j = 0; j < nvars; j++){
               t->m[k]->data[i][j] = randDouble(0,100);
@@ -93,7 +93,7 @@ void test3()
   NewTensor(&t, colsizes->size);
   for(k = 0; k < colsizes->size; k++){
     NewTensorMatrix(t, k, rowsize, colsizes->data[k]);
-    srand(rowsize+colsizes->data[k]);
+    srand((unsigned int)(rowsize+colsizes->data[k]));
     for(i = 0; i < rowsize; i++){
       for(j = 0; j < colsizes->data[k]; j++){
         t->m[k]->data[i][j] = rand() % 100;
@@ -171,7 +171,7 @@ void test2()
   double d1 = -0.44;
   double d2 = +0.44;
 
-  srand_(rowsize+colsize+nblocks);
+  srand_((uint32_t)(rowsize+colsize+nblocks));
   NewTensor(&t, nblocks);
   for(k = 0; k < nblocks; k++){
     NewTensorMatrix(t, k, rowsize, colsize);
@@ -218,7 +218,7 @@ void test1(){
   NewTensor(&t, colsizes->size);
   for(k = 0; k < colsizes->size; k++){
     NewTensorMatrix(t, k, rowsize, colsizes->data[k]);
-    srand(rowsize+colsizes->data[k]);
+    srand((unsigned int)(rowsize+colsizes->data[k]));
     for(i = 0; i < rowsize; i++){
       for(j = 0; j < colsizes->data[k]; j++){
         t->m[k]->data[i][j] = rand() % 100;
