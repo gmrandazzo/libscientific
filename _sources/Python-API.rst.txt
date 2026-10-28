@@ -1,5 +1,5 @@
 ********************
-Pyhton API Reference
+Python API Reference
 ********************
 
 libscientific.matrix module
@@ -66,7 +66,6 @@ libscientific.loadlibrary module
    :undoc-members:
    :show-inheritance:
 
-
 libscientific.misc module
 -------------------------
 
@@ -87,6 +86,14 @@ libscientific.pls module
 ------------------------
 
 .. automodule:: libscientific.pls
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+libscientific.model_io module
+-----------------------------
+
+.. automodule:: libscientific.model_io
    :members:
    :undoc-members:
    :show-inheritance:

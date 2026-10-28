@@ -7,7 +7,7 @@ Getting started in C
 ====================
 
 
-Every data type object in libscientific is stored in the HEAP and then supports 
+Every data type object in libscientific is stored in the HEAP and then supports
 dynamic memory allocation.
 
 Hence, every data object such as matrix, vectors, tensors, models, in general,
@@ -197,8 +197,8 @@ Then print it to the terminal using "PrintTensor();"
 Initialize an empty tensor and append different matrix to it
 ------------------------------------------------------------
 
-An empty tensor is an object with matrix equal to 0. In that 
-object we can add dynamically different matrix with different 
+An empty tensor is an object with matrix equal to 0. In that
+object we can add dynamically different matrix with different
 rows and columns.
 
 In this example we will initialize an empty tensor and we add different matrix to it
@@ -263,3 +263,68 @@ Here is a simple example that shows how to calculate a PLS model.
 .. literalinclude:: c_code_examples/plsexample1.c
    :language: c
    :linenos:
+
+
+Model persistence and serialization (.lsm and .lsb)
+===================================================
+
+Libscientific provides zero-dependency binary serialization for trained models.
+Single models are stored in the ``.lsm`` format, while multiple related models can be archived
+into a unified project bundle using the ``.lsb`` format with CRC32 integrity verification.
+
+Saving and loading a single model (.lsm)
+----------------------------------------
+
+.. code-block:: c
+   :linenos:
+
+   #include <scientific.h>
+
+   /* Train PCA model */
+   PCAMODEL *pca = NULL;
+   NewPCAModel(&pca);
+   PCA(data_matrix, 3, pca);
+
+   /* Save trained model to disk */
+   SavePCAModel("pca_model.lsm", pca);
+
+   /* Load model back */
+   PCAMODEL *loaded_pca = NULL;
+   NewPCAModel(&loaded_pca);
+   ImportPCAModel("pca_model.lsm", loaded_pca);
+
+   /* Clean up resources */
+   DelPCAModel(&pca);
+   DelPCAModel(&loaded_pca);
+
+
+Working with multi-model bundles (.lsb)
+---------------------------------------
+
+Bundles allow bundling multiple models together into a single file with a Table of Contents:
+
+.. code-block:: c
+   :linenos:
+
+   #include <scientific.h>
+
+   /* Create a new bundle */
+   MODEL_BUNDLE *bundle = NewModelBundle();
+
+   /* Add models to the bundle */
+   ModelBundleAddModel(bundle, "screening_pca", MODEL_TYPE_PCA, pca);
+   ModelBundleAddModel(bundle, "activity_pls", MODEL_TYPE_PLS, pls);
+
+   /* Save bundle to disk */
+   SaveModelBundle("project_models.lsb", bundle);
+
+   /* Import bundle back */
+   MODEL_BUNDLE *loaded_bundle = ImportModelBundle("project_models.lsb");
+
+   /* Retrieve a specific model by name */
+   ModelType type;
+   PCAMODEL *retrieved_pca = (PCAMODEL*)ModelBundleGetModel(loaded_bundle, "screening_pca", &type);
+
+   /* Free bundle memory */
+   DelModelBundle(&bundle, 0);
+   DelModelBundle(&loaded_bundle, 1);

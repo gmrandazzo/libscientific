@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>model_io.h &#8212; libscientific 1.8.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=2bf1fcf8" />
+    
+    <script src="../_static/documentation_options.js?v=b51e6972"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.8.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">model_io.h</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for model_io.h</h1><div class="highlight"><pre>
+<span></span><span class="cm">/* Provides zero-dependency binary model container serialization (.lsm / .lsb).</span>
+<span class="cm"> * Copyright (C) 2026 designed, written and maintained by Giuseppe Marco Randazzo &lt;gmrandazzo@gmail.com&gt;</span>
+<span class="cm"> *</span>
+<span class="cm"> * This program is free software: you can redistribute it and/or modify</span>
+<span class="cm"> * it under the terms of the GNU Affero General Public License as published by</span>
+<span class="cm"> * the Free Software Foundation, either version 3 of the License, or</span>
+<span class="cm"> * (at your option) any later version.</span>
+<span class="cm"> *</span>
+<span class="cm"> * This program is distributed in the hope that it will be useful,</span>
+<span class="cm"> * but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="cm"> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the</span>
+<span class="cm"> * GNU Affero General Public License for more details.</span>
+<span class="cm"> *</span>
+<span class="cm"> * You should have received a copy of the GNU Affero General Public License</span>
+<span class="cm"> * along with this program. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
+<span class="cm"> */</span>
+
+<span class="cp">#ifndef MODEL_IO_H</span>
+<div class="viewcode-block" id="c.MODEL_IO_H"><span class="cp">#define MODEL_IO_H</span></div>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdint.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdbool.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stddef.h&gt;</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;pca.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;pls.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;cpca.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;mlr.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;lda.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;ica.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;upca.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;upls.h&quot;</span>
+
+<span class="cp">#ifdef __cplusplus</span>
+<span class="k">extern</span><span class="w"> </span><span class="s">&quot;C&quot;</span><span class="w"> </span><span class="p">{</span>
+<span class="cp">#endif</span>
+
+<div class="viewcode-block" id="c.LSCM_MAGIC"><span class="cp">#define LSCM_MAGIC 0x4D43534CU </span><span class="cm">/* &quot;LSCM&quot; in little-endian */</span></div>
+<div class="viewcode-block" id="c.LSCM_VERSION"><span class="cp">#define LSCM_VERSION 1U</span></div>
+<div class="viewcode-block" id="c.LSCM_MAX_NAME_LEN"><span class="cp">#define LSCM_MAX_NAME_LEN 64</span></div>
+
+<div class="viewcode-block" id="c.ModelType"><span class="cm">/**</span>
+<span class="cm"> * Enumeration of supported model types in the LSCM container format.</span>
+<span class="cm"> */</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="p">{</span>
+<div class="viewcode-block" id="c.ModelType.MODEL_TYPE_UNKNOWN"><span class="w">    </span><span class="n">MODEL_TYPE_UNKNOWN</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span></div>
+<div class="viewcode-block" id="c.ModelType.MODEL_TYPE_PCA"><span class="w">    </span><span class="n">MODEL_TYPE_PCA</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span></div>
+<div class="viewcode-block" id="c.ModelType.MODEL_TYPE_PLS"><span class="w">    </span><span class="n">MODEL_TYPE_PLS</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span></div>
+<div class="viewcode-block" id="c.ModelType.MODEL_TYPE_CPCA"><span class="w">    </span><span class="n">MODEL_TYPE_CPCA</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span></div>
+<div class="viewcode-block" id="c.ModelType.MODEL_TYPE_MLR"><span class="w">    </span><span class="n">MODEL_TYPE_MLR</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span></div>
+<div class="viewcode-block" id="c.ModelType.MODEL_TYPE_LDA"><span class="w">    </span><span class="n">MODEL_TYPE_LDA</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span></div>
+<div class="viewcode-block" id="c.ModelType.MODEL_TYPE_ICA"><span class="w">    </span><span class="n">MODEL_TYPE_ICA</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span></div>
+<div class="viewcode-block" id="c.ModelType.MODEL_TYPE_UPCA"><span class="w">    </span><span class="n">MODEL_TYPE_UPCA</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span></div>
+<div class="viewcode-block" id="c.ModelType.MODEL_TYPE_UPLS"><span class="w">    </span><span class="n">MODEL_TYPE_UPLS</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span></div>
+<div class="viewcode-block" id="c.ModelType.MODEL_TYPE_ANY"><span class="w">    </span><span class="n">MODEL_TYPE_ANY</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="mi">255</span></div>
+<span class="p">}</span><span class="w"> </span><span class="n">ModelType</span><span class="p">;</span></div>
+
+<div class="viewcode-block" id="c.LSCMStatus"><span class="cm">/**</span>
+<span class="cm"> * Error codes returned by model I/O routines.</span>
+<span class="cm"> */</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="p">{</span>
+<div class="viewcode-block" id="c.LSCMStatus.LSCM_OK"><span class="w">    </span><span class="n">LSCM_OK</span><span class="w">                 </span><span class="o">=</span><span class="w">  </span><span class="mi">0</span><span class="p">,</span></div>
+<div class="viewcode-block" id="c.LSCMStatus.LSCM_ERR_FILE_NOT_FOUND"><span class="w">    </span><span class="n">LSCM_ERR_FILE_NOT_FOUND</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">-1</span><span class="p">,</span></div>
+<div class="viewcode-block" id="c.LSCMStatus.LSCM_ERR_IO"><span class="w">    </span><span class="n">LSCM_ERR_IO</span><span class="w">             </span><span class="o">=</span><span class="w"> </span><span class="mi">-2</span><span class="p">,</span></div>
+<div class="viewcode-block" id="c.LSCMStatus.LSCM_ERR_INVALID_MAGIC"><span class="w">    </span><span class="n">LSCM_ERR_INVALID_MAGIC</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="mi">-3</span><span class="p">,</span></div>
+<div class="viewcode-block" id="c.LSCMStatus.LSCM_ERR_UNSUPPORTED_VER"><span class="w">    </span><span class="n">LSCM_ERR_UNSUPPORTED_VER</span><span class="o">=</span><span class="w"> </span><span class="mi">-4</span><span class="p">,</span></div>
+<div class="viewcode-block" id="c.LSCMStatus.LSCM_ERR_INVALID_TYPE"><span class="w">    </span><span class="n">LSCM_ERR_INVALID_TYPE</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="mi">-5</span><span class="p">,</span></div>
+<div class="viewcode-block" id="c.LSCMStatus.LSCM_ERR_TYPE_MISMATCH"><span class="w">    </span><span class="n">LSCM_ERR_TYPE_MISMATCH</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="mi">-6</span><span class="p">,</span></div>
+<div class="viewcode-block" id="c.LSCMStatus.LSCM_ERR_NOT_FOUND"><span class="w">    </span><span class="n">LSCM_ERR_NOT_FOUND</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="mi">-7</span><span class="p">,</span></div>
+<div class="viewcode-block" id="c.LSCMStatus.LSCM_ERR_MEM"><span class="w">    </span><span class="n">LSCM_ERR_MEM</span><span class="w">            </span><span class="o">=</span><span class="w"> </span><span class="mi">-8</span><span class="p">,</span></div>
+<div class="viewcode-block" id="c.LSCMStatus.LSCM_ERR_PARAM"><span class="w">    </span><span class="n">LSCM_ERR_PARAM</span><span class="w">          </span><span class="o">=</span><span class="w"> </span><span class="mi">-9</span><span class="p">,</span></div>
+<div class="viewcode-block" id="c.LSCMStatus.LSCM_ERR_CORRUPT"><span class="w">    </span><span class="n">LSCM_ERR_CORRUPT</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="mi">-10</span></div>
+<span class="p">}</span><span class="w"> </span><span class="n">LSCMStatus</span><span class="p">;</span></div>
+
+<div class="viewcode-block" id="c.MODEL_FILE_INFO"><a class="viewcode-back" href="../C-API.html#c.MODEL_FILE_INFO">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Metadata descriptor for inspecting files without full payload loading.</span>
+<span class="cm"> */</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+<div class="viewcode-block" id="c.MODEL_FILE_INFO.num_models"><span class="w">    </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">num_models</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.MODEL_FILE_INFO.is_single"><span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">is_single</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.MODEL_FILE_INFO.primary_type"><span class="w">    </span><span class="n">ModelType</span><span class="w"> </span><span class="n">primary_type</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.MODEL_FILE_INFO.primary_name"><span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">primary_name</span><span class="p">[</span><span class="n">LSCM_MAX_NAME_LEN</span><span class="p">];</span></div>
+<div class="viewcode-block" id="c.MODEL_FILE_INFO.format_version"><span class="w">    </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">format_version</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.MODEL_FILE_INFO.total_size"><span class="w">    </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">total_size</span><span class="p">;</span></div>
+<span class="p">}</span><span class="w"> </span><span class="n">MODEL_FILE_INFO</span><span class="p">;</span></div>
+
+<div class="viewcode-block" id="c.MODEL_ENTRY"><a class="viewcode-back" href="../C-API.html#c.MODEL_ENTRY">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Single entry within a multi-model bundle.</span>
+<span class="cm"> */</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+<div class="viewcode-block" id="c.MODEL_ENTRY.name"><span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">name</span><span class="p">[</span><span class="n">LSCM_MAX_NAME_LEN</span><span class="p">];</span></div>
+<div class="viewcode-block" id="c.MODEL_ENTRY.type"><span class="w">    </span><span class="n">ModelType</span><span class="w"> </span><span class="n">type</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.MODEL_ENTRY.model"><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">model</span><span class="p">;</span></div>
+<span class="p">}</span><span class="w"> </span><span class="n">MODEL_ENTRY</span><span class="p">;</span></div>
+
+<div class="viewcode-block" id="c.MODEL_BUNDLE"><a class="viewcode-back" href="../C-API.html#c.MODEL_BUNDLE">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Multi-model bundle container representing a project or pipeline.</span>
+<span class="cm"> */</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+<div class="viewcode-block" id="c.MODEL_BUNDLE.count"><span class="w">    </span><span class="kt">size_t</span><span class="w"> </span><span class="n">count</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.MODEL_BUNDLE.capacity"><span class="w">    </span><span class="kt">size_t</span><span class="w"> </span><span class="n">capacity</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.MODEL_BUNDLE.entries"><span class="w">    </span><span class="n">MODEL_ENTRY</span><span class="w"> </span><span class="o">*</span><span class="n">entries</span><span class="p">;</span></div>
+<span class="p">}</span><span class="w"> </span><span class="n">MODEL_BUNDLE</span><span class="p">;</span></div>
+
+<span class="cm">/* =========================================================================</span>
+<span class="cm"> * Core Single-Model APIs (.lsm)</span>
+<span class="cm"> * ========================================================================= */</span>
+
+<div class="viewcode-block" id="c.SaveModel"><a class="viewcode-back" href="../C-API.html#c.SaveModel">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Save a single model into a standalone .lsm file.</span>
+<span class="cm"> *</span>
+<span class="cm"> * @param [in] filepath Destination file path (typically with .lsm extension)</span>
+<span class="cm"> * @param [in] model_name Identifier tag for the model (e.g. &quot;qsar_pls&quot; or NULL for &quot;default&quot;)</span>
+<span class="cm"> * @param [in] type Model type (MODEL_TYPE_PCA, MODEL_TYPE_PLS, etc.)</span>
+<span class="cm"> * @param [in] model Pointer to the populated model struct</span>
+<span class="cm"> * @return LSCM_OK (0) on success, or a negative LSCMStatus error code</span>
+<span class="cm"> */</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">SaveModel</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">filepath</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">model_name</span><span class="p">,</span><span class="w"> </span><span class="n">ModelType</span><span class="w"> </span><span class="n">type</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">model</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.ImportModel"><a class="viewcode-back" href="../C-API.html#c.ImportModel">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Import a single model from a file (.lsm or .lsb with 1 model).</span>
+<span class="cm"> *</span>
+<span class="cm"> * @param [in] filepath Source file path</span>
+<span class="cm"> * @param [in] expected_type Expected ModelType (or MODEL_TYPE_ANY)</span>
+<span class="cm"> * @param [out] model Pointer to pre-allocated or initialized target model struct</span>
+<span class="cm"> * @return LSCM_OK (0) on success, or a negative LSCMStatus error code</span>
+<span class="cm"> */</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">ImportModel</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">filepath</span><span class="p">,</span><span class="w"> </span><span class="n">ModelType</span><span class="w"> </span><span class="n">expected_type</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">model</span><span class="p">);</span></div>
+
+<span class="cm">/* =========================================================================</span>
+<span class="cm"> * Multi-Model Project Bundle APIs (.lsb)</span>
+<span class="cm"> * ========================================================================= */</span>
+
+<div class="viewcode-block" id="c.NewModelBundle"><a class="viewcode-back" href="../C-API.html#c.NewModelBundle">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Create a new empty model bundle in memory.</span>
+<span class="cm"> */</span>
+<span class="n">MODEL_BUNDLE</span><span class="o">*</span><span class="w"> </span><span class="nf">NewModelBundle</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.ModelBundleAddModel"><a class="viewcode-back" href="../C-API.html#c.ModelBundleAddModel">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Add a model into a bundle. The bundle takes custody of the model pointer.</span>
+<span class="cm"> *</span>
+<span class="cm"> * @param [in,out] bundle Target bundle</span>
+<span class="cm"> * @param [in] name Unique model identifier name within the project</span>
+<span class="cm"> * @param [in] type Model type</span>
+<span class="cm"> * @param [in] model Pointer to the concrete model struct</span>
+<span class="cm"> * @return LSCM_OK (0) on success, or a negative LSCMStatus error code</span>
+<span class="cm"> */</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">ModelBundleAddModel</span><span class="p">(</span><span class="n">MODEL_BUNDLE</span><span class="w"> </span><span class="o">*</span><span class="n">bundle</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">ModelType</span><span class="w"> </span><span class="n">type</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">model</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.ModelBundleGetModel"><a class="viewcode-back" href="../C-API.html#c.ModelBundleGetModel">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Retrieve a model from a bundle by its unique name.</span>
+<span class="cm"> *</span>
+<span class="cm"> * @param [in] bundle Source bundle</span>
+<span class="cm"> * @param [in] name Unique model name</span>
+<span class="cm"> * @param [out] out_type Optional output parameter for model type</span>
+<span class="cm"> * @return Pointer to the model struct, or NULL if not found</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="nf">ModelBundleGetModel</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">MODEL_BUNDLE</span><span class="w"> </span><span class="o">*</span><span class="n">bundle</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">ModelType</span><span class="w"> </span><span class="o">*</span><span class="n">out_type</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.ModelBundleGetModelByIndex"><a class="viewcode-back" href="../C-API.html#c.ModelBundleGetModelByIndex">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Retrieve a model from a bundle by index.</span>
+<span class="cm"> *</span>
+<span class="cm"> * @param [in] bundle Source bundle</span>
+<span class="cm"> * @param [in] index 0-based index</span>
+<span class="cm"> * @param [out] out_name Optional output buffer/pointer for model name</span>
+<span class="cm"> * @param [out] out_type Optional output parameter for model type</span>
+<span class="cm"> * @return Pointer to the model struct, or NULL if index is out of bounds</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="nf">ModelBundleGetModelByIndex</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">MODEL_BUNDLE</span><span class="w"> </span><span class="o">*</span><span class="n">bundle</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">index</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">**</span><span class="n">out_name</span><span class="p">,</span><span class="w"> </span><span class="n">ModelType</span><span class="w"> </span><span class="o">*</span><span class="n">out_type</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.DelModelBundle"><a class="viewcode-back" href="../C-API.html#c.DelModelBundle">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Free a model bundle container.</span>
+<span class="cm"> *</span>
+<span class="cm"> * @param [in,out] bundle Pointer to bundle pointer</span>
+<span class="cm"> * @param [in] free_contained_models If non-zero, frees each contained model struct appropriately</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">DelModelBundle</span><span class="p">(</span><span class="n">MODEL_BUNDLE</span><span class="w"> </span><span class="o">**</span><span class="n">bundle</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">free_contained_models</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.SaveModelBundle"><a class="viewcode-back" href="../C-API.html#c.SaveModelBundle">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Save multiple models from a bundle into a single .lsb file.</span>
+<span class="cm"> *</span>
+<span class="cm"> * @param [in] filepath Destination file path (typically with .lsb extension)</span>
+<span class="cm"> * @param [in] bundle Model bundle containing 1 or more models</span>
+<span class="cm"> * @return LSCM_OK (0) on success, or a negative LSCMStatus error code</span>
+<span class="cm"> */</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">SaveModelBundle</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">filepath</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">MODEL_BUNDLE</span><span class="w"> </span><span class="o">*</span><span class="n">bundle</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.ImportModelBundle"><a class="viewcode-back" href="../C-API.html#c.ImportModelBundle">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Import a multi-model project bundle from an .lsb file.</span>
+<span class="cm"> *</span>
+<span class="cm"> * @param [in] filepath Source file path</span>
+<span class="cm"> * @return Pointer to loaded MODEL_BUNDLE, or NULL on error</span>
+<span class="cm"> */</span>
+<span class="n">MODEL_BUNDLE</span><span class="o">*</span><span class="w"> </span><span class="nf">ImportModelBundle</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">filepath</span><span class="p">);</span></div>
+
+<span class="cm">/* =========================================================================</span>
+<span class="cm"> * Inspection &amp; Auto-Detection APIs</span>
+<span class="cm"> * ========================================================================= */</span>
+
+<div class="viewcode-block" id="c.InspectModelFile"><a class="viewcode-back" href="../C-API.html#c.InspectModelFile">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Inspect a model file header without loading full matrix/tensor payloads.</span>
+<span class="cm"> *</span>
+<span class="cm"> * @param [in] filepath Source file path (.lsm or .lsb)</span>
+<span class="cm"> * @param [out] info Output structure with model count, types, and sizes</span>
+<span class="cm"> * @return LSCM_OK (0) on success, or a negative LSCMStatus error code</span>
+<span class="cm"> */</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">InspectModelFile</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">filepath</span><span class="p">,</span><span class="w"> </span><span class="n">MODEL_FILE_INFO</span><span class="w"> </span><span class="o">*</span><span class="n">info</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.ImportModelAuto"><a class="viewcode-back" href="../C-API.html#c.ImportModelAuto">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Automatically import a file, detecting whether it is a single model or a bundle.</span>
+<span class="cm"> *</span>
+<span class="cm"> * If single model:</span>
+<span class="cm"> *   - `*out_bundle` will be NULL.</span>
+<span class="cm"> *   - `*out_single_model` receives the newly allocated model struct.</span>
+<span class="cm"> *   - `*out_single_type` receives the model type.</span>
+<span class="cm"> *   - Returns 1.</span>
+<span class="cm"> *</span>
+<span class="cm"> * If multi-model bundle:</span>
+<span class="cm"> *   - `*out_single_model` will be NULL.</span>
+<span class="cm"> *   - `*out_bundle` receives the loaded MODEL_BUNDLE.</span>
+<span class="cm"> *   - Returns the total count of models in the bundle (&gt; 1).</span>
+<span class="cm"> *</span>
+<span class="cm"> * @param [in] filepath Source file path (.lsm, .lsb, or generic)</span>
+<span class="cm"> * @param [out] out_single_model Output pointer for single model</span>
+<span class="cm"> * @param [out] out_single_type Output pointer for single model type</span>
+<span class="cm"> * @param [out] out_bundle Output pointer for bundle</span>
+<span class="cm"> * @return Number of models imported on success (&gt; 0), or a negative error code</span>
+<span class="cm"> */</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">ImportModelAuto</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">filepath</span><span class="p">,</span>
+<span class="w">                    </span><span class="kt">void</span><span class="w"> </span><span class="o">**</span><span class="n">out_single_model</span><span class="p">,</span>
+<span class="w">                    </span><span class="n">ModelType</span><span class="w"> </span><span class="o">*</span><span class="n">out_single_type</span><span class="p">,</span>
+<span class="w">                    </span><span class="n">MODEL_BUNDLE</span><span class="w"> </span><span class="o">**</span><span class="n">out_bundle</span><span class="p">);</span></div>
+
+<span class="cm">/* =========================================================================</span>
+<span class="cm"> * Type-Specific Convenience Helpers</span>
+<span class="cm"> * ========================================================================= */</span>
+
+<div class="viewcode-block" id="c.SavePCAModel"><a class="viewcode-back" href="../C-API.html#c.SavePCAModel">[docs]</a><span class="kt">int</span><span class="w"> </span><span class="nf">SavePCAModel</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">filepath</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">PCAMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">pca</span><span class="p">);</span></div>
+<div class="viewcode-block" id="c.ImportPCAModel"><a class="viewcode-back" href="../C-API.html#c.ImportPCAModel">[docs]</a><span class="kt">int</span><span class="w"> </span><span class="nf">ImportPCAModel</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">filepath</span><span class="p">,</span><span class="w"> </span><span class="n">PCAMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">pca</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.SavePLSModel"><a class="viewcode-back" href="../C-API.html#c.SavePLSModel">[docs]</a><span class="kt">int</span><span class="w"> </span><span class="nf">SavePLSModel</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">filepath</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">PLSMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">pls</span><span class="p">);</span></div>
+<div class="viewcode-block" id="c.ImportPLSModel"><a class="viewcode-back" href="../C-API.html#c.ImportPLSModel">[docs]</a><span class="kt">int</span><span class="w"> </span><span class="nf">ImportPLSModel</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">filepath</span><span class="p">,</span><span class="w"> </span><span class="n">PLSMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">pls</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.SaveCPCAModel"><a class="viewcode-back" href="../C-API.html#c.SaveCPCAModel">[docs]</a><span class="kt">int</span><span class="w"> </span><span class="nf">SaveCPCAModel</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">filepath</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">CPCAMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">cpca</span><span class="p">);</span></div>
+<div class="viewcode-block" id="c.ImportCPCAModel"><a class="viewcode-back" href="../C-API.html#c.ImportCPCAModel">[docs]</a><span class="kt">int</span><span class="w"> </span><span class="nf">ImportCPCAModel</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">filepath</span><span class="p">,</span><span class="w"> </span><span class="n">CPCAMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">cpca</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.SaveMLRModel"><a class="viewcode-back" href="../C-API.html#c.SaveMLRModel">[docs]</a><span class="kt">int</span><span class="w"> </span><span class="nf">SaveMLRModel</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">filepath</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">MLRMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">mlr</span><span class="p">);</span></div>
+<div class="viewcode-block" id="c.ImportMLRModel"><a class="viewcode-back" href="../C-API.html#c.ImportMLRModel">[docs]</a><span class="kt">int</span><span class="w"> </span><span class="nf">ImportMLRModel</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">filepath</span><span class="p">,</span><span class="w"> </span><span class="n">MLRMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">mlr</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.SaveLDAModel"><a class="viewcode-back" href="../C-API.html#c.SaveLDAModel">[docs]</a><span class="kt">int</span><span class="w"> </span><span class="nf">SaveLDAModel</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">filepath</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">LDAMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">lda</span><span class="p">);</span></div>
+<div class="viewcode-block" id="c.ImportLDAModel"><a class="viewcode-back" href="../C-API.html#c.ImportLDAModel">[docs]</a><span class="kt">int</span><span class="w"> </span><span class="nf">ImportLDAModel</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">filepath</span><span class="p">,</span><span class="w"> </span><span class="n">LDAMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">lda</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.SaveICAModel"><a class="viewcode-back" href="../C-API.html#c.SaveICAModel">[docs]</a><span class="kt">int</span><span class="w"> </span><span class="nf">SaveICAModel</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">filepath</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">ICAMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">ica</span><span class="p">);</span></div>
+<div class="viewcode-block" id="c.ImportICAModel"><a class="viewcode-back" href="../C-API.html#c.ImportICAModel">[docs]</a><span class="kt">int</span><span class="w"> </span><span class="nf">ImportICAModel</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">filepath</span><span class="p">,</span><span class="w"> </span><span class="n">ICAMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">ica</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.SaveUPCAModel"><a class="viewcode-back" href="../C-API.html#c.SaveUPCAModel">[docs]</a><span class="kt">int</span><span class="w"> </span><span class="nf">SaveUPCAModel</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">filepath</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">UPCAMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">upca</span><span class="p">);</span></div>
+<div class="viewcode-block" id="c.ImportUPCAModel"><a class="viewcode-back" href="../C-API.html#c.ImportUPCAModel">[docs]</a><span class="kt">int</span><span class="w"> </span><span class="nf">ImportUPCAModel</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">filepath</span><span class="p">,</span><span class="w"> </span><span class="n">UPCAMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">upca</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.SaveUPLSModel"><a class="viewcode-back" href="../C-API.html#c.SaveUPLSModel">[docs]</a><span class="kt">int</span><span class="w"> </span><span class="nf">SaveUPLSModel</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">filepath</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">UPLSMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">upls</span><span class="p">);</span></div>
+<div class="viewcode-block" id="c.ImportUPLSModel"><a class="viewcode-back" href="../C-API.html#c.ImportUPLSModel">[docs]</a><span class="kt">int</span><span class="w"> </span><span class="nf">ImportUPLSModel</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">filepath</span><span class="p">,</span><span class="w"> </span><span class="n">UPLSMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">upls</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.ModelTypeToString"><a class="viewcode-back" href="../C-API.html#c.ModelTypeToString">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Helper to convert ModelType enum to human-readable string.</span>
+<span class="cm"> */</span>
+<span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="nf">ModelTypeToString</span><span class="p">(</span><span class="n">ModelType</span><span class="w"> </span><span class="n">type</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.ModelTypeFromString"><a class="viewcode-back" href="../C-API.html#c.ModelTypeFromString">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Helper to parse human-readable string to ModelType enum.</span>
+<span class="cm"> */</span>
+<span class="n">ModelType</span><span class="w"> </span><span class="nf">ModelTypeFromString</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">str</span><span class="p">);</span></div>
+
+<span class="cp">#ifdef __cplusplus</span>
+<span class="p">}</span>
+<span class="cp">#endif</span>
+
+<span class="cp">#endif </span><span class="cm">/* MODEL_IO_H */</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.8.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">model_io.h</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2011, Giuseppe Marco Randazzo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    </div>
+  </body>
+</html>

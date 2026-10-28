@@ -4,11 +4,11 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pls.h &#8212; libscientific 1.5.1 documentation</title>
+    <title>pls.h &#8212; libscientific 1.8.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=2bf1fcf8" />
     
-    <script src="../_static/documentation_options.js?v=44dfd65d"></script>
+    <script src="../_static/documentation_options.js?v=b51e6972"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     
@@ -24,7 +24,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.5.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.8.0 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">pls.h</a></li> 
       </ul>
     </div>  
@@ -63,7 +63,7 @@
 
 <div class="viewcode-block" id="c.PLSMODEL"><a class="viewcode-back" href="../C-API.html#c.PLSMODEL">[docs]</a><span class="cm">/**</span>
 <span class="cm"> * PLS model data structure</span>
-<span class="cm"> * </span>
+<span class="cm"> *</span>
 <span class="cm"> * - **xscores** x space scores</span>
 <span class="cm"> * - **xloadings** x space loadings</span>
 <span class="cm"> * - **xweights** x space weights</span>
@@ -77,16 +77,16 @@
 <span class="cm"> * - **ycolscaling** y independent variable column scaling</span>
 <span class="cm"> * - **recalculated_y** y recalculated</span>
 <span class="cm"> * - **recalc_residuals** y recalculated residuals</span>
-<span class="cm"> * - **predicted_y** y predicted </span>
-<span class="cm"> * - **pred_residuals** y predicted residuals </span>
+<span class="cm"> * - **predicted_y** y predicted</span>
+<span class="cm"> * - **pred_residuals** y predicted residuals</span>
 <span class="cm"> * - **r2y_recalculated** r squared using y recalculated values</span>
 <span class="cm"> * - **r2y_validation**</span>
 <span class="cm"> * - **q2y** q squared using y predicted values</span>
 <span class="cm"> * - **sdep** standard deviation over prediction using y predictions</span>
 <span class="cm"> * - **sdec** standard deviation over recalculation using y recalculated</span>
 <span class="cm"> * - **bias** bias</span>
-<span class="cm"> * - **roc_recalculated** receiver operating characteristic using y recalculated </span>
-<span class="cm"> * - **roc_validation** receiver operating characteristic using y predicted </span>
+<span class="cm"> * - **roc_recalculated** receiver operating characteristic using y recalculated</span>
+<span class="cm"> * - **roc_validation** receiver operating characteristic using y predicted</span>
 <span class="cm"> * - **roc_auc_recalculated** receiver operating characteristic area under the curve using y recalculated</span>
 <span class="cm"> * - **roc_auc_validation** eceiver operating characteristic area under the curve using y predicted</span>
 <span class="cm"> * - **precision_recall_recalculated** precision-recall curve using y recalculated</span>
@@ -160,13 +160,13 @@
 <span class="cm"> * @brief Calculate a partial least squares model using the NIPALS algorithm.</span>
 <span class="cm"> *</span>
 <span class="cm"> * @param [in] mx libscientific matrix data input: x independent variables</span>
-<span class="cm"> * @param [in] my libscientific matrix data input: y dependent variables </span>
+<span class="cm"> * @param [in] my libscientific matrix data input: y dependent variables</span>
 <span class="cm"> * @param [in] nlv number of desired latent variables</span>
 <span class="cm"> * @param [in] xautoscaling scaling typeon the x independent variables expressed as unsigned int type</span>
 <span class="cm"> * @param [in] yautoscaling scaling typeon the y dependent variables expressed as unsigned int type</span>
 <span class="cm"> * @param [out] PLSMODEL output -initialized model using NewPLSAModel(...). The datastructure will be populated with results</span>
 <span class="cm"> * @param [in] scisignal libscientific signal. Default value is NULL.</span>
-<span class="cm"> * </span>
+<span class="cm"> *</span>
 <span class="cm"> * Available scalings:</span>
 <span class="cm"> *</span>
 <span class="cm"> * - 0: No scaling. Only mean centering</span>
@@ -217,7 +217,7 @@
 
 <div class="viewcode-block" id="c.PLSYPredictor"><a class="viewcode-back" href="../C-API.html#c.PLSYPredictor">[docs]</a><span class="cm">/**</span>
 <span class="cm"> * Calculate the Y values at a specific lv number (nlv).</span>
-<span class="cm"> * </span>
+<span class="cm"> *</span>
 <span class="cm"> * N.B.: The output of y will be: [y-&gt;row][y-col]</span>
 <span class="cm"> * @param [in] tscore input matrix of scores calculated using PLSScorePredictor</span>
 <span class="cm"> * @param [in] model PLSMODEL</span>
@@ -231,7 +231,7 @@
 
 <div class="viewcode-block" id="c.PLSYPredictorAllLV"><a class="viewcode-back" href="../C-API.html#c.PLSYPredictorAllLV">[docs]</a><span class="cm">/**</span>
 <span class="cm"> * Calculate the Y values at all the lv.</span>
-<span class="cm"> * </span>
+<span class="cm"> *</span>
 <span class="cm"> * N.B.: The output of y will be: [y-&gt;row][y-&gt;col*nlv]</span>
 <span class="cm"> * @param [in] mx input matrix of scores calculated using PLSScorePredictor</span>
 <span class="cm"> * @param [in] model PLSMODEL</span>
@@ -252,7 +252,7 @@
 <span class="cm"> *</span>
 <span class="cm"> * @param [in] my_true input matrix of y true values</span>
 <span class="cm"> * @param [in] my_pred input matrix of y predicted or recalculated values</span>
-<span class="cm"> * @param [out] ccoeff output - correlation coefficients q-squared or r-squared if my_pred is respectivelly predicted or recalculated </span>
+<span class="cm"> * @param [out] ccoeff output - correlation coefficients q-squared or r-squared if my_pred is respectivelly predicted or recalculated</span>
 <span class="cm"> * @param [out] rmse output - root mean square error</span>
 <span class="cm"> * @param [out] bias output - bias defined as how distant are we from the diagonal</span>
 <span class="cm"> */</span>
@@ -266,7 +266,7 @@
 <span class="cm"> * Calculate the roc curve, the auc, the precision recall curve,</span>
 <span class="cm"> * the precision_recall_auc of a classification model.</span>
 <span class="cm"> * mx and my could be the training or the test datasets.</span>
-<span class="cm"> * </span>
+<span class="cm"> *</span>
 <span class="cm"> * @param [in] my_true input matrix of y true values</span>
 <span class="cm"> * @param [in] my_scores input matrix of y predicted or recalculated class scores/probabilities</span>
 <span class="cm"> * @param [out] roc output - roc curves</span>
@@ -336,7 +336,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.5.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.8.0 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">pls.h</a></li> 
       </ul>
     </div>

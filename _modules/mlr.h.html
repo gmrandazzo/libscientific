@@ -4,11 +4,11 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mlr.h &#8212; libscientific 1.5.1 documentation</title>
+    <title>mlr.h &#8212; libscientific 1.8.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=2bf1fcf8" />
     
-    <script src="../_static/documentation_options.js?v=44dfd65d"></script>
+    <script src="../_static/documentation_options.js?v=b51e6972"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     
@@ -24,7 +24,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.5.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.8.0 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">mlr.h</a></li> 
       </ul>
     </div>  
@@ -60,14 +60,14 @@
 
 <div class="viewcode-block" id="c.MLRMODEL"><a class="viewcode-back" href="../C-API.html#c.MLRMODEL">[docs]</a><span class="cm">/**</span>
 <span class="cm"> * Multiple Linear Regression data structure</span>
-<span class="cm"> * </span>
+<span class="cm"> *</span>
 <span class="cm"> * - **b** beta coefficients</span>
 <span class="cm"> * - **recalculated_y** y recalculated</span>
 <span class="cm"> * - **predicted_y** y predicted</span>
 <span class="cm"> * - **recalc_residuals** residuals using recalculated values</span>
 <span class="cm"> * - **pred_residuals** residuals using predicted values</span>
 <span class="cm"> * - **ymean** y averages</span>
-<span class="cm"> * - **r2y_model** model r-squared using y recalculated </span>
+<span class="cm"> * - **r2y_model** model r-squared using y recalculated</span>
 <span class="cm"> * - **q2y** model q-squared using y predicted</span>
 <span class="cm"> * - **sdep** standard deviation over prediction</span>
 <span class="cm"> * - **sdec** standard deviation over recalculation</span>
@@ -96,17 +96,17 @@
 <span class="kt">void</span><span class="w"> </span><span class="nf">NewMLRModel</span><span class="p">(</span><span class="n">MLRMODEL</span><span class="w"> </span><span class="o">**</span><span class="n">m</span><span class="p">);</span></div>
 
 <div class="viewcode-block" id="c.DelMLRModel"><a class="viewcode-back" href="../C-API.html#c.DelMLRModel">[docs]</a><span class="cm">/**</span>
-<span class="cm"> * Delete a MLR model </span>
+<span class="cm"> * Delete a MLR model</span>
 <span class="cm"> */</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">DelMLRModel</span><span class="p">(</span><span class="n">MLRMODEL</span><span class="w"> </span><span class="o">**</span><span class="n">m</span><span class="p">);</span></div>
 
 <div class="viewcode-block" id="c.MLR"><a class="viewcode-back" href="../C-API.html#c.MLR">[docs]</a><span class="cm">/**</span>
 <span class="cm"> * Calculate a MLR model using OLS algorithm</span>
-<span class="cm"> * </span>
+<span class="cm"> *</span>
 <span class="cm"> * @param [in] mx x independent variables input</span>
-<span class="cm"> * @param [in] my y dependent variables input </span>
+<span class="cm"> * @param [in] my y dependent variables input</span>
 <span class="cm"> * @param [out] model initialized model using NewMLRModel(...). The datastructure will be populated with results</span>
-<span class="cm"> * </span>
+<span class="cm"> *</span>
 <span class="cm"> */</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">MLR</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">mx</span><span class="p">,</span>
 <span class="w">         </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">my</span><span class="p">,</span>
@@ -115,7 +115,7 @@
 
 <div class="viewcode-block" id="c.MLRPredictY"><a class="viewcode-back" href="../C-API.html#c.MLRPredictY">[docs]</a><span class="cm">/**</span>
 <span class="cm"> * Predict Y targets using a MLR model</span>
-<span class="cm"> * </span>
+<span class="cm"> *</span>
 <span class="cm"> * @param [in] mx x independent variables input</span>
 <span class="cm"> * @param [in] my y dependent variables input (if known)</span>
 <span class="cm"> * @param [in] model computed MLRMODEL</span>
@@ -123,7 +123,7 @@
 <span class="cm"> * @param [out] predicted_residuals residuals using y predicted</span>
 <span class="cm"> * @param [out] r2y r-squared of the prediction if my known</span>
 <span class="cm"> * @param [out] sdep standard deviation over prediction if my known</span>
-<span class="cm"> * </span>
+<span class="cm"> *</span>
 <span class="cm"> */</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">MLRPredictY</span><span class="p">(</span><span class="n">matrix</span><span class="o">*</span><span class="w"> </span><span class="n">mx</span><span class="p">,</span>
 <span class="w">                 </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">my</span><span class="p">,</span>
@@ -138,10 +138,10 @@
 <span class="cm"> * the standard deviation of the prediction (stdev),</span>
 <span class="cm"> * the bias of the prediction (bias) in a regression model.</span>
 <span class="cm"> * mx and my could be the training or the test datasets.</span>
-<span class="cm"> * </span>
+<span class="cm"> *</span>
 <span class="cm"> * @param [in] my_true input matrix of y true values</span>
 <span class="cm"> * @param [in] my_pred input matrix of y predicted or recalculated values</span>
-<span class="cm"> * @param [out] ccoeff output - correlation coefficients q-squared or r-squared if my_pred is respectivelly predicted or recalculated </span>
+<span class="cm"> * @param [out] ccoeff output - correlation coefficients q-squared or r-squared if my_pred is respectivelly predicted or recalculated</span>
 <span class="cm"> * @param [out] rmse output - root mean square error</span>
 <span class="cm"> * @param [out] bias output - bias defined as how distant are we from the diagonal</span>
 <span class="cm"> */</span>
@@ -193,7 +193,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.5.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.8.0 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">mlr.h</a></li> 
       </ul>
     </div>

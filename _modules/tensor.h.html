@@ -4,11 +4,11 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>tensor.h &#8212; libscientific 1.5.1 documentation</title>
+    <title>tensor.h &#8212; libscientific 1.8.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=2bf1fcf8" />
     
-    <script src="../_static/documentation_options.js?v=44dfd65d"></script>
+    <script src="../_static/documentation_options.js?v=b51e6972"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     
@@ -24,7 +24,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.5.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.8.0 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">tensor.h</a></li> 
       </ul>
     </div>  
@@ -66,7 +66,7 @@
 <span class="cm"> */</span>
 
 <div class="viewcode-block" id="c.tensor"><a class="viewcode-back" href="../C-API.html#c.tensor">[docs]</a><span class="cm">/**</span>
-<span class="cm"> * Tensor data structure </span>
+<span class="cm"> * Tensor data structure</span>
 <span class="cm"> *</span>
 <span class="cm"> * - **m** list of matrix</span>
 <span class="cm"> * - **order** number of matrix layers</span>
@@ -88,8 +88,8 @@
 
 <div class="viewcode-block" id="c.NewTensorMatrix"><a class="viewcode-back" href="../C-API.html#c.NewTensorMatrix">[docs]</a><span class="cm">/**</span>
 <span class="cm"> * Create into an empty tensor a matrix of &quot;row x col&quot; at position &quot;order&quot;</span>
-<span class="cm"> * </span>
-<span class="cm"> * @param [in] t input tensor </span>
+<span class="cm"> *</span>
+<span class="cm"> * @param [in] t input tensor</span>
 <span class="cm"> * @param [in] order point where to add the matrix</span>
 <span class="cm"> * @param [in] row number of rows of the matrix</span>
 <span class="cm"> * @param [in] col number of columns of the matrix</span>
@@ -98,8 +98,8 @@
 
 <div class="viewcode-block" id="c.AddTensorMatrix"><a class="viewcode-back" href="../C-API.html#c.AddTensorMatrix">[docs]</a><span class="cm">/**</span>
 <span class="cm"> * Append to a tensor a matrix at the end of it.</span>
-<span class="cm"> * </span>
-<span class="cm"> * @param [in] t input tensor </span>
+<span class="cm"> *</span>
+<span class="cm"> * @param [in] t input tensor</span>
 <span class="cm"> * @param [in] row number of rows of the matrix</span>
 <span class="cm"> * @param [in] col number of columns of the matrix</span>
 <span class="cm"> */</span>
@@ -121,7 +121,7 @@
 <span class="kt">void</span><span class="w"> </span><span class="nf">PrintTensor</span><span class="p">(</span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">t</span><span class="p">);</span></div>
 
 <div class="viewcode-block" id="c.setTensorValue"><span class="cm">/**</span>
-<span class="cm"> * Set a value into a tensor </span>
+<span class="cm"> * Set a value into a tensor</span>
 <span class="cm"> */</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">setTensorValue</span><span class="p">(</span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">order</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">row</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">col</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">val</span><span class="p">);</span></div>
 
@@ -180,14 +180,14 @@
 
 <div class="viewcode-block" id="c.TensorTranspose"><span class="cm">/**</span>
 <span class="cm"> * Transpose a tensor</span>
-<span class="cm"> * </span>
+<span class="cm"> *</span>
 <span class="cm"> */</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">TensorTranspose</span><span class="p">(</span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">t1</span><span class="p">,</span><span class="w"> </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">t2</span><span class="p">);</span></div>
 
 <div class="viewcode-block" id="c.TransposedTensorDVectorProduct"><span class="cm">/**</span>
 <span class="cm"> * Calculate the transposed tensor x vector product.</span>
 <span class="cm"> * The result is a matrix.</span>
-<span class="cm"> * </span>
+<span class="cm"> *</span>
 <span class="cm"> */</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">TransposedTensorDVectorProduct</span><span class="p">(</span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">p</span><span class="p">);</span></div>
 
@@ -241,7 +241,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.5.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.8.0 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">tensor.h</a></li> 
       </ul>
     </div>

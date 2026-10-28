@@ -5,11 +5,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Getting started in Python &#8212; libscientific 1.5.1 documentation</title>
+    <title>Getting started in Python &#8212; libscientific 1.8.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="_static/classic.css?v=2bf1fcf8" />
     
-    <script src="_static/documentation_options.js?v=44dfd65d"></script>
+    <script src="_static/documentation_options.js?v=b51e6972"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     
@@ -33,7 +33,7 @@
         <li class="right" >
           <a href="GettingStartedInC.html" title="Getting started in C"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">libscientific 1.5.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">libscientific 1.8.0 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Getting started in Python</a></li> 
       </ul>
     </div>  
@@ -90,7 +90,7 @@ Please follow the process described <a class="reference external" href="http://g
 <span class="linenos">17</span><span class="c1"># If you want to modify the value in position 1</span>
 <span class="linenos">18</span><span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span>
 <span class="linenos">19</span>
-<span class="linenos">20</span><span class="c1">#If you want to get back the result as a &quot;list&quot; </span>
+<span class="linenos">20</span><span class="c1">#If you want to get back the result as a &quot;list&quot;</span>
 <span class="linenos">21</span><span class="n">dlst</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
 <span class="linenos">22</span>
 <span class="linenos">23</span><span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">dlst</span><span class="p">:</span>
@@ -143,7 +143,7 @@ modify its content and convert it again to a list of lists.</p>
 <span class="linenos"> 2</span><span class="kn">import</span><span class="w"> </span><span class="nn">libscientific</span>
 <span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">random</span>
 <span class="linenos"> 4</span>
-<span class="linenos"> 5</span><span class="c1"># Create a random list of list </span>
+<span class="linenos"> 5</span><span class="c1"># Create a random list of list</span>
 <span class="linenos"> 6</span><span class="n">a</span> <span class="o">=</span> <span class="p">[[</span><span class="n">random</span><span class="p">()</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">)]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
 <span class="linenos"> 7</span>
 <span class="linenos"> 8</span><span class="c1"># Convert the list of list matrix into a libscientific matrix</span>
@@ -183,7 +183,7 @@ modify its content and convert it again to a list of lists.</p>
 <span class="linenos"> 2</span><span class="kn">import</span><span class="w"> </span><span class="nn">libscientific</span>
 <span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="kn">import</span> <span class="n">random</span>
 <span class="linenos"> 4</span>
-<span class="linenos"> 5</span><span class="c1"># Create a random list of list </span>
+<span class="linenos"> 5</span><span class="c1"># Create a random list of list</span>
 <span class="linenos"> 6</span><span class="n">a</span> <span class="o">=</span> <span class="p">[[[</span><span class="n">random</span><span class="p">()</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">)]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
 <span class="linenos"> 7</span>
 <span class="linenos"> 8</span><span class="c1"># Convert the list of list of lists into a libscientific tensor</span>
@@ -423,6 +423,46 @@ In particular, the algorithm described here is extracted from official libscient
 </div>
 </section>
 </section>
+<section id="model-persistence-and-serialization-lsm-and-lsb">
+<h1>Model persistence and serialization (.lsm and .lsb)<a class="headerlink" href="#model-persistence-and-serialization-lsm-and-lsb" title="Link to this heading">¶</a></h1>
+<p>Libscientific allows saving and loading models in Python with zero external dependencies.</p>
+<section id="saving-and-loading-a-single-model-lsm">
+<h2>Saving and loading a single model (.lsm)<a class="headerlink" href="#saving-and-loading-a-single-model-lsm" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">libscientific.pca</span><span class="w"> </span><span class="kn">import</span> <span class="n">PCA</span>
+<span class="linenos"> 2</span><span class="kn">from</span><span class="w"> </span><span class="nn">libscientific.model_io</span><span class="w"> </span><span class="kn">import</span> <span class="n">save_pca_model</span><span class="p">,</span> <span class="n">load_pca_model</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span><span class="c1"># Train PCA model</span>
+<span class="linenos"> 5</span><span class="n">model</span> <span class="o">=</span> <span class="n">PCA</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">n_components</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="linenos"> 6</span>
+<span class="linenos"> 7</span><span class="c1"># Save model to .lsm container</span>
+<span class="linenos"> 8</span><span class="n">save_pca_model</span><span class="p">(</span><span class="s2">&quot;pca_model.lsm&quot;</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span>
+<span class="linenos"> 9</span>
+<span class="linenos">10</span><span class="c1"># Load model back from disk</span>
+<span class="linenos">11</span><span class="n">loaded_model</span> <span class="o">=</span> <span class="n">load_pca_model</span><span class="p">(</span><span class="s2">&quot;pca_model.lsm&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="working-with-multi-model-bundles-lsb">
+<h2>Working with multi-model bundles (.lsb)<a class="headerlink" href="#working-with-multi-model-bundles-lsb" title="Link to this heading">¶</a></h2>
+<p>Bundles allow grouping multiple related models together into a single file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span><span class="w"> </span><span class="nn">libscientific.model_io</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelBundle</span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="c1"># Create and populate a project bundle</span>
+<span class="linenos"> 4</span><span class="n">bundle</span> <span class="o">=</span> <span class="n">ModelBundle</span><span class="p">()</span>
+<span class="linenos"> 5</span><span class="n">bundle</span><span class="o">.</span><span class="n">add_pca</span><span class="p">(</span><span class="s2">&quot;screening_pca&quot;</span><span class="p">,</span> <span class="n">pca_model</span><span class="p">)</span>
+<span class="linenos"> 6</span><span class="n">bundle</span><span class="o">.</span><span class="n">add_pls</span><span class="p">(</span><span class="s2">&quot;activity_pls&quot;</span><span class="p">,</span> <span class="n">pls_model</span><span class="p">)</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="c1"># Save bundle to disk</span>
+<span class="linenos"> 9</span><span class="n">bundle</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;project.lsb&quot;</span><span class="p">)</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span><span class="c1"># Load bundle back</span>
+<span class="linenos">12</span><span class="n">loaded_bundle</span> <span class="o">=</span> <span class="n">ModelBundle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;project.lsb&quot;</span><span class="p">)</span>
+<span class="linenos">13</span><span class="n">retrieved_pca</span> <span class="o">=</span> <span class="n">loaded_bundle</span><span class="o">.</span><span class="n">get_pca</span><span class="p">(</span><span class="s2">&quot;screening_pca&quot;</span><span class="p">)</span>
+<span class="linenos">14</span><span class="n">retrieved_pls</span> <span class="o">=</span> <span class="n">loaded_bundle</span><span class="o">.</span><span class="n">get_pls</span><span class="p">(</span><span class="s2">&quot;activity_pls&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -455,6 +495,11 @@ In particular, the algorithm described here is extracted from official libscient
 <li><a class="reference internal" href="#principal-component-analysis-pca">Principal Component Analysis (PCA)</a></li>
 <li><a class="reference internal" href="#consensus-principal-component-analysis-cpca">Consensus Principal Component Analysis (CPCA)</a></li>
 <li><a class="reference internal" href="#partial-least-squares-pls">Partial Least Squares (PLS)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#model-persistence-and-serialization-lsm-and-lsb">Model persistence and serialization (.lsm and .lsb)</a><ul>
+<li><a class="reference internal" href="#saving-and-loading-a-single-model-lsm">Saving and loading a single model (.lsm)</a></li>
+<li><a class="reference internal" href="#working-with-multi-model-bundles-lsb">Working with multi-model bundles (.lsb)</a></li>
 </ul>
 </li>
 </ul>
@@ -506,7 +551,7 @@ In particular, the algorithm described here is extracted from official libscient
         <li class="right" >
           <a href="GettingStartedInC.html" title="Getting started in C"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">libscientific 1.5.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">libscientific 1.8.0 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Getting started in Python</a></li> 
       </ul>
     </div>

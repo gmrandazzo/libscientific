@@ -4,11 +4,11 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cpca.h &#8212; libscientific 1.5.1 documentation</title>
+    <title>cpca.h &#8212; libscientific 1.8.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=2bf1fcf8" />
     
-    <script src="../_static/documentation_options.js?v=44dfd65d"></script>
+    <script src="../_static/documentation_options.js?v=b51e6972"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     
@@ -24,7 +24,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.5.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.8.0 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">cpca.h</a></li> 
       </ul>
     </div>  
@@ -61,11 +61,11 @@
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;vector.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;scientificinfo.h&quot;</span>
 
-<div class="viewcode-block" id="c.CPCACONVERGENCE"><span class="cp">#define CPCACONVERGENCE 1e-18</span></div>
+<div class="viewcode-block" id="c.CPCACONVERGENCE"><span class="cp">#define CPCACONVERGENCE 1e-10</span></div>
 
 <div class="viewcode-block" id="c.CPCAMODEL"><a class="viewcode-back" href="../C-API.html#c.CPCAMODEL">[docs]</a><span class="cm">/**</span>
 <span class="cm"> * CPCA model data structure.</span>
-<span class="cm"> * </span>
+<span class="cm"> *</span>
 <span class="cm"> * - **block_scores** matrix of scores</span>
 <span class="cm"> * - **block_loadings** matrix of loadings</span>
 <span class="cm"> * - **super_scores** matrix of super scores</span>
@@ -100,13 +100,13 @@
 
 <div class="viewcode-block" id="c.CPCA"><a class="viewcode-back" href="../C-API.html#c.CPCA">[docs]</a><span class="cm">/**</span>
 <span class="cm"> * Consensus Principal Component Analysis</span>
-<span class="cm"> * </span>
+<span class="cm"> *</span>
 <span class="cm"> * @param [in] x libscientific tensor data input</span>
 <span class="cm"> * @param [in] scaling scaling type expressed as unsigned int type</span>
 <span class="cm"> * @param [in] npc number of desired principal components</span>
 <span class="cm"> * @param [out] model initialized model using NewCPCAModel(...). The datastructure will be populated with results</span>
-<span class="cm"> * </span>
-<span class="cm"> * </span>
+<span class="cm"> *</span>
+<span class="cm"> *</span>
 <span class="cm"> * Available scalings:</span>
 <span class="cm"> *</span>
 <span class="cm"> * - 0: No scaling. Only mean centering</span>
@@ -127,7 +127,7 @@
 
 <div class="viewcode-block" id="c.CPCAScorePredictor"><a class="viewcode-back" href="../C-API.html#c.CPCAScorePredictor">[docs]</a><span class="cm">/**</span>
 <span class="cm"> * Project objects in a CPCA model.</span>
-<span class="cm"> * </span>
+<span class="cm"> *</span>
 <span class="cm"> * @param [in] x libscientific tensor data input</span>
 <span class="cm"> * @param [in] model CPCA model</span>
 <span class="cm"> * @param [in] npc number of desired principal components</span>
@@ -182,7 +182,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.5.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.8.0 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">cpca.h</a></li> 
       </ul>
     </div>

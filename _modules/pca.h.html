@@ -4,11 +4,11 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pca.h &#8212; libscientific 1.5.1 documentation</title>
+    <title>pca.h &#8212; libscientific 1.8.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=2bf1fcf8" />
     
-    <script src="../_static/documentation_options.js?v=44dfd65d"></script>
+    <script src="../_static/documentation_options.js?v=b51e6972"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     
@@ -24,7 +24,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.5.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.8.0 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">pca.h</a></li> 
       </ul>
     </div>  
@@ -62,10 +62,10 @@
 
 <div class="viewcode-block" id="c.PCAMODEL"><a class="viewcode-back" href="../C-API.html#c.PCAMODEL">[docs]</a><span class="cm">/**</span>
 <span class="cm"> * PCA model data structure.</span>
-<span class="cm"> * </span>
+<span class="cm"> *</span>
 <span class="cm"> * - **scores** matrix of scores</span>
 <span class="cm"> * - **loadings** matrix of loadings</span>
-<span class="cm"> * - **varexp** vector of explained variance by every component </span>
+<span class="cm"> * - **varexp** vector of explained variance by every component</span>
 <span class="cm"> * - **dmodx** object distance from the model</span>
 <span class="cm"> * - **colaverage** input matrix column average</span>
 <span class="cm"> * - **colscaling** input matrix column scaling</span>
@@ -80,12 +80,12 @@
 <span class="p">}</span><span class="w"> </span><span class="n">PCAMODEL</span><span class="p">;</span></div>
 
 <div class="viewcode-block" id="c.NewPCAModel"><a class="viewcode-back" href="../C-API.html#c.NewPCAModel">[docs]</a><span class="cm">/**</span>
-<span class="cm"> * Initialize an empty PCAMODEL </span>
+<span class="cm"> * Initialize an empty PCAMODEL</span>
 <span class="cm"> */</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">NewPCAModel</span><span class="p">(</span><span class="n">PCAMODEL</span><span class="w"> </span><span class="o">**</span><span class="n">m</span><span class="p">);</span></div>
 
 <div class="viewcode-block" id="c.DelPCAModel"><a class="viewcode-back" href="../C-API.html#c.DelPCAModel">[docs]</a><span class="cm">/**</span>
-<span class="cm"> * Delete a PCAMODEL </span>
+<span class="cm"> * Delete a PCAMODEL</span>
 <span class="cm"> */</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">DelPCAModel</span><span class="p">(</span><span class="n">PCAMODEL</span><span class="w"> </span><span class="o">**</span><span class="n">m</span><span class="p">);</span></div>
 
@@ -98,7 +98,7 @@
 <div class="viewcode-block" id="c.calcObjectDistance"><span class="kt">double</span><span class="w"> </span><span class="nf">calcObjectDistance</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">);</span></div>
 
 <span class="cm">/*</span>
-<span class="cm"> * Calculate convergence criteria as described in </span>
+<span class="cm"> * Calculate convergence criteria as described in</span>
 <span class="cm"> * DOI: 10.1002/cem.1180010107 page 51 d = ...</span>
 <span class="cm"> * THIS METHOD IS USED INSIDE THE PCA/CPCA/PLS ALGORITHM</span>
 <span class="cm"> */</span>
@@ -108,12 +108,12 @@
 <div class="viewcode-block" id="c.PCA"><a class="viewcode-back" href="../C-API.html#c.PCA">[docs]</a><span class="cm">/**</span>
 <span class="cm"> * @brief Calculate a principal component analysis using the NIPALS algorithm.</span>
 <span class="cm"> *</span>
-<span class="cm"> * @param [in] mx libscientific matrix data input </span>
+<span class="cm"> * @param [in] mx libscientific matrix data input</span>
 <span class="cm"> * @param [in] scaling scaling type expressed as unsigned int type</span>
 <span class="cm"> * @param [in] npc number of desired principal components</span>
 <span class="cm"> * @param [out] PCAMODEL initialized model using NewPCAModel(...). The datastructure will be populated with results</span>
 <span class="cm"> * @param [in] scisignal libscientific signal. Default value is NULL</span>
-<span class="cm"> * </span>
+<span class="cm"> *</span>
 <span class="cm"> * Available scalings:</span>
 <span class="cm"> *</span>
 <span class="cm"> * - 0: No scaling. Only mean centering</span>
@@ -141,10 +141,10 @@
 <div class="viewcode-block" id="c.PCAScorePredictor"><a class="viewcode-back" href="../C-API.html#c.PCAScorePredictor">[docs]</a><span class="cm">/**</span>
 <span class="cm"> * @brief Predict scores given a principal component analysis and a matrix as input.</span>
 <span class="cm"> *</span>
-<span class="cm"> * @param [in] mx libscientific matrix data input </span>
+<span class="cm"> * @param [in] mx libscientific matrix data input</span>
 <span class="cm"> * @param [in] PCAMODEL pca model input</span>
 <span class="cm"> * @param [in] npc number of desired principal components</span>
-<span class="cm"> * @param [in] pscores predicted scores </span>
+<span class="cm"> * @param [in] pscores predicted scores</span>
 <span class="cm"> *</span>
 <span class="cm"> * @par Returns</span>
 <span class="cm"> *    Nothing.</span>
@@ -259,7 +259,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.5.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.8.0 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">pca.h</a></li> 
       </ul>
     </div>

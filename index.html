@@ -5,11 +5,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>The libscientific documentation &#8212; libscientific 1.5.1 documentation</title>
+    <title>The libscientific documentation &#8212; libscientific 1.8.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="_static/classic.css?v=2bf1fcf8" />
     
-    <script src="_static/documentation_options.js?v=44dfd65d"></script>
+    <script src="_static/documentation_options.js?v=b51e6972"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     
@@ -29,7 +29,7 @@
         <li class="right" >
           <a href="Overview.html" title="What is libscientific?"
              accesskey="N">next</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">libscientific 1.5.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="#">libscientific 1.8.0 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">The libscientific documentation</a></li> 
       </ul>
     </div>  
@@ -87,6 +87,11 @@
 <li class="toctree-l2"><a class="reference internal" href="GettingStartedInC.html#partial-least-squares-pls">Partial Least Squares (PLS)</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="GettingStartedInC.html#model-persistence-and-serialization-lsm-and-lsb">Model persistence and serialization (.lsm and .lsb)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="GettingStartedInC.html#saving-and-loading-a-single-model-lsm">Saving and loading a single model (.lsm)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GettingStartedInC.html#working-with-multi-model-bundles-lsb">Working with multi-model bundles (.lsb)</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="GettingStartedInPython.html">Getting started in Python</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="GettingStartedInPython.html#use-libscientific-in-python">Use libscientific in python</a></li>
 </ul>
@@ -110,6 +115,11 @@
 <li class="toctree-l2"><a class="reference internal" href="GettingStartedInPython.html#partial-least-squares-pls">Partial Least Squares (PLS)</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="GettingStartedInPython.html#model-persistence-and-serialization-lsm-and-lsb">Model persistence and serialization (.lsm and .lsb)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="GettingStartedInPython.html#saving-and-loading-a-single-model-lsm">Saving and loading a single model (.lsm)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GettingStartedInPython.html#working-with-multi-model-bundles-lsb">Working with multi-model bundles (.lsb)</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="Licensing.html">Licensing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="C-API.html">C API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="C-API.html#double-vector-functions">Double Vector Functions</a></li>
@@ -124,10 +134,10 @@
 <li class="toctree-l2"><a class="reference internal" href="C-API.html#mlr-functions">MLR Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="C-API.html#lda-functions">LDA Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="C-API.html#upca-functions">UPCA Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="C-API.html#object-selection-functions">Object Selection Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="C-API.html#model-container-i-o-functions">Model Container I/O Functions</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="Python-API.html">Pyhton API Reference</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="Python-API.html">Python API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="Python-API.html#module-libscientific.matrix">libscientific.matrix module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Python-API.html#module-libscientific.tensor">libscientific.tensor module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Python-API.html#module-libscientific.vectlist">libscientific.vectlist module</a></li>
@@ -139,6 +149,7 @@
 <li class="toctree-l2"><a class="reference internal" href="Python-API.html#module-libscientific.misc">libscientific.misc module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Python-API.html#module-libscientific.pca">libscientific.pca module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Python-API.html#module-libscientific.pls">libscientific.pls module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Python-API.html#module-libscientific.model_io">libscientific.model_io module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Python-API.html#module-libscientific">Module contents</a></li>
 </ul>
 </li>
@@ -207,7 +218,7 @@
         <li class="right" >
           <a href="Overview.html" title="What is libscientific?"
              >next</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">libscientific 1.5.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="#">libscientific 1.8.0 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">The libscientific documentation</a></li> 
       </ul>
     </div>

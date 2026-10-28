@@ -4,11 +4,11 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>lda.h &#8212; libscientific 1.5.1 documentation</title>
+    <title>lda.h &#8212; libscientific 1.8.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=2bf1fcf8" />
     
-    <script src="../_static/documentation_options.js?v=44dfd65d"></script>
+    <script src="../_static/documentation_options.js?v=b51e6972"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     
@@ -24,7 +24,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.5.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.8.0 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">lda.h</a></li> 
       </ul>
     </div>  
@@ -107,7 +107,7 @@
 
 <div class="viewcode-block" id="c.LDA"><a class="viewcode-back" href="../C-API.html#c.LDA">[docs]</a><span class="cm">/**</span>
 <span class="cm"> * Calculate and LDA Fisher discriminant analyisis model</span>
-<span class="cm"> * </span>
+<span class="cm"> *</span>
 <span class="cm"> * @param [in] mx input matrix of independent variables</span>
 <span class="cm"> * @param [in] my input matrix of classes</span>
 <span class="cm"> * @param [out] lda initialized model using NewLDAModel(...). The datastructure will be populated with results</span>
@@ -115,14 +115,14 @@
 <span class="kt">void</span><span class="w"> </span><span class="nf">LDA</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">mx</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">my</span><span class="p">,</span><span class="w"> </span><span class="n">LDAMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">lda</span><span class="p">);</span></div>
 
 <div class="viewcode-block" id="c.LDAPrediction"><a class="viewcode-back" href="../C-API.html#c.LDAPrediction">[docs]</a><span class="cm">/** Predict classes using an LDA fisher discriminant analysis model</span>
-<span class="cm"> * </span>
+<span class="cm"> *</span>
 <span class="cm"> * @param [in] mx input matrix of independent variables</span>
 <span class="cm"> * @param [in] lda computed LDAMODEL</span>
 <span class="cm"> * @param [out] pfeatures predicted features</span>
 <span class="cm"> * @param [out] probabilities</span>
 <span class="cm"> * @param [out] multivariate normal probability distribution of features</span>
 <span class="cm"> * @param [out] predicted classes</span>
-<span class="cm"> * </span>
+<span class="cm"> *</span>
 <span class="cm"> */</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">LDAPrediction</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">mx</span><span class="p">,</span>
 <span class="w">                   </span><span class="n">LDAMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">lda</span><span class="p">,</span>
@@ -185,7 +185,7 @@
         <li class="right" >
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.5.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.8.0 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">lda.h</a></li> 
       </ul>
     </div>

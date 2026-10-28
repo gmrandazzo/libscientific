@@ -5,17 +5,17 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>C API Reference &#8212; libscientific 1.5.1 documentation</title>
+    <title>C API Reference &#8212; libscientific 1.8.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="_static/classic.css?v=2bf1fcf8" />
     
-    <script src="_static/documentation_options.js?v=44dfd65d"></script>
+    <script src="_static/documentation_options.js?v=b51e6972"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Pyhton API Reference" href="Python-API.html" />
+    <link rel="next" title="Python API Reference" href="Python-API.html" />
     <link rel="prev" title="Licensing" href="Licensing.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="Related">
@@ -28,12 +28,12 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Python-API.html" title="Pyhton API Reference"
+          <a href="Python-API.html" title="Python API Reference"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="Licensing.html" title="Licensing"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">libscientific 1.5.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">libscientific 1.8.0 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">C API Reference</a></li> 
       </ul>
     </div>  
@@ -1069,8 +1069,302 @@ or auc in case of classification.</p>
 </dd></dl>
 
 </section>
-<section id="object-selection-functions">
-<h2>Object Selection Functions<a class="headerlink" href="#object-selection-functions" title="Link to this heading">¶</a></h2>
+<section id="model-container-i-o-functions">
+<h2>Model Container I/O Functions<a class="headerlink" href="#model-container-i-o-functions" title="Link to this heading">¶</a></h2>
+<dl class="c struct">
+<dt class="sig sig-object c" id="c.MODEL_FILE_INFO">
+<span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MODEL_FILE_INFO</span></span></span><a class="headerlink" href="#c.MODEL_FILE_INFO" title="Link to this definition">¶</a><br /><a class="reference internal" href="_modules/model_io.h.html#c.MODEL_FILE_INFO"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Metadata descriptor for inspecting files without full payload loading.</p>
+</dd></dl>
+
+<dl class="c struct">
+<dt class="sig sig-object c" id="c.MODEL_ENTRY">
+<span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MODEL_ENTRY</span></span></span><a class="headerlink" href="#c.MODEL_ENTRY" title="Link to this definition">¶</a><br /><a class="reference internal" href="_modules/model_io.h.html#c.MODEL_ENTRY"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Single entry within a multi-model bundle.</p>
+</dd></dl>
+
+<dl class="c struct">
+<dt class="sig sig-object c" id="c.MODEL_BUNDLE">
+<span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MODEL_BUNDLE</span></span></span><a class="headerlink" href="#c.MODEL_BUNDLE" title="Link to this definition">¶</a><br /><a class="reference internal" href="_modules/model_io.h.html#c.MODEL_BUNDLE"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Multi-model bundle container representing a project or pipeline.</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.SaveModel">
+<span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SaveModel</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">filepath</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">model_name</span></span>, <span class="n"><span class="pre">ModelType</span></span><span class="w"> </span><span class="n"><span class="pre">type</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">model</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.SaveModel" title="Link to this definition">¶</a><br /><a class="reference internal" href="_modules/model_io.h.html#c.SaveModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Save a single model into a standalone .lsm file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> – Destination file path (typically with .lsm extension)</p></li>
+<li><p><strong>model_name</strong> – Identifier tag for the model (e.g. “qsar_pls” or NULL for “default”)</p></li>
+<li><p><strong>type</strong> – Model type (MODEL_TYPE_PCA, MODEL_TYPE_PLS, etc.)</p></li>
+<li><p><strong>model</strong> – Pointer to the populated model struct</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>LSCM_OK (0) on success, or a negative LSCMStatus error code</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.ImportModel">
+<span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ImportModel</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">filepath</span></span>, <span class="n"><span class="pre">ModelType</span></span><span class="w"> </span><span class="n"><span class="pre">expected_type</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">model</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.ImportModel" title="Link to this definition">¶</a><br /><a class="reference internal" href="_modules/model_io.h.html#c.ImportModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Import a single model from a file (.lsm or .lsb with 1 model).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> – Source file path</p></li>
+<li><p><strong>expected_type</strong> – Expected ModelType (or MODEL_TYPE_ANY)</p></li>
+<li><p><strong>model</strong> – Pointer to pre-allocated or initialized target model struct</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>LSCM_OK (0) on success, or a negative LSCMStatus error code</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.NewModelBundle">
+<a class="reference internal" href="#c.MODEL_BUNDLE" title="MODEL_BUNDLE"><span class="n"><span class="pre">MODEL_BUNDLE</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">NewModelBundle</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.NewModelBundle" title="Link to this definition">¶</a><br /><a class="reference internal" href="_modules/model_io.h.html#c.NewModelBundle"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Create a new empty model bundle in memory.</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.ModelBundleAddModel">
+<span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ModelBundleAddModel</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.MODEL_BUNDLE" title="MODEL_BUNDLE"><span class="n"><span class="pre">MODEL_BUNDLE</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">bundle</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">name</span></span>, <span class="n"><span class="pre">ModelType</span></span><span class="w"> </span><span class="n"><span class="pre">type</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">model</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.ModelBundleAddModel" title="Link to this definition">¶</a><br /><a class="reference internal" href="_modules/model_io.h.html#c.ModelBundleAddModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Add a model into a bundle. The bundle takes custody of the model pointer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bundle</strong> – Target bundle</p></li>
+<li><p><strong>name</strong> – Unique model identifier name within the project</p></li>
+<li><p><strong>type</strong> – Model type</p></li>
+<li><p><strong>model</strong> – Pointer to the concrete model struct</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>LSCM_OK (0) on success, or a negative LSCMStatus error code</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.ModelBundleGetModel">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">ModelBundleGetModel</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#c.MODEL_BUNDLE" title="MODEL_BUNDLE"><span class="n"><span class="pre">MODEL_BUNDLE</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">bundle</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">name</span></span>, <span class="n"><span class="pre">ModelType</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">out_type</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.ModelBundleGetModel" title="Link to this definition">¶</a><br /><a class="reference internal" href="_modules/model_io.h.html#c.ModelBundleGetModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Retrieve a model from a bundle by its unique name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bundle</strong> – Source bundle</p></li>
+<li><p><strong>name</strong> – Unique model name</p></li>
+<li><p><strong>out_type</strong> – Optional output parameter for model type</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Pointer to the model struct, or NULL if not found</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.ModelBundleGetModelByIndex">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">ModelBundleGetModelByIndex</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#c.MODEL_BUNDLE" title="MODEL_BUNDLE"><span class="n"><span class="pre">MODEL_BUNDLE</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">bundle</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n"><span class="pre">index</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">out_name</span></span>, <span class="n"><span class="pre">ModelType</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">out_type</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.ModelBundleGetModelByIndex" title="Link to this definition">¶</a><br /><a class="reference internal" href="_modules/model_io.h.html#c.ModelBundleGetModelByIndex"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Retrieve a model from a bundle by index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bundle</strong> – Source bundle</p></li>
+<li><p><strong>index</strong> – 0-based index</p></li>
+<li><p><strong>out_name</strong> – Optional output buffer/pointer for model name</p></li>
+<li><p><strong>out_type</strong> – Optional output parameter for model type</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Pointer to the model struct, or NULL if index is out of bounds</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.DelModelBundle">
+<span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DelModelBundle</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.MODEL_BUNDLE" title="MODEL_BUNDLE"><span class="n"><span class="pre">MODEL_BUNDLE</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">bundle</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n"><span class="pre">free_contained_models</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.DelModelBundle" title="Link to this definition">¶</a><br /><a class="reference internal" href="_modules/model_io.h.html#c.DelModelBundle"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Free a model bundle container.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bundle</strong> – Pointer to bundle pointer</p></li>
+<li><p><strong>free_contained_models</strong> – If non-zero, frees each contained model struct appropriately</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.SaveModelBundle">
+<span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SaveModelBundle</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">filepath</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#c.MODEL_BUNDLE" title="MODEL_BUNDLE"><span class="n"><span class="pre">MODEL_BUNDLE</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">bundle</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.SaveModelBundle" title="Link to this definition">¶</a><br /><a class="reference internal" href="_modules/model_io.h.html#c.SaveModelBundle"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Save multiple models from a bundle into a single .lsb file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> – Destination file path (typically with .lsb extension)</p></li>
+<li><p><strong>bundle</strong> – Model bundle containing 1 or more models</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>LSCM_OK (0) on success, or a negative LSCMStatus error code</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.ImportModelBundle">
+<a class="reference internal" href="#c.MODEL_BUNDLE" title="MODEL_BUNDLE"><span class="n"><span class="pre">MODEL_BUNDLE</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">ImportModelBundle</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">filepath</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.ImportModelBundle" title="Link to this definition">¶</a><br /><a class="reference internal" href="_modules/model_io.h.html#c.ImportModelBundle"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Import a multi-model project bundle from an .lsb file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> – Source file path</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Pointer to loaded MODEL_BUNDLE, or NULL on error</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.InspectModelFile">
+<span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">InspectModelFile</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">filepath</span></span>, <a class="reference internal" href="#c.MODEL_FILE_INFO" title="MODEL_FILE_INFO"><span class="n"><span class="pre">MODEL_FILE_INFO</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">info</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.InspectModelFile" title="Link to this definition">¶</a><br /><a class="reference internal" href="_modules/model_io.h.html#c.InspectModelFile"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Inspect a model file header without loading full matrix/tensor payloads.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> – Source file path (.lsm or .lsb)</p></li>
+<li><p><strong>info</strong> – Output structure with model count, types, and sizes</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>LSCM_OK (0) on success, or a negative LSCMStatus error code</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.ImportModelAuto">
+<span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ImportModelAuto</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">filepath</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">out_single_model</span></span>, <span class="n"><span class="pre">ModelType</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">out_single_type</span></span>, <a class="reference internal" href="#c.MODEL_BUNDLE" title="MODEL_BUNDLE"><span class="n"><span class="pre">MODEL_BUNDLE</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">out_bundle</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.ImportModelAuto" title="Link to this definition">¶</a><br /><a class="reference internal" href="_modules/model_io.h.html#c.ImportModelAuto"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Automatically import a file, detecting whether it is a single model or a bundle.</p>
+<p>If single model:   - <cite>*out_bundle</cite> will be NULL.   - <cite>*out_single_model</cite> receives the newly allocated model struct.   - <cite>*out_single_type</cite> receives the model type.   - Returns 1.</p>
+<p>If multi-model bundle:   - <cite>*out_single_model</cite> will be NULL.   - <cite>*out_bundle</cite> receives the loaded MODEL_BUNDLE.   - Returns the total count of models in the bundle (&gt; 1).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> – Source file path (.lsm, .lsb, or generic)</p></li>
+<li><p><strong>out_single_model</strong> – Output pointer for single model</p></li>
+<li><p><strong>out_single_type</strong> – Output pointer for single model type</p></li>
+<li><p><strong>out_bundle</strong> – Output pointer for bundle</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Number of models imported on success (&gt; 0), or a negative error code</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.SavePCAModel">
+<span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SavePCAModel</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">filepath</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#c.PCAMODEL" title="PCAMODEL"><span class="n"><span class="pre">PCAMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">pca</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.SavePCAModel" title="Link to this definition">¶</a><br /><a class="reference internal" href="_modules/model_io.h.html#c.SavePCAModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.ImportPCAModel">
+<span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ImportPCAModel</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">filepath</span></span>, <a class="reference internal" href="#c.PCAMODEL" title="PCAMODEL"><span class="n"><span class="pre">PCAMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">pca</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.ImportPCAModel" title="Link to this definition">¶</a><br /><a class="reference internal" href="_modules/model_io.h.html#c.ImportPCAModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.SavePLSModel">
+<span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SavePLSModel</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">filepath</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#c.PLSMODEL" title="PLSMODEL"><span class="n"><span class="pre">PLSMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">pls</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.SavePLSModel" title="Link to this definition">¶</a><br /><a class="reference internal" href="_modules/model_io.h.html#c.SavePLSModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.ImportPLSModel">
+<span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ImportPLSModel</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">filepath</span></span>, <a class="reference internal" href="#c.PLSMODEL" title="PLSMODEL"><span class="n"><span class="pre">PLSMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">pls</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.ImportPLSModel" title="Link to this definition">¶</a><br /><a class="reference internal" href="_modules/model_io.h.html#c.ImportPLSModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.SaveCPCAModel">
+<span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SaveCPCAModel</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">filepath</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#c.CPCAMODEL" title="CPCAMODEL"><span class="n"><span class="pre">CPCAMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">cpca</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.SaveCPCAModel" title="Link to this definition">¶</a><br /><a class="reference internal" href="_modules/model_io.h.html#c.SaveCPCAModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.ImportCPCAModel">
+<span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ImportCPCAModel</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">filepath</span></span>, <a class="reference internal" href="#c.CPCAMODEL" title="CPCAMODEL"><span class="n"><span class="pre">CPCAMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">cpca</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.ImportCPCAModel" title="Link to this definition">¶</a><br /><a class="reference internal" href="_modules/model_io.h.html#c.ImportCPCAModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.SaveMLRModel">
+<span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SaveMLRModel</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">filepath</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#c.MLRMODEL" title="MLRMODEL"><span class="n"><span class="pre">MLRMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">mlr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.SaveMLRModel" title="Link to this definition">¶</a><br /><a class="reference internal" href="_modules/model_io.h.html#c.SaveMLRModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.ImportMLRModel">
+<span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ImportMLRModel</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">filepath</span></span>, <a class="reference internal" href="#c.MLRMODEL" title="MLRMODEL"><span class="n"><span class="pre">MLRMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">mlr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.ImportMLRModel" title="Link to this definition">¶</a><br /><a class="reference internal" href="_modules/model_io.h.html#c.ImportMLRModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.SaveLDAModel">
+<span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SaveLDAModel</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">filepath</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#c.LDAMODEL" title="LDAMODEL"><span class="n"><span class="pre">LDAMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">lda</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.SaveLDAModel" title="Link to this definition">¶</a><br /><a class="reference internal" href="_modules/model_io.h.html#c.SaveLDAModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.ImportLDAModel">
+<span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ImportLDAModel</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">filepath</span></span>, <a class="reference internal" href="#c.LDAMODEL" title="LDAMODEL"><span class="n"><span class="pre">LDAMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">lda</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.ImportLDAModel" title="Link to this definition">¶</a><br /><a class="reference internal" href="_modules/model_io.h.html#c.ImportLDAModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.SaveICAModel">
+<span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SaveICAModel</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">filepath</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">ICAMODEL</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">ica</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.SaveICAModel" title="Link to this definition">¶</a><br /><a class="reference internal" href="_modules/model_io.h.html#c.SaveICAModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.ImportICAModel">
+<span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ImportICAModel</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">filepath</span></span>, <span class="n"><span class="pre">ICAMODEL</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">ica</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.ImportICAModel" title="Link to this definition">¶</a><br /><a class="reference internal" href="_modules/model_io.h.html#c.ImportICAModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.SaveUPCAModel">
+<span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SaveUPCAModel</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">filepath</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#c.UPCAMODEL" title="UPCAMODEL"><span class="n"><span class="pre">UPCAMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">upca</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.SaveUPCAModel" title="Link to this definition">¶</a><br /><a class="reference internal" href="_modules/model_io.h.html#c.SaveUPCAModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.ImportUPCAModel">
+<span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ImportUPCAModel</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">filepath</span></span>, <a class="reference internal" href="#c.UPCAMODEL" title="UPCAMODEL"><span class="n"><span class="pre">UPCAMODEL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">upca</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.ImportUPCAModel" title="Link to this definition">¶</a><br /><a class="reference internal" href="_modules/model_io.h.html#c.ImportUPCAModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.SaveUPLSModel">
+<span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SaveUPLSModel</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">filepath</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">UPLSMODEL</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">upls</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.SaveUPLSModel" title="Link to this definition">¶</a><br /><a class="reference internal" href="_modules/model_io.h.html#c.SaveUPLSModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.ImportUPLSModel">
+<span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ImportUPLSModel</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">filepath</span></span>, <span class="n"><span class="pre">UPLSMODEL</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">upls</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.ImportUPLSModel" title="Link to this definition">¶</a><br /><a class="reference internal" href="_modules/model_io.h.html#c.ImportUPLSModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd></dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.ModelTypeToString">
+<span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">ModelTypeToString</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">ModelType</span></span><span class="w"> </span><span class="n"><span class="pre">type</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.ModelTypeToString" title="Link to this definition">¶</a><br /><a class="reference internal" href="_modules/model_io.h.html#c.ModelTypeToString"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Helper to convert ModelType enum to human-readable string.</p>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.ModelTypeFromString">
+<span class="n"><span class="pre">ModelType</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ModelTypeFromString</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">str</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.ModelTypeFromString" title="Link to this definition">¶</a><br /><a class="reference internal" href="_modules/model_io.h.html#c.ModelTypeFromString"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Helper to parse human-readable string to ModelType enum.</p>
+</dd></dl>
+
 </section>
 </section>
 
@@ -1097,7 +1391,7 @@ or auc in case of classification.</p>
 <li><a class="reference internal" href="#mlr-functions">MLR Functions</a></li>
 <li><a class="reference internal" href="#lda-functions">LDA Functions</a></li>
 <li><a class="reference internal" href="#upca-functions">UPCA Functions</a></li>
-<li><a class="reference internal" href="#object-selection-functions">Object Selection Functions</a></li>
+<li><a class="reference internal" href="#model-container-i-o-functions">Model Container I/O Functions</a></li>
 </ul>
 </li>
 </ul>
@@ -1111,7 +1405,7 @@ or auc in case of classification.</p>
   <div>
     <h4>Next topic</h4>
     <p class="topless"><a href="Python-API.html"
-                          title="next chapter">Pyhton API Reference</a></p>
+                          title="next chapter">Python API Reference</a></p>
   </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
@@ -1144,12 +1438,12 @@ or auc in case of classification.</p>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="Python-API.html" title="Pyhton API Reference"
+          <a href="Python-API.html" title="Python API Reference"
              >next</a> |</li>
         <li class="right" >
           <a href="Licensing.html" title="Licensing"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">libscientific 1.5.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">libscientific 1.8.0 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">C API Reference</a></li> 
       </ul>
     </div>
