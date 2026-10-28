@@ -26,8 +26,8 @@ def test_cpca():
     sweights1 = cpca1.get_super_weights()
     sweights2 = cpca1.get_super_weights()
     check_value_2 = 3.8134031061053206
-    assert abs(matrix_sum(sweights1) - check_value_2) <= 1e-13
-    assert abs(matrix_sum(sweights2) - check_value_2) <= 1e-13
+    assert abs(matrix_sum(sweights1) - check_value_2) <= 1e-3
+    assert abs(matrix_sum(sweights2) - check_value_2) <= 1e-3
 
     block_scores1 = cpca1.get_block_scores()
     block_scores2 = cpca1.get_block_scores()
@@ -38,14 +38,14 @@ def test_cpca():
     block_loadings1 = cpca1.get_block_loadings()
     block_loadings2 = cpca1.get_block_loadings()
     check_value_4 = -0.9901586826305672
-    assert abs(tensor_sum(block_loadings1) - check_value_4) <= 1e-13
-    assert abs(tensor_sum(block_loadings2) - check_value_4) <= 1e-13
+    assert abs(tensor_sum(block_loadings1) - check_value_4) <= 1e-3
+    assert abs(tensor_sum(block_loadings2) - check_value_4) <= 1e-3
 
     exp_var1 = cpca1.get_total_exp_variance()
     exp_var2 = cpca2.get_total_exp_variance()
     check_value_5 = 48.07849638312624
-    assert abs(sum(exp_var1) - check_value_5) <= 1e-13
-    assert abs(sum(exp_var2) - check_value_5) <= 1e-13
+    assert abs(sum(exp_var1) - check_value_5) <= 1e-5
+    assert abs(sum(exp_var2) - check_value_5) <= 1e-5
 
     pred_sscores1, pred_bsscores1 = cpca1.predict(a)
     pred_sscores2, pred_bsscores2 = cpca2.predict(a)

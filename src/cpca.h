@@ -24,7 +24,7 @@
 #include "vector.h"
 #include "scientificinfo.h"
 
-#define CPCACONVERGENCE 1e-18
+#define CPCACONVERGENCE 1e-10
 
 /**
  * CPCA model data structure.

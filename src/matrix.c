@@ -1499,11 +1499,55 @@ void MatrixColRMS(matrix* m, dvector *colrms)
 
 void MatrixColVar(matrix* m, dvector *colvar)
 {
+  if (!m || m->row == 0 || m->col == 0) return;
   size_t i;
   size_t j;
   size_t n;
   double var;
   double average;
+
+  /* Check if there are any missing values */
+  int has_missing = 0;
+  for (i = 0; i < m->row; i++) {
+    for (j = 0; j < m->col; j++) {
+      if (FLOAT_EQ(m->data[i][j], MISSING, 1e-1)) {
+        has_missing = 1;
+        break;
+      }
+    }
+    if (has_missing) break;
+  }
+
+  if (!has_missing && m->row > 1) {
+    double *avg = xcalloc(m->col, sizeof(double));
+    for (i = 0; i < m->row; i++) {
+      const double *row_i = m->data[i];
+      for (j = 0; j < m->col; j++) {
+        avg[j] += row_i[j];
+      }
+    }
+    double inv_n = 1.0 / (double)m->row;
+    for (j = 0; j < m->col; j++) {
+      avg[j] *= inv_n;
+    }
+
+    double *vars = xcalloc(m->col, sizeof(double));
+    for (i = 0; i < m->row; i++) {
+      const double *row_i = m->data[i];
+      for (j = 0; j < m->col; j++) {
+        double a = row_i[j] - avg[j];
+        vars[j] += a * a;
+      }
+    }
+    double inv_n_1 = 1.0 / (double)(m->row - 1);
+    for (j = 0; j < m->col; j++) {
+      DVectorAppend(colvar, vars[j] * inv_n_1);
+    }
+    xfree(avg);
+    xfree(vars);
+    return;
+  }
+
   for(j = 0; j < m->col; j++){
     average = +0.f;
     n = 0;
