@@ -19,7 +19,13 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
-#include <assert.h>
+
+#define TEST_ASSERT(expr) do { \
+    if (!(expr)) { \
+        fprintf(stderr, "Assertion failed at %s:%d: %s\n", __FILE__, __LINE__, #expr); \
+        abort(); \
+    } \
+} while (0)
 
 #include "model_io.h"
 #include "numeric.h"
@@ -31,25 +37,25 @@
 #define TEST_EPS 1e-12
 
 static void assert_dvector_eq(const dvector *v1, const dvector *v2, const char *msg) {
-    assert(v1->size == v2->size);
+    TEST_ASSERT(v1->size == v2->size);
     for (size_t i = 0; i < v1->size; i++) {
         if (isnan(v1->data[i]) && isnan(v2->data[i])) continue;
         if (!FLOAT_EQ(v1->data[i], v2->data[i], TEST_EPS)) {
             fprintf(stderr, "dvector mismatch at %zu: %f != %f in %s\n", i, v1->data[i], v2->data[i], msg);
-            assert(0);
+            TEST_ASSERT(0);
         }
     }
 }
 
 static void assert_matrix_eq(const matrix *m1, const matrix *m2, const char *msg) {
-    assert(m1->row == m2->row);
-    assert(m1->col == m2->col);
+    TEST_ASSERT(m1->row == m2->row);
+    TEST_ASSERT(m1->col == m2->col);
     for (size_t i = 0; i < m1->row; i++) {
         for (size_t j = 0; j < m1->col; j++) {
             if (isnan(m1->data[i][j]) && isnan(m2->data[i][j])) continue;
             if (!FLOAT_EQ(m1->data[i][j], m2->data[i][j], TEST_EPS)) {
                 fprintf(stderr, "matrix mismatch at [%zu][%zu]: %f != %f in %s\n", i, j, m1->data[i][j], m2->data[i][j], msg);
-                assert(0);
+                TEST_ASSERT(0);
             }
         }
     }
@@ -72,12 +78,12 @@ static void test_single_pca(void) {
 
     const char *path = "test_pca_single.lsm";
     int st = SavePCAModel(path, pca);
-    assert(st == LSCM_OK);
+    TEST_ASSERT(st == LSCM_OK);
 
     PCAMODEL *loaded_pca = NULL;
     NewPCAModel(&loaded_pca);
     st = ImportPCAModel(path, loaded_pca);
-    assert(st == LSCM_OK);
+    TEST_ASSERT(st == LSCM_OK);
 
     assert_matrix_eq(pca->scores, loaded_pca->scores, "PCA scores");
     assert_matrix_eq(pca->loadings, loaded_pca->loadings, "PCA loadings");
@@ -111,12 +117,12 @@ static void test_single_pls(void) {
 
     const char *path = "test_pls_single.lsm";
     int st = SavePLSModel(path, pls);
-    assert(st == LSCM_OK);
+    TEST_ASSERT(st == LSCM_OK);
 
     PLSMODEL *loaded_pls = NULL;
     NewPLSModel(&loaded_pls);
     st = ImportPLSModel(path, loaded_pls);
-    assert(st == LSCM_OK);
+    TEST_ASSERT(st == LSCM_OK);
 
     assert_matrix_eq(pls->xscores, loaded_pls->xscores, "PLS xscores");
     assert_matrix_eq(pls->xloadings, loaded_pls->xloadings, "PLS xloadings");
@@ -161,29 +167,29 @@ static void test_multi_model_bundle(void) {
     ModelBundleAddModel(bundle, "pca_stage", MODEL_TYPE_PCA, pca);
     ModelBundleAddModel(bundle, "pls_stage", MODEL_TYPE_PLS, pls);
     ModelBundleAddModel(bundle, "mlr_stage", MODEL_TYPE_MLR, mlr);
-    assert(bundle->count == 3);
+    TEST_ASSERT(bundle->count == 3);
 
     const char *path = "test_project.lsb";
     int st = SaveModelBundle(path, bundle);
-    assert(st == LSCM_OK);
+    TEST_ASSERT(st == LSCM_OK);
 
     MODEL_BUNDLE *loaded_bundle = ImportModelBundle(path);
-    assert(loaded_bundle != NULL);
-    assert(loaded_bundle->count == 3);
+    TEST_ASSERT(loaded_bundle != NULL);
+    TEST_ASSERT(loaded_bundle->count == 3);
 
     ModelType t_pca = MODEL_TYPE_UNKNOWN;
     PCAMODEL *l_pca = (PCAMODEL*)ModelBundleGetModel(loaded_bundle, "pca_stage", &t_pca);
-    assert(l_pca != NULL && t_pca == MODEL_TYPE_PCA);
+    TEST_ASSERT(l_pca != NULL && t_pca == MODEL_TYPE_PCA);
     assert_matrix_eq(pca->scores, l_pca->scores, "Bundle PCA scores");
 
     ModelType t_pls = MODEL_TYPE_UNKNOWN;
     PLSMODEL *l_pls = (PLSMODEL*)ModelBundleGetModel(loaded_bundle, "pls_stage", &t_pls);
-    assert(l_pls != NULL && t_pls == MODEL_TYPE_PLS);
+    TEST_ASSERT(l_pls != NULL && t_pls == MODEL_TYPE_PLS);
     assert_dvector_eq(pls->b, l_pls->b, "Bundle PLS b");
 
     ModelType t_mlr = MODEL_TYPE_UNKNOWN;
     MLRMODEL *l_mlr = (MLRMODEL*)ModelBundleGetModel(loaded_bundle, "mlr_stage", &t_mlr);
-    assert(l_mlr != NULL && t_mlr == MODEL_TYPE_MLR);
+    TEST_ASSERT(l_mlr != NULL && t_mlr == MODEL_TYPE_MLR);
     assert_matrix_eq(mlr->b, l_mlr->b, "Bundle MLR b");
 
     remove(path);
@@ -213,20 +219,20 @@ static void test_auto_detection(void) {
 
     MODEL_FILE_INFO info;
     int st = InspectModelFile(single_path, &info);
-    assert(st == LSCM_OK);
-    assert(info.is_single == true);
-    assert(info.num_models == 1);
-    assert(info.primary_type == MODEL_TYPE_PCA);
+    TEST_ASSERT(st == LSCM_OK);
+    TEST_ASSERT(info.is_single == true);
+    TEST_ASSERT(info.num_models == 1);
+    TEST_ASSERT(info.primary_type == MODEL_TYPE_PCA);
 
     void *single_model = NULL;
     ModelType single_type = MODEL_TYPE_UNKNOWN;
     MODEL_BUNDLE *bundle_out = NULL;
 
     int count = ImportModelAuto(single_path, &single_model, &single_type, &bundle_out);
-    assert(count == 1);
-    assert(single_model != NULL);
-    assert(single_type == MODEL_TYPE_PCA);
-    assert(bundle_out == NULL);
+    TEST_ASSERT(count == 1);
+    TEST_ASSERT(single_model != NULL);
+    TEST_ASSERT(single_type == MODEL_TYPE_PCA);
+    TEST_ASSERT(bundle_out == NULL);
 
     PCAMODEL *loaded_pca = (PCAMODEL*)single_model;
     assert_matrix_eq(pca->scores, loaded_pca->scores, "Auto-detected PCA scores");
@@ -240,8 +246,8 @@ static void test_auto_detection(void) {
     SaveModelBundle(bundle_path, b);
 
     st = InspectModelFile(bundle_path, &info);
-    assert(st == LSCM_OK);
-    assert(info.is_single == true); // 1 model in bundle is single
+    TEST_ASSERT(st == LSCM_OK);
+    TEST_ASSERT(info.is_single == true); // 1 model in bundle is single
     remove(bundle_path);
 
     /* 2 models in bundle */
@@ -252,18 +258,18 @@ static void test_auto_detection(void) {
 
     SaveModelBundle(bundle_path, b);
     st = InspectModelFile(bundle_path, &info);
-    assert(st == LSCM_OK);
-    assert(info.is_single == false);
-    assert(info.num_models == 2);
+    TEST_ASSERT(st == LSCM_OK);
+    TEST_ASSERT(info.is_single == false);
+    TEST_ASSERT(info.num_models == 2);
 
     single_model = NULL;
     single_type = MODEL_TYPE_UNKNOWN;
     bundle_out = NULL;
     count = ImportModelAuto(bundle_path, &single_model, &single_type, &bundle_out);
-    assert(count == 2);
-    assert(single_model == NULL);
-    assert(bundle_out != NULL);
-    assert(bundle_out->count == 2);
+    TEST_ASSERT(count == 2);
+    TEST_ASSERT(single_model == NULL);
+    TEST_ASSERT(bundle_out != NULL);
+    TEST_ASSERT(bundle_out->count == 2);
 
     DelModelBundle(&bundle_out, 1);
     DelModelBundle(&b, 1);
@@ -277,7 +283,7 @@ static void test_error_handling(void) {
 
     MODEL_FILE_INFO info;
     int st = InspectModelFile("non_existent_file.lsm", &info);
-    assert(st == LSCM_ERR_FILE_NOT_FOUND);
+    TEST_ASSERT(st == LSCM_ERR_FILE_NOT_FOUND);
 
     /* Corrupted file with wrong magic */
     const char *corrupt_path = "corrupt_test.lsm";
@@ -290,12 +296,12 @@ static void test_error_handling(void) {
     fclose(f);
 
     st = InspectModelFile(corrupt_path, &info);
-    assert(st == LSCM_ERR_INVALID_MAGIC);
+    TEST_ASSERT(st == LSCM_ERR_INVALID_MAGIC);
 
     PCAMODEL *pca = NULL;
     NewPCAModel(&pca);
     st = ImportPCAModel(corrupt_path, pca);
-    assert(st == LSCM_ERR_INVALID_MAGIC);
+    TEST_ASSERT(st == LSCM_ERR_INVALID_MAGIC);
 
     remove(corrupt_path);
     DelPCAModel(&pca);
