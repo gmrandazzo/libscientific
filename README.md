@@ -2,7 +2,7 @@
 
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.05420/status.svg)](https://doi.org/10.21105/joss.05420)
 [![Licence: GPL v3](https://img.shields.io/github/license/gmrandazzo/libscientific)](https://github.com/gmrandazzo/libscientific/blob/master/LICENSE)
-[![Pylint](https://github.com/gmrandazzo/libscientific/actions/workflows/pylint.yml/badge.svg)](https://github.com/gmrandazzo/libscientific/actions/workflows/pylint.yml)
+[![Code Quality & Linting](https://github.com/gmrandazzo/libscientific/actions/workflows/lint.yml/badge.svg)](https://github.com/gmrandazzo/libscientific/actions/workflows/lint.yml)
 [![Pytest](https://github.com/gmrandazzo/libscientific/actions/workflows/pytest.yml/badge.svg)](https://github.com/gmrandazzo/libscientific/actions/workflows/pytest.yml)
 [![Coverage](https://sonarqube.gmrandazzo.com/api/project_badges/measure?project=libscientific&metric=coverage&token=sqb_f37b38679864cfa4294f7efa1f2509a46e00cee2)](https://sonarqube.gmrandazzo.com/dashboard?id=libscientific)
 [![Maintainability Rating](https://sonarqube.gmrandazzo.com/api/project_badges/measure?project=libscientific&metric=software_quality_maintainability_rating&token=sqb_f37b38679864cfa4294f7efa1f2509a46e00cee2)](https://sonarqube.gmrandazzo.com/dashboard?id=libscientific)
