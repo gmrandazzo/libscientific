@@ -57,6 +57,6 @@ void ReadUPLS(char *dbpath, UPLSMODEL *upls);
  * @param [in] path output path of the CSV file
  * @param [in] m matrix to save
  */
-void WriteMatrixCSV(char *path, matrix *m);
+void WriteMatrixCSV(const char *path, const matrix *m);
 
 #endif

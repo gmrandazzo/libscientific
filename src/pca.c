@@ -50,18 +50,6 @@ void DelPCAModel(PCAMODEL** m)
   (*m) = NULL;
 }
 
-
-/* void calcVarExpressed(double total_ss, dvector *eval, dvector *varexp)
-{
-  size_t i;
-  DVectorResize(varexp, eval->size);
-  if(total_ss > 0){
-    for(i = 0; i < eval->size; i++){
-      varexp->data[i] = (eval->data[i] / total_ss) * 100.;
-    }
-  }
-} */
-
 double calcObjectDistance(matrix *m)
 {
   size_t i, j;

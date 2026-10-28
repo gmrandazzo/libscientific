@@ -1209,25 +1209,37 @@ void PruneResults(matrix *m,
     initMatrix(&distmx);
     CalculateDistance(subcentroid, submx, distmx, nthreads, EUCLIDEAN); 
 
-    /* type == 0 = Near Object else Faar object */
-    float (*compare_func)(float, float) = (type == 0) ? fminf : fmaxf;
+    if (ids->size == 0 || distmx->row == 0) {
+      DelMatrix(&distmx);
+      DelMatrix(&subcentroid);
+      DelUIVector(&ids);
+      DelMatrix(&submx);
+      continue;
+    }
+
+    /* type == 0 = Near Object else Far object */
     for (j = 0; j < nmaxobj; j++) {
       l = 0;
       k = ids->data[0];
       var = distmx->data[0][0];
-      for (int i = 1; i < distmx->row; i++) {
-        if (compare_func(distmx->data[i][0], var) == distmx->data[i][0]){
-          var = distmx->data[i][0];
-          k = ids->data[i];
-          l = i;
+      for (size_t row_idx = 1; row_idx < distmx->row; row_idx++) {
+        if (type == 0) {
+          if (distmx->data[row_idx][0] <= var) {
+            var = distmx->data[row_idx][0];
+            k = ids->data[row_idx];
+            l = row_idx;
+          }
+        } else {
+          if (distmx->data[row_idx][0] >= var) {
+            var = distmx->data[row_idx][0];
+            k = ids->data[row_idx];
+            l = row_idx;
+          }
         }
       }
 
-      if(FLOAT_EQ(var, MISSING, EPSILON)){
-        distmx->data[l][0] = MISSING;
-      }
-      else{
-        distmx->data[l][0] = MISSING;
+      distmx->data[l][0] = MISSING;
+      if (!FLOAT_EQ(var, MISSING, EPSILON)) {
         clusters_->data[k] = n+1;
       }
     }

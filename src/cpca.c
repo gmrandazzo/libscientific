@@ -60,20 +60,74 @@ void DelCPCAModel(CPCAMODEL **m)
 * pb = Xb_T x t / tT x t (step 2)
 */
 static inline void CalcBlockLoadings(matrix *Xb, dvector *t, dvector *p){
-  size_t i;
-  size_t j;
   double mod_t = DVectorDVectorDotProd(t, t);
   if (mod_t <= EPSILON) {
-    for (j = 0; j < p->size; j++) p->data[j] = 0.0;
+    for (size_t j = 0; j < p->size; j++) p->data[j] = 0.0;
     return;
   }
-  for (j = 0; j < Xb->col; j++) {
+  for (size_t j = 0; j < Xb->col; j++) {
     double s = 0.0;
-    for (i = 0; i < Xb->row; i++) {
+    for (size_t i = 0; i < Xb->row; i++) {
       s += Xb->data[i][j] * t->data[i];
     }
     p->data[j] = s / mod_t;
   }
+}
+
+static void cpca_store_and_deflate(tensor *Eb,
+                                   size_t pc,
+                                   const dvector *t_new,
+                                   const dvector *w_T,
+                                   matrix *T_T,
+                                   matrix *T,
+                                   dvector **p_b_list,
+                                   const dvector *tr_orig,
+                                   double mod_t,
+                                   double ss,
+                                   CPCAMODEL *model)
+{
+  MatrixTranspose(T_T, T);
+  TensorAppendMatrix(model->block_scores, T);
+
+  for (size_t i = 0; i < model->super_scores->row; i++) {
+    model->super_scores->data[i][pc] = t_new->data[i];
+  }
+
+  for (size_t i = 0; i < model->super_weights->row; i++) {
+    model->super_weights->data[i][pc] = w_T->data[i];
+  }
+
+  dvector *local_blockvexp = NULL;
+  NewDVector(&local_blockvexp, Eb->order);
+
+  for (size_t k = 0; k < Eb->order; k++) {
+    CalcBlockLoadings(Eb->m[k], (dvector *)t_new, p_b_list[k]);
+
+    for (size_t j = 0; j < p_b_list[k]->size; j++) {
+      model->block_loadings->m[k]->data[j][pc] = p_b_list[k]->data[j];
+    }
+
+    /* Deflation */
+    for (size_t i = 0; i < Eb->m[k]->row; i++) {
+      double ti = t_new->data[i];
+      for (size_t j = 0; j < Eb->m[k]->col; j++) {
+        Eb->m[k]->data[i][j] -= ti * p_b_list[k]->data[j];
+      }
+    }
+
+    /* Calculate cumulative percentage explained for each block */
+    double trace_val = 0.0;
+    for (size_t i = 0; i < Eb->m[k]->row; i++) {
+      for (size_t j = 0; j < Eb->m[k]->col; j++) {
+        trace_val += square(Eb->m[k]->data[i][j]);
+      }
+    }
+    local_blockvexp->data[k] = (1.0 - (trace_val / tr_orig->data[k])) * 100.0;
+  }
+
+  DVectorAppend(model->total_expvar, (mod_t / ss) * 100.0);
+  DVectorListAppend(model->block_expvar, local_blockvexp);
+  DelDVector(&local_blockvexp);
 }
 
 /*
@@ -101,7 +155,6 @@ void CPCA(tensor *x, int scaling, size_t npc, CPCAMODEL *model)
   dvector *w_T;
   dvector *colvar;
   dvector *tr_orig;
-  dvector *local_blockvexp;
   double ss;
   double mod_t;
   tensor *Eb; /* copy of the original data matrix to do autoscing and mean centring */
@@ -300,69 +353,7 @@ void CPCA(tensor *x, int scaling, size_t npc, CPCAMODEL *model)
         printf("new score calculated\n");
         printf("pc: %zu\n", pc);
         #endif
-        
-        /* Reconstruct T for storage if needed, or just store directly */
-        /* model->block_scores needs to append T. T is N x K. T_T is K x N. */
-        /* Transpose T_T to T for storage */
-        MatrixTranspose(T_T, T);
-        TensorAppendMatrix(model->block_scores, T);
-
-        for(i = 0; i < model->super_scores->row; i++)
-          model->super_scores->data[i][pc] = t_new->data[i];
-
-        for(i = 0; i < model->super_weights->row; i++)
-          model->super_weights->data[i][pc] = w_T->data[i];
-
-        /* Deflation and calculation block variance explained */
-        NewDVector(&local_blockvexp, Eb->order);
-
-        for(k = 0; k < Eb->order; k++){
-          /* Calculate the block loadings - already done in loop? 
-             p_b depends on t. t changed to t_new. Recalculate p_b with final t_new.
-          */
-          CalcBlockLoadings(Eb->m[k], t_new, p_b_list[k]);
-
-          /* store the block of loadings */
-          for(j = 0; j < p_b_list[k]->size; j++)
-            model->block_loadings->m[k]->data[j][pc] = p_b_list[k]->data[j];
-
-          /* Deflation */
-          for(i = 0; i < Eb->m[k]->row; i++){
-            double ti = t_new->data[i];
-            for(j = 0; j < Eb->m[k]->col; j++){
-              Eb->m[k]->data[i][j] -= ti * p_b_list[k]->data[j];
-            }
-          }
-        
-         /*
-          * Calculate cumulative percentage explained for each block
-          */
-          NewMatrix(&Eb_T, Eb->m[k]->col, Eb->m[k]->row);
-          MatrixTranspose(Eb->m[k], Eb_T);
-          
-          /* Optimization: Trace(Eb' * Eb) is sum of squares of elements of Eb.
-             No need for full matrix mult!
-          */
-          double trace_val = 0.0;
-          for(i=0; i < Eb->m[k]->row; i++) {
-              for(j=0; j < Eb->m[k]->col; j++) {
-                  trace_val += square(Eb->m[k]->data[i][j]);
-              }
-          }
-          /*
-          NewMatrix(&Eb_T_E, Eb->m[k]->col, Eb->m[k]->col);
-          MatrixDotProduct(Eb_T, Eb->m[k], Eb_T_E); 
-          local_blockvexp->data[k] = (1.f-(MatrixTrace(Eb_T_E)/tr_orig->data[k]))*100.;
-          DelMatrix(&Eb_T_E);
-          */
-          local_blockvexp->data[k] = (1.0 - (trace_val / tr_orig->data[k])) * 100.0;
-          
-          DelMatrix(&Eb_T);
-        }
-
-        DVectorAppend(model->total_expvar, (mod_t/ss) * 100.);
-        DVectorListAppend(model->block_expvar, local_blockvexp);
-        DelDVector(&local_blockvexp);
+        cpca_store_and_deflate(Eb, pc, t_new, w_T, T_T, T, p_b_list, tr_orig, mod_t, ss, model);
         break;
       }
       else{

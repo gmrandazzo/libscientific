@@ -30,22 +30,20 @@
 #include "upca.h"
 #include "upls.h"
 
-static void serialize_uivector(uivector *v, dvector *serialized)
+static void serialize_uivector(const uivector *v, dvector *serialized)
 {
-    size_t i;
     DVectorResize(serialized, v->size + 1);
     serialized->data[0] = (double)v->size;
-    for(i = 0; i < v->size; i++) {
+    for(size_t i = 0; i < v->size; i++) {
         serialized->data[i+1] = (double)v->data[i];
     }
 }
 
-static void deserialize_uivector(dvector *serialized, uivector *v)
+static void deserialize_uivector(const dvector *serialized, uivector *v)
 {
-    size_t i;
     size_t size = (size_t)serialized->data[0];
     UIVectorResize(v, size);
-    for(i = 0; i < size; i++) {
+    for(size_t i = 0; i < size; i++) {
         v->data[i] = (size_t)serialized->data[i+1];
     }
 }
@@ -162,7 +160,6 @@ static int callback(void *data, int argc, char **argv, char **azColName){
 
 static void write_vector_into_sqltable(sqlite3 *db, char *tabname, dvector *vect)
 {
-    size_t i;
     int rc;
     int length;
     char *err_msg = 0;
@@ -205,7 +202,7 @@ static void write_vector_into_sqltable(sqlite3 *db, char *tabname, dvector *vect
         return;
     }
 
-    for (i = 0; i < vect->size; i++){
+    for (size_t i = 0; i < vect->size; i++){
         sqlite3_bind_double(stmt, 1, vect->data[i]);
         rc = sqlite3_step(stmt);
         if (rc != SQLITE_DONE) {
@@ -777,16 +774,15 @@ void ReadPLS(char *dbpath, PLSMODEL *pls)
     CloseDB(db);
 }
 
-void WriteMatrixCSV(char *path, matrix *m)
+void WriteMatrixCSV(const char *path, const matrix *m)
 {
   FILE *f = fopen(path, "w");
   if(!f){
     fprintf(stderr, "Error: Unable to open file %s for writing\n", path);
     return;
   }
-  size_t i, j;
-  for(i = 0; i < m->row; i++){
-    for(j = 0; j < m->col; j++){
+  for(size_t i = 0; i < m->row; i++){
+    for(size_t j = 0; j < m->col; j++){
       fprintf(f, "%f%s", m->data[i][j], (j == m->col - 1) ? "" : ",");
     }
     fprintf(f, "\n");

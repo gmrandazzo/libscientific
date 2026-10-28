@@ -150,6 +150,30 @@ void ICA(matrix *mx,
   ICA_ext(mx, scaling, n_signals, 1.0, 1e-8, 5000, model);
 }
 
+/*
+ * Decorrelate weights (Gram-Schmidt)
+ * w_new = w_new - Sum (w_new * wj) * wj
+ */
+static void decorrelate_weights(matrix *W, dvector *w_new)
+{
+  dvector *s = NULL;
+  NewDVector(&s, w_new->size);
+  DVectorSet(s, 0.0);
+  for (size_t j = 0; j < W->col; j++) {
+    dvector *wj = getMatrixColumn(W, j);
+    double mod = DVectorDVectorDotProd(w_new, wj);
+    for (size_t k = 0; k < s->size; k++) {
+      s->data[k] += mod * wj->data[k];
+    }
+    DelDVector(&wj);
+  }
+
+  for (size_t k = 0; k < s->size; k++) {
+    w_new->data[k] -= s->data[k];
+  }
+  DelDVector(&s);
+}
+
 void ICA_ext(matrix *mx,
          size_t scaling,
          size_t n_signals,
@@ -174,17 +198,9 @@ void ICA_ext(matrix *mx,
     return;
   }
 
-  size_t j;
-  size_t k;
-  size_t ic;
-
   matrix *mx_whitened; /* data matrix of autoscaled / mean centred object */
   dvector *w;
   dvector *w_new;
-  dvector *wj;
-  dvector *s;
-
-  double mod;
 
   /* check if matrix have nan or infinite and convert them to MISSING */
   MatrixCheck(mx);
@@ -204,10 +220,10 @@ void ICA_ext(matrix *mx,
                   mx_whitened);
   DelMatrix(&a);
 
-  for(ic = 0; ic < n_signals; ic++){
+  for(size_t ic = 0; ic < n_signals; ic++){
     NewDVector(&w, mx_whitened->col);
     NewDVector(&w_new, mx_whitened->col);
-    for(j = 0; j < w->size; j++){
+    for(size_t j = 0; j < w->size; j++){
       w->data[j] = randDouble(-1, 1);
     }
     /* Initial normalization */
@@ -218,26 +234,9 @@ void ICA_ext(matrix *mx,
     
     while(lim > thresh && iter_count < max_iter){
       newW(w, mx_whitened, w_new, alpha);
-      /*
-       * Decorrelate weights (Gram-Schmidt)
-       * w_new = w_new - Sum (w_new * wj) * wj
-       */
+      
       if(ic >= 1){
-        NewDVector(&s, w_new->size);
-        DVectorSet(s, 0.0);
-        for(j = 0; j < model->W->col; j++){
-          wj = getMatrixColumn(model->W, j);
-          mod = DVectorDVectorDotProd(w_new, wj);
-          for(k = 0; k < s->size; k++){
-            s->data[k] += mod*wj->data[k];
-          }
-          DelDVector(&wj); 
-        }
-
-        for(k = 0; k < s->size; k++){
-          w_new->data[k] -= s->data[k];
-        }
-        DelDVector(&s);
+        decorrelate_weights(model->W, w_new);
       }
 
       /* Normalization */

@@ -964,9 +964,8 @@ void PLSVIP(PLSMODEL *model, matrix *vip)
 {
   size_t nlv = model->xscores->col;    /* F */
   size_t npred = model->xweights->row; /* J */
-  size_t f, j;
   double ssy_total = 0.0;
-  dvector *ssy_f;
+  dvector *ssy_f = NULL;
 
   if (nlv == 0 || npred == 0) return;
 
@@ -974,7 +973,7 @@ void PLSVIP(PLSMODEL *model, matrix *vip)
   ResizeMatrix(vip, npred, 1); /* VIP is a single vector for all components */
 
   /* 1. Calculate SSY_f for each component and SSY_total */
-  for (f = 0; f < nlv; f++) {
+  for (size_t f = 0; f < nlv; f++) {
     double bf = model->b->data[f];
     dvector *tf = getMatrixColumn(model->xscores, f);
     double tf_tf = DVectorDVectorDotProd(tf, tf);
@@ -992,9 +991,9 @@ void PLSVIP(PLSMODEL *model, matrix *vip)
   }
 
   /* 2. Calculate VIP_j for each variable */
-  for (j = 0; j < npred; j++) {
+  for (size_t j = 0; j < npred; j++) {
     double weighted_sum_w2 = 0.0;
-    for (f = 0; f < nlv; f++) {
+    for (size_t f = 0; f < nlv; f++) {
       double w_jf = model->xweights->data[j][f];
       weighted_sum_w2 += (w_jf * w_jf * ssy_f->data[f]);
     }

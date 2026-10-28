@@ -232,6 +232,7 @@ void UPLS(tensor* X_,
 
     if(X->m[0]->col < 1){
       fprintf(stderr, "Unable to run UPLS Calculation.\n The number of independent variables (X) is 0\n");
+      DelTensor(&X);
       return;
     }
 
