@@ -224,6 +224,69 @@ UPCA Functions
 
 .. autocfunction:: upca.h::PrintUPCAModel
 
+Model Container I/O Functions
+-----------------------------
 
-Object Selection Functions
---------------------------
+.. autocstruct:: model_io.h::MODEL_FILE_INFO
+
+.. autocstruct:: model_io.h::MODEL_ENTRY
+
+.. autocstruct:: model_io.h::MODEL_BUNDLE
+
+.. autocfunction:: model_io.h::SaveModel
+
+.. autocfunction:: model_io.h::ImportModel
+
+.. autocfunction:: model_io.h::NewModelBundle
+
+.. autocfunction:: model_io.h::ModelBundleAddModel
+
+.. autocfunction:: model_io.h::ModelBundleGetModel
+
+.. autocfunction:: model_io.h::ModelBundleGetModelByIndex
+
+.. autocfunction:: model_io.h::DelModelBundle
+
+.. autocfunction:: model_io.h::SaveModelBundle
+
+.. autocfunction:: model_io.h::ImportModelBundle
+
+.. autocfunction:: model_io.h::InspectModelFile
+
+.. autocfunction:: model_io.h::ImportModelAuto
+
+.. autocfunction:: model_io.h::SavePCAModel
+
+.. autocfunction:: model_io.h::ImportPCAModel
+
+.. autocfunction:: model_io.h::SavePLSModel
+
+.. autocfunction:: model_io.h::ImportPLSModel
+
+.. autocfunction:: model_io.h::SaveCPCAModel
+
+.. autocfunction:: model_io.h::ImportCPCAModel
+
+.. autocfunction:: model_io.h::SaveMLRModel
+
+.. autocfunction:: model_io.h::ImportMLRModel
+
+.. autocfunction:: model_io.h::SaveLDAModel
+
+.. autocfunction:: model_io.h::ImportLDAModel
+
+.. autocfunction:: model_io.h::SaveICAModel
+
+.. autocfunction:: model_io.h::ImportICAModel
+
+.. autocfunction:: model_io.h::SaveUPCAModel
+
+.. autocfunction:: model_io.h::ImportUPCAModel
+
+.. autocfunction:: model_io.h::SaveUPLSModel
+
+.. autocfunction:: model_io.h::ImportUPLSModel
+
+.. autocfunction:: model_io.h::ModelTypeToString
+
+.. autocfunction:: model_io.h::ModelTypeFromString

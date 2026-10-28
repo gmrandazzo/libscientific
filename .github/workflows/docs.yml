@@ -15,15 +15,15 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Instal libscientific library
+      - name: Install libscientific library
         run: |
           sudo apt-get -y update
-          sudo apt-get -y upgrade
           sudo apt-get -y install liblapack-dev cmake python3-venv libclang-14-dev libsqlite3-dev
           mkdir build
           cd build
           cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release
           sudo make install
+          sudo ldconfig
       - name: Install libscientific python package
         run: |
           python -m venv lscivenv
@@ -37,6 +37,7 @@ jobs:
           make html
       - name: Deploy documentation
         uses: JamesIves/github-pages-deploy-action@v4
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         with:
           folder: docs/_build/html/
           branch: gh-pages

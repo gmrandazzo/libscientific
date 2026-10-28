@@ -13,6 +13,20 @@
 
 import sys, os
 
+try:
+    from clang.cindex import Config
+    for candidate in [
+        '/usr/lib/llvm-14/lib/libclang.so.1',
+        '/usr/lib/llvm-14/lib/libclang.so',
+        '/usr/lib/x86_64-linux-gnu/libclang-14.so.1',
+        '/usr/lib/x86_64-linux-gnu/libclang.so',
+    ]:
+        if os.path.exists(candidate):
+            Config.set_library_file(candidate)
+            break
+except Exception:
+    pass
+
 sys.path.insert(0, os.path.abspath('../src/python_bindings/'))
 
 

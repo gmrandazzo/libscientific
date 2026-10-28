@@ -99,6 +99,11 @@ What can I do with libscientific?
         * Particle Swarm Optimization variable selection for PLS only
         * Spearman Ranking variable selection for PLS only
 
+* Model persistence and serialization:
+        * Zero-dependency binary container format (.lsm) for standalone models (PCA, PLS, CPCA, MLR, LDA, ICA, UPCA, UPLS)
+        * Multi-model project bundle container (.lsb) with Table of Contents (TOC) for managing complete modeling pipelines
+        * CRC32 data integrity verification and header inspection without full payload decompression
+
 History
 -------
 
