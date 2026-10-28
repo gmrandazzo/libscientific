@@ -50,6 +50,18 @@ typedef struct {
     uint8_t reserved[20];
 } LSCMTocEntry;
 
+static void copy_model_name(char *dest, const char *src, size_t max_len) {
+    if (!dest || max_len == 0) return;
+    dest[0] = '\0';
+    if (!src) return;
+    size_t i = 0;
+    while (i + 1 < max_len && src[i] != '\0') {
+        dest[i] = src[i];
+        i++;
+    }
+    dest[i] = '\0';
+}
+
 /* =========================================================================
  * Low-Level Binary Primitive Helpers (Standard C stdio)
  * ========================================================================= */
@@ -578,8 +590,7 @@ int ModelBundleAddModel(MODEL_BUNDLE *bundle, const char *name, ModelType type, 
         bundle->capacity = new_cap;
     }
     MODEL_ENTRY *e = &bundle->entries[bundle->count];
-    strncpy(e->name, name, LSCM_MAX_NAME_LEN - 1);
-    e->name[LSCM_MAX_NAME_LEN - 1] = '\0';
+    copy_model_name(e->name, name, sizeof(e->name));
     e->type = type;
     e->model = model;
     bundle->count++;
@@ -650,7 +661,7 @@ int SaveModelBundle(const char *filepath, const MODEL_BUNDLE *bundle) {
     LSCMTocEntry *toc = (LSCMTocEntry*)xcalloc(num_models, sizeof(LSCMTocEntry));
     for (size_t i = 0; i < num_models; i++) {
         toc[i].model_type = (uint32_t)bundle->entries[i].type;
-        strncpy(toc[i].model_name, bundle->entries[i].name, LSCM_MAX_NAME_LEN - 1);
+        copy_model_name(toc[i].model_name, bundle->entries[i].name, sizeof(toc[i].model_name));
     }
     if (fwrite(toc, TOC_ENTRY_SIZE, num_models, f) != num_models) {
         xfree(toc);
@@ -741,7 +752,7 @@ int InspectModelFile(const char *filepath, MODEL_FILE_INFO *info) {
         LSCMTocEntry first_entry;
         if (fread(&first_entry, TOC_ENTRY_SIZE, 1, f) == 1) {
             info->primary_type = (ModelType)first_entry.model_type;
-            strncpy(info->primary_name, first_entry.model_name, LSCM_MAX_NAME_LEN - 1);
+            copy_model_name(info->primary_name, first_entry.model_name, sizeof(info->primary_name));
         }
     }
 
