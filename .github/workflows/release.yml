@@ -4,7 +4,8 @@ name: Release
 # (libscientific.so / libscientific.dll / libscientific.dylib),
 # test them on a clean machine and publish them to PyPI with twine.
 #
-#  - push a tag vX.Y.Z      -> build + test + upload to PyPI
+#  - push a tag vX.Y.Z      -> build + test + upload to PyPI and attach the
+#                              wheels to the GitHub release of the tag
 #  - pull request to master -> build + test only (nothing is uploaded)
 #  - manual run             -> build + test only (nothing is uploaded)
 
@@ -209,3 +210,27 @@ jobs:
           python -m pip install --upgrade twine
           twine check --strict dist/*
           twine upload --skip-existing dist/*
+
+  github-release:
+    name: Attach wheels to the GitHub release
+    needs: test
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: wheel-*
+          path: dist
+          merge-multiple: true
+      - name: Create the release if missing and upload the wheels
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          ls -l dist
+          gh release view "$TAG" >/dev/null 2>&1 \
+            || gh release create "$TAG" --title "$TAG" --verify-tag --notes ""
+          gh release upload "$TAG" dist/*.whl --clobber
