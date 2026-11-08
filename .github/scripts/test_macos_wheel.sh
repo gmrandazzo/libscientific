@@ -90,7 +90,9 @@ python -m pip install -q --upgrade pip
 python -m pip install -q build delocate pytest numpy
 
 step "Build the wheel"
-python -m build --wheel --outdir "$DIST_DIR" "$PKG_SRC"
+# tag the wheel for this architecture even with a universal2 interpreter
+_PYTHON_HOST_PLATFORM="macosx-${MACOSX_DEPLOYMENT_TARGET}-${ARCH}" ARCHFLAGS="-arch ${ARCH}" \
+  python -m build --wheel --outdir "$DIST_DIR" "$PKG_SRC"
 
 step "Check the wheel with delocate"
 delocate-wheel -v --require-archs "$ARCH" -w "$WHEELHOUSE" "$DIST_DIR"/*.whl

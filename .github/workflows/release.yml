@@ -98,6 +98,11 @@ jobs:
           cmake --build build --target libscientific -j3
           cp -L build/src/libscientific.dylib src/python_bindings/libscientific/libscientific.dylib
       - name: Build wheel
+        env:
+          # setup-python provides a universal2 interpreter: tag the wheel for
+          # the single architecture of the bundled library
+          _PYTHON_HOST_PLATFORM: macosx-${{ matrix.deployment_target }}-${{ matrix.arch }}
+          ARCHFLAGS: -arch ${{ matrix.arch }}
         run: |
           python -m pip install --upgrade pip build delocate
           python -m build --wheel --outdir dist src/python_bindings
