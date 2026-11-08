@@ -19,12 +19,12 @@
 #include <scientificconfig.h>
 
 
-void ScientificVersion()
+void ScientificVersion(void)
 {
   printf("Scientific Library was written by Giuseppe Marco Randazzo <gmrandazzo@gmail.com>\nVersion: %d.%d.%d\n", major_, minor_, patch_);
 }
 
-const char *GetScientificVersion()
+const char *GetScientificVersion(void)
 {
   static char c[10];
   snprintf(c, 10, "%d.%d.%d",  major_, minor_, patch_);

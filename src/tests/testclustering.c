@@ -1013,6 +1013,43 @@ void test22()
   DelMatrix(&m);
 }
 
+/*
+ * Regression test: MDC and MDC_Fast implement the same algorithm and must
+ * select the same objects for every metric. MDC used to give the self vote
+ * to the wrong object, and the cosine metric used the similarity in place
+ * of a distance.
+ */
+void test_mdc_equals_mdc_fast()
+{
+  printf("Test MDC == MDC_Fast for every metric: ");
+  matrix *m;
+  NewMatrix(&m, 40, 3);
+  for(size_t i = 0; i < m->row; i++)
+    for(size_t j = 0; j < m->col; j++)
+      m->data[i][j] = 3.0 + sin(0.7*(double)((i+1)*(j+2))) + 0.3*cos(1.3*(double)(i*j+1));
+  for(int metric = 0; metric <= 2; metric++){
+    uivector *a, *b;
+    initUIVector(&a);
+    initUIVector(&b);
+    MDC(m, 8, metric, a, 2);
+    MDC_Fast(m, 8, metric, b, 2);
+    if(a->size != 8 || b->size != 8){
+      printf("FAIL: metric %d selected %zu and %zu objects\n", metric, a->size, b->size);
+      abort();
+    }
+    for(size_t i = 0; i < a->size; i++){
+      if(a->data[i] != b->data[i]){
+        printf("FAIL: metric %d position %zu: MDC %zu != MDC_Fast %zu\n", metric, i, a->data[i], b->data[i]);
+        abort();
+      }
+    }
+    DelUIVector(&a);
+    DelUIVector(&b);
+  }
+  printf("OK.\n");
+  DelMatrix(&m);
+}
+
 int main(void){
   /* Selection Tests */
   test1();
@@ -1034,6 +1071,7 @@ int main(void){
   test16();
   test17();
   test18();
+  test_mdc_equals_mdc_fast();
   test19();
   test20();
   test21();

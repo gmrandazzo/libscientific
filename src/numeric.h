@@ -33,6 +33,8 @@
 
 #define _isnan_(a) (a != a)
 #define _isinf_(a) (!_isnan_(a) && _isnan_(a - a))
+/* portable isfinite(): MinGW math.h isfinite() warns (-Wfloat-conversion) on doubles */
+#define _isfinite_(a) (!_isnan_((a) - (a)))
 #define _pi_ 3.14159265358979323846264338327950288419716939937510
 
 #define MISSING 99999999
@@ -42,7 +44,7 @@
  *         if(FLOAT_EQ(NumOne, NumTwo, EPSILON))...
  * END FLOATING POINT NUMBER PRECISION */
 
-double missing_value();
+double missing_value(void);
 
 /* Xorshift 128 is thread safe */
 struct xorshift128_state {
@@ -50,7 +52,7 @@ struct xorshift128_state {
 };
 
 void srand_(uint32_t seed);
-double rand_();
+double rand_(void);
 int randInt(int low, int high);
 double randDouble(double low, double high);
 

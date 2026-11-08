@@ -67,6 +67,15 @@ void MLR(matrix* mx, matrix* my, MLRMODEL* model, scisignal *s)
   matrix *mx_;
   dvector *y_;
   dvector *b_;
+  /* Reset the results of a previous fit: b, r2y_model and sdec are
+   * appended to, so refitting a model would otherwise mix old and new. */
+  DelMatrix(&model->b);
+  initMatrix(&model->b);
+  DelDVector(&model->r2y_model);
+  initDVector(&model->r2y_model);
+  DelDVector(&model->sdec);
+  initDVector(&model->sdec);
+
   NewMatrix(&mx_, mx->row, mx->col+1);
   NewDVector(&y_, mx->row);
 
@@ -123,7 +132,7 @@ void MLRPredictY(matrix* mx,
     size_t i, j, k;
     double ypred, rss, tss;
 
-    if(predicted_y->row != mx->row && predicted_y->col != model->b->col){
+    if(predicted_y->row != mx->row || predicted_y->col != model->b->col){
       ResizeMatrix(predicted_y, mx->row, model->b->col);
     }
 

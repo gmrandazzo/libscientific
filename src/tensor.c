@@ -81,11 +81,14 @@ void AddTensorMatrix(tensor *t, size_t row, size_t col)
 
 void DelTensor(tensor** t)
 {
+  if(t == NULL || (*t) == NULL)
+    return;
   size_t i;
   for(i = 0; i < (*t)->order; i++)
     DelMatrix(&(*t)->m[i]);
   free((*t)->m);
   free((*t));
+  (*t) = NULL;
 }
 
 void ClearTensor(tensor* t)

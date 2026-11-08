@@ -27,7 +27,7 @@ typedef int scisignal;
 #define SIGSCIENTIFICSTOP 1
 #define SIGSCIENTIFICRUN 0
 
-void ScientificVersion();
-const char *GetScientificVersion();
+void ScientificVersion(void);
+const char *GetScientificVersion(void);
 
 #endif

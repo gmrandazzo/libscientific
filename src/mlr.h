@@ -22,20 +22,27 @@
 #include "scientificinfo.h"
 
 /**
- * Multiple Linear Regression data structure
+ * Multiple Linear Regression model (ordinary least squares).
  *
- * - **b** beta coefficients
- * - **recalculated_y** y recalculated
- * - **predicted_y** y predicted
- * - **recalc_residuals** residuals using recalculated values
- * - **pred_residuals** residuals using predicted values
- * - **ymean** y averages
- * - **r2y_model** model r-squared using y recalculated
- * - **q2y** model q-squared using y predicted
- * - **sdep** standard deviation over prediction
- * - **sdec** standard deviation over recalculation
- * - **bias** model bias
- * - **r2q2scrambling** y scrambling results
+ * Create it with :c:func:`NewMLRModel`, fill it with :c:func:`MLR` and free
+ * it with :c:func:`DelMLRModel`. With ``n`` objects, ``f`` features and
+ * ``ny`` responses:
+ *
+ * Members:
+ *   b: Coefficients, ``(f+1) x ny``: row 0 is the intercept, row ``j+1`` the
+ *     coefficient of feature ``j``; column ``k`` refers to response ``k``.
+ *   recalculated_y: Fitted responses of the training objects, ``n x ny``.
+ *   predicted_y: Cross-validated predictions (filled by the validation
+ *     functions of ``modelvalidation.h``), ``n x ny``.
+ *   recalc_residuals: Fitted minus true responses, ``n x ny``.
+ *   pred_residuals: Cross-validated residuals, ``n x ny``.
+ *   ymean: Mean of each training response (size ``ny``).
+ *   r2y_model: R² of the training fit, one value per response.
+ *   q2y: Cross-validated R² (Q²), one value per response.
+ *   sdep: Standard deviation of the prediction errors, per response.
+ *   sdec: Standard deviation of the training errors, per response.
+ *   bias: Bias of the predictions, per response.
+ *   r2q2scrambling: Y-scrambling results.
  */
 
 typedef struct{
@@ -54,22 +61,55 @@ typedef struct{
 } MLRMODEL;
 
 /**
- * Initialize an MLR model
-*/
+ * Allocate an empty MLR model.
+ *
+ * Args:
+ *   m: [out] Address of the pointer that receives the new model.
+ *
+ * Note:
+ *   Release the model with :c:func:`DelMLRModel`.
+ */
 void NewMLRModel(MLRMODEL **m);
 
 /**
- * Delete a MLR model
+ * Free an MLR model and all its members, and set the pointer to ``NULL``.
+ *
+ * Args:
+ *   m: [in,out] Address of the model pointer created with :c:func:`NewMLRModel`.
  */
 void DelMLRModel(MLRMODEL **m);
 
 /**
- * Calculate a MLR model using OLS algorithm
+ * Fit a multiple linear regression model by ordinary least squares.
  *
- * @param [in] mx x independent variables input
- * @param [in] my y dependent variables input
- * @param [out] model initialized model using NewMLRModel(...). The datastructure will be populated with results
+ * Every response is fitted independently with an intercept:
+ * ``y_k = b[0][k] + sum_j b[j+1][k] x_j``. The training fit (fitted values,
+ * residuals, R², SDEC) is stored in the model. Fitting an already fitted
+ * model replaces its results.
  *
+ * Args:
+ *   mx: [in] Predictors, ``n x f`` (``n > f``). NaN/inf values are replaced
+ *     by ``MISSING``.
+ *   my: [in] Responses, ``n x ny``.
+ *   model: [out] Model created with :c:func:`NewMLRModel`; filled with the
+ *     results (see :c:type:`MLRMODEL`).
+ *   s: [in] Unused, pass ``NULL``.
+ *
+ * Returns:
+ *   Nothing, the results are written into ``model``.
+ *
+ * Example:
+ *   .. code-block:: c
+ *
+ *      MLRMODEL *model;
+ *      matrix *ypred;
+ *      NewMLRModel(&model);
+ *      MLR(x, y, model, NULL);
+ *      // model->b->data[0][k]: intercept of response k
+ *      initMatrix(&ypred);
+ *      MLRPredictY(xnew, NULL, model, ypred, NULL, NULL, NULL);
+ *      DelMatrix(&ypred);
+ *      DelMLRModel(&model);
  */
 void MLR(matrix *mx,
          matrix *my,
@@ -77,16 +117,27 @@ void MLR(matrix *mx,
          scisignal *s);
 
 /**
- * Predict Y targets using a MLR model
+ * Predict the responses of new objects and, if their true values are known,
+ * compute the prediction statistics.
  *
- * @param [in] mx x independent variables input
- * @param [in] my y dependent variables input (if known)
- * @param [in] model computed MLRMODEL
- * @param [out] predicted_y y predicted
- * @param [out] predicted_residuals residuals using y predicted
- * @param [out] r2y r-squared of the prediction if my known
- * @param [out] sdep standard deviation over prediction if my known
+ * Args:
+ *   mx: [in] Objects, ``m x f`` (same features as the training data).
+ *   my: [in] True responses ``m x ny``, or ``NULL`` if unknown.
+ *   model: [in] Model fitted with :c:func:`MLR`.
+ *   predicted_y: [out] Matrix created with ``initMatrix``; resized to
+ *     ``m x ny`` and filled with the predictions.
+ *   predicted_residuals: [out] Predicted minus true responses, ``m x ny``.
+ *     Only computed when ``my`` is given; ``NULL`` to skip.
+ *   r2y: [out] Empty vector created with ``initDVector``: one R² value per
+ *     response is **appended** (relative to the training mean). Only when
+ *     ``my`` is given; ``NULL`` to skip.
+ *   sdep: [out] Empty vector: one standard deviation of the errors per
+ *     response is appended. Only when ``my`` is given; ``NULL`` to skip.
  *
+ * Returns:
+ *   Nothing, the results are written into the outputs. If the number of
+ *   features differs from the model, an error is printed and nothing is
+ *   computed.
  */
 void MLRPredictY(matrix* mx,
                  matrix *my,
@@ -97,16 +148,19 @@ void MLRPredictY(matrix* mx,
                  dvector *sdep);
 
 /**
- * Calculate the correlation coefficient (ccoeff),
- * the standard deviation of the prediction (stdev),
- * the bias of the prediction (bias) in a regression model.
- * mx and my could be the training or the test datasets.
+ * Compute R², RMSE and bias of regression predictions.
  *
- * @param [in] my_true input matrix of y true values
- * @param [in] my_pred input matrix of y predicted or recalculated values
- * @param [out] ccoeff output - correlation coefficients q-squared or r-squared if my_pred is respectivelly predicted or recalculated
- * @param [out] rmse output - root mean square error
- * @param [out] bias output - bias defined as how distant are we from the diagonal
+ * Args:
+ *   my_true: [in] True responses, ``n x ny``.
+ *   my_pred: [in] Predicted (or fitted) responses, ``n x ny``.
+ *   ccoeff: [out] Vector created with ``initDVector``; resized to ``ny``:
+ *     R² of each response (Q² for cross-validated predictions).
+ *     ``NULL`` to skip.
+ *   rmse: [out] Root mean squared error of each response. ``NULL`` to skip.
+ *   bias: [out] Bias of each response. ``NULL`` to skip.
+ *
+ * Returns:
+ *   Nothing, the statistics are written into the output vectors.
  */
  void MLRRegressionStatistics(matrix *my_true,
                               matrix *my_pred,
@@ -115,12 +169,10 @@ void MLRPredictY(matrix* mx,
                               dvector *bias);
 
 /**
- * @brief Print MRLMODEL to video.
+ * Print the content of an MLR model to standard output.
  *
- * @param [in] m computed mlr model
- *
- * @par Returns
- *    Nothing.
+ * Args:
+ *   m: [in] The model to print.
  */
 void PrintMLR(MLRMODEL *m);
 

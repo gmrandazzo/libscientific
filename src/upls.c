@@ -223,6 +223,32 @@ void UPLS(tensor* X_,
     dvector *sh_s;
     dvector *sh_r;
 
+    /* Reset the results of a previous fit: these members are appended to
+     * and the column averages/scalings would be reused by
+     * TensorPreprocess(), so refitting would mix old and new results. */
+    DelMatrix(&m->xscores);
+    initMatrix(&m->xscores);
+    DelTensor(&m->xloadings);
+    initTensor(&m->xloadings);
+    DelTensor(&m->xweights);
+    initTensor(&m->xweights);
+    DelMatrix(&m->yscores);
+    initMatrix(&m->yscores);
+    DelTensor(&m->yloadings);
+    initTensor(&m->yloadings);
+    DelDVector(&m->b);
+    initDVector(&m->b);
+    DelDVectorList(&m->xcolaverage);
+    initDVectorList(&m->xcolaverage);
+    DelDVectorList(&m->xcolscaling);
+    initDVectorList(&m->xcolscaling);
+    DelDVectorList(&m->ycolaverage);
+    initDVectorList(&m->ycolaverage);
+    DelDVectorList(&m->ycolscaling);
+    initDVectorList(&m->ycolscaling);
+    DelTensor(&m->recalc_residuals);
+    initTensor(&m->recalc_residuals);
+
     NewTensor(&X, X_->order);
     for(k = 0; k < X_->order; k++){
       NewTensorMatrix(X, k, X_->m[k]->row, X_->m[k]->col);
@@ -251,6 +277,11 @@ void UPLS(tensor* X_,
     puts("Processed X Tensor");
     PrintTensor(X);
     #endif
+
+    /* NIPALS iteration budget, reset for every component */
+    size_t iter;
+    const size_t max_iter = 1000;
+    double dist;
 
     NewDVector(&t_old, X->m[0]->row); /* the object number is the same for all the matrix in tensor */
     NewDVector(&t_new, X->m[0]->row); /* the object number is the same for all the matrix in tensor */
@@ -329,13 +360,14 @@ void UPLS(tensor* X_,
       PrintDVector(u);
       #endif
 
+      iter = 0;
       while(1){
         /*step 3: W = u'X/u'u */
         MatrixSet(W, 0.f);
         DvectorTensorDotProduct(X, u, W);
 
         a = DVectorDVectorDotProd(u, u);
-        if (a <= EPSILON) { printf("UPLS PC %zu: dot_u too small\n", pc); goto next_pc; }
+        if (a <= EPSILON) { fprintf(stderr, "UPLS: latent variable %zu skipped, Y is fully explained\n", pc); goto next_pc; }
 
         for(i = 0; i < W->row; i++){
           for(j = 0; j < W->col; j++){
@@ -438,7 +470,7 @@ void UPLS(tensor* X_,
         TensorMatrixDotProduct(X, W, t_new);
 
         a = Matrixnorm(W);
-        if (a <= EPSILON) { printf("UPLS PC %zu: norm_W too small\n", pc); goto next_pc; }
+        if (a <= EPSILON) { fprintf(stderr, "UPLS: latent variable %zu skipped, X weights are zero\n", pc); goto next_pc; }
         a = square(a);
 
         for(i = 0; i < t_new->size; i++)
@@ -457,14 +489,17 @@ void UPLS(tensor* X_,
         #endif
 
         /*Check Distance */
-        if(calcConvergence(t_new, t_old) < UPLSCONVERGENCE){
+        iter++;
+        dist = calcConvergence(t_new, t_old);
+        if(!_isnan_(dist) && (dist < UPLSCONVERGENCE || iter >= max_iter)){
+          /* on iteration budget exhaustion keep the best estimate */
           /* storing t score result */
           MatrixAppendCol(m->xscores, t_new);
           TensorAppendMatrix(m->xweights, W);
           setDVectorValue(xeval, pc, DVectorDVectorDotProd(t_new, t_new));
           break;
         }
-        else if(_isnan_(DVectorDVectorDotProd(t_new, t_new))){
+        else if(_isnan_(dist)){
           fprintf(stderr, "UPLS Error! The Solver Engine was Unable to Converge! Please Check your data.\n");
           fflush(stderr);
           goto next_pc;
@@ -646,8 +681,9 @@ void UPLSScorePredictor(tensor *X_,  UPLSMODEL *m, size_t npc, matrix *ptscores)
         }
 
         if(m->xcolscaling->size > 0){
+          /* scale the centered value (not the raw input) */
           for(i = 0; i < X->m[k]->row; i++){
-            X->m[k]->data[i][j] = X_->m[k]->data[i][j]/m->xcolscaling->d[k]->data[j];
+            X->m[k]->data[i][j] = X->m[k]->data[i][j]/m->xcolscaling->d[k]->data[j];
           }
         }
       }
@@ -655,6 +691,9 @@ void UPLSScorePredictor(tensor *X_,  UPLSMODEL *m, size_t npc, matrix *ptscores)
 
     if(m->xloadings->order < npc)
       npc = m->xweights->order;
+
+    /* the scores are appended column by column: start from an empty matrix */
+    ResizeMatrix(ptscores, X->m[0]->row, 0);
 
     for(pc = 0; pc < npc; pc++){
       DVectorSet(t, 0.f);
@@ -751,8 +790,9 @@ void UPLSYPredictor(matrix *tscores, UPLSMODEL *m, size_t npc, tensor *py)
   /* Adjusting to real Y value, so no autoscaled and autocentered */
   if(m->ycolaverage->size > 0 && m->ycolscaling->size > 0){
 
-    for(k = 0; k < m->ycolaverage->size; k++){
-      for(j = 0; j < m->ycolaverage->size; j++){
+    /* k runs over the Y layers, j over the columns of each layer */
+    for(k = 0; k < m->ycolaverage->size && k < py->order; k++){
+      for(j = 0; j < py->m[k]->col; j++){
         for(i = 0; i < py->m[k]->row; i++){
           py->m[k]->data[i][j] *= m->ycolscaling->d[k]->data[j];
         }

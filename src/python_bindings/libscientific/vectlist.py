@@ -1,22 +1,31 @@
-"""vectlist.py libscientific python binding
+# vectlist.py libscientific python binding
+#
+# Copyright (C) <2023>  Giuseppe Marco Randazzo
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""Lists of double vectors stored in the C library.
 
-Copyright (C) <2023>  Giuseppe Marco Randazzo
+Used by the models for per-block or per-layer results (column averages,
+explained variances, ...).
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    >>> from libscientific.vectlist import DVectorList
+    >>> DVectorList([[1.0, 2.0], [3.0]]).tolist()
+    [[1.0, 2.0], [3.0]]
 """
 
 import ctypes
+from typing import Any
 
 from libscientific import vector as vect
 from libscientific.loadlibrary import load_libscientific_library
@@ -25,8 +34,15 @@ lsci = load_libscientific_library()
 
 
 class DVECTLIST(ctypes.Structure):
-    """
-    DVECTLIST data structure
+    """C structure of a list of double vectors (low-level API).
+
+    Attributes
+    ----------
+    dvector : POINTER(POINTER(DVECTOR))
+        The vectors; ``dvector[i]`` is vector ``i``. The vectors can have
+        different sizes.
+    size : int
+        Number of vectors.
     """
 
     _fields_ = [
@@ -46,8 +62,12 @@ lsci.initDVectorList.restype = None
 
 
 def init_dvector_list():
-    """
-    init_dvector_list: Allocate in memory an empty libscientific double vector list
+    """Allocate an empty list of double vectors.
+
+    Returns
+    -------
+    ctypes.POINTER(DVECTLIST)
+        A new list; release it with :func:`del_dvector_list`.
     """
     dvl = ctypes.POINTER(DVECTLIST)()
     lsci.initDVectorList(ctypes.pointer(dvl))
@@ -55,9 +75,24 @@ def init_dvector_list():
 
 
 def new_dvector_list(dvl_):
-    """
-    new_dvector_list: Allocate in memory a libscientific double vector list
-    from a list of lists
+    """Create a list of double vectors from a list of lists.
+
+    Parameters
+    ----------
+    dvl_ : list[list[float]]
+        The vectors (they can have different lengths).
+
+    Returns
+    -------
+    ctypes.POINTER(DVECTLIST)
+        A new list; release it with :func:`del_dvector_list`.
+
+    Examples
+    --------
+    >>> dvl = new_dvector_list([[1.0, 2.0], [3.0]])
+    >>> dvector_list_tolist(dvl)
+    [[1.0, 2.0], [3.0]]
+    >>> del_dvector_list(dvl)
     """
     dvl = init_dvector_list()
     for v_lst in dvl_:
@@ -70,8 +105,12 @@ lsci.DelDVectorList.restype = None
 
 
 def del_dvector_list(dvl):
-    """
-    del_dvector_list: Delete an allocated libscientific double vector
+    """Free a list of double vectors and all its vectors.
+
+    Parameters
+    ----------
+    dvl : ctypes.POINTER(DVECTLIST)
+        The list to release. It must not be used afterwards.
     """
     lsci.DelDVectorList(ctypes.pointer(dvl))
 
@@ -81,8 +120,14 @@ lsci.DVectorListAppend.restype = None
 
 
 def dvector_list_append(dvl, dvect):
-    """
-    dvector_list_append: Append a double vector to a DvectorList
+    """Append a copy of a vector to the list.
+
+    Parameters
+    ----------
+    dvl : ctypes.POINTER(DVECTLIST)
+        The list; its size grows by one.
+    dvect : list[float], DVector or POINTER(DVECTOR)
+        The vector to append.
     """
     if isinstance(dvect, vect.DVector):
         lsci.DVectorListAppend(dvl, dvect.dvect)
@@ -96,56 +141,54 @@ def dvector_list_append(dvl, dvect):
     return 0
 
 
-def dvector_list_tolist(dvl):
+def dvector_list_tolist(dvl: Any) -> list[list[float]]:
+    """Convert a list of double vectors into Python lists.
+
+    Parameters
+    ----------
+    dvl : ctypes.POINTER(DVECTLIST)
+        The list.
+
+    Returns
+    -------
+    list[list[float]]
     """
-    convert a divector list into a list of lists
-    """
-    lsts = []
+    lsts: list[list[float]] = []
     for i in range(dvl[0].size):
         lsts.append(vect.dvector_tolist(dvl[0].dvector[i].contents))
     return lsts
 
 
 class DVectorList:
-    """
-    DVectorList Class
+    """A list of double vectors stored in the C library.
 
-    This class provides methods for creating and manipulating
-    a list of libscientific double vectors.
+    Parameters
+    ----------
+    dvl_ : list[list[float]] or None
+        Initial vectors (copied), or ``None`` for an empty list.
 
-    Attributes:
-        dvl (DVECTORLIST): The double vector list.
+    Attributes
+    ----------
+    dvl : ctypes.POINTER(DVECTLIST)
+        The underlying C list, owned by this object.
 
-    Methods:
-        __init__(self, dvl_)
-        __del__(self)
-        __getitem__(self, key)
-        __setitem__(self, key, v_lst)
-        size(self)
-        data_ptr(self)
-        append(self, v_lst)
-        tolist(self)
-        fromlist(self, v_lists)
-        debug(self)
+    Examples
+    --------
+    >>> dvl = DVectorList([[1.0, 2.0], [3.0, 4.0, 5.0]])
+    >>> dvl.append([6.0])
+    >>> len(dvl), dvl.tolist()
+    (3, [[1.0, 2.0], [3.0, 4.0, 5.0], [6.0]])
     """
 
     def __init__(self, dvl_=None):
-        """
-        Initialize a DVectorList instance.
-
-        Args:
-            dvl_ : list of DVECTOR, list of lists, or None
-                The initial double vector list. If None, initializes an empty list.
-        """
+        """Create the list (see the class documentation)."""
         if dvl_ is None:
             self.dvl = init_dvector_list()
         else:
             self.dvl = new_dvector_list(dvl_)
 
     def __del__(self):
-        """
-        Clean up resources associated with the DVectorList instance.
-        """
+        """Release the C list."""
         if getattr(self, "dvl", None) is not None:
             del_dvector_list(self.dvl)
             del self.dvl
@@ -158,100 +201,101 @@ class DVectorList:
         return f"DVectorList({self.tolist()})"
 
     def __len__(self):
-        """
-        Return the number of vectors in the list.
-        """
+        """Return the number of vectors."""
         return self.size()
 
     def __iter__(self):
-        """
-        Iterate over the double vectors as lists.
-        """
+        """Iterate over the vectors, each as a Python list."""
         return iter(self.tolist())
 
     def __getitem__(self, key):
-        """
-        Get the DVECTOR at the specified index in the list.
+        """Return vector ``key`` as a C ``DVECTOR`` structure.
 
-        Args:
-            key : int
-                Index of the DVECTOR in the list.
+        Use ``dvl.tolist()[key]`` to get the values as a Python list.
 
-        Returns:
-            DVECTOR : The DVECTOR at the specified index.
+        Raises
+        ------
+        IndexError
+            If the index is out of range.
         """
-        return self.data_ptr()[key].contents
+        return self.data_ptr()[self._check_index(key)].contents
+
+    def _check_index(self, key: int) -> int:
+        """Validate an index; negative values count from the end."""
+        size = self.size()
+        idx = key + size if key < 0 else key
+        if not 0 <= idx < size:
+            raise IndexError(f"index {key} out of range for a list of {size} vectors")
+        return idx
 
     def __setitem__(self, key, v_lst):
-        """
-        Set values in the DVECTOR at the specified index in the list.
+        """Overwrite the values of vector ``key`` (``dvl[key] = values``).
 
-        Args:
-            key : int
-                Index of the DVECTOR in the list.
-            v_lst : list
-                List of values to set in the DVECTOR.
+        Only the first ``len(vector)`` values are used; the vector size does not
+        change.
+
+        Raises
+        ------
+        IndexError
+            If the index is out of range.
         """
+        key = self._check_index(key)
         for i, val in enumerate(v_lst):
             if i < self.data_ptr()[key].contents.size:
                 self.data_ptr()[key].contents.data[i] = val
             else:
                 break
-        return 0
 
     def size(self):
-        """
-        Get the size of the double vector list.
+        """Return the number of vectors.
 
-        Returns:
-            int : Size of the double vector list.
+        Returns
+        -------
+        int
         """
         return self.dvl[0].size
 
     def data_ptr(self):
-        """
-        Get the pointer to the data.
+        """Return the C array of vector pointers (low-level access).
 
-        Returns:
-            DVECTORLIST : The pointer to the data.
+        Returns
+        -------
+        POINTER(POINTER(DVECTOR))
         """
         return self.dvl[0].dvector
 
     def append(self, v_lst):
-        """
-        Append a value to the double vector list.
+        """Append a vector.
 
-        Args:
-            v_lst : DVector, DVECTOR, or list
-                Vector or list of values to append to the double vector list.
+        Parameters
+        ----------
+        v_lst : list[float]
+            The values of the new vector.
         """
         dvector_list_append(self.dvl, v_lst)
-        return 0
 
     def tolist(self):
-        """
-        Convert the double vector list to a list of lists.
+        """Return all the vectors as Python lists.
 
-        Returns:
-            list : The double vector list as a list of lists.
+        Returns
+        -------
+        list[list[float]]
         """
         return dvector_list_tolist(self.dvl)
 
     def fromlist(self, v_lists):
-        """
-        Convert a list of lists to a double vector list.
+        """Replace the content with a list of lists.
 
-        Args:
-            v_lists : list of lists
-                List of lists to convert to a double vector list.
+        Parameters
+        ----------
+        v_lists : list[list[float]]
+            The new vectors.
         """
         for v_lst in v_lists:
             dvector_list_append(self.dvl, v_lst)
         return 0
 
     def debug(self):
-        """
-        Print the double vector list for debugging purposes.
-        """
+        """Print the list to standard output."""
         for i in range(self.dvl[0].size):
             vect.print_dvector(self.dvl[0].dvector[i].contents)

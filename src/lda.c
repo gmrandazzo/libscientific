@@ -119,6 +119,17 @@ void LDA(matrix *mx, matrix *my, LDAMODEL *lda)
 
   lda->nclass = 0;
 
+  /* Reset the results of a previous fit: these members are appended to,
+   * so refitting a model would otherwise mix old and new classes. */
+  DelDVector(&lda->pprob);
+  initDVector(&lda->pprob);
+  DelMatrix(&lda->mu);
+  initMatrix(&lda->mu);
+  DelTensor(&lda->features);
+  initTensor(&lda->features);
+  DelTensor(&lda->mnpdf);
+  initTensor(&lda->mnpdf);
+
 
   imin = imax = (size_t)my->data[0][0];
 
@@ -444,7 +455,8 @@ void LDA(matrix *mx, matrix *my, LDAMODEL *lda)
       lda->fmean->data[k][l] = mean;
       lda->fsdev->data[k][l] = sdev;
       for(i = 0; i < ldfeature->size; i++){
-        lda->mnpdf->m[k]->data[i][l] = 1./sqrt(2 * _pi_* sdev) * exp(-square((ldfeature->data[i] - mean)/sdev)/2.f);
+        /* normal density: 1/(sdev*sqrt(2 pi)) * exp(-((x-mean)/sdev)^2 / 2) */
+        lda->mnpdf->m[k]->data[i][l] = 1./(sdev * sqrt(2 * _pi_)) * exp(-square((ldfeature->data[i] - mean)/sdev)/2.f);
       }
     }
   }
@@ -473,7 +485,7 @@ void LDAPrediction(matrix *mx,
    * f = mu_class * inv_cov * mx.T  - 1/2. * mu_class * inv_cov * mu_class.T + ln(prior_probability_class)
    */
   size_t i, j, argmax;
-  int pos, id;
+  size_t id;
   matrix *mx_T;
   dvector *x, *mu, *C_x_T, *C_mu_T, *ldfeature, *evect_;
 
@@ -486,12 +498,7 @@ void LDAPrediction(matrix *mx,
   ResizeMatrix(probability, mx->row, lda->nclass);
   ResizeMatrix(prediction, mx->row, 1);
 
-  if(lda->class_start == 1){
-    pos = -1;
-  }
-  else{
-    pos = 0;
-  }
+  /* class index k (0..nclass-1) <-> class label k + class_start */
 
   for(i = 0; i < mx_T->col; i++){
     x = getMatrixColumn(mx_T, i); /* object k*/
@@ -517,7 +524,7 @@ void LDAPrediction(matrix *mx,
         continue;
       }
     }
-    prediction->data[i][0] = (double)argmax + (double)pos;
+    prediction->data[i][0] = (double)(argmax + lda->class_start);
   }
 
   /* Predict the the new projection in the feature space */
@@ -530,8 +537,9 @@ void LDAPrediction(matrix *mx,
     MatrixAppendCol(pfeatures, ldfeature);
 
     for(j = 0; j < ldfeature->size; j++){
-      id = (int)(prediction->data[j][0]+pos);
-      mnpdf->data[j][i] = 1./sqrt(2 * _pi_* lda->fsdev->data[id][i]) * exp(-square((ldfeature->data[j] - lda->fmean->data[id][i])/lda->fsdev->data[id][i])/2.f);
+      id = (size_t)prediction->data[j][0] - lda->class_start;
+      /* normal density of the feature in the predicted class */
+      mnpdf->data[j][i] = 1./(lda->fsdev->data[id][i] * sqrt(2 * _pi_)) * exp(-square((ldfeature->data[j] - lda->fmean->data[id][i])/lda->fsdev->data[id][i])/2.f);
     }
 
     DVectorSet(ldfeature, 0.f);
@@ -710,27 +718,24 @@ void LDAMulticlassStatistics(matrix *y_true,
   NewDVector(&ytrue, y_true->row);
   NewDVector(&ypred, y_true->row);
 
-  int nc = getNClasses(y_pred);
+  /* classes are counted on the true labels; labels start at 0 or 1 */
+  int nc = getNClasses(y_true);
   n_classes = (nc > 0) ? (size_t)nc : 0;
+  size_t first_label = (size_t)y_true->data[0][0];
+  for(i = 1; i < y_true->row; i++){
+    if((size_t)y_true->data[i][0] < first_label)
+      first_label = (size_t)y_true->data[i][0];
+  }
   if(n_classes == 2){
-    n_classes = 1;
+    n_classes = 1; /* binary problem: a single one-vs-rest curve */
   }
 
   for(j = 0; j < n_classes; j++){
+    size_t label = first_label + j;
     for(i = 0; i < y_true->row; i++){
-      if((size_t)y_true->data[i][0] == j){
-        ytrue->data[i] = 1;
-      }
-      else{
-        ytrue->data[i] = 0;
-      }
-
-      if((size_t)y_pred->data[i][0] == j){
-        ytrue->data[i] = 1;
-      }
-      else{
-        ytrue->data[i] = 0;
-      }
+      /* positives: objects of this class; score: predicted as this class */
+      ytrue->data[i] = ((size_t)y_true->data[i][0] == label) ? 1 : 0;
+      ypred->data[i] = ((size_t)y_pred->data[i][0] == label) ? 1 : 0;
     }
 
     initMatrix(&roc_);

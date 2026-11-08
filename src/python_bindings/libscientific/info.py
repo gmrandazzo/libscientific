@@ -1,20 +1,20 @@
-"""info.py libscientific python binding
-
-Copyright (C) <2023>  Giuseppe Marco Randazzo
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
-"""
+# info.py libscientific python binding
+#
+# Copyright (C) <2023>  Giuseppe Marco Randazzo
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""Information about the libscientific C library (version)."""
 
 import ctypes
 
@@ -27,46 +27,38 @@ lsci.GetScientificVersion.restype = ctypes.c_char_p
 
 
 class Scientific:
-    """
-    Libscientific Information
+    """Information about the loaded libscientific C library.
 
-    This class provides methods to retrieve and print information
-    about the libscientific library.
+    Attributes
+    ----------
+    __version__ : str
+        Version of the C library, e.g. ``"1.8.0"``.
 
-    Attributes:
-        __version__ (str): The version of the libscientific library.
-
-    Methods:
-        print_version(): Prints the libscientific version to the console.
-        version(): Returns the libscientific version as a string.
-
-    Examples:
-    >>> sci = Scientific()
-    >>> sci.print_version()
-    1.0.0
-    >>> ver = sci.version()
-    >>> print(ver)
-    1.0.0
+    Examples
+    --------
+    >>> from libscientific.info import Scientific
+    >>> isinstance(Scientific().version(), str)
+    True
+    >>> Scientific().version()  # doctest: +SKIP
+    '1.8.0'
     """
 
     def __init__(self):
-        """
-        Initialize the Scientific class and retrieve the libscientific version.
-        """
+        """Read the version from the C library."""
         self.__version__ = str(lsci.GetScientificVersion().decode("UTF-8"))
 
     def print_version(self):
-        """
-        Print the libscientific version to the console.
-        """
+        """Print the version of the C library to standard output."""
         print(self.__version__)
 
     def version(self):
-        """
-        Get the libscientific version as a string.
+        """Return the version of the C library.
 
-        Returns:
-            str: The libscientific version.
+        Returns
+        -------
+        str
+            For example ``"1.8.0"``. It normally matches ``libscientific.__version__``
+            (the version of the Python package).
         """
         return self.__version__
 

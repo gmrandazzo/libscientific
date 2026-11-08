@@ -125,6 +125,15 @@ void PCA(matrix *mx, int scaling, size_t npc, PCAMODEL* model, scisignal *s)
   double ss;
 
   matrix *E; /* data matrix of autoscaled / mean centred object */
+
+  /* Reset the preprocessing of a previous fit: MatrixPreprocess() reuses the
+   * column averages/scalings when they are not empty, so refitting a model
+   * on new data would otherwise center it with the old averages. */
+  DelDVector(&model->colaverage);
+  initDVector(&model->colaverage);
+  DelDVector(&model->colscaling);
+  initDVector(&model->colscaling);
+
   NewMatrix(&E, mx->row, mx->col);
 
   /* Center and scale the input matrix */
@@ -160,6 +169,11 @@ void PCA(matrix *mx, int scaling, size_t npc, PCAMODEL* model, scisignal *s)
       #ifdef DEBUG
       printf("## Computing Component %d\n", (int)pc);
       #endif
+
+      /* Each component gets its own iteration budget and convergence
+       * reference: t_old must not carry the previous component's scores. */
+      iter = 0;
+      DVectorSet(t_old, 0.f);
 
       /* Init Step
       * calculate variance for each column for select after the vector with the greater value
@@ -232,7 +246,16 @@ void PCA(matrix *mx, int scaling, size_t npc, PCAMODEL* model, scisignal *s)
         puts("....................");
         #endif
 
-        if(calcConvergence(t, t_old) < PCACONVERGENCE){
+        /* Stop on convergence or when the iteration budget is exhausted.
+         * In the second case keep the current (best) estimate: it must be
+         * stored and deflated from E, otherwise the next component would
+         * recompute the same direction. */
+        iter++;
+        if(calcConvergence(t, t_old) < PCACONVERGENCE || iter >= max_iter){
+          #ifdef DEBUG
+          if(iter >= max_iter)
+            printf("PC %d not converged after %d iterations\n", (int)pc, (int)max_iter);
+          #endif
           /* copy the loadings and score to the output data matrix */
           for(i = 0; i < t->size; i++){
             model->scores->data[i][pc] = t->data[i];
@@ -277,10 +300,6 @@ void PCA(matrix *mx, int scaling, size_t npc, PCAMODEL* model, scisignal *s)
         else{
           DVectorCopy(t, t_old);
           /* End Step 5 */
-        }
-        iter++;
-        if (iter >= max_iter) {
-          break; /* stop if not converging */
         }
       }
       /*Reset all the variables*/
@@ -689,10 +708,10 @@ void PCATsqContributions(
 
       /* Calculate difference and squared difference */
       double diff = val_orig - val_recon;
-      if (isfinite(diff)) {
+      if (_isfinite_(diff)) {
         double squared_diff = diff * diff;
-        sum_squared_diff += isfinite(squared_diff) ? squared_diff : 0.0;
-        contributions->data[i][j] = isfinite(squared_diff) ? squared_diff : 0.0;
+        sum_squared_diff += _isfinite_(squared_diff) ? squared_diff : 0.0;
+        contributions->data[i][j] = _isfinite_(squared_diff) ? squared_diff : 0.0;
       } else {
         contributions->data[i][j] = 0.0;
       }

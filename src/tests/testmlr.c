@@ -209,11 +209,67 @@ void test1()
   DelMatrix(&my);
 }
 
+/*
+ * Regression tests: refitting a model must replace it (b and the
+ * statistics used to be appended), and predicting a different number of
+ * objects than the training set must resize the output (it used to be
+ * resized only when both dimensions differed, writing out of bounds).
+ */
+void test4()
+{
+  printf("Test 4: MLR refit and prediction of a different number of objects = ");
+  matrix *x, *y, *xnew, *ynew;
+  MLRMODEL *m;
+  NewMatrix(&x, 10, 2);
+  NewMatrix(&y, 10, 1);
+  for(size_t i = 0; i < 10; i++){
+    x->data[i][0] = (double)i;
+    x->data[i][1] = (double)((i * 7) % 5);
+    y->data[i][0] = 1.0 + 2.0*x->data[i][0] - 3.0*x->data[i][1];
+  }
+  NewMLRModel(&m);
+  MLR(x, y, m, NULL);
+  MLR(x, y, m, NULL); /* refit */
+  if(m->b->row != 3 || m->b->col != 1 || m->r2y_model->size != 1){
+    printf("FAIL: b is %zux%zu and r2y has %zu values after refit\n", m->b->row, m->b->col, m->r2y_model->size);
+    abort();
+  }
+  if(!FLOAT_EQ(m->b->data[0][0], 1.0, 1e-8) || !FLOAT_EQ(m->b->data[1][0], 2.0, 1e-8) ||
+     !FLOAT_EQ(m->b->data[2][0], -3.0, 1e-8)){
+    printf("FAIL: wrong coefficients %g %g %g\n", m->b->data[0][0], m->b->data[1][0], m->b->data[2][0]);
+    abort();
+  }
+  /* predict 3 objects into an output matrix that already has 1 column */
+  NewMatrix(&xnew, 3, 2);
+  NewMatrix(&ynew, 10, 1);
+  for(size_t i = 0; i < 3; i++){
+    xnew->data[i][0] = (double)(i + 20);
+    xnew->data[i][1] = 1.0;
+  }
+  MLRPredictY(xnew, NULL, m, ynew, NULL, NULL, NULL);
+  if(ynew->row != 3 || ynew->col != 1){
+    printf("FAIL: prediction is %zux%zu, expected 3x1\n", ynew->row, ynew->col);
+    abort();
+  }
+  for(size_t i = 0; i < 3; i++){
+    double expected = 1.0 + 2.0*(double)(i + 20) - 3.0;
+    if(!FLOAT_EQ(ynew->data[i][0], expected, 1e-8)){
+      printf("FAIL: object %zu predicted %g, expected %g\n", i, ynew->data[i][0], expected);
+      abort();
+    }
+  }
+  printf("OK.\n");
+  DelMatrix(&xnew); DelMatrix(&ynew);
+  DelMLRModel(&m);
+  DelMatrix(&x); DelMatrix(&y);
+}
+
 int main()
 {
   /**/
   test1();
   test2();
   test3();
+  test4();
   return 0;
 }

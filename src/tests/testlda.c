@@ -350,6 +350,71 @@ void Test1()
   DelMatrix(&y);
 }
 
+/*
+ * Regression test: classes numbered from 1 (1..K) must be predicted with
+ * their own labels, and refitting a model must replace it. Labels starting
+ * at 1 used to be predicted as label - 2 and the class density read outside
+ * its arrays (segmentation fault).
+ */
+static void fill_lda_data(matrix *x, matrix *y, size_t first_label, double shift)
+{
+  for(size_t i = 0; i < x->row; i++){
+    size_t c = i / 4; /* 3 well separated classes of 4 objects */
+    x->data[i][0] = shift + 10.0*(double)c + 0.1*(double)(i%4);
+    x->data[i][1] = shift - 5.0*(double)c + 0.2*(double)((i*3)%4);
+    y->data[i][0] = (double)(c + first_label);
+  }
+}
+
+void Test7()
+{
+  printf("Test 7: LDA with classes 1..K and refit = ");
+  matrix *x, *y, *pf, *prob, *mnpdf, *pred;
+  LDAMODEL *m;
+  NewMatrix(&x, 12, 2);
+  NewMatrix(&y, 12, 1);
+  NewLDAModel(&m);
+  for(size_t first = 0; first <= 1; first++){
+    fill_lda_data(x, y, first, (double)first * 3.0);
+    LDA(x, y, m); /* the second iteration refits the same model */
+    if(m->nclass != 3 || m->pprob->size != 3 || m->mu->row != 3 || m->features->order != 3){
+      printf("FAIL: model has %zu classes, %zu priors, %zu means after fit %zu\n",
+             m->nclass, m->pprob->size, m->mu->row, first + 1);
+      abort();
+    }
+    initMatrix(&pf); initMatrix(&prob); initMatrix(&mnpdf); initMatrix(&pred);
+    LDAPrediction(x, m, pf, prob, mnpdf, pred);
+    for(size_t i = 0; i < x->row; i++){
+      if(!FLOAT_EQ(pred->data[i][0], y->data[i][0], 1e-9)){
+        printf("FAIL: labels from %zu: object %zu predicted %g, expected %g\n",
+               first, i, pred->data[i][0], y->data[i][0]);
+        abort();
+      }
+    }
+    /* perfect predictions: every one-vs-rest ROC AUC must be 1
+     * (the predicted labels used to be ignored, giving random AUCs) */
+    dvector *roc_aucs, *pr_aucs;
+    initDVector(&roc_aucs); initDVector(&pr_aucs);
+    LDAMulticlassStatistics(y, pred, NULL, roc_aucs, NULL, pr_aucs);
+    if(roc_aucs->size != 3){
+      printf("FAIL: %zu ROC AUCs, expected 3\n", roc_aucs->size);
+      abort();
+    }
+    for(size_t k = 0; k < roc_aucs->size; k++){
+      if(!FLOAT_EQ(roc_aucs->data[k], 1.0, 1e-9)){
+        printf("FAIL: labels from %zu: ROC AUC of class %zu is %g, expected 1\n", first, k, roc_aucs->data[k]);
+        abort();
+      }
+    }
+    DelDVector(&roc_aucs); DelDVector(&pr_aucs);
+    DelMatrix(&pf); DelMatrix(&prob); DelMatrix(&mnpdf); DelMatrix(&pred);
+  }
+  printf("OK.\n");
+  DelLDAModel(&m);
+  DelMatrix(&x);
+  DelMatrix(&y);
+}
+
 int main()
 {
    Test1();
@@ -358,5 +423,6 @@ int main()
    Test4();
    Test5();
    Test6();
+   Test7();
   return 0;
 }

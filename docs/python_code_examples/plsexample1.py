@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 
-import libscientific
+import os
 import random
+import tempfile
+
+import libscientific
 
 def mx_to_video(m, decimals=5):
     for row in m:
@@ -46,8 +49,9 @@ print("Predicted Scores")
 mx_to_video(pscores, 3)
 
 # Save model
-model.save("mymodel.sqlite3")
+model_path = os.path.join(tempfile.mkdtemp(), "mymodel.lsm")
+model.save(model_path)
 
 # Load model
-model2 = PLS()
-model2.load("mymodel.sqlite3")
+model2 = libscientific.pls.PLS()
+model2.load(model_path)

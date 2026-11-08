@@ -2,106 +2,49 @@
 Python API Reference
 ********************
 
-libscientific.matrix module
----------------------------
+Every model follows the same pattern::
 
-.. automodule:: libscientific.matrix
-   :members:
-   :undoc-members:
-   :show-inheritance:
+    model = PCA(scaling=1, npc=2)     # 1. create with the options
+    model.fit(X)                      # 2. fit on training data
+    scores = model.predict(X_new)     # 3. use on new data
+    model.save("model.lsm")           # 4. save / load
 
-libscientific.tensor module
----------------------------
+Inputs can be Python lists of rows, numpy arrays or
+:class:`~libscientific.matrix.Matrix` objects (see
+:data:`~libscientific.matrix.MatrixLike`). Results are Python lists: the
+documentation of every method gives their exact shape. Wrap them with
+``numpy.array(...)`` if you need arrays.
 
-.. automodule:: libscientific.tensor
-   :members:
-   :undoc-members:
-   :show-inheritance:
+The examples in the documentation are executed by the test suite, so they
+always match the behaviour of the library.
 
-libscientific.vectlist module
------------------------------
+Models
+======
 
-.. automodule:: libscientific.vectlist
-   :members:
-   :undoc-members:
-   :show-inheritance:
+.. toctree::
+   :maxdepth: 1
 
-libscientific.vector module
----------------------------
+   python_api/pca
+   python_api/pls
+   python_api/cpca
+   python_api/mlr
+   python_api/lda
+   python_api/upca
+   python_api/upls
+   python_api/clustering
+   python_api/interpolate
+   python_api/model_io
 
-.. automodule:: libscientific.vector
-   :members:
-   :undoc-members:
-   :show-inheritance:
+Data structures and utilities
+=============================
 
-libscientific.clustering module
--------------------------------
+.. toctree::
+   :maxdepth: 1
 
-.. automodule:: libscientific.clustering
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-libscientific.cpca module
--------------------------
-
-.. automodule:: libscientific.cpca
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-libscientific.interpolate module
---------------------------------
-
-.. automodule:: libscientific.interpolate
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-libscientific.loadlibrary module
---------------------------------
-
-.. automodule:: libscientific.loadlibrary
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-libscientific.misc module
--------------------------
-
-.. automodule:: libscientific.misc
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-libscientific.pca module
-------------------------
-
-.. automodule:: libscientific.pca
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-libscientific.pls module
-------------------------
-
-.. automodule:: libscientific.pls
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-libscientific.model_io module
------------------------------
-
-.. automodule:: libscientific.model_io
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: libscientific
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   python_api/matrix
+   python_api/vector
+   python_api/tensor
+   python_api/vectlist
+   python_api/misc
+   python_api/info
+   python_api/loadlibrary

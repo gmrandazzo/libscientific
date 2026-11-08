@@ -42,3 +42,7 @@ jobs:
       run: |
         cd src/python_bindings/
         pytest
+    - name: Running the examples of the docstrings (doctest)
+      run: |
+        cd src/python_bindings/
+        pytest --doctest-modules libscientific

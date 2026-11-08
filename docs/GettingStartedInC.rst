@@ -265,6 +265,36 @@ Here is a simple example that shows how to calculate a PLS model.
    :linenos:
 
 
+Multiple Linear Regression (MLR)
+--------------------------------
+
+.. literalinclude:: c_code_examples/mlrexample1.c
+   :language: c
+   :linenos:
+
+Linear Discriminant Analysis (LDA)
+----------------------------------
+
+.. literalinclude:: c_code_examples/ldaexample1.c
+   :language: c
+   :linenos:
+
+Multi-way Principal Component Analysis (UPCA)
+---------------------------------------------
+
+.. literalinclude:: c_code_examples/upcaexample1.c
+   :language: c
+   :linenos:
+
+Multi-way Partial Least Squares (UPLS)
+--------------------------------------
+
+.. literalinclude:: c_code_examples/uplsexample1.c
+   :language: c
+   :linenos:
+
+
+
 Model persistence and serialization (.lsm and .lsb)
 ===================================================
 

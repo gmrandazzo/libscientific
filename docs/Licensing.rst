@@ -6,5 +6,5 @@
 Licensing
 =========
 
-Libscientific is distributed under GPLv3 license.
-To know more in details how the licens work please read the file "LICENSE" or go to "http://www.gnu.org/licenses/gpl-3.0.en.html"
+Libscientific is distributed under the GNU Affero General Public License v3.0 or later (AGPL-3.0-or-later).
+To know more in details how the license works please read the file "LICENSE" or go to "https://www.gnu.org/licenses/agpl-3.0.html"

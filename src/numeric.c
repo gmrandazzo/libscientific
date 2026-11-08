@@ -27,7 +27,7 @@
 #include "interpolate.h"
 
 
-double missing_value(){ return MISSING; }
+double missing_value(void){ return MISSING; }
 
 uint32_t generate_seed(uint32_t seed) {
     uint32_t a = 0x7AFB2C23ULL;
@@ -58,7 +58,7 @@ void srand_(uint32_t seed)
   XOR128_SEED = generate_seed(seed);
 }
 
-double rand_()
+double rand_(void)
 {
   struct xorshift128_state state;
   if(XOR128_SEED  == 0)

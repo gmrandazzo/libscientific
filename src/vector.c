@@ -59,12 +59,13 @@ void NewStrVector(strvector **s, size_t size)
 
 void DelStrVector(strvector **s)
 {
-  if(s != NULL){
+  if(s != NULL && (*s) != NULL){
     size_t i;
     for(i = 0; i < (*s)->size; i++)
       xfree((*s)->data[i]);
     xfree((*s)->data);
     xfree((*s));
+    (*s) = NULL;
   }
 }
 
@@ -221,9 +222,10 @@ void NewDVector(dvector **d, size_t size)
 
 void DelDVector(dvector **d )
 {
-  if(d != NULL){
+  if(d != NULL && (*d) != NULL){
     xfree((*d)->data);
     xfree((*d));
+    (*d) = NULL;
   }
 }
 
@@ -539,9 +541,10 @@ void NewIVector(ivector **d, size_t size)
 
 void DelIVector(ivector **d )
 {
-  if(d != NULL){
+  if(d != NULL && (*d) != NULL){
     xfree((*d)->data);
     xfree((*d));
+    (*d) = NULL;
   }
 }
 
@@ -655,9 +658,10 @@ void NewUIVector(uivector **d, size_t size)
 
 void DelUIVector(uivector **d )
 {
-  if(d != NULL){
+  if(d != NULL && (*d) != NULL){
     xfree((*d)->data);
     xfree((*d));
+    (*d) = NULL;
   }
 }
 
