@@ -30,14 +30,14 @@
 #include <stdarg.h>
 
 
-ValidationArg initValidationArg()
+ValidationArg initValidationArg(void)
 {
   return (ValidationArg) {.vtype = BootstrapRGCV,
                           .rgcv_group = 5,
                           .rgcv_iterations = 5};
 }
 
-MODELINPUT initModelInput()
+MODELINPUT initModelInput(void)
 {
   return (MODELINPUT) {.mx = NULL,
                        .my = NULL,

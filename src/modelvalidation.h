@@ -41,7 +41,7 @@ typedef struct{
   size_t rgcv_iterations;
 } ValidationArg;
 
-ValidationArg initValidationArg();
+ValidationArg initValidationArg(void);
 
 typedef struct{
   matrix *mx;
@@ -51,7 +51,7 @@ typedef struct{
   size_t yautoscaling;
 } MODELINPUT;
 
-MODELINPUT initModelInput();
+MODELINPUT initModelInput(void);
 
 /* Description: Generate random groups of train and test set.
  *

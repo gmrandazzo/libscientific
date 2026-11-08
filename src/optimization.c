@@ -72,7 +72,7 @@ void shrink(matrix *x, double delta)
  * Comput Optim Appl
  * DOI 10.1007/s10589-010-9329-3
  */
-double NelderMeadSimplex(double (*func)(),
+double NelderMeadSimplex(double (*func)(dvector *),
                          dvector *x0,
                          dvector *step,
                          double xtol,

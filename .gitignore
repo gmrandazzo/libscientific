@@ -58,3 +58,6 @@ __pycache__/*
 .mypy_cache/
 .ruff_cache/
 .pre-commit-cache/
+
+# Release wheels (.github/scripts/build_linux_wheel.sh)
+wheelhouse/

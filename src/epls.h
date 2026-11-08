@@ -57,7 +57,7 @@ typedef struct{
   size_t r_fix;
 } ELearningParameters;
 
-ELearningParameters initElearningParameters();
+ELearningParameters initElearningParameters(void);
 
 void EPLS(matrix *mx, matrix *my, size_t nlv, size_t xautoscaling, size_t yautoscaling, EPLSMODEL *m, ELearningParameters eparm, scisignal *s);
 

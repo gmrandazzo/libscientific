@@ -102,7 +102,7 @@ void MatrixCheck(matrix *m)
   size_t j;
   for(i = 0; i < m->row; i++){
     for(j = 0; j < m->col; j++){
-      if(_isnan_(m->data[i][j]) || !isfinite(m->data[i][j])){
+      if(_isnan_(m->data[i][j]) || !_isfinite_(m->data[i][j])){
         m->data[i][j] = MISSING;
       }
     }
@@ -1873,7 +1873,7 @@ double Matrixnorm(matrix *m)
   for(j = 0; j < m->col; j++){
     for(i = 0; i < m->row; i++){
       v = m->data[i][j];
-      if(_isnan_(v) || !isfinite(v)){
+      if(_isnan_(v) || !_isfinite_(v)){
         continue;
       }
       else{

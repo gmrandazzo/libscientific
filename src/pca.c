@@ -699,10 +699,10 @@ void PCATsqContributions(
 
       /* Calculate difference and squared difference */
       double diff = val_orig - val_recon;
-      if (isfinite(diff)) {
+      if (_isfinite_(diff)) {
         double squared_diff = diff * diff;
-        sum_squared_diff += isfinite(squared_diff) ? squared_diff : 0.0;
-        contributions->data[i][j] = isfinite(squared_diff) ? squared_diff : 0.0;
+        sum_squared_diff += _isfinite_(squared_diff) ? squared_diff : 0.0;
+        contributions->data[i][j] = _isfinite_(squared_diff) ? squared_diff : 0.0;
       } else {
         contributions->data[i][j] = 0.0;
       }

@@ -68,7 +68,7 @@ void SubspaceMatrix(matrix *mx, uivector *featureids, matrix **x_subspace)
   }
 }
 
-ELearningParameters initElearningParameters()
+ELearningParameters initElearningParameters(void)
 {
   return (ELearningParameters){ .n_models = 100, .trainsize = 0.3, .algorithm = Bagging, .r_fix = 4};
 }

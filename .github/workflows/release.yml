@@ -1,0 +1,206 @@
+name: Release
+
+# Build the python wheels with the native library bundled inside
+# (libscientific.so / libscientific.dll / libscientific.dylib),
+# test them on a clean machine and publish them to PyPI with twine.
+#
+#  - push a tag vX.Y.Z      -> build + test + upload to PyPI
+#  - pull request to master -> build + test only (nothing is uploaded)
+#  - manual run             -> build + test only (nothing is uploaded)
+
+on:
+  push:
+    tags:
+      - "v*"
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check-version:
+    name: Check version consistency
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tag, python and CMake versions must match
+        run: |
+          py_version=$(sed -n 's/^__version__ = "\(.*\)"/\1/p' src/python_bindings/libscientific/__init__.py)
+          major=$(sed -n 's/^set(VERSION_MAJOR \([0-9]*\))/\1/p' CMakeLists.txt)
+          minor=$(sed -n 's/^set(VERSION_MINOR \([0-9]*\))/\1/p' CMakeLists.txt)
+          patch=$(sed -n 's/^set(VERSION_PATCH \([0-9]*\))/\1/p' CMakeLists.txt)
+          cmake_version="$major.$minor.$patch"
+          echo "python: $py_version  cmake: $cmake_version"
+          if [ "$py_version" != "$cmake_version" ]; then
+            echo "::error::libscientific/__init__.py ($py_version) and CMakeLists.txt ($cmake_version) disagree"
+            exit 1
+          fi
+          if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            tag_version="${GITHUB_REF_NAME#v}"
+            if [ "$tag_version" != "$py_version" ]; then
+              echo "::error::tag ${GITHUB_REF_NAME} does not match package version $py_version"
+              exit 1
+            fi
+          fi
+
+  linux:
+    name: Linux wheel (${{ matrix.arch }})
+    needs: check-version
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-latest
+            arch: x86_64
+          - runner: ubuntu-24.04-arm
+            arch: aarch64
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build manylinux wheel
+        run: |
+          docker run --rm -v "$PWD":/io quay.io/pypa/manylinux_2_28_${{ matrix.arch }} \
+            /io/.github/scripts/build_linux_wheel.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wheel-linux-${{ matrix.arch }}
+          path: wheelhouse/*.whl
+          if-no-files-found: error
+
+  macos:
+    name: macOS wheel (${{ matrix.arch }})
+    needs: check-version
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-14
+            arch: arm64
+            deployment_target: "11.0"
+          - runner: macos-15-intel
+            arch: x86_64
+            deployment_target: "10.15"
+    env:
+      MACOSX_DEPLOYMENT_TARGET: ${{ matrix.deployment_target }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build library (LAPACK from the Accelerate framework)
+        run: |
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local \
+                -DCMAKE_OSX_ARCHITECTURES=${{ matrix.arch }}
+          cmake --build build --target libscientific -j3
+          cp -L build/src/libscientific.dylib src/python_bindings/libscientific/libscientific.dylib
+      - name: Build wheel
+        run: |
+          python -m pip install --upgrade pip build delocate
+          python -m build --wheel --outdir dist src/python_bindings
+          # bundle any non-system dylib and check the architecture / minimum macOS
+          delocate-wheel -v --require-archs ${{ matrix.arch }} -w wheelhouse dist/*.whl
+          delocate-listdeps --all wheelhouse/*.whl
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wheel-macos-${{ matrix.arch }}
+          path: wheelhouse/*.whl
+          if-no-files-found: error
+
+  windows:
+    name: Windows wheel (x86_64)
+    needs: check-version
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-ninja
+            mingw-w64-x86_64-lapack
+            mingw-w64-x86_64-sqlite3
+      - name: Build library (MinGW64)
+        shell: msys2 {0}
+        run: |
+          # PORTABLE_PYTHON_PACKAGE copies libscientific.dll and its runtime
+          # DLLs (lapack, blas, gfortran, quadmath, gcc, winpthread, sqlite3)
+          # into src/python_bindings/libscientific/
+          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DPORTABLE_PYTHON_PACKAGE=True
+          cmake --build build --target libscientific
+          ls -l src/python_bindings/libscientific/*.dll
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build wheel
+        shell: pwsh
+        run: |
+          python -m pip install --upgrade pip build
+          python -m build --wheel --outdir wheelhouse src/python_bindings
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wheel-windows-x86_64
+          path: wheelhouse/*.whl
+          if-no-files-found: error
+
+  test:
+    name: Test wheel on ${{ matrix.os }} / py${{ matrix.python }}
+    needs: [linux, macos, windows]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, ubuntu-24.04-arm, macos-14, macos-15-intel, windows-latest]
+        python: ["3.10", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: wheel-*
+          path: dist
+          merge-multiple: true
+      - name: Install the wheel on a machine without libscientific/LAPACK
+        shell: bash
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --only-binary=:all: --no-index --find-links dist libscientific
+          python -m pip install pytest numpy
+      - name: Run the test suite against the installed package
+        shell: bash
+        run: |
+          # run outside the source tree so the installed wheel is imported
+          cp -r src/python_bindings/tests "$RUNNER_TEMP/tests"
+          cd "$RUNNER_TEMP"
+          python -c "import libscientific; print(libscientific.__file__, libscientific.__version__)"
+          python -m pytest -q tests
+
+  publish:
+    name: Upload to PyPI
+    needs: test
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    environment: pypi
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: wheel-*
+          path: dist
+          merge-multiple: true
+      - name: Upload with twine
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        run: |
+          ls -l dist
+          python -m pip install --upgrade twine
+          twine check --strict dist/*
+          twine upload --skip-existing dist/*

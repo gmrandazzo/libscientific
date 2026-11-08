@@ -275,6 +275,15 @@ def load_library_for_posix():
             raise OSError("Could not find libscientific.dylib")
 
         # Handle Linux
+        # Wheels built by the release pipeline (auditwheel) bundle the
+        # dependencies and set RUNPATH: load the packaged library directly.
+        bundled = package_lib_path / "libscientific.so"
+        if bundled.exists():
+            try:
+                return ctypes.CDLL(str(bundled))
+            except OSError:
+                pass  # dependencies not resolvable: fall back to preloading
+
         load_gfortran_for_posix(package_lib_path)
         load_quadmath_for_posix(package_lib_path)
         # Load BLAS and LAPACK
