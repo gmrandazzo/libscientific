@@ -61,22 +61,11 @@ lsci.NewMatrix.argtypes = [ctypes.POINTER(ctypes.POINTER(MATRIX)), ctypes.c_size
 lsci.NewMatrix.restype = None
 
 
-def new_matrix_from_list(mx_lst):
+def _new_matrix_from_list_slow(mx_lst, nrows, ncols):
     """
-    Import a matrix from a list
+    Element-by-element import: handles ragged rows and non-numeric
+    entries (stored as MISSING). Only used when the fast paths fail.
     """
-    nrows = 0
-    ncols = 0
-    try:
-        nrows = len(mx_lst)
-        try:
-            ncols = len(mx_lst[0])
-        except TypeError:
-            ncols = 1
-        except IndexError:
-            ncols = 0
-    except (IndexError, TypeError):
-        nrows = 0
     mtx = ctypes.POINTER(MATRIX)()
     lsci.NewMatrix(ctypes.pointer(mtx), nrows, ncols)
 
@@ -95,6 +84,60 @@ def new_matrix_from_list(mx_lst):
             else:
                 lsci.setMatrixValue(mtx, i, j, val)
     return mtx
+
+
+def new_matrix_from_list(mx_lst):
+    """
+    Import a matrix from a list
+    """
+    nrows = 0
+    ncols = 0
+    try:
+        nrows = len(mx_lst)
+        try:
+            ncols = len(mx_lst[0])
+        except TypeError:
+            ncols = 1
+        except IndexError:
+            ncols = 0
+    except (IndexError, TypeError):
+        nrows = 0
+
+    if nrows > 0 and ncols > 0:
+        # Fast path 1: let numpy parse the whole list in C, then bulk-copy.
+        try:
+            import numpy as np  # pylint: disable=import-outside-toplevel
+
+            arr = np.asarray(mx_lst, dtype=np.float64)
+            if arr.ndim == 1:
+                arr = arr.reshape(-1, 1)
+            if arr.shape == (nrows, ncols):
+                return matrix_from_numpy(arr)
+        except (ImportError, ValueError, TypeError):
+            pass
+
+        # Fast path 2 (no numpy): convert one row at a time and copy it with
+        # a single memmove instead of one ctypes call per element.
+        try:
+            mtx = ctypes.POINTER(MATRIX)()
+            lsci.NewMatrix(ctypes.pointer(mtx), nrows, ncols)
+            row_type = ctypes.c_double * ncols
+            nbytes = ctypes.sizeof(row_type)
+            data = mtx[0].data
+            try:
+                for i, row in enumerate(mx_lst):
+                    if ncols == 1 and not hasattr(row, "__len__"):
+                        row = (row,)
+                    if len(row) != ncols:
+                        raise ValueError("ragged row")
+                    ctypes.memmove(data[i], row_type(*map(float, row)), nbytes)
+                return mtx
+            except (ValueError, TypeError):
+                del_matrix(mtx)
+        except (ValueError, TypeError):
+            pass
+
+    return _new_matrix_from_list_slow(mx_lst, nrows, ncols)
 
 
 def new_matrix_from_csv(fcsv):
@@ -249,27 +292,66 @@ def matrix_to_list(mtx):
     """
     matrix_to_list: Convert a libscientific matrix to list of list
     """
-    mtx_list = []
     try:
-        for i in range(mtx[0].row):
-            row_lst = []
-            for j in range(mtx[0].col):
-                row_lst.append(mtx[0].data[i][j])
-            mtx_list.append(row_lst)
+        mtx_c = mtx[0]
     except TypeError:
-        for i in range(mtx.row):
-            row_lst = []
-            for j in range(mtx.col):
-                row_lst.append(mtx.data[i][j])
-            mtx_list.append(row_lst)
-    return mtx_list
+        mtx_c = mtx
+    ncols = mtx_c.col
+    data = mtx_c.data
+    # Slicing a ctypes double pointer converts a whole row in C.
+    return [data[i][:ncols] for i in range(mtx_c.row)]
+
+
+def matrix_to_numpy(mtx):
+    """
+    matrix_to_numpy: Copy a libscientific matrix into a new numpy array
+    (requires numpy).
+    """
+    import numpy as np  # pylint: disable=import-outside-toplevel
+
+    try:
+        mtx_c = mtx[0]
+    except TypeError:
+        mtx_c = mtx
+    nrows, ncols = mtx_c.row, mtx_c.col
+    out = np.empty((nrows, ncols), dtype=np.float64)
+    if nrows == 0 or ncols == 0:
+        return out
+    nbytes = ncols * ctypes.sizeof(ctypes.c_double)
+    base = out.ctypes.data
+    data = mtx_c.data
+    for i in range(nrows):
+        ctypes.memmove(base + i * nbytes, data[i], nbytes)  # C-contiguous rows
+    return out
 
 
 def matrix_from_numpy(npm):
     """
-    Convert a numpy matrix into a libscientific matrix
+    Convert a numpy matrix into a libscientific matrix.
+
+    The data is copied row by row with memmove: no intermediate Python
+    list is built and there is no per-element ctypes call.
+    NaN/inf values are converted to MISSING by the C algorithms
+    (MatrixCheck), exactly as before.
     """
-    return new_matrix(npm.tolist())
+    import numpy as np  # pylint: disable=import-outside-toplevel
+
+    arr = np.ascontiguousarray(npm, dtype=np.float64)
+    if arr.ndim == 1:
+        arr = arr.reshape(-1, 1)
+    elif arr.ndim != 2:
+        raise ValueError(f"matrix_from_numpy expects a 1D or 2D array, got {arr.ndim}D")
+    nrows, ncols = arr.shape
+    mtx = ctypes.POINTER(MATRIX)()
+    lsci.NewMatrix(ctypes.pointer(mtx), nrows, ncols)
+    if nrows == 0 or ncols == 0:
+        return mtx
+    nbytes = ncols * ctypes.sizeof(ctypes.c_double)
+    base = arr.ctypes.data
+    data = mtx[0].data
+    for i in range(nrows):
+        ctypes.memmove(data[i], base + i * nbytes, nbytes)  # C-contiguous rows
+    return mtx
 
 
 def set_missing_matrix_value(mtx, row_id, col_id):
