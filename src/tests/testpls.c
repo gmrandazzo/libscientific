@@ -15,6 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <math.h>
 #include "tensor.h"
 #include "pls.h"
 #include "modelvalidation.h"
@@ -1189,11 +1190,94 @@ void TestPLSVIP()
       abort();
   }
 
-  printf("OK.\n");
   DelPLSModel(&m);
   DelMatrix(&vip);
   DelMatrix(&x);
   DelMatrix(&y);
+
+  /*
+   * Regression: the average squared VIP must be 1 for any number of latent
+   * variables. VIP used to divide by the number of latent variables and to
+   * ignore that the stored weights are not unit length, so the average
+   * dropped to ~1/nlv.
+   */
+  NewMatrix(&x, 20, 4);
+  NewMatrix(&y, 20, 1);
+  for(size_t i = 0; i < 20; i++){
+    double a = (double)i;
+    x->data[i][0] = a;
+    x->data[i][1] = sin(a);
+    x->data[i][2] = cos(1.7*a);
+    x->data[i][3] = (double)((i*7) % 5);
+    y->data[i][0] = 3.0*x->data[i][0] + 2.0*x->data[i][1] - x->data[i][2];
+  }
+  for(size_t nlv = 1; nlv <= 3; nlv++){
+    NewPLSModel(&m);
+    initMatrix(&vip);
+    PLS(x, y, nlv, 1, 0, m, NULL);
+    PLSVIP(m, vip);
+    double sum_sq = 0.0;
+    for(size_t j = 0; j < vip->row; j++)
+      sum_sq += square(vip->data[j][0]);
+    if(!FLOAT_EQ(sum_sq / (double)vip->row, 1.0, 1e-6)){
+      printf("Failed! nlv=%zu: average squared VIP should be 1.0, got %f\n", nlv, sum_sq / (double)vip->row);
+      abort();
+    }
+    DelPLSModel(&m);
+    DelMatrix(&vip);
+  }
+  DelMatrix(&x);
+  DelMatrix(&y);
+
+  printf("OK.\n");
+}
+
+
+static void fill_refit_data(matrix *m, double offset, size_t seed)
+{
+  for(size_t i = 0; i < m->row; i++)
+    for(size_t j = 0; j < m->col; j++)
+      m->data[i][j] = offset + sin(0.7*(double)((i+1)*(j+seed)) + (double)seed);
+}
+
+/*
+ * Regression test: fitting the same model twice must give the same result as
+ * a new model (column averages used to be reused and b kept growing).
+ */
+void TestPLSRefit()
+{
+  printf("Test PLS refit a model on new data: ");
+  matrix *xa, *ya, *xb, *yb, *pr, *pf;
+  PLSMODEL *refit, *fresh;
+  NewMatrix(&xa, 12, 4); fill_refit_data(xa, 0.0, 1);
+  NewMatrix(&ya, 12, 1); fill_refit_data(ya, 1.0, 3);
+  NewMatrix(&xb, 12, 4); fill_refit_data(xb, 5.0, 2);
+  NewMatrix(&yb, 12, 1); fill_refit_data(yb, 3.0, 4);
+  NewPLSModel(&refit); NewPLSModel(&fresh);
+  PLS(xa, ya, 2, 1, 0, refit, NULL);
+  PLS(xb, yb, 2, 1, 0, refit, NULL);
+  PLS(xb, yb, 2, 1, 0, fresh, NULL);
+  if(refit->b->size != fresh->b->size){
+    printf("Failed! b has %zu values after refit, expected %zu\n", refit->b->size, fresh->b->size);
+    abort();
+  }
+  initMatrix(&pr); initMatrix(&pf);
+  PLSYPredictorAllLV(xb, refit, NULL, pr);
+  PLSYPredictorAllLV(xb, fresh, NULL, pf);
+  if(pr->col != pf->col){
+    printf("Failed! %zu prediction columns after refit, expected %zu\n", pr->col, pf->col);
+    abort();
+  }
+  for(size_t i = 0; i < pr->row; i++)
+    for(size_t j = 0; j < pr->col; j++)
+      if(!FLOAT_EQ(pr->data[i][j], pf->data[i][j], 1e-9)){
+        printf("Failed! prediction (%zu,%zu) differs after refit\n", i, j);
+        abort();
+      }
+  printf("OK.\n");
+  DelMatrix(&pr); DelMatrix(&pf);
+  DelPLSModel(&refit); DelPLSModel(&fresh);
+  DelMatrix(&xa); DelMatrix(&ya); DelMatrix(&xb); DelMatrix(&yb);
 }
 
 int main(void)
@@ -1218,5 +1302,6 @@ int main(void)
   TestPLS15();
   TestPLSGetLVCCutoff();
   TestPLSVIP();
+  TestPLSRefit();
   return 0;
 }

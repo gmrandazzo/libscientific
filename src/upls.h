@@ -25,6 +25,43 @@
 
 #define UPLSCONVERGENCE 1e-3
 
+/**
+ * Multi-way (unfolded) Partial Least Squares regression model.
+ *
+ * X and Y are tensors of layers with the same objects: ``X->m[k]`` is
+ * ``n x f`` (``Kx`` layers), ``Y->m[k]`` is ``n x ny`` (``Ky`` layers; a single
+ * response matrix is a tensor with one layer). Create the model with
+ * :c:func:`NewUPLSModel`, fill it with :c:func:`UPLS` and free it with
+ * :c:func:`DelUPLSModel`. With ``nlv`` latent variables:
+ *
+ * Members:
+ *   xscores: X scores, ``n x nlv``.
+ *   xloadings: One ``f x Kx`` X loading matrix per latent variable.
+ *   xweights: One ``f x Kx`` X weight matrix per latent variable.
+ *   xvarexp: Percentage of the X variance explained by each latent variable.
+ *   yscores: Y scores, ``n x nlv``.
+ *   yloadings: One ``ny x Ky`` Y loading matrix per latent variable.
+ *   b: Inner regression coefficient of each latent variable (1 for a single
+ *     response: the coefficient is carried by the Y loadings).
+ *   xcolaverage: Column means of each X layer.
+ *   xcolscaling: Column scalings of each X layer.
+ *   ycolaverage: Column means of each Y layer.
+ *   ycolscaling: Column scalings of each Y layer.
+ *   r2x_model: R² of X for 1..nlv latent variables (:c:func:`UPLSRSquared`).
+ *   r2x_validation: Cross-validated R² of X.
+ *   r2y_model: R² of Y: one ``ny x Ky`` matrix per latent variable.
+ *   r2y_validation: Cross-validated R² of Y, same layout.
+ *   q2y: Q² of Y, same layout (validation functions).
+ *   sdep: Standard deviation of the prediction errors, same layout.
+ *   sdec: Standard deviation of the recalculation errors, same layout.
+ *   recalculated_y: Fitted Y of the training objects: one matrix per Y
+ *     layer, ``n x (ny*nlv)``.
+ *   predicted_y: Cross-validated Y, same layout.
+ *   recalc_residuals: Fitted minus true Y, same layout.
+ *   pred_residuals: Cross-validated residuals, same layout.
+ *   q2y_yscrambling: Q² of the y-scrambling models.
+ *   sdep_yscrambling: SDEP of the y-scrambling models.
+ */
 typedef struct{
   matrix *xscores;
   tensor *xloadings;
@@ -52,57 +89,50 @@ typedef struct{
   tensor *sdep_yscrambling;
 } UPLSMODEL;
 
-/*
- * Description: Create a new UPLSMODEL
+/**
+ * Allocate an empty UPLS model.
+ *
+ * Args:
+ *   m: [out] Address of the pointer that receives the new model.
+ *
+ * Note:
+ *   Release the model with :c:func:`DelUPLSModel`.
  */
 void NewUPLSModel(UPLSMODEL **m);
 
-/*
- * Description: Delete an UPLSMODEL
+/**
+ * Free a UPLS model and all its members, and set the pointer to ``NULL``.
+ *
+ * Args:
+ *   m: [in,out] Address of the model pointer created with :c:func:`NewUPLSModel`.
  */
 void DelUPLSModel(UPLSMODEL **m);
 
-int CheckArrays(tensor *X_, tensor *Y_);
-
-/*
- *  Description:
+/**
+ * Fit a multi-way PLS regression model (Wold, Geladi and Esbensen,
+ * J. Chemometrics 1, 41-56, 1987).
  *
- *  UPLS : Unfold PLS is applied to multilinear data compute a bilinear modeling (bilinear weighs and loadings).
- *  This means that models describe an equal or higher amount of covariance by using an equal or higher number of model parameters
+ * Every column of every X and Y layer is preprocessed, then the latent
+ * variables are extracted one at a time with NIPALS (up to 1000 iterations,
+ * relative tolerance ``UPLSCONVERGENCE`` = 1e-3). When Y is fully explained
+ * the remaining latent variables are skipped (a message is printed on
+ * standard error), so the model can have fewer than ``npc`` latent
+ * variables. Fitting an already fitted model replaces its results.
  *
- * ----------------------
- *  Variable Explanation
- * ----------------------
+ * Args:
+ *   X_: [in] X layers, all ``n x f``.
+ *   Y_: [in] Y layers, all ``n x ny``.
+ *   npc: [in] Number of latent variables; capped to ``f``.
+ *   xautoscaling: [in] Column preprocessing of X: 0 = mean centering only,
+ *     1 = standard deviation, 2 = root mean square, 3 = Pareto, 4 = range,
+ *     5 = level.
+ *   yautoscaling: [in] Column preprocessing of Y, same options.
+ *   m: [out] Model created with :c:func:`NewUPLSModel`; filled with the
+ *     results (see :c:type:`UPLSMODEL`).
+ *   s: [in] Unused, pass ``NULL``.
  *
- * xscores->row represent the number of objects that is equal to X_->m[i]->row;
- * xscores->col represent the number of pc that is less equal to X_->order and depends on the number of principal component computed
- *
- * xloadings->order represent the number of pc computed.
- * xloadings->m[i]->row represent the number of descriptor that is equal to X_->m[i]->col
- * xloadings->m[i]->col represent the number of order present in the tensor X_ and is equal to X_->order
- *
- * xvar is the variance explained for each component for the X matrix
- *
- * xcolaverage->row and xcolsdev->row are the number of variable for each submatrix in X_, so these are equal to X_->m[i]->col
- *
- * xcolaverage->col and xcolsdev->col are the number of order present in X_, so these are equal to X_->order
- *
- *
- * yscores->row represent the number of objects that is equal to X_->m[i]->row and Y_->m[i]->row;
- * yscores->col represent the number of pc that is less equal to X_->order and depends on the number of principal component computed
- *
- * yloadings->order represent the number of pc computed.
- * yloadings->m[i]->row represent the number of descriptor for each matrix in the tensor Y_->m[i]->col
- * yloadings->m[i]->col represent the number of order present in the tensor Y_->order
- *
- * yvar is the variance explained for each component for the Y matrix
- *
- *
- * ycolaverage->row and ycolsdev->row are the number of variable for each submatrix in Y_, so these are equal to Y_->m[i]->col
- *
- * ycolaverage->col and ycolsdev->col are the number of order present in Y_, so these are equal to Y_->order
- *
- * recalc_residuals & recalculated_y  have size row = number of objects  and col = number of column y * number of principal component and order is the same order of the Y dependent variable. Ex. if we calculate 5 component in 2 y the size will be 10
+ * Returns:
+ *   Nothing, the results are written into ``m``.
  */
 void UPLS(tensor *X_,
           tensor *Y_,
@@ -112,32 +142,59 @@ void UPLS(tensor *X_,
           UPLSMODEL *m,
           scisignal *s);
 
-/* Description: Predict Score variable through the UPLSMODEL m.
- * This Function is used by UPLSRSquared and UPLSRSquared_SSErr_SStot
+/**
+ * Compute the X scores of new objects.
+ *
+ * Args:
+ *   X_: [in] X layers of the new objects (same layers and features as the
+ *     training X, ``m`` rows each).
+ *   m: [in] Model fitted with :c:func:`UPLS`.
+ *   npc: [in] Number of latent variables to use.
+ *   ptscores: [out] Matrix created with ``initMatrix``; resized to
+ *     ``m x npc``.
+ *
+ * Returns:
+ *   Nothing, the scores are written into ``ptscores``.
  */
 void UPLSScorePredictor(tensor *X_,
                         UPLSMODEL *m,
                         size_t npc,
                         matrix *ptscores);
 
-/*
- * Description: Predict the dependent variable through UPLSMODEL m.
- * The output will of this function is an tensor with the size of the tensor of dependent variable used during the generation of the model.
+/**
+ * Compute the responses from X scores.
+ *
+ * Args:
+ *   tscores: [in] X scores (from :c:func:`UPLSScorePredictor`).
+ *   m: [in] Model fitted with :c:func:`UPLS`.
+ *   npc: [in] Number of latent variables to use.
+ *   py: [out] Tensor created with ``initTensor``; receives one ``m x ny``
+ *     matrix per Y layer, in the original units of Y.
+ *
+ * Returns:
+ *   Nothing, the responses are written into ``py``.
  */
 void UPLSYPredictor(matrix *tscores,
                     UPLSMODEL *m,
                     size_t npc,
                     tensor *py);
 
-/*
- * Description: Calculation The RSquared for the objects in the model UPLSMODEL m.
- * This function is used after UPLS model generation and the output is:
- *  ~ dvector r2x where the size correspond to the number of pricipal component calculated
- *  ~ tensor r2y and sdec where:
- *       - the order of the tensor correspond to the number of principal component
- *       - the row for each matrix in tensor correspond to an Y dependent value
- *       - the colunm for each matrix in tensor correspond to a layer of the Y dependen value, and so is equal to the Y->order if Y is the starting tensor for the model generation.
+/**
+ * Compute R² of X and Y and the SDEC for 1..npc latent variables.
  *
+ * Args:
+ *   X_: [in] X layers (training or test objects).
+ *   Y_: [in] True Y layers of the same objects.
+ *   m: [in] Model fitted with :c:func:`UPLS`.
+ *   npc: [in] Maximum number of latent variables.
+ *   r2x: [out] Vector created with ``initDVector``; one cumulative R² of X
+ *     per number of latent variables.
+ *   r2y: [out] Tensor created with ``initTensor``; one ``ny x Ky`` matrix of
+ *     R² values per number of latent variables.
+ *   sdec: [out] Tensor; standard deviation of the errors, same layout.
+ *
+ * Returns:
+ *   Nothing, the statistics are written into the outputs.
  */
 void UPLSRSquared(tensor *X_,
                   tensor *Y_,
@@ -147,17 +204,25 @@ void UPLSRSquared(tensor *X_,
                   tensor *r2y,
                   tensor *sdec);
 
-/*
- * Description: Calculation of the regression sum of squares and total sum of squares (proportional to the sample variance).
- * This function is used by UPLSCrossValidation and Leave One Out.
- * The output is:
+/**
+ * Compute the residual and total sums of squares of X and Y for 1..npc
+ * latent variables (used by the cross-validation functions).
  *
- *  ~ dvector xss_err and xss_tot where the size correspond to the number of pricipal component calculated
- *  ~ tensor yss_err and  yss_tot where:
- *       - the order of the tensor correspond to the number of principal component
- *       - the row for each matrix in tensor correspond to an Y dependent value
- *       - the colunm for each matrix in tensor correspond to a layer of the Y dependen value, and so is equal to the Y->order if Y is the starting tensor for the model generation.
+ * Args:
+ *   X_: [in] X layers.
+ *   Y_: [in] True Y layers.
+ *   m: [in] Model fitted with :c:func:`UPLS`.
+ *   npc: [in] Maximum number of latent variables.
+ *   xss_err: [out] Residual sum of squares of X, one value per number of
+ *     latent variables.
+ *   xss_tot: [out] Total sum of squares of X, same size.
+ *   yss_err: [out] Residual sums of squares of Y: one ``ny x Ky`` matrix per
+ *     number of latent variables.
+ *   yss_tot: [out] Total sums of squares of Y, same layout.
+ *   predicted_y: [out] Predicted Y layers. ``NULL`` to skip.
  *
+ * Returns:
+ *   Nothing, the results are written into the outputs.
  */
 void UPLSRSquared_SSErr_SStot(tensor *X_,
                               tensor *Y_,
@@ -169,9 +234,27 @@ void UPLSRSquared_SSErr_SStot(tensor *X_,
                               tensor *yss_tot,
                               tensor *predicted_y);
 
-/*
- * Description: Calculate the consistency of model to prevent Overfitting.
- * Thi funcion is used coupled with UPLSLOOValidation or UPLSCrossValidation in order to exstimate the overfitting of model.
+/**
+ * Y-scrambling test: refit models on permuted Y to detect chance
+ * correlation (overfitting).
+ *
+ * Args:
+ *   X_: [in] X layers.
+ *   Y_: [in] Y layers.
+ *   xautoscaling: [in] X preprocessing (see :c:func:`UPLS`).
+ *   yautoscaling: [in] Y preprocessing.
+ *   npc: [in] Number of latent variables.
+ *   block: [in] Number of scrambling blocks.
+ *   valtype: [in] Validation of each scrambled model: 0 = leave-one-out,
+ *     otherwise random groups.
+ *   rgcv_groups: [in] Number of groups for random-group validation.
+ *   rgcv_iterations: [in] Number of iterations for random-group validation.
+ *   q2y: [out] Address of a tensor receiving the Q² of the scrambled models.
+ *   sdep: [out] Address of a tensor receiving their SDEP.
+ *   s: [in] Optional stop signal; ``NULL`` if unused.
+ *
+ * Returns:
+ *   Nothing, the results are written into ``q2y`` and ``sdep``.
  */
 void UPLSYScrambling(tensor *X_, tensor *Y_,
                         size_t xautoscaling, size_t yautoscaling,
@@ -179,48 +262,79 @@ void UPLSYScrambling(tensor *X_, tensor *Y_,
                         size_t valtype, size_t rgcv_groups, size_t rgcv_iterations,
                         tensor **q2y, tensor **sdep, scisignal *s);
 
-/*
- * Description: Random Cross Validation. Is used to extimate the model predictivity.
- * The output is:
- *  ~ dvector r2x where the size correspond to the number of pricipal component calculated
- *  ~ tensor q2y and sdep where:
- *       - the order of the tensor correspond to the number of principal component
- *       - the row for each matrix in tensor correspond to an Y dependent value
- *       - the colunm for each matrix in tensor correspond to a layer of the Y dependen value, and so is equal to the Y->order if Y is the starting tensor for the model generation.
+/**
+ * Estimate the predictive ability of a UPLS model by random-group
+ * cross-validation.
  *
+ * Args:
+ *   X_: [in] X layers.
+ *   Y_: [in] Y layers.
+ *   xautoscaling: [in] X preprocessing (see :c:func:`UPLS`).
+ *   yautoscaling: [in] Y preprocessing.
+ *   npc: [in] Maximum number of latent variables.
+ *   group: [in] Number of cross-validation groups.
+ *   iterations: [in] Number of random repetitions.
+ *   r2x: [out] Cross-validated R² of X for 1..npc latent variables.
+ *   q2y: [out] Q² of Y: one ``ny x Ky`` matrix per number of latent variables.
+ *   sdep: [out] Standard deviation of the prediction errors, same layout.
+ *   predicted_y: [out] Cross-validated predictions.
+ *   pred_residuals: [out] Cross-validated residuals.
+ *   s: [in] Optional stop signal; ``NULL`` if unused.
+ *
+ * Returns:
+ *   Nothing, the results are written into the outputs.
  */
 void UPLSRandomGroupsCV(tensor *X_, tensor *Y_,
                          size_t xautoscaling, size_t yautoscaling,
                          size_t npc, size_t group, size_t iterations,
                          dvector **r2x, tensor **q2y, tensor **sdep, tensor **predicted_y, tensor **pred_residuals, scisignal *s);
 
-
-/*
- * Description: Leave One Out Validation. Is used to extimate the model predictivity.
- * The output is:
- *  ~ dvector r2x where the size correspond to the number of pricipal component calculated
- *  ~ tensor q2y and sdep where:
- *       - the order of the tensor correspond to the number of principal component
- *       - the row for each matrix in tensor correspond to an Y dependent value
- *       - the colunm for each matrix in tensor correspond to a layer of the Y dependen value, and so is equal to the Y->order if Y is the starting tensor for the model generation.
+/**
+ * Estimate the predictive ability of a UPLS model by leave-one-out
+ * cross-validation.
  *
+ * Args:
+ *   X_: [in] X layers.
+ *   Y_: [in] Y layers.
+ *   xautoscaling: [in] X preprocessing (see :c:func:`UPLS`).
+ *   yautoscaling: [in] Y preprocessing.
+ *   npc: [in] Maximum number of latent variables.
+ *   r2x: [out] Cross-validated R² of X for 1..npc latent variables.
+ *   q2y: [out] Q² of Y: one ``ny x Ky`` matrix per number of latent variables.
+ *   sdep: [out] Standard deviation of the prediction errors, same layout.
+ *   predicted_y: [out] Cross-validated predictions.
+ *   pred_residuals: [out] Cross-validated residuals.
+ *   s: [in] Optional stop signal; ``NULL`` if unused.
+ *
+ * Returns:
+ *   Nothing, the results are written into the outputs.
  */
 void UPLSLOOCV(tensor *X_, tensor *Y_,
                          size_t xautoscaling, size_t yautoscaling,
                          size_t npc,
                          dvector **r2x, tensor **q2y, tensor **sdep, tensor **predicted_y, tensor **pred_residuals, scisignal *s);
 
-
-/*This function from Q^2, or R^2 return the number of components to use for make predictions.
- * This cutoff components look at the best r^2 or q^2 and pay attention if r^2 or q^2 get low value
- * and after high value..
+/**
+ * Choose the number of latent variables from a table of R² or Q² values.
  *
- * rq2_randomness comes from the PLSModelConsistency that is the q2
- * N.B.: 0 means the first principal component, 1 is the second principal component. etc...
+ * Looks for the best value and stops when it drops.
+ *
+ * Args:
+ *   rq2: [in] R² or Q² values: one matrix per number of latent variables
+ *     (e.g. ``model->q2y``).
+ *
+ * Returns:
+ *   The **0-based** index of the selected latent variable: the number of
+ *   latent variables to use is the return value + 1.
  */
 size_t UPLSGetPCModelCutOff(tensor *rq2);
 
-
+/**
+ * Print the content of a UPLS model to standard output.
+ *
+ * Args:
+ *   m: [in] The model to print.
+ */
 void PrintUPLSModel(UPLSMODEL *m);
 
 #endif

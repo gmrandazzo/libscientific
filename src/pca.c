@@ -125,6 +125,15 @@ void PCA(matrix *mx, int scaling, size_t npc, PCAMODEL* model, scisignal *s)
   double ss;
 
   matrix *E; /* data matrix of autoscaled / mean centred object */
+
+  /* Reset the preprocessing of a previous fit: MatrixPreprocess() reuses the
+   * column averages/scalings when they are not empty, so refitting a model
+   * on new data would otherwise center it with the old averages. */
+  DelDVector(&model->colaverage);
+  initDVector(&model->colaverage);
+  DelDVector(&model->colscaling);
+  initDVector(&model->colscaling);
+
   NewMatrix(&E, mx->row, mx->col);
 
   /* Center and scale the input matrix */

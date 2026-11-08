@@ -67,7 +67,8 @@ void *MDCWorker(void *arg_)
         d_a += square(arg->m->data[arg->mdc][j]);
         d_b += square(arg->m->data[k][j]);
       }
-      dist = dist/(sqrt(d_a)*sqrt(d_b));
+      /* cosine distance = 1 - cosine similarity (1 for a zero vector) */
+      dist = (d_a > 0 && d_b > 0) ? 1.0 - dist/(sqrt(d_a)*sqrt(d_b)) : 1.0;
     }
     arg->tmprank->data[k][0] = dist;
     arg->tmprank->data[k][1] = (double)k;
@@ -139,13 +140,15 @@ void MDC(matrix* m,
     MatrixSort(tmprank, 0);
 
     //Calculate the reciprocal of the rank
+    /* object i votes 1 for itself and 1/rank for the others, nearest first
+     * (the object at rank position k is tmprank->data[k][1]) */
     d = 2;
     for(k = 0; k < tmprank->row; k++){
-      if(k == i){
-        vectinfo->data[k] += 1;
+      j = (size_t)tmprank->data[k][1];
+      if(j == i){
+        vectinfo->data[j] += 1;
       }
       else{
-        j = (size_t)tmprank->data[k][1];
         vectinfo->data[j] += 1/d;
         d += 1;
       }
@@ -324,10 +327,11 @@ static void *MDCFastInitialWorker(void *arg_) {
           d_a += square(arg->m->data[i][k]);
           d_b += square(arg->m->data[j][k]);
         }
+        /* cosine distance = 1 - cosine similarity (1 for a zero vector) */
         if (d_a > 0 && d_b > 0)
-            pairs[j].dist = dist / (sqrt(d_a) * sqrt(d_b));
+            pairs[j].dist = 1.0 - dist / (sqrt(d_a) * sqrt(d_b));
         else
-            pairs[j].dist = 0.0; /* Handle zero vectors */
+            pairs[j].dist = 1.0;
       }
     }
 
@@ -391,10 +395,11 @@ static void *MDCFastDistWorker(void *arg_) {
           d_a += square(arg->m->data[i][k]);
           d_b += square(arg->m->data[j][k]);
         }
+        /* cosine distance = 1 - cosine similarity (1 for a zero vector) */
         if (d_a > 0 && d_b > 0)
-            arg->distances[j].dist = dist / (sqrt(d_a) * sqrt(d_b));
+            arg->distances[j].dist = 1.0 - dist / (sqrt(d_a) * sqrt(d_b));
         else
-            arg->distances[j].dist = 0.0;
+            arg->distances[j].dist = 1.0;
       }
   }
   return NULL;

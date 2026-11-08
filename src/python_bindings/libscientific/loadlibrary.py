@@ -1,19 +1,24 @@
-"""loadlibrary.py method to load libscientific library
+# loadlibrary.py method to load libscientific library
+#
+# Copyright (C) <2023>  Giuseppe Marco Randazzo
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""Locate and load the libscientific C library.
 
-Copyright (C) <2023>  Giuseppe Marco Randazzo
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+Used internally at import time: the library bundled in the wheel is loaded
+first; otherwise it is searched in ``LD_LIBRARY_PATH`` /
+``DYLD_LIBRARY_PATH`` and the system library directories.
 """
 
 import ctypes
@@ -23,10 +28,14 @@ import platform
 
 
 def get_platform_info() -> tuple[str, str]:
-    """Get detailed platform and architecture information.
+    """Return the operating system and the CPU architecture.
 
-    Returns:
-        Tuple of (system_name, architecture)
+    Returns
+    -------
+    tuple[str, str]
+        ``(system, machine)`` in lower case, e.g. ``("linux", "x86_64")`` or
+        ``("darwin", "arm64")``; ``amd64`` is reported as ``x86_64`` and
+        ``aarch64`` as ``arm64``.
     """
     system = platform.system().lower()
     machine = platform.machine().lower()
@@ -36,10 +45,13 @@ def get_platform_info() -> tuple[str, str]:
 
 
 def get_platform_specific_paths() -> list[pathlib.Path]:
-    """Get platform-specific library paths based on the OS and architecture.
+    """Return the standard library directories of the current platform.
 
-    Returns:
-        List of platform-specific library paths
+    Returns
+    -------
+    list[pathlib.Path]
+        Directories such as ``/usr/lib``, ``/usr/local/lib``, Homebrew prefixes
+        on macOS, ...
     """
     system, arch = get_platform_info()
     paths = [
@@ -80,14 +92,22 @@ def get_platform_specific_paths() -> list[pathlib.Path]:
 
 
 def get_search_paths(local_path: pathlib.Path, verbose: bool = False) -> list[pathlib.Path]:
-    """Get all possible library search paths including environment variables.
+    """Return all the directories where the libraries are searched.
 
-    Args:
-        local_path: Local directory to include in search
-        verbose: Whether to print debug information
+    Parameters
+    ----------
+    local_path : pathlib.Path
+        The package directory (searched first, together with its ``lib``
+        subdirectory).
+    verbose : bool, default False
+        Print the directories.
 
-    Returns:
-        List of unique, existing library paths
+    Returns
+    -------
+    list[pathlib.Path]
+        Existing directories: the package directory, the directories in
+        ``LD_LIBRARY_PATH``, ``LIBRARY_PATH``, ``DYLD_LIBRARY_PATH`` and the
+        platform directories.
     """
     search_paths: set[pathlib.Path] = set()
 
@@ -121,10 +141,13 @@ def get_search_paths(local_path: pathlib.Path, verbose: bool = False) -> list[pa
 
 
 def get_lib_extensions() -> list[str]:
-    """Get library extensions and patterns for different platforms.
+    """Return the shared library file extensions of the current platform.
 
-    Returns:
-        List of platform-specific library patterns
+    Returns
+    -------
+    list[str]
+        ``[".so", ".so.*"]`` on Linux, ``[".dylib", ".dylib.*"]`` on macOS,
+        ``[".dll"]`` on Windows (all of them on other systems).
     """
     system, _ = get_platform_info()
     return {"linux": [".so", ".so.*"], "darwin": [".dylib", ".dylib.*"], "windows": [".dll"]}.get(
@@ -133,14 +156,19 @@ def get_lib_extensions() -> list[str]:
 
 
 def find_versioned_library(base_path: pathlib.Path, lib_name: str) -> pathlib.Path | None:
-    """Search for versioned library files.
+    """Find a versioned shared library in a directory (e.g. ``libfoo.so.3``).
 
-    Args:
-        base_path: Directory to search in
-        lib_name: Library name to search for
+    Parameters
+    ----------
+    base_path : pathlib.Path
+        Directory to search.
+    lib_name : str
+        Library file name without version, e.g. ``"libgfortran.so"``.
 
-    Returns:
-        Path to the library if found, None otherwise
+    Returns
+    -------
+    pathlib.Path or None
+        The matching file with the highest version, or ``None``.
     """
     system, _ = get_platform_info()
     extensions = get_lib_extensions()
@@ -162,18 +190,28 @@ def find_versioned_library(base_path: pathlib.Path, lib_name: str) -> pathlib.Pa
 def find_library(
     lib_name: str, local_path: pathlib.Path, verbose: bool = False
 ) -> pathlib.Path | None:
-    """Try to find a library in system paths and local directory.
+    """Find a shared library in the package directory and the system paths.
 
-    Args:
-        lib_name: Name of the library to find
-        local_path: Local directory to check
-        verbose: Whether to print debug information
+    Parameters
+    ----------
+    lib_name : str
+        File name, e.g. ``"liblapack.so"`` (``.so`` is replaced by ``.dylib``
+        on macOS). Versioned files (``liblapack.so.3``) are also accepted.
+    local_path : pathlib.Path
+        The package directory, searched first.
+    verbose : bool, default False
+        Print every path checked.
 
-    Returns:
-        Path to library if found, None otherwise
+    Returns
+    -------
+    pathlib.Path or None
+        Path of the library, or ``None`` if it is not found.
 
-    Example:
-        >>> find_library('liblapack.so', Path('/usr/local'), verbose=True)
+    Examples
+    --------
+    >>> import pathlib
+    >>> find_library("liblapack.so", pathlib.Path("/usr/lib"))  # doctest: +SKIP
+    PosixPath('/usr/lib/x86_64-linux-gnu/liblapack.so.3')
     """
     if not isinstance(local_path, pathlib.Path):
         local_path = pathlib.Path(local_path)
@@ -199,10 +237,12 @@ def find_library(
 
 
 def load_dependencies_for_darwin(package_lib_path: pathlib.Path):
-    """Load required dependencies for macOS (both ARM and x86_64).
+    """Preload the BLAS/LAPACK and OpenMP libraries on macOS, if found.
 
-    Args:
-        package_lib_path: Path to the package library directory
+    Parameters
+    ----------
+    package_lib_path : pathlib.Path
+        The package directory.
     """
     system, _ = get_platform_info()
     if system != "darwin":
@@ -229,8 +269,12 @@ def load_dependencies_for_darwin(package_lib_path: pathlib.Path):
 
 
 def load_gfortran_for_posix(package_lib_path: pathlib.Path):
-    """
-    Load libgfortran
+    """Preload ``libgfortran`` (versions 3 to 5) if found (Linux).
+
+    Parameters
+    ----------
+    package_lib_path : pathlib.Path
+        The package directory.
     """
     for i in range(3, 6):
         gfortran_path = find_library(f"libgfortran.so.{i}", package_lib_path)
@@ -240,8 +284,12 @@ def load_gfortran_for_posix(package_lib_path: pathlib.Path):
 
 
 def load_quadmath_for_posix(package_lib_path: pathlib.Path):
-    """
-    Load libquadmath (optional for non-ARM systems)
+    """Preload ``libquadmath`` if found (Linux; not available on every architecture).
+
+    Parameters
+    ----------
+    package_lib_path : pathlib.Path
+        The package directory.
     """
     quadmath_names = ["libquadmath.so.0", "libquadmath.so.0.0.0"]
     for name in quadmath_names:
@@ -255,13 +303,24 @@ def load_quadmath_for_posix(package_lib_path: pathlib.Path):
 
 
 def load_library_for_posix():
-    """Load the libscientific library and its dependencies for POSIX systems.
+    """Load libscientific on Linux and macOS.
 
-    Returns:
-        Loaded libscientific library
+    The library bundled in the wheel is loaded first (its dependencies are
+    bundled too). Otherwise the dependencies (gfortran, quadmath, BLAS, LAPACK)
+    are preloaded and ``libscientific.so``/``.dylib`` is searched in the system
+    paths (see :func:`get_search_paths`).
 
-    Raises:
-        RuntimeError: If libraries cannot be loaded
+    Returns
+    -------
+    ctypes.CDLL
+        The loaded library.
+
+    Raises
+    ------
+    RuntimeError
+        If the library or one of its dependencies cannot be found or loaded; the
+        message explains how to install it or set ``LD_LIBRARY_PATH`` /
+        ``DYLD_LIBRARY_PATH``.
     """
     try:
         package_lib_path = pathlib.Path(__file__).parent.absolute()
@@ -312,7 +371,16 @@ def load_library_for_posix():
 
 
 def load_library_for_nt():
-    """Load the libscientific library for NT systems"""
+    """Load ``libscientific.dll`` from the package directory (Windows).
+
+    The runtime DLLs it needs (LAPACK, BLAS, gfortran, ...) are bundled in the
+    same directory.
+
+    Returns
+    -------
+    ctypes.WinDLL or None
+        The loaded library, or ``None`` if it cannot be loaded.
+    """
     try:
         lib_path = f"{pathlib.Path(__file__).parent}"
         win_dll = getattr(ctypes, "WinDLL", ctypes.CDLL)
@@ -322,17 +390,20 @@ def load_library_for_nt():
 
 
 def load_libscientific_library():
-    """Load the libscientific library dynamically.
+    """Load the libscientific C library for the current platform.
+
+    Every module of the package calls this function at import time; the result
+    is the ``ctypes`` handle used to call the C functions.
 
     Returns
     -------
-    CDLL
-        A ctypes dynamic link library object representing the loaded libscientific library.
+    ctypes.CDLL
+        The loaded library.
 
     Raises
     ------
     RuntimeError
-        If the library cannot be loaded or the platform is not supported.
+        If the library cannot be loaded (POSIX systems).
     """
     if os.name == "nt":
         return load_library_for_nt()

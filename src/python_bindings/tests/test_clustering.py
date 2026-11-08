@@ -13,7 +13,10 @@ def test_clustering():
 
     # sample from list with MDC
     selobj_ids = most_descriptive_compound(x, 5)
-    assert sum(selobj_ids) == 61
+    # MDC used to select [16, 10, 3, 13, 19] (sum 61) because of a wrong self
+    # vote; it now agrees with MDC_Fast
+    assert selobj_ids == [11, 5, 19, 4, 9]
+    assert most_descriptive_compound_fast(x, 5) == selobj_ids
 
     # sample from matrix with MaxDissimilaritySelection
     selobj_ids = max_dissimilarity_selection(x, 5)

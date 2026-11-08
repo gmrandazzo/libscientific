@@ -21,6 +21,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <math.h>
+#include <float.h>
 #include <pthread.h>
 #include "numeric.h"
 #include "algebra.h"
@@ -926,6 +927,10 @@ void MatrixDotProduct_(matrix *a, matrix *b, matrix *r)
 void MatrixDotProduct(matrix *a, matrix *b, matrix *r)
 {
   if(a->col == b->row){
+    /* allocate the result if needed (the product is added to r, so an
+     * already allocated r of the right shape is used as it is) */
+    if(r->row != a->row || r->col != b->col)
+      ResizeMatrix(r, a->row, b->col);
     if((int)a->col-3 > 0){
       MatrixDotProduct_LOOP_UNROLLING(a, b, r);
     }
@@ -974,6 +979,8 @@ void RowColOuterProduct(dvector *a, dvector *b, matrix *m)
 void MatrixTranspose(matrix *m, matrix *r){
   size_t i;
   size_t j;
+  if(r->row != m->col || r->col != m->row)
+    ResizeMatrix(r, m->col, m->row);
   for(i = 0; i < m->row; i++){
     for(j = 0; j < m->col; j++){
       r->data[j][i] = m->data[i][j];
@@ -1136,37 +1143,45 @@ void MatrixInversion(matrix *m, matrix *m_inv)
  */
 void MatrixPseudoinversion(matrix *m, matrix *m_inv)
 {
+  /*
+   * Moore-Penrose pseudo-inverse from the SVD m = U S VT:
+   *   m^+ = V S^+ U^T   (col x row)
+   * where S^+ inverts the singular values larger than the tolerance
+   * max(row, col) * DBL_EPSILON * s_max and sets the others to zero.
+   */
+  size_t i, j, k, mn;
+  double s_max, tol;
   matrix *U;
   matrix *S;
   matrix *V_T;
   initMatrix(&U);
   initMatrix(&S);
   initMatrix(&V_T);
-  SVD(m, U, S, V_T);
+  SVDlapack(m, U, S, V_T);
 
-  /*
-  puts("U");
-  PrintMatrix(U);
-  puts("S");
-  PrintMatrix(S);
-  puts("VT");
-  PrintMatrix(V_T);
-  */
+  mn = S->row;
+  s_max = 0.0;
+  for(k = 0; k < mn; k++){
+    if(S->data[k][k] > s_max)
+      s_max = S->data[k][k];
+  }
+  tol = (double)((m->row > m->col) ? m->row : m->col) * DBL_EPSILON * s_max;
 
-  matrix *Sinv;
-  NewMatrix(&Sinv, S->col, S->row);
-  MatrixInversion(S, Sinv);
-  DelMatrix(&S);
+  ResizeMatrix(m_inv, m->col, m->row);
+  for(i = 0; i < m->col; i++){
+    for(j = 0; j < m->row; j++){
+      double v = 0.0;
+      for(k = 0; k < mn; k++){
+        if(S->data[k][k] > tol)
+          v += V_T->data[k][i] * U->data[j][k] / S->data[k][k];
+      }
+      m_inv->data[i][j] = v;
+    }
+  }
 
-  matrix *USinv;
-  NewMatrix(&USinv, U->row, Sinv->col);
-  MatrixDotProduct(U, Sinv, USinv);
   DelMatrix(&U);
-  DelMatrix(&Sinv);
-  ResizeMatrix(m_inv, m->row, m->col);
-  MatrixDotProduct(USinv, V_T, m_inv);
+  DelMatrix(&S);
   DelMatrix(&V_T);
-  DelMatrix(&USinv);
 }
 
 
@@ -2101,49 +2116,16 @@ int cmpfunc(const void *a, const void *b)
 
 void SVD(matrix* m, matrix *U, matrix *S, matrix *VT)
 {
-  size_t i;
-  matrix *w1;
-  matrix *w2;
-  matrix *m_t;
-  matrix *v;
-  dvector *eval1;
-  dvector *eval2;
-  NewMatrix(&w1, m->row, m->row); // A A^T
-  NewMatrix(&w2, m->col, m->col); // A^T A
-  NewMatrix(&m_t, m->col, m->row);
-
-  MatrixTranspose(m, m_t);
-
-  MatrixDotProduct(m, m_t, w1);
-  MatrixDotProduct(m_t, m, w2);
-
-  initDVector(&eval1);
-  initDVector(&eval2);
-
-  initMatrix(&v);
-  EVectEval(w1, eval1, v);
-  EVectEval(w2, eval2, U);
-
-  ResizeMatrix(VT, v->col, v->row);
-  MatrixTranspose(v, VT);
-  ResizeMatrix(S, m->row, m->col);
-
-  /*NewMatrix(&to_sort, (*S)->row, 2);*/
-
-  for(i = 0; i < S->col; i++){
-    if(FLOAT_EQ(eval1->data[i], 0.f, 1e-6) || eval1->data[i] < 0)
-      S->data[i][i] = 0.f;
-    else{
-      S->data[i][i] = sqrt(eval1->data[i]);
-    }
-  }
-
-  DelMatrix(&v);
-  DelMatrix(&m_t);
-  DelDVector(&eval1);
-  DelDVector(&eval2);
-  DelMatrix(&w2);
-  DelMatrix(&w1);
+  /*
+   * Thin singular value decomposition m = U * S * VT
+   * (U: row x mn, S: mn x mn diagonal, VT: mn x col, mn = min(row, col)).
+   *
+   * This used to be computed from two independent eigen decompositions
+   * (A A^T and A^T A): U and V were swapped, their signs were not
+   * consistent and wide matrices were read out of bounds. LAPACK dgesdd
+   * gives a consistent decomposition.
+   */
+  SVDlapack(m, U, S, VT);
 }
 
 /* DGESDD prototype */
@@ -2166,23 +2148,32 @@ void conv2matrix(int m, int n, double* a, int lda, matrix *m_)
 
 void SVDlapack(matrix *m_, matrix *u, matrix *s, matrix *vt)
 {
+  /*
+   * Thin SVD with LAPACK dgesdd (JOBZ = "S"): m_ = U * S * VT with
+   *   U  : m x mn   left singular vectors
+   *   S  : mn x mn  diagonal matrix of the singular values
+   *   VT : mn x n   right singular vectors (transposed)
+   * where mn = min(m, n).
+   */
   size_t i;
   size_t j;
   size_t k;
   int m = (int)m_->row;
   int n = (int)m_->col;
-  int lda = (int)m_->row;
-  int ldu = (int)m_->row;
-  int ldvt = (int)m_->col;
+  size_t mn = (m_->row < m_->col) ? m_->row : m_->col;
+  int mn_i = (int)mn;
+  int lda = m;
+  int ldu = m;
+  int ldvt = mn_i;
   int info;
   int lwork;
   double wkopt;
   double* work = NULL;
   /* Local arrays */
   double *s_, *u_, *vt_, *a;
-  s_ = xmalloc(sizeof(double)*m_->row);
-  u_ = xmalloc(sizeof(double)*m_->row*m_->row);
-  vt_ = xmalloc(sizeof(double)*m_->col*m_->col);
+  s_ = xmalloc(sizeof(double)*mn);
+  u_ = xmalloc(sizeof(double)*m_->row*mn);
+  vt_ = xmalloc(sizeof(double)*mn*m_->col);
   a = xmalloc(sizeof(double)*m_->row*m_->col);
   k = 0;
   for(j = 0; j < m_->col; j++){
@@ -2193,7 +2184,6 @@ void SVDlapack(matrix *m_, matrix *u, matrix *s, matrix *vt)
   }
 
   /* dgesdd_ implementation */
-  size_t mn = (m_->row < m_->col) ? m_->row : m_->col;
   int *iwork = (int*)xmalloc(sizeof(int) * 8 * mn);
   lwork = -1;
   /* U * SIGMA * V^H */
@@ -2208,16 +2198,15 @@ void SVDlapack(matrix *m_, matrix *u, matrix *s, matrix *vt)
     goto cleanup;
   }
 
-  /* s are the eigenvectors singular values diagonal matrix*/
-  ResizeMatrix(s, m_->col, m_->col);
-  for(i = 0; i < m_->col; i++){
+  /* s: diagonal matrix of the singular values, mn x mn */
+  ResizeMatrix(s, mn, mn);
+  for(i = 0; i < mn; i++){
     s->data[i][i] = s_[i];
   }
-  //conv2matrix(1, n, s_, 1, s);
-  /* u is left singular vectors */
-  conv2matrix(m, n, u_, ldu, u);
-  /*vt is the right singular vectors */
-  conv2matrix(m, n, vt_, ldvt, vt);
+  /* u: left singular vectors, m x mn */
+  conv2matrix(m, mn_i, u_, ldu, u);
+  /* vt: right singular vectors, mn x n */
+  conv2matrix(mn_i, n, vt_, ldvt, vt);
   /* Free workspace */
 cleanup:
   xfree(work);

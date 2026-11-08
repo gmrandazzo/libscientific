@@ -16,6 +16,7 @@
  */
 
 #include <stdio.h>
+#include <math.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <time.h>
@@ -30,7 +31,7 @@ void test5()
   matrix *ps;
   UPCAMODEL *m;
 
-  puts(">>>>>>> Test 1: Compute Multi Way PCA");
+  puts(">>>>>>> Test 5: Predicted scores of the training tensor = model scores");
 
   NewTensor(&t, 2);
 
@@ -251,13 +252,64 @@ void test1()
   DelTensor(&t);
 }
 
+/*
+ * Sanity checks:
+ * - a rank-1 trilinear tensor (X[k][i][j] = a_i * b_j * c_k plus column
+ *   offsets) is described exactly by one UPCA component, so decomposing
+ *   and recomposing it must give back the input, with and without scaling
+ *   (the scaling used to be reverted as x + scaling + average);
+ * - refitting a model must replace it (scores and loadings used to be
+ *   appended and the old column averages reused).
+ */
+void test6()
+{
+  puts(">>>>>>> Test 6: UPCA decomposition/recomposition and refit");
+  tensor *X, *Xr;
+  UPCAMODEL *m;
+  NewTensor(&X, 3);
+  for(size_t k = 0; k < 3; k++){
+    NewTensorMatrix(X, k, 15, 4);
+    for(size_t i = 0; i < 15; i++)
+      for(size_t j = 0; j < 4; j++)
+        X->m[k]->data[i][j] = 3.0*(double)(j+1) + sin(0.9*(double)(i+1)) * (1.0+0.5*(double)j) * (1.0+0.7*(double)k);
+  }
+  for(size_t scaling = 0; scaling <= 1; scaling++){
+    NewUPCAModel(&m);
+    UPCA(X, 1, scaling, m, NULL);
+    UPCA(X, 1, scaling, m, NULL); /* refit */
+    if(m->scores->col != 1 || m->loadings->order != 1 || m->colaverage->size != 3){
+      printf("FAIL: after refit scores %zux%zu, %zu loadings, %zu averages\n",
+             m->scores->row, m->scores->col, m->loadings->order, m->colaverage->size);
+      abort();
+    }
+    if(!FLOAT_EQ(m->varexp->data[0], 100.0, 1e-6)){
+      printf("FAIL: one component explains %g%%, expected 100%%\n", m->varexp->data[0]);
+      abort();
+    }
+    initTensor(&Xr);
+    UPCAIndVarPredictor(m->scores, m->loadings, m->colaverage, m->colscaling, 1, Xr);
+    for(size_t k = 0; k < 3; k++)
+      for(size_t i = 0; i < 15; i++)
+        for(size_t j = 0; j < 4; j++)
+          if(!FLOAT_EQ(Xr->m[k]->data[i][j], X->m[k]->data[i][j], 1e-8)){
+            printf("FAIL: scaling %zu: X[%zu][%zu][%zu] recomposed %g != %g\n",
+                   scaling, k, i, j, Xr->m[k]->data[i][j], X->m[k]->data[i][j]);
+            abort();
+          }
+    DelTensor(&Xr);
+    DelUPCAModel(&m);
+  }
+  DelTensor(&X);
+  puts("OK.");
+}
+
 int main(void)
 {
   test1();
-  /*test2();
+  test2();
   test3();
   test4();
-  test5(); << FAIL!!
-  */
+  test5();
+  test6();
   return 0;
 }

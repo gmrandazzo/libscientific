@@ -25,38 +25,51 @@
 #define PLSCONVERGENCE 1e-8
 
 /**
- * PLS model data structure
+ * Partial Least Squares regression model.
  *
- * - **xscores** x space scores
- * - **xloadings** x space loadings
- * - **xweights** x space weights
- * - **yscores** y space scores
- * - **yloadings** y space loadings
- * - **b** pls regression coefficients
- * - **xvarexp** variance explained in the x space
- * - **xcolaverage** x independent variable column average
- * - **xcolscaling** x independent variable column scaling
- * - **ycolaverage** y independent variable column average
- * - **ycolscaling** y independent variable column scaling
- * - **recalculated_y** y recalculated
- * - **recalc_residuals** y recalculated residuals
- * - **predicted_y** y predicted
- * - **pred_residuals** y predicted residuals
- * - **r2y_recalculated** r squared using y recalculated values
- * - **r2y_validation**
- * - **q2y** q squared using y predicted values
- * - **sdep** standard deviation over prediction using y predictions
- * - **sdec** standard deviation over recalculation using y recalculated
- * - **bias** bias
- * - **roc_recalculated** receiver operating characteristic using y recalculated
- * - **roc_validation** receiver operating characteristic using y predicted
- * - **roc_auc_recalculated** receiver operating characteristic area under the curve using y recalculated
- * - **roc_auc_validation** eceiver operating characteristic area under the curve using y predicted
- * - **precision_recall_recalculated** precision-recall curve using y recalculated
- * - **precision_recall_validation** precision-recall curve using y predicted
- * - **precision_recall_ap_recalculated** precision-recall aread under the curve using y recalculated
- * - **precision_recall_ap_validation** precision-recall aread under the curve using y predicted
- * - **yscrambling** y-scrambling r-squared and q-squared
+ * Create it with :c:func:`NewPLSModel`, fill it with :c:func:`PLS` and free
+ * it with :c:func:`DelPLSModel`. All the members are owned by the model.
+ * With ``n`` objects, ``f`` features, ``ny`` responses and ``nlv`` latent
+ * variables:
+ *
+ * Members:
+ *   xscores: X scores ``T``, ``n x nlv``.
+ *   xloadings: X loadings ``P``, ``f x nlv``.
+ *   xweights: X weights ``W``, ``f x nlv`` (used to compute the scores of
+ *     new objects; not unit length).
+ *   yscores: Y scores ``U``, ``n x nlv``.
+ *   yloadings: Y loadings ``Q``, ``ny x nlv`` (all ``1`` for one response).
+ *   b: Inner regression coefficient of each latent variable (size ``nlv``).
+ *   xvarexp: Percentage of the X variance explained by each latent variable.
+ *   xcolaverage: Column means of X (size ``f``).
+ *   xcolscaling: Column scalings of X (size ``f``).
+ *   ycolaverage: Column means of Y (size ``ny``).
+ *   ycolscaling: Column scalings of Y (size ``ny``).
+ *   recalculated_y: Fitted Y of the training objects, ``n x (ny*nlv)``:
+ *     column ``ny*lv + j`` is response ``j`` with ``lv+1`` latent variables.
+ *   recalc_residuals: ``recalculated_y`` minus the true Y, same layout.
+ *   predicted_y: Cross-validated predictions (filled by the validation
+ *     functions of ``modelvalidation.h``), same layout.
+ *   pred_residuals: Cross-validated residuals, same layout.
+ *   r2y_recalculated: R² of the fitted Y, ``nlv x ny``.
+ *   r2y_validation: R² of the cross-validated Y, ``nlv x ny``.
+ *   q2y: Q² (cross-validated R²), ``nlv x ny``.
+ *   sdep: Standard deviation of the prediction errors, ``nlv x ny``.
+ *   sdec: Standard deviation of the recalculation errors, ``nlv x ny``.
+ *   bias: Prediction bias, ``nlv x ny``.
+ *   roc_recalculated: PLS-DA ROC curves of the fitted Y (one matrix per
+ *     latent variable).
+ *   roc_validation: PLS-DA ROC curves of the cross-validated Y.
+ *   roc_auc_recalculated: ROC AUC of the fitted Y, ``nlv x ny``.
+ *   roc_auc_validation: ROC AUC of the cross-validated Y, ``nlv x ny``.
+ *   precision_recall_recalculated: Precision-recall curves of the fitted Y.
+ *   precision_recall_validation: Precision-recall curves of the
+ *     cross-validated Y.
+ *   precision_recall_ap_recalculated: Average precision of the fitted Y.
+ *   precision_recall_ap_validation: Average precision of the
+ *     cross-validated Y.
+ *   yscrambling: Y-scrambling results (R² and Q² of models fitted on
+ *     permuted Y).
  */
 typedef struct{
   matrix *xscores;
@@ -94,58 +107,70 @@ typedef struct{
 } PLSMODEL;
 
 /**
- * Create a new PLSMODEL
+ * Allocate an empty PLS model.
+ *
+ * Args:
+ *   m: [out] Address of the pointer that receives the new model.
+ *
+ * Note:
+ *   Release the model with :c:func:`DelPLSModel`.
  */
 void NewPLSModel(PLSMODEL **m);
 
 /**
- * Delete a PLSMODEL
+ * Free a PLS model and all its members, and set the pointer to ``NULL``.
+ *
+ * Args:
+ *   m: [in,out] Address of the model pointer created with :c:func:`NewPLSModel`.
  */
 void DelPLSModel(PLSMODEL **m);
 
 /*
- * Calculate the latent variables according the NIPALS algorithm
- * The function use X, Y and return
- * - deflated X
- * - deflated Y
- * - scores t, u
- * - loadings p, q
- * - weights w (or c)
- * - the beta coefficient bcoef
- *
- * N.B.: all the dvector must be initialised.
- * See Geladi ref. for details
+ * Internal helper: compute one latent variable with NIPALS (Geladi &
+ * Kowalski, Anal. Chim. Acta 185, 1986), returning the scores t, u, the
+ * loadings p, q, the weights w and the inner coefficient bcoef.
+ * All the vectors must be allocated. Used by PLS().
  */
 void LVCalc(matrix *X, matrix *Y, dvector *t, dvector *u, dvector *p, dvector *q, dvector *w, double *bcoef);
 
 
 /**
- * @brief Calculate a partial least squares model using the NIPALS algorithm.
+ * Fit a PLS regression model with the NIPALS algorithm.
  *
- * @param [in] mx libscientific matrix data input: x independent variables
- * @param [in] my libscientific matrix data input: y dependent variables
- * @param [in] nlv number of desired latent variables
- * @param [in] xautoscaling scaling typeon the x independent variables expressed as unsigned int type
- * @param [in] yautoscaling scaling typeon the y dependent variables expressed as unsigned int type
- * @param [out] PLSMODEL output -initialized model using NewPLSAModel(...). The datastructure will be populated with results
- * @param [in] scisignal libscientific signal. Default value is NULL.
+ * X and Y are preprocessed, then ``nlv`` latent variables are extracted one
+ * at a time (up to 1000 iterations each). The model also stores the fitted Y
+ * of the training objects for every number of latent variables.
  *
- * Available scalings:
+ * Args:
+ *   mx: [in] Predictors, ``n x f``.
+ *   my: [in] Responses, ``n x ny`` (one column per response).
+ *   nlv: [in] Number of latent variables; capped to ``f``.
+ *   xautoscaling: [in] Column preprocessing of X: 0 = mean centering only,
+ *     1 = standard deviation, 2 = root mean square, 3 = Pareto, 4 = range,
+ *     5 = level (all options mean-center first).
+ *   yautoscaling: [in] Column preprocessing of Y, same options.
+ *   model: [out] Model created with :c:func:`NewPLSModel`; filled with the
+ *     results (see :c:type:`PLSMODEL`).
+ *   s: [in] Optional stop signal (``*s == SIGSCIENTIFICSTOP`` stops the
+ *     computation); ``NULL`` if unused.
  *
- * - 0: No scaling. Only mean centering
+ * Returns:
+ *   Nothing, the results are written into ``model``.
  *
- * - 1: Mean centering and STDEV scaling
+ * Example:
+ *   .. code-block:: c
  *
- * - 2: Mean centering and Root-Mean-Square column scaling
- *
- * - 3: Mean centering and Pareto scaling
- *
- * - 4: Mean centering and min-max range scaling
- *
- * - 5: Mean centering and level scaling
- *
- * @par Returns
- *    Nothing.
+ *      PLSMODEL *model;
+ *      matrix *ypred, *tscores;
+ *      NewPLSModel(&model);
+ *      PLS(x, y, 3, 1, 0, model, NULL);   // 3 LVs, autoscale X, center Y
+ *      initMatrix(&tscores);
+ *      initMatrix(&ypred);
+ *      PLSYPredictorAllLV(xnew, model, tscores, ypred);
+ *      // ypred->data[i][ny*lv + j]: response j of object i with lv+1 LVs
+ *      DelMatrix(&ypred);
+ *      DelMatrix(&tscores);
+ *      DelPLSModel(&model);
  */
 void PLS(matrix *mx,
          matrix *my,
@@ -156,22 +181,40 @@ void PLS(matrix *mx,
          scisignal *s);
 
 /**
- * Calculate betas coefficients from a pls model at specific nlv latent variables
- * @param [in] model libscientific matrix data input: x independent variables
- * @param [in] nlv number of desired latent variables
- * @param [out] betas output - initialized libscientific dvector
+ * Compute the regression coefficients ``B = W (P' W)^-1 b`` with ``nlv``
+ * latent variables.
+ *
+ * They express the model as a linear equation on the preprocessed data:
+ * ``(y - ycolaverage) / ycolscaling = sum_j B[j] (x[j] - xcolaverage[j]) / xcolscaling[j]``.
+ *
+ * Args:
+ *   model: [in] Model fitted with :c:func:`PLS` on a **single** response.
+ *   nlv: [in] Number of latent variables to use.
+ *   betas: [out] Vector created with ``initDVector``; filled with ``f``
+ *     coefficients.
+ *
+ * Returns:
+ *   Nothing, the coefficients are written into ``betas``.
+ *
+ * Warning:
+ *   Only valid for models with one response: the Y loadings are not used,
+ *   so the result is meaningless when ``ny > 1``.
  */
 void PLSBetasCoeff(PLSMODEL *model,
                    size_t nlv,
                    dvector *betas);
 
 /**
- * Project a matrix and predict the scores into the new space.
- * This function is used before predict the Y values
- * @param [in] mx libscientific matrix data input: x independent variables
- * @param [in] model PLSMODEL
- * @param [in] nlv number of desired latent variables
- * @param [out] xscores output - initialized libscientific matrix
+ * Compute the X scores of new objects.
+ *
+ * Args:
+ *   mx: [in] Objects, ``m x f``, same features as the training X.
+ *   model: [in] Model fitted with :c:func:`PLS`.
+ *   nlv: [in] Number of latent variables to use.
+ *   xscores: [out] Matrix created with ``initMatrix``; resized to ``m x nlv``.
+ *
+ * Returns:
+ *   Nothing, the scores are written into ``xscores``.
  */
 void PLSScorePredictor(matrix *mx,
                        PLSMODEL *model,
@@ -179,13 +222,18 @@ void PLSScorePredictor(matrix *mx,
                        matrix *xscores);
 
 /**
- * Calculate the Y values at a specific lv number (nlv).
+ * Compute the responses from X scores with ``nlv`` latent variables.
  *
- * N.B.: The output of y will be: [y->row][y-col]
- * @param [in] tscore input matrix of scores calculated using PLSScorePredictor
- * @param [in] model PLSMODEL
- * @param [in] nlv number of desired latent variables
- * @param [out] y output - initialized libscientific matrix
+ * Args:
+ *   tscore: [in] X scores, ``m x a`` with ``a >= nlv`` (from
+ *     :c:func:`PLSScorePredictor` or ``model->xscores``).
+ *   model: [in] Model fitted with :c:func:`PLS`.
+ *   nlv: [in] Number of latent variables to use.
+ *   y: [out] Matrix created with ``initMatrix``; resized to ``m x ny`` and
+ *     filled with the responses in the original units of Y.
+ *
+ * Returns:
+ *   Nothing, the responses are written into ``y``.
  */
 void PLSYPredictor(matrix *tscore,
                    PLSMODEL *model,
@@ -193,13 +241,19 @@ void PLSYPredictor(matrix *tscore,
                    matrix *y);
 
 /**
- * Calculate the Y values at all the lv.
+ * Predict the responses of new objects for every number of latent variables.
  *
- * N.B.: The output of y will be: [y->row][y->col*nlv]
- * @param [in] mx input matrix of scores calculated using PLSScorePredictor
- * @param [in] model PLSMODEL
- * @param [out] tscores output - predicted scores
- * @param [out] y output - y predicted
+ * Args:
+ *   mx: [in] Objects, ``m x f``, same features as the training X.
+ *   model: [in] Model fitted with :c:func:`PLS`.
+ *   tscores: [out] Matrix created with ``initMatrix``; receives the X
+ *     scores, ``m x nlv``. Pass ``NULL`` if not needed.
+ *   y: [out] Matrix created with ``initMatrix``; resized to
+ *     ``m x (ny*nlv)``: column ``ny*lv + j`` is response ``j`` with ``lv+1``
+ *     latent variables.
+ *
+ * Returns:
+ *   Nothing, the results are written into ``tscores`` and ``y``.
  */
 void PLSYPredictorAllLV(matrix *mx,
                         PLSMODEL *model,
@@ -208,16 +262,21 @@ void PLSYPredictorAllLV(matrix *mx,
 
 
 /**
- * Calculate the correlation coefficient (ccoeff),
- * the root mean square error of the prediction (rmse),
- * the bias of the prediction (bias) in a regression model.
- * mx and my could be the training or the test datasets.
+ * Compute R², RMSE and bias of regression predictions for every number of
+ * latent variables.
  *
- * @param [in] my_true input matrix of y true values
- * @param [in] my_pred input matrix of y predicted or recalculated values
- * @param [out] ccoeff output - correlation coefficients q-squared or r-squared if my_pred is respectivelly predicted or recalculated
- * @param [out] rmse output - root mean square error
- * @param [out] bias output - bias defined as how distant are we from the diagonal
+ * Args:
+ *   my_true: [in] True responses, ``n x ny``.
+ *   my_pred: [in] Predictions in the layout of :c:func:`PLSYPredictorAllLV`,
+ *     ``n x (ny*nlv)`` (fitted values give R², cross-validated ones Q²).
+ *   ccoeff: [out] Matrix created with ``initMatrix``; resized to
+ *     ``nlv x ny``: element ``[lv][j]`` is R² of response ``j`` with
+ *     ``lv+1`` latent variables. ``NULL`` to skip.
+ *   rmse: [out] Root mean squared error, ``nlv x ny``. ``NULL`` to skip.
+ *   bias: [out] Bias of the predictions, ``nlv x ny``. ``NULL`` to skip.
+ *
+ * Returns:
+ *   Nothing, the statistics are written into the output matrices.
  */
 void PLSRegressionStatistics(matrix *my_true,
                              matrix *my_pred,
@@ -226,16 +285,27 @@ void PLSRegressionStatistics(matrix *my_true,
                              matrix *bias);
 
 /**
- * Calculate the roc curve, the auc, the precision recall curve,
- * the precision_recall_auc of a classification model.
- * mx and my could be the training or the test datasets.
+ * Compute ROC and precision-recall curves of a PLS discriminant analysis
+ * (PLS-DA) for every number of latent variables.
  *
- * @param [in] my_true input matrix of y true values
- * @param [in] my_scores input matrix of y predicted or recalculated class scores/probabilities
- * @param [out] roc output - roc curves
- * @param [out] roc_auc output - roc AUCs
- * @param [out] precision_recall output - precision-recall curves
- * @param [out] precision_recall_ap output - precision-recall AUCs
+ * Args:
+ *   my_true: [in] True classes, ``n x ny`` (one 0/1 column per class).
+ *   my_score: [in] Predicted class scores in the layout of
+ *     :c:func:`PLSYPredictorAllLV`, ``n x (ny*nlv)``.
+ *   roc: [out] Tensor created with ``initTensor``; receives one ``n x 2ny``
+ *     matrix per latent variable (columns ``2j``, ``2j+1``: false and true
+ *     positive rates of class ``j``). ``NULL`` to skip.
+ *   roc_auc: [out] Matrix created with ``initMatrix``; one row per latent
+ *     variable, one column per class (area under the ROC curve).
+ *     ``NULL`` to skip.
+ *   precision_recall: [out] Tensor created with ``initTensor``; one
+ *     ``n x 2ny`` matrix per latent variable (columns ``2j``, ``2j+1``:
+ *     recall and precision of class ``j``). ``NULL`` to skip.
+ *   precision_recall_ap: [out] Matrix; average precision, same layout as
+ *     ``roc_auc``. ``NULL`` to skip.
+ *
+ * Returns:
+ *   Nothing, the results are written into the outputs.
  */
 void PLSDiscriminantAnalysisStatistics(matrix *my_true,
                                        matrix *my_score,
@@ -244,26 +314,45 @@ void PLSDiscriminantAnalysisStatistics(matrix *my_true,
                                        tensor *precision_recall,
                                        matrix *precision_recall_ap);
 
-/*
- * Description: Calculate the ROC curve with AUC and the Precision-Recall crurve with his
- * area usefull in PLS-DA case
-
-void PLSBinaryClassificationScores(matrix *mx, matrix *my, PLSMODEL *model, size_t nlv, dvector** roc_auc, dvector **pr_ap, matrix **roc_curve, matrix **pr_curve);
-*/
-
 /**
- * Calculate the PLS Very important variables
+ * Compute the Variable Importance in Projection (VIP) of each feature.
+ *
+ * Uses S. Wold's definition over all the latent variables of the model:
+ * ``VIP_j = sqrt(f * sum_a (w_ja² / ||w_a||²) SSY_a / SSY)``. The average of
+ * the squared VIP values is 1; features with ``VIP > 1`` are usually
+ * considered important.
+ *
+ * Args:
+ *   model: [in] Model fitted with :c:func:`PLS`.
+ *   vip: [out] Matrix created with ``initMatrix``; resized to ``f x 1``.
+ *
+ * Returns:
+ *   Nothing, the values are written into ``vip``.
  */
 void PLSVIP(PLSMODEL *model, matrix *vip);
 
 /**
- * Get the Cutoff based on the grow of r2, q2 in case of regression
- * or auc in case of classification.
+ * Choose the number of latent variables from a table of R²/Q² or AUC values.
+ *
+ * The values of each row are summed over the responses; the function walks
+ * the rows while the sum increases by more than 3% and stops at the first
+ * smaller improvement.
+ *
+ * Args:
+ *   coeff: [in] Statistics, ``nlv x ny`` (e.g. ``model->q2y`` or the
+ *     ``ccoeff`` output of :c:func:`PLSRegressionStatistics`).
+ *
+ * Returns:
+ *   The **0-based** index of the selected row: the number of latent
+ *   variables to use is the return value + 1.
  */
 int GetLVCCutoff(matrix* coeff);
 
 /**
- * Print to video a PLSMODEL
+ * Print the content of a PLS model to standard output.
+ *
+ * Args:
+ *   model: [in] The model to print.
  */
 void PrintPLSModel(PLSMODEL *model);
 

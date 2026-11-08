@@ -435,6 +435,19 @@ void PLS(matrix *mx, matrix *my, size_t nlv, int xautoscaling, int yautoscaling,
   if(nlv >= 1){
     size_t i, j, pc; /* pc = principal component */
 
+    /* Reset the results of a previous fit: the column averages/scalings
+     * would be reused by MatrixPreprocess() and b would keep growing. */
+    DelDVector(&model->xcolaverage);
+    initDVector(&model->xcolaverage);
+    DelDVector(&model->xcolscaling);
+    initDVector(&model->xcolscaling);
+    DelDVector(&model->ycolaverage);
+    initDVector(&model->ycolaverage);
+    DelDVector(&model->ycolscaling);
+    initDVector(&model->ycolscaling);
+    DelDVector(&model->b);
+    initDVector(&model->b);
+
     matrix *X; /* data matrix of mean centred object  for mx */
     matrix *Y; /* data matrix of mean centred object  for my */
 
@@ -574,7 +587,8 @@ void PLS(matrix *mx, matrix *my, size_t nlv, int xautoscaling, int yautoscaling,
       ResizeMatrix(model->recalc_residuals, my->row, my->col*nlv);
       for(i = 0; i < model->recalculated_y->row; i++){
         for(j = 0; j < model->recalculated_y->col; j++){
-          model->recalc_residuals->data[i][j] = model->recalculated_y->data[i][j] - my->data[i][j / nlv];
+          /* recalculated_y column j holds y column (j % n_y) at latent variable (j / n_y) */
+          model->recalc_residuals->data[i][j] = model->recalculated_y->data[i][j] - my->data[i][j % my->col];
         }
       }
 
@@ -990,14 +1004,23 @@ void PLSVIP(PLSMODEL *model, matrix *vip)
     return;
   }
 
-  /* 2. Calculate VIP_j for each variable */
+  /* 2. Calculate VIP_j for each variable (Wold):
+   *    VIP_j = sqrt( J * sum_f (w_jf^2 / ||w_f||^2) * SSY_f / SSY_total )
+   * The stored weights are rescaled by the NIPALS p-normalization, so they
+   * are normalized here; with this definition sum_j VIP_j^2 = J for any
+   * number of latent variables. */
   for (size_t j = 0; j < npred; j++) {
     double weighted_sum_w2 = 0.0;
     for (size_t f = 0; f < nlv; f++) {
+      double w_norm2 = 0.0;
+      for (size_t k = 0; k < npred; k++)
+        w_norm2 += square(model->xweights->data[k][f]);
+      if (w_norm2 <= EPSILON)
+        continue;
       double w_jf = model->xweights->data[j][f];
-      weighted_sum_w2 += (w_jf * w_jf * ssy_f->data[f]);
+      weighted_sum_w2 += (w_jf * w_jf / w_norm2) * ssy_f->data[f];
     }
-    vip->data[j][0] = sqrt((double)npred * weighted_sum_w2 / (ssy_total * (double)nlv));
+    vip->data[j][0] = sqrt((double)npred * weighted_sum_w2 / ssy_total);
   }
 
   DelDVector(&ssy_f);

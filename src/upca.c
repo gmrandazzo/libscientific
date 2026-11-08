@@ -121,6 +121,18 @@ void UPCA(tensor *X_, size_t npc, size_t autoscaling, UPCAMODEL *m, scisignal *s
     dvector *r;
     dvector *u;
 
+    /* Reset the results of a previous fit: scores and loadings are appended
+     * to and the column averages/scalings would be reused by
+     * TensorPreprocess(), so refitting would mix old and new results. */
+    DelMatrix(&m->scores);
+    initMatrix(&m->scores);
+    DelTensor(&m->loadings);
+    initTensor(&m->loadings);
+    DelDVectorList(&m->colaverage);
+    initDVectorList(&m->colaverage);
+    DelDVectorList(&m->colscaling);
+    initDVectorList(&m->colscaling);
+
     /* step 1 center and autoscale matrix */
 
     NewTensor(&X, X_->order);
@@ -409,7 +421,7 @@ void UPCAScorePredictor(tensor *X_,
       /* Mean Centering */
       if(model->colaverage->size > 0){
         for(i = 0; i < X_->m[k]->row; i++){
-          X->m[k]->data[i][j] = X->m[k]->data[i][j] - model->colaverage->d[k]->data[j];
+          X->m[k]->data[i][j] = X_->m[k]->data[i][j] - model->colaverage->d[k]->data[j];
         }
       }
       else{
@@ -429,6 +441,9 @@ void UPCAScorePredictor(tensor *X_,
 
   if(model->loadings->order < npc)
     npc = model->loadings->order;
+
+  /* the scores are appended column by column: start from an empty matrix */
+  ResizeMatrix(pscores, X->m[0]->row, 0);
 
   for(pc = 0; pc < npc; pc++){
     DVectorSet(t, 0.f);
@@ -472,6 +487,12 @@ void UPCAIndVarPredictor(matrix *T,
 {
   size_t pc, i, j, k;
 
+  /* use at most the components available in the scores and loadings */
+  if(npc > T->col)
+    npc = T->col;
+  if(npc > P->order)
+    npc = P->order;
+
   /*Allocate the output tensor*/
   for(i = 0; i < P->m[0]->col; i++)
     AddTensorMatrix(X, T->row, P->m[0]->row);
@@ -499,11 +520,12 @@ void UPCAIndVarPredictor(matrix *T,
     for(k = 0; k < X->order; k++){
       for(i = 0; i < X->m[k]->row; i++){
         for(j = 0; j < X->m[k]->col; j++){
+          /* revert the preprocessing: x * scaling + average */
           if(colscaling->size > 0){
-            X->m[k]->data[i][j] = (X->m[k]->data[i][j] + colscaling->d[k]->data[j])  + colaverage->d[k]->data[j];
+            X->m[k]->data[i][j] = X->m[k]->data[i][j] * colscaling->d[k]->data[j] + colaverage->d[k]->data[j];
           }
           else{
-            X->m[k]->data[i][j] = (X->m[k]->data[i][j] + colscaling->d[k]->data[j]);
+            X->m[k]->data[i][j] = X->m[k]->data[i][j] + colaverage->d[k]->data[j];
           }
         }
       }

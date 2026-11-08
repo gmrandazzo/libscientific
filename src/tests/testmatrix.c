@@ -869,6 +869,30 @@ void Test30(){
   puts("Calculating Matrix Statistics Descriptive: OK");
 }
 
+/* Penrose conditions: A A+ A = A and A+ A A+ = A+ */
+static void check_pseudoinverse(matrix *a, matrix *a_inv, const char *name)
+{
+  matrix *aai, *aaia, *aia, *aiaai;
+  initMatrix(&aai); initMatrix(&aaia); initMatrix(&aia); initMatrix(&aiaai);
+  MatrixDotProduct(a, a_inv, aai);
+  MatrixDotProduct(aai, a, aaia);
+  MatrixDotProduct(a_inv, a, aia);
+  MatrixDotProduct(aia, a_inv, aiaai);
+  for(size_t i = 0; i < a->row; i++)
+    for(size_t j = 0; j < a->col; j++)
+      if(!FLOAT_EQ(aaia->data[i][j], a->data[i][j], 1e-8)){
+        printf("FAIL: %s pseudo-inverse: A A+ A != A at (%zu,%zu)\n", name, i, j);
+        abort();
+      }
+  for(size_t i = 0; i < a_inv->row; i++)
+    for(size_t j = 0; j < a_inv->col; j++)
+      if(!FLOAT_EQ(aiaai->data[i][j], a_inv->data[i][j], 1e-8)){
+        printf("FAIL: %s pseudo-inverse: A+ A A+ != A+ at (%zu,%zu)\n", name, i, j);
+        abort();
+      }
+  DelMatrix(&aai); DelMatrix(&aaia); DelMatrix(&aia); DelMatrix(&aiaai);
+}
+
 void Test29()
 {
   matrix *m, *m_inv;
@@ -885,8 +909,29 @@ void Test29()
   MatrixPseudoinversion(m,  m_inv);
   PrintMatrix(m);
   PrintMatrix(m_inv);
+  check_pseudoinverse(m, m_inv, "5x5");
   DelMatrix(&m);
   DelMatrix(&m_inv);
+
+  /* rank-deficient (rank 2) rectangular matrix: the pseudo-inverse must
+   * still satisfy the Penrose conditions (it used to invert zero singular
+   * values and to return a matrix of the wrong shape) */
+  NewMatrix(&m, 4, 3);
+  for(size_t i = 0; i < 4; i++){
+    m->data[i][0] = (double)(i + 1);
+    m->data[i][1] = (double)((i * 3) % 4);
+    m->data[i][2] = m->data[i][0] + 2.0 * m->data[i][1];
+  }
+  initMatrix(&m_inv);
+  MatrixPseudoinversion(m, m_inv);
+  if(m_inv->row != 3 || m_inv->col != 4){
+    printf("FAIL: pseudo-inverse of a 4x3 matrix is %zux%zu\n", m_inv->row, m_inv->col);
+    abort();
+  }
+  check_pseudoinverse(m, m_inv, "4x3 rank 2");
+  DelMatrix(&m);
+  DelMatrix(&m_inv);
+  puts("Pseudoinversion: OK");
 }
 
 void Test28()
@@ -975,17 +1020,20 @@ void Test26_bis()
   Ur->data[1][0] = -0.926551; Ur->data[1][1] =0.376168;
   Sr->data[0][0] = 14.227407; Sr->data[1][1] = 1.257330;
   V_Tr->data[0][0] = -0.352062; V_Tr->data[0][1] = -0.443626; V_Tr->data[0][2] = -0.535190; V_Tr->data[0][3] = -0.626754;
-  V_Tr->data[1][0] = 0.758981; V_Tr->data[1][1] = 0.321242; V_Tr->data[1][1] = -0.116498; V_Tr->data[1][1] = -0.554238;
+  V_Tr->data[1][0] = 0.758981; V_Tr->data[1][1] = 0.321242; V_Tr->data[1][2] = -0.116498; V_Tr->data[1][3] = -0.554238;
 
   int ok = 1;
-  for(i = 0; i < 2; i++){
-    for(j = 0; j < 2; j++){
-      if(FLOAT_EQ(U->data[i][j], Ur->data[i][j], 1e-2) &&
-         FLOAT_EQ(S->data[i][j], Sr->data[i][j], 1e-2) &&
-         FLOAT_EQ(V_T->data[i][j], V_Tr->data[i][j], 1e-2)){
-         continue;
+  /* thin SVD of a 2x4 matrix: U 2x2, S 2x2, VT 2x4 */
+  if(U->row != 2 || U->col != 2 || S->row != 2 || S->col != 2 || V_T->row != 2 || V_T->col != 4)
+    ok = 0;
+  for(i = 0; i < 2 && ok == 1; i++){
+    for(j = 0; j < 4; j++){
+      if(j < 2 && (!FLOAT_EQ(U->data[i][j], Ur->data[i][j], 1e-2) ||
+                   !FLOAT_EQ(S->data[i][j], Sr->data[i][j], 1e-2))){
+        ok = 0;
+        break;
       }
-      else{
+      if(!FLOAT_EQ(V_T->data[i][j], V_Tr->data[i][j], 1e-2)){
         ok = 0;
         break;
       }
@@ -1003,8 +1051,9 @@ void Test26_bis()
     puts("Correct answer");
     puts("U"); PrintMatrix(Ur);
     puts("S"); PrintMatrix(Sr);
-    puts("V_T"); PrintMatrix(V_T);
+    puts("V_T"); PrintMatrix(V_Tr);
     puts("Error Test26_bis");
+    abort();
   }
 
   DelMatrix(&Ur);

@@ -1,19 +1,26 @@
-"""interpolate.py libscientific python binding
+# interpolate.py libscientific python binding
+#
+# Copyright (C) <2023>  Giuseppe Marco Randazzo
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""Natural cubic spline interpolation.
 
-Copyright (C) <2023>  Giuseppe Marco Randazzo
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+>>> from libscientific.interpolate import CubicSplineInterpolation
+>>> spline = CubicSplineInterpolation()
+>>> spline.fit([[0.0, 0.0], [1.0, 1.0], [2.0, 4.0], [3.0, 9.0]])
+>>> round(spline.predict([2.0])[0], 6)
+4.0
 """
 
 import ctypes
@@ -30,9 +37,18 @@ lsci.cubic_spline_interpolation.restype = None
 
 
 def cubic_spline_interpolation(x_y, s_interp):
-    """
-    CubicSplineInterpolation: Given a matrix x_y, interpolate the npoints
-                              using a natural cubic spline approach
+    """Compute the coefficients of a natural cubic spline (low-level API).
+
+    Parameters
+    ----------
+    x_y : Matrix or ctypes.POINTER(MATRIX)
+        The points, shape ``(n_points, 2)``: column 0 is x (**sorted in
+        increasing order**, no duplicates), column 1 is y.
+    s_interp : Matrix or ctypes.POINTER(MATRIX)
+        Output matrix; receives one row per interval, ``(n_points - 1, 5)``:
+        ``[x_i, a, b, c, d]`` with
+        ``y = a + b (x - x_i) + c (x - x_i)^2 + d (x - x_i)^3`` on
+        ``[x_i, x_{i+1}]``.
     """
     x_y_ = None
     if isinstance(x_y, mx.Matrix):
@@ -58,8 +74,16 @@ lsci.cubic_spline_predict.restype = None
 
 
 def cubic_spline_predict(x_cc, s_interp, y_pred):
-    """
-    Natural cubic spline prediction
+    """Evaluate a natural cubic spline (low-level API).
+
+    Parameters
+    ----------
+    x_cc : DVector or ctypes.POINTER(DVECTOR)
+        The x values to evaluate.
+    s_interp : Matrix or ctypes.POINTER(MATRIX)
+        Spline coefficients from :func:`cubic_spline_interpolation`.
+    y_pred : DVector or ctypes.POINTER(DVECTOR)
+        Output vector; resized and filled with one y value per x.
     """
     x_cc_ = None
     if isinstance(x_cc, vect.DVector):
@@ -83,47 +107,30 @@ def cubic_spline_predict(x_cc, s_interp, y_pred):
 
 
 class CubicSplineInterpolation:
-    """
-    Cubic Spline Interpolation
+    """Natural cubic spline interpolation of 2D points.
 
-    This class provides a cubic spline interpolation model for fitting and predicting values.
-
-    Examples
-    --------
-    >>> from libscientific import interpolate
-    >>> xy = [[-1.82, 0.63],
-    ...       [-0.73, 0.19],
-    ...       [-0.17, 0.01],
-    ...       [-0.09, 0.00],
-    ...       [0.15, 0.01],
-    ...       [0.39, 0.06],
-    ...       [0.86, 0.24],
-    ...       [1.44, 0.49]]
-    >>> x = [-1.82, -0.73, -0.17, -0.09, 0.15, 0.39, 0.86, 1.44]
-    >>> csi = interpolate.CubicSplineInterpolation()
-    >>> csi.fit(xy)
-    >>> yp = csi.predict(x)
-    >>> yp
-    [0.63, 0.19, 0.010000000000000002, 1.463672932855431e-18, 0.01, 0.06, 0.23999999999999996, 0.49]
-
-    Methods
-    -------
-    fit(XY):
-        Fit the cubic spline interpolation model with a 2D matrix x and y.
-    predict(X):
-        Predict targets of given samples.
+    The spline goes exactly through every given point, with continuous first
+    and second derivatives, and zero second derivative at the two ends.
 
     Attributes
     ----------
-    s_interp : CDataType
-        The interpolation matrix.
+    s_interp : ctypes.POINTER(MATRIX) or None
+        The spline coefficients (see :func:`cubic_spline_interpolation`),
+        ``None`` before :meth:`fit`.
 
+    Examples
+    --------
+    >>> import math
+    >>> from libscientific.interpolate import CubicSplineInterpolation
+    >>> points = [[x / 2, math.sin(x / 2)] for x in range(13)]   # x from 0 to 6
+    >>> spline = CubicSplineInterpolation()
+    >>> spline.fit(points)
+    >>> [round(y, 3) for y in spline.predict([0.25, 1.1, 3.3])]
+    [0.247, 0.891, -0.158]
     """
 
     def __init__(self) -> None:
-        """
-        Initialize a CubicSplineInterpolation instance.
-        """
+        """Create an empty (not fitted) spline."""
         self.s_interp = None
 
     def __repr__(self):
@@ -133,61 +140,71 @@ class CubicSplineInterpolation:
         return f"CubicSplineInterpolation(fitted={self.s_interp is not None})"
 
     def __del__(self):
-        """
-        Clean up resources associated with the CubicSplineInterpolation instance.
-        """
-        if self.s_interp is not None:
+        """Release the C spline coefficients."""
+        if getattr(self, "s_interp", None) is not None:
             mx.del_matrix(self.s_interp)
-            del self.s_interp
         self.s_interp = None
 
     def fit(self, x_y_) -> None:
-        """
-        Fit the cubic spline interpolation model.
+        """Compute the spline through a set of points.
+
+        Calling ``fit`` again replaces the previous spline.
 
         Parameters
         ----------
-        x_y_ : Matrix or List[List]
-            2D matrix with x and y values for interpolation.
+        x_y_ : MatrixLike
+            The points, shape ``(n_points, 2)``: ``[[x0, y0], [x1, y1], ...]``.
+            Lists and numpy arrays are sorted by x automatically; a
+            :class:`~libscientific.matrix.Matrix` must already be sorted. The x values
+            must be distinct.
 
         Returns
         -------
         None
         """
+        if self.s_interp is not None:
+            mx.del_matrix(self.s_interp)
         self.s_interp = mx.init_matrix()
-        xalloc = False
-        if isinstance(x_y_, mx.Matrix):
-            x_y = x_y_.mtx
-        elif isinstance(x_y_, ctypes.POINTER(mx.MATRIX)):
-            x_y = x_y_
+        if isinstance(x_y_, (mx.Matrix, ctypes.POINTER(mx.MATRIX))):
+            x_y, xalloc = mx.as_c_matrix(x_y_)
         else:
-            x_y = mx.new_matrix(x_y_)
-            xalloc = True
-        cubic_spline_interpolation(x_y, self.s_interp)
-        if xalloc:
-            mx.del_matrix(x_y)
+            # the spline needs the points sorted by x
+            points = x_y_.tolist() if "numpy" in str(type(x_y_)) else list(x_y_)
+            x_y, xalloc = mx.as_c_matrix(sorted(points, key=lambda p: p[0]))
+        try:
+            cubic_spline_interpolation(x_y, self.s_interp)
+        finally:
+            if xalloc:
+                mx.del_matrix(x_y)
 
     def predict(self, x_pred_):
-        """
-        Predict values using the cubic spline interpolation model.
+        """Evaluate the spline at new x values.
 
         Parameters
         ----------
-        x_pred_ : DVector, Matrix or List[float]
-            DVector or list of x values for prediction.
+        x_pred_ : list[float], DVector or ctypes.POINTER(DVECTOR)
+            The x values. Values outside the range of the fitted points are
+            extrapolated with the first/last polynomial and are not reliable.
 
         Returns
         -------
-        List[float]
-            Predicted y values for the given x values.
+        list[float]
+            One y value per x.
+
+        Raises
+        ------
+        RuntimeError
+            If the spline has not been fitted.
         """
+        if self.s_interp is None:
+            raise RuntimeError("the model is not fitted: call fit() first")
         xalloc = False
         if isinstance(x_pred_, vect.DVector):
             x_pred = x_pred_.dvect
         elif isinstance(x_pred_, ctypes.POINTER(vect.DVECTOR)):
             x_pred = x_pred_
         else:
-            x_pred = vect.new_dvector(x_pred_)
+            x_pred = vect.new_dvector(list(x_pred_))
             xalloc = True
 
         ypred_ = vect.init_dvector()

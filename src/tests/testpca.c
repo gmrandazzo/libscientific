@@ -510,6 +510,48 @@ void test12()
   DelMatrix(&m);
 }
 
+
+static void fill_refit_data(matrix *m, double offset, size_t seed)
+{
+  for(size_t i = 0; i < m->row; i++)
+    for(size_t j = 0; j < m->col; j++)
+      m->data[i][j] = offset + sin(0.7*(double)((i+1)*(j+seed)) + (double)seed);
+}
+
+/*
+ * Regression test: fitting the same model twice must give the same result as
+ * a new model. The column averages/scalings of the first fit used to be
+ * reused, so the second dataset was centered with the wrong averages.
+ */
+void test13()
+{
+  printf("Test PCA 13 - Refit a model on new data = ");
+  matrix *a, *b;
+  PCAMODEL *refit, *fresh;
+  NewMatrix(&a, 12, 4); fill_refit_data(a, 0.0, 1);
+  NewMatrix(&b, 12, 4); fill_refit_data(b, 5.0, 2);
+  NewPCAModel(&refit); NewPCAModel(&fresh);
+  PCA(a, 1, 3, refit, NULL);
+  PCA(b, 1, 3, refit, NULL);
+  PCA(b, 1, 3, fresh, NULL);
+  for(size_t j = 0; j < b->col; j++){
+    if(!FLOAT_EQ(refit->colaverage->data[j], fresh->colaverage->data[j], 1e-12) ||
+       !FLOAT_EQ(refit->colscaling->data[j], fresh->colscaling->data[j], 1e-12)){
+      printf("FAIL: column %zu preprocessing differs after refit\n", j);
+      abort();
+    }
+  }
+  for(size_t i = 0; i < b->row; i++)
+    for(size_t k = 0; k < 3; k++)
+      if(!FLOAT_EQ(refit->scores->data[i][k], fresh->scores->data[i][k], 1e-9)){
+        printf("FAIL: score (%zu,%zu) differs after refit\n", i, k);
+        abort();
+      }
+  printf("OK.\n");
+  DelPCAModel(&refit); DelPCAModel(&fresh);
+  DelMatrix(&a); DelMatrix(&b);
+}
+
 int main(void)
 {
   test1();
@@ -524,5 +566,6 @@ int main(void)
   test10();
   test11();
   test12();
+  test13();
   return 0;
 }

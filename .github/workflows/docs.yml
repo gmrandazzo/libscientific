@@ -29,12 +29,28 @@ jobs:
           python -m venv lscivenv
           . lscivenv/bin/activate
           python -m pip install --upgrade --upgrade-strategy eager --no-cache-dir ./src/python_bindings
-      - name: Build documentation
+      - name: Compile and run the C examples
+        run: |
+          for f in docs/c_code_examples/*.c; do
+            echo "== $f"
+            gcc -std=c99 -Wall -o example "$f" -lscientific -lm
+            ./example > /dev/null
+          done
+      - name: Run the Python examples
+        run: |
+          . lscivenv/bin/activate
+          python -m pip install numpy
+          cd "$RUNNER_TEMP"
+          for f in "$GITHUB_WORKSPACE"/docs/python_code_examples/*.py; do
+            echo "== $f"
+            python "$f" > /dev/null
+          done
+      - name: Build documentation (warnings are errors)
         run: |
           . lscivenv/bin/activate
           python -m pip install --exists-action=w --no-cache-dir -r docs/requirements.txt
           cd docs/
-          make html
+          make html SPHINXOPTS="-W --keep-going"
       - name: Deploy documentation
         uses: JamesIves/github-pages-deploy-action@v4
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'

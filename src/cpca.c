@@ -162,6 +162,24 @@ void CPCA(tensor *x, int scaling, size_t npc, CPCAMODEL *model)
   size_t row = 0;
   size_t col = 0;
 
+  /* Reset the results of a previous fit: these members are appended to
+   * (or, for colaverage/colscaling, reused by TensorPreprocess()), so
+   * refitting a model would otherwise mix old and new results. */
+  DelTensor(&model->block_scores);
+  initTensor(&model->block_scores);
+  DelTensor(&model->block_loadings);
+  initTensor(&model->block_loadings);
+  DelDVector(&model->scaling_factor);
+  initDVector(&model->scaling_factor);
+  DelDVector(&model->total_expvar);
+  initDVector(&model->total_expvar);
+  DelDVectorList(&model->block_expvar);
+  initDVectorList(&model->block_expvar);
+  DelDVectorList(&model->colaverage);
+  initDVectorList(&model->colaverage);
+  DelDVectorList(&model->colscaling);
+  initDVectorList(&model->colscaling);
+
   NewTensor(&Eb, x->order);
   for(k = 0; k < Eb->order; k++){
     NewTensorMatrix(Eb, k, x->m[k]->row, x->m[k]->col);

@@ -78,7 +78,8 @@ void *CalcWorker(void *arg_)
           d_a += square(arg->m1->data[i][j]);
           d_b += square(arg->m2->data[k][j]);
         }
-        arg->distances->data[k][i] = n/(sqrt(d_a)*sqrt(d_b));
+        /* cosine distance = 1 - cosine similarity (1 for a zero vector) */
+        arg->distances->data[k][i] = (d_a > 0 && d_b > 0) ? 1.0 - n/(sqrt(d_a)*sqrt(d_b)) : 1.0;
       }
     }
   }
@@ -210,7 +211,8 @@ void CosineDistance_ST(matrix *m1, matrix *m2, matrix *distances)
         d_a += square(m1->data[i][j]);
         d_b += square(m2->data[k][j]);
       }
-      distances->data[k][i] = n/(sqrt(d_a)*sqrt(d_b));
+      /* cosine distance = 1 - cosine similarity (1 for a zero vector) */
+      distances->data[k][i] = (d_a > 0 && d_b > 0) ? 1.0 - n/(sqrt(d_a)*sqrt(d_b)) : 1.0;
     }
   }
 }
@@ -366,7 +368,8 @@ void *CalcCondensedWorker(void *arg_)
           d_b += square(arg->m->data[k][j]);
         }
         size_t indx = square_to_condensed_index(i, k, arg->m->row);
-        arg->distances->data[indx] = n/(sqrt(d_a)*sqrt(d_b));
+        /* cosine distance = 1 - cosine similarity (1 for a zero vector) */
+        arg->distances->data[indx] = (d_a > 0 && d_b > 0) ? 1.0 - n/(sqrt(d_a)*sqrt(d_b)) : 1.0;
       }
     }
   }

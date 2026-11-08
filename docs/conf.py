@@ -43,6 +43,7 @@ sys.path.insert(0, os.path.abspath('../src/python_bindings/'))
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = ['sphinx.ext.githubpages',
+              'sphinx.ext.napoleon',
               'sphinx.ext.duration',
               'sphinx.ext.doctest',
               'sphinx.ext.autodoc',
@@ -115,7 +116,7 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'default'
+html_theme = 'sphinx_rtd_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -242,3 +243,13 @@ man_pages = [
 # -- Options for sphinx_c_autodoc, the extension being documented -----------
 c_autodoc_roots = ['../src']
 set_type_checking_flag = True
+
+# --- Python API rendering ---------------------------------------------------
+# NumPy-style docstrings, type hints shown in the signatures, members in
+# source order (classes first, low-level wrappers after).
+napoleon_numpy_docstring = True
+napoleon_google_docstring = True   # C comments use Google style
+autodoc_member_order = 'bysource'
+autodoc_typehints = 'signature'
+autodoc_typehints_format = 'short'
+autodoc_type_aliases = {'MatrixLike': 'libscientific.matrix.MatrixLike'}

@@ -617,6 +617,36 @@ void test1()
   DelMatrix(&m2);
 }
 
+/*
+ * Regression test: the cosine distance is 1 - cosine similarity
+ * (0 for vectors with the same direction, 1 for orthogonal vectors,
+ * 2 for opposite vectors). It used to return the similarity.
+ */
+void test_cosine_is_a_distance()
+{
+  puts("Test: cosine distance values");
+  matrix *a, *b, *d_st, *d_mt;
+  NewMatrix(&a, 1, 2);
+  a->data[0][0] = 1.0; a->data[0][1] = 0.0;
+  NewMatrix(&b, 3, 2);
+  b->data[0][0] = 2.0;  b->data[0][1] = 0.0;   /* same direction */
+  b->data[1][0] = 0.0;  b->data[1][1] = 3.0;   /* orthogonal */
+  b->data[2][0] = -1.0; b->data[2][1] = 0.0;   /* opposite */
+  initMatrix(&d_st);
+  initMatrix(&d_mt);
+  CosineDistance_ST(a, b, d_st);
+  CalculateDistance(a, b, d_mt, 2, COSINE);
+  const double expected[3] = {0.0, 1.0, 2.0};
+  for(size_t k = 0; k < 3; k++){
+    if(!FLOAT_EQ(d_st->data[k][0], expected[k], 1e-12) || !FLOAT_EQ(d_mt->data[k][0], expected[k], 1e-12)){
+      printf("FAIL: cosine distance %zu = %g / %g, expected %g\n", k, d_st->data[k][0], d_mt->data[k][0], expected[k]);
+      abort();
+    }
+  }
+  puts("Cosine distance values: OK");
+  DelMatrix(&a); DelMatrix(&b); DelMatrix(&d_st); DelMatrix(&d_mt);
+}
+
 int main(void)
 {
   test1();
@@ -632,4 +662,6 @@ int main(void)
   test11();
   test12();
   test13();
+  test_cosine_is_a_distance();
+  return 0;
 }

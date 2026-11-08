@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 
-import libscientific
+import os
 import random
+import tempfile
+
+import libscientific
 
 def mx_to_video(m, decimals=5):
     for row in m:
@@ -43,8 +46,9 @@ ra = model.reconstruct_original_matrix()
 mx_to_video(ra)
 
 # Save model
-model.save("mymodel.sqlite3")
+model_path = os.path.join(tempfile.mkdtemp(), "mymodel.lsm")
+model.save(model_path)
 
 # Load model
-model2 = PCA()
-model2.load("mymodel.sqlite3")
+model2 = libscientific.pca.PCA()
+model2.load(model_path)

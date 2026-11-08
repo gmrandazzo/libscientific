@@ -27,13 +27,21 @@
 #define UPCACONVERGENCE 1e-10
 
 /**
- * UPCA model data structure.
+ * Multi-way (unfolded) Principal Component Analysis model.
  *
- * - **scores** matrix of scores
- * - **loadings** tesnor of loadings
- * - **varexp** vector of explained variance by every component
- * - **colaverage** vector list of column average
- * - **colaverage** vector list of column scaling
+ * The input is a tensor of ``K`` layers (``X->m[k]``), all ``n x f``: ``n``
+ * objects, ``f`` features measured in ``K`` conditions. Create the model with
+ * :c:func:`NewUPCAModel`, fill it with :c:func:`UPCA` and free it with
+ * :c:func:`DelUPCAModel`.
+ *
+ * Members:
+ *   scores: Scores, ``n x npc``.
+ *   loadings: One ``f x K`` loading matrix per component
+ *     (``loadings->m[pc]``), constrained to rank 1 (outer product of a
+ *     feature profile and a layer profile).
+ *   varexp: Percentage of variance explained by each component.
+ *   colaverage: Column means of each layer (one vector of size ``f`` per layer).
+ *   colscaling: Column scalings of each layer.
  */
 typedef struct{
   matrix *scores;
@@ -44,40 +52,59 @@ typedef struct{
 } UPCAMODEL;
 
 /**
- *  Initialize an empty UPCAMODEL
+ * Allocate an empty UPCA model.
+ *
+ * Args:
+ *   m: [out] Address of the pointer that receives the new model.
+ *
+ * Note:
+ *   Release the model with :c:func:`DelUPCAModel`.
  */
 void NewUPCAModel(UPCAMODEL **m);
 
 /**
- * Delete an UPCAMODEL
+ * Free a UPCA model and all its members, and set the pointer to ``NULL``.
+ *
+ * Args:
+ *   m: [in,out] Address of the model pointer created with :c:func:`NewUPCAModel`.
  */
 void DelUPCAModel(UPCAMODEL **m);
 
+/**
+ * Check that all the layers of a tensor have the same shape.
+ *
+ * Args:
+ *   X: [in] The tensor to check.
+ *
+ * Returns:
+ *   0 if every layer has the same number of rows and columns, -1 otherwise.
+ */
 int CheckTensor(tensor *X);
 
 /**
- * Unfolded Principal Component Analysis
+ * Fit a multi-way PCA model (Wold, Geladi and Esbensen, J. Chemometrics 1,
+ * 41-56, 1987).
  *
- * @param [in] X input tensor
- * @param [in] npc number of desired principal components
- * @param [in] autoscaling
- * @param [out] m initialized model using NewUPCAModel(...). The datastructure will be populated with results
- * @param [in] scisignal libscientific signal. Default value is NULL
+ * Every column of every layer is preprocessed, then the components are
+ * extracted one at a time with NIPALS (up to 1000 iterations each). The
+ * loading matrix of each component is constrained to rank 1, so the
+ * components are not exactly orthogonal: with several components the
+ * explained variances can add up to slightly more than 100%. Fitting an
+ * already fitted model replaces its results.
  *
- * Available scalings:
+ * Args:
+ *   X: [in] Layers, all ``n x f`` (see :c:func:`CheckTensor`).
+ *   npc: [in] Number of components; capped to ``f``.
+ *   autoscaling: [in] Column preprocessing: 0 = mean centering only,
+ *     1 = standard deviation, 2 = root mean square, 3 = Pareto, 4 = range,
+ *     5 = level.
+ *   m: [out] Model created with :c:func:`NewUPCAModel`; filled with the
+ *     results (see :c:type:`UPCAMODEL`).
+ *   s: [in] Optional stop signal; ``NULL`` if unused.
  *
- * - 0: No scaling. Only mean centering
- *
- * - 1: Mean centering and STDEV scaling
- *
- * - 2: Mean centering and Root-Mean-Square column scaling
- *
- * - 3: Mean centering and Pareto scaling
- *
- * - 4: Mean centering and min-max range scaling
- *
- * - 5: Mean centering and level scaling
- *
+ * Returns:
+ *   Nothing, the results are written into ``m``. Nothing is computed if the
+ *   layers have different shapes.
  */
 void UPCA(tensor *X,
           size_t npc,
@@ -86,13 +113,19 @@ void UPCA(tensor *X,
           scisignal *s);
 
 /**
- *  Predict scores given an unfolded principal component analysis and a tensor as input.
+ * Project new objects into a UPCA model.
  *
- * @param [in] X input tensor
- * @param [in] model computed UPCAMODEL
- * @param [in] npc number of desired principal components
- * @param [out] pscores predicted scores
+ * Projecting the training tensor reproduces ``model->scores``.
  *
+ * Args:
+ *   X: [in] Layers of the new objects: same number of layers and features as
+ *     the training data, ``m`` rows each.
+ *   model: [in] Model fitted with :c:func:`UPCA`.
+ *   npc: [in] Number of components to use; capped to the model components.
+ *   pscores: [out] Matrix created with ``initMatrix``; resized to ``m x npc``.
+ *
+ * Returns:
+ *   Nothing, the scores are written into ``pscores``.
  */
 void UPCAScorePredictor(tensor *X,
                         UPCAMODEL *model,
@@ -100,17 +133,23 @@ void UPCAScorePredictor(tensor *X,
                         matrix *pscores);
 
 /**
- * @brief Reconstruct the original input tensor from UPCA model using scores and loadings.
+ * Rebuild layers in the original units from scores and loadings.
  *
- * @param [in] t upca scores with size #objects x npc
- * @param [in] p upca loadings with size order x npc x #features
- * @param [in] colaverage input list of column average with size #features
- * @param [in] colscaling input list of column scaling with size #features
- * @param [in] npc desired principal components to use for the tensor reconstruction
- * @param [in] X ouptut reconstructed tensor
+ * Computes ``X[k][i][j] = sum_pc T[i][pc] P[pc][j][k]`` with the first
+ * ``npc`` components, then reverts the scaling and centering of every layer.
  *
- * @par Returns
- *    Nothing.
+ * Args:
+ *   T: [in] Scores, ``n x a`` (``model->scores`` or the output of
+ *     :c:func:`UPCAScorePredictor`).
+ *   P: [in] Loadings (``model->loadings``).
+ *   colaverage: [in] Column means of each layer (``model->colaverage``).
+ *   colscaling: [in] Column scalings of each layer (``model->colscaling``).
+ *   npc: [in] Number of components to use; capped to the available ones.
+ *   X: [out] Tensor created with ``initTensor``; receives one ``n x f``
+ *     matrix per layer.
+ *
+ * Returns:
+ *   Nothing, the result is written into ``X``.
  */
 void UPCAIndVarPredictor(matrix *T,
                          tensor *P,
@@ -120,9 +159,10 @@ void UPCAIndVarPredictor(matrix *T,
                          tensor *X);
 
 /**
- * @brief Print UPCAMODEL to video.
+ * Print the content of a UPCA model to standard output.
  *
- * @param [in] m computed upca model
+ * Args:
+ *   m: [in] The model to print.
  */
 void PrintUPCAModel(UPCAMODEL *m);
 
