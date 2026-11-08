@@ -40,11 +40,14 @@ void NewDVectorList(dvectorlist **lst, size_t size_)
 
 void DelDVectorList(dvectorlist **lst)
 {
+  if(lst == NULL || (*lst) == NULL)
+    return;
   size_t i;
   for(i = 0; i < (*lst)->size; i++)
     DelDVector(&(*lst)->d[i]);
   xfree((*lst)->d);
   xfree((*lst));
+  (*lst) = NULL;
 }
 
 void DVectorListAppend(dvectorlist *lst, dvector *d)

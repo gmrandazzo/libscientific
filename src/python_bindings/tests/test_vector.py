@@ -57,10 +57,9 @@ def test_double_vector():
     # check for something wrong
     assert abs(raw_vector_sum(q) - check_value_4) <= 1e-14
     # delete q vector
-    q_size = q.contents.size
     del_dvector(q)
-    # check for something wrong
-    assert q.contents.size != q_size
+    # the pointer is reset to NULL (reading the freed memory is undefined)
+    assert not q
 
     # check if the double vector d have the value -123
     assert dvector_has_value(d.dvect, -123.0000) == 0
