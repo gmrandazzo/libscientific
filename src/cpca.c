@@ -256,6 +256,12 @@ void CPCA(tensor *x, int scaling, size_t npc, CPCAMODEL *model)
   NewMatrix(&T_T, Eb->order, Eb->m[0]->row);
   NewDVector(&w_T, Eb->order);
 
+  /* NIPALS iteration budget, reset for every component */
+  size_t iter;
+  const size_t max_iter = 1000;
+  double dist;
+  int diverged = 0;
+
   for(pc = 0; pc < npc; pc++){
    /*
     * The super score of CPCA equals the score of PCA, i.e. t_T : t
@@ -294,6 +300,7 @@ void CPCA(tensor *x, int scaling, size_t npc, CPCAMODEL *model)
     dvector **p_b_list = xmalloc(sizeof(dvector*) * Eb->order);
     for(k=0; k<Eb->order; k++) NewDVector(&p_b_list[k], Eb->m[k]->col);
 
+    iter = 0;
     while(1){ /* loop until convergence of t */
       mod_t = DVectorDVectorDotProd(t, t);
       for(k = 0; k < Eb->order; k++){
@@ -343,8 +350,17 @@ void CPCA(tensor *x, int scaling, size_t npc, CPCAMODEL *model)
         }
       }
 
-      /* check for convergence */
-      if(calcConvergence(t_new, t) < CPCACONVERGENCE){
+      /* check for convergence (or iteration budget exhausted: keep the
+       * best estimate so it is stored and deflated) */
+      iter++;
+      dist = calcConvergence(t_new, t);
+      if(_isnan_(dist)){
+        fprintf(stderr, "CPCA Error! The Solver Engine was Unable to Converge! Please Check your data.\n");
+        fflush(stderr);
+        diverged = 1;
+        break;
+      }
+      else if(dist < CPCACONVERGENCE || iter >= max_iter){
         #ifdef DEBUG
         printf("new score calculated\n");
         printf("pc: %zu\n", pc);
@@ -361,6 +377,8 @@ void CPCA(tensor *x, int scaling, size_t npc, CPCAMODEL *model)
     xfree(p_b_list);
 
     DelDVector(&t);
+    if(diverged)
+      break;
   }
 
   #ifdef DEBUG

@@ -161,6 +161,11 @@ void PCA(matrix *mx, int scaling, size_t npc, PCAMODEL* model, scisignal *s)
       printf("## Computing Component %d\n", (int)pc);
       #endif
 
+      /* Each component gets its own iteration budget and convergence
+       * reference: t_old must not carry the previous component's scores. */
+      iter = 0;
+      DVectorSet(t_old, 0.f);
+
       /* Init Step
       * calculate variance for each column for select after the vector with the greater value
       */
@@ -232,7 +237,16 @@ void PCA(matrix *mx, int scaling, size_t npc, PCAMODEL* model, scisignal *s)
         puts("....................");
         #endif
 
-        if(calcConvergence(t, t_old) < PCACONVERGENCE){
+        /* Stop on convergence or when the iteration budget is exhausted.
+         * In the second case keep the current (best) estimate: it must be
+         * stored and deflated from E, otherwise the next component would
+         * recompute the same direction. */
+        iter++;
+        if(calcConvergence(t, t_old) < PCACONVERGENCE || iter >= max_iter){
+          #ifdef DEBUG
+          if(iter >= max_iter)
+            printf("PC %d not converged after %d iterations\n", (int)pc, (int)max_iter);
+          #endif
           /* copy the loadings and score to the output data matrix */
           for(i = 0; i < t->size; i++){
             model->scores->data[i][pc] = t->data[i];
@@ -277,10 +291,6 @@ void PCA(matrix *mx, int scaling, size_t npc, PCAMODEL* model, scisignal *s)
         else{
           DVectorCopy(t, t_old);
           /* End Step 5 */
-        }
-        iter++;
-        if (iter >= max_iter) {
-          break; /* stop if not converging */
         }
       }
       /*Reset all the variables*/

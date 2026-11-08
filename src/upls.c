@@ -252,6 +252,11 @@ void UPLS(tensor* X_,
     PrintTensor(X);
     #endif
 
+    /* NIPALS iteration budget, reset for every component */
+    size_t iter;
+    const size_t max_iter = 1000;
+    double dist;
+
     NewDVector(&t_old, X->m[0]->row); /* the object number is the same for all the matrix in tensor */
     NewDVector(&t_new, X->m[0]->row); /* the object number is the same for all the matrix in tensor */
     NewMatrix(&W, X->m[0]->col, X->order);
@@ -329,6 +334,7 @@ void UPLS(tensor* X_,
       PrintDVector(u);
       #endif
 
+      iter = 0;
       while(1){
         /*step 3: W = u'X/u'u */
         MatrixSet(W, 0.f);
@@ -457,14 +463,17 @@ void UPLS(tensor* X_,
         #endif
 
         /*Check Distance */
-        if(calcConvergence(t_new, t_old) < UPLSCONVERGENCE){
+        iter++;
+        dist = calcConvergence(t_new, t_old);
+        if(!_isnan_(dist) && (dist < UPLSCONVERGENCE || iter >= max_iter)){
+          /* on iteration budget exhaustion keep the best estimate */
           /* storing t score result */
           MatrixAppendCol(m->xscores, t_new);
           TensorAppendMatrix(m->xweights, W);
           setDVectorValue(xeval, pc, DVectorDVectorDotProd(t_new, t_new));
           break;
         }
-        else if(_isnan_(DVectorDVectorDotProd(t_new, t_new))){
+        else if(_isnan_(dist)){
           fprintf(stderr, "UPLS Error! The Solver Engine was Unable to Converge! Please Check your data.\n");
           fflush(stderr);
           goto next_pc;

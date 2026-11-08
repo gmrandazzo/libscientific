@@ -145,6 +145,12 @@ void UPCA(tensor *X_, size_t npc, size_t autoscaling, UPCAMODEL *m, scisignal *s
     PrintTensor(X);
     #endif
 
+    /* NIPALS iteration budget, reset for every component */
+    size_t iter;
+    const size_t max_iter = 1000;
+    double dist;
+    int diverged = 0;
+
     NewDVector(&t_old, X->m[0]->row); /* the object number is the same for all the matrix in tensor */
     NewDVector(&t_new, X->m[0]->row); /* the object number is the same for all the matrix in tensor */
     NewMatrix(&P, X->m[0]->col, X->order); /*Check that all the matrix of tensor have the same row and column */
@@ -209,6 +215,7 @@ void UPCA(tensor *X_, size_t npc, size_t autoscaling, UPCAMODEL *m, scisignal *s
         PrintDVector(t_old);
         #endif
 
+        iter = 0;
         while(1){
           /*step 5*/
           MatrixSet(P, 0.f);
@@ -326,22 +333,28 @@ void UPCA(tensor *X_, size_t npc, size_t autoscaling, UPCAMODEL *m, scisignal *s
           PrintDVector(t_new);
           #endif
 
-          if(calcConvergence(t_new, t_old) < UPCACONVERGENCE){
-            /* storing results */
+          iter++;
+          dist = calcConvergence(t_new, t_old);
+          if(!_isnan_(dist) && (dist < UPCACONVERGENCE || iter >= max_iter)){
+            /* storing results (on iteration budget exhaustion keep the best estimate) */
             MatrixAppendCol(m->scores, t_new);
             TensorAppendMatrix(m->loadings, P);
             setDVectorValue(eval, pc, DVectorDVectorDotProd(t_new, t_new));
             break;
           }
-          else if(_isnan_(DVectorDVectorDotProd(t_new, t_new))){
+          else if(_isnan_(dist)){
             fprintf(stderr, "UPCA Error! The Solver Engine was Unable to Converge! Please Check your data.\n");
             fflush(stderr);
-            /*   abort(); */
+            diverged = 1;
+            break;
           }
           else{
             DVectorCopy(t_new, t_old);
           }
         }
+
+        if(diverged)
+          break; /* do not deflate with NaN scores, stop here */
 
         /* step 8 remove computed component */
         for(k = 0; k < X->order; k++){

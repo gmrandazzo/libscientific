@@ -17,6 +17,7 @@
 
 #include <stdlib.h>
 #include <stdlib.h>
+#include <math.h>
 #include "numeric.h"
 #include "pca.h"
 #include "pca.h"
@@ -403,6 +404,112 @@ void test1()
   DelMatrix(&m);
 }
 
+/*
+ * Regression test: every component must get its own NIPALS iteration
+ * budget (max_iter), and a component that exhausts it must still be
+ * stored and deflated.
+ *
+ * X = C * diag(s) * R where C has orthogonal zero-mean cosine columns and
+ * R is a Householder reflection, so the exact PCA is known:
+ * loadings = rows of R, explained variance proportional to s^2.
+ * s_k = 0.99^k gives small gaps between consecutive eigenvalues: each
+ * component needs ~20-200 NIPALS iterations, well within the per-component
+ * budget, but more than 1000 in total. When the iteration counter was not
+ * reset between components (bug), from PC12 on every component ran a single
+ * iteration, was never stored and came back as zero scores/loadings
+ * with 0% explained variance.
+ */
+void test12()
+{
+  printf("Test PCA 12 - Per-component NIPALS iteration budget  = ");
+  enum { NROW = 128, NCOL = 20 };
+  const double pi = 3.14159265358979323846;
+  double sv[NCOL], R[NCOL][NCOL];
+  double vv = 0.0, ss = 0.0, totvar = 0.0;
+  size_t i, j, k, a, b;
+  matrix *m, *rm;
+  PCAMODEL *model;
+
+  for(k = 0; k < NCOL; k++){
+    sv[k] = pow(0.99, (double)k);
+    ss += sv[k]*sv[k];
+  }
+
+  /* Householder reflection R = I - 2 v v' / v'v with v = (1, 2, ..., NCOL) */
+  for(i = 0; i < NCOL; i++)
+    vv += (double)((i+1)*(i+1));
+  for(i = 0; i < NCOL; i++)
+    for(j = 0; j < NCOL; j++)
+      R[i][j] = (i == j ? 1.0 : 0.0) - 2.0*(double)((i+1)*(j+1))/vv;
+
+  NewMatrix(&m, NROW, NCOL);
+  for(i = 0; i < NROW; i++){
+    for(j = 0; j < NCOL; j++){
+      double x = 0.0;
+      for(k = 0; k < NCOL; k++)
+        x += cos(2.0*pi*(double)((k+1)*i)/(double)NROW) * sv[k] * R[k][j];
+      m->data[i][j] = x;
+    }
+  }
+
+  NewPCAModel(&model);
+  PCA(m, 0, NCOL, model, NULL);
+
+  for(a = 0; a < NCOL; a++){
+    /* 1. explained variance of every component matches the exact one */
+    double expected = sv[a]*sv[a]/ss*100.0;
+    if(!FLOAT_EQ(model->varexp->data[a], expected, 1e-3)){
+      printf("FAIL: PC%zu explains %g%% of variance, expected %g%%\n",
+             a+1, model->varexp->data[a], expected);
+      abort();
+    }
+    totvar += model->varexp->data[a];
+
+    /* 2. loadings are orthonormal */
+    for(b = a; b < NCOL; b++){
+      double d = 0.0;
+      for(j = 0; j < NCOL; j++)
+        d += model->loadings->data[j][a]*model->loadings->data[j][b];
+      if(!FLOAT_EQ(d, (a == b ? 1.0 : 0.0), 1e-6)){
+        printf("FAIL: loadings PC%zu.PC%zu = %g\n", a+1, b+1, d);
+        abort();
+      }
+    }
+
+    /* 3. loadings match the exact solution (up to the sign) */
+    double c = 0.0;
+    for(j = 0; j < NCOL; j++)
+      c += model->loadings->data[j][a]*R[a][j];
+    if(!FLOAT_EQ(fabs(c), 1.0, 1e-4)){
+      printf("FAIL: PC%zu |cos| with exact loading = %g\n", a+1, fabs(c));
+      abort();
+    }
+  }
+
+  /* 4. all the components together explain the whole matrix */
+  if(!FLOAT_EQ(totvar, 100.0, 1e-3)){
+    printf("FAIL: total explained variance %g%%\n", totvar);
+    abort();
+  }
+
+  /* 5. scores x loadings' reconstruct the input */
+  initMatrix(&rm);
+  PCAIndVarPredictor(model->scores, model->loadings, model->colaverage, model->colscaling, NCOL, rm);
+  for(i = 0; i < NROW; i++){
+    for(j = 0; j < NCOL; j++){
+      if(!FLOAT_EQ(m->data[i][j], rm->data[i][j], 1e-6)){
+        printf("FAIL: reconstruction (%zu,%zu) %g != %g\n", i, j, rm->data[i][j], m->data[i][j]);
+        abort();
+      }
+    }
+  }
+
+  printf("OK.\n");
+  DelMatrix(&rm);
+  DelPCAModel(&model);
+  DelMatrix(&m);
+}
+
 int main(void)
 {
   test1();
@@ -416,5 +523,6 @@ int main(void)
   test9();
   test10();
   test11();
+  test12();
   return 0;
 }
