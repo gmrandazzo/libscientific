@@ -14,7 +14,7 @@ the eigenvector/eigenvalue transformation from a third-party library, the Lapack
 It requires two dependencies: CMake and a c/fortran compiler
 and supports Windows, Linux, macOS, and embedded systems.
 Python bindings are available using ctypes to avoid dependencies.
-The library is distributed under GPLv3 license.
+The library is distributed under the GNU Affero General Public License v3.0 or later (AGPL-3.0-or-later).
 
 The project has been published in the Journal of Open Source Software (JOSS):
 `Randazzo, (2023). libscientific: A C framework for multivariate and statistical analysis. Journal of Open Source Software, 8(90), 5420 <https://doi.org/10.21105/joss.05420>`_.

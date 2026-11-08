@@ -27,9 +27,10 @@ More information at
 License
 =======
 
-libscientific and libscientific python binding is distributed under GPLv3 license.
+libscientific and libscientific python binding are distributed under the
+GNU Affero General Public License v3.0 or later (AGPL-3.0-or-later).
 
-To know more in details how the licens work please
-go to "http://www.gnu.org/licenses/gpl-3.0.en.html"
+To know more in details how the license works please
+go to "https://www.gnu.org/licenses/agpl-3.0.html"
 
 libscientific is currently mantained by Giuseppe Marco Randazzo.

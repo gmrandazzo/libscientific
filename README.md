@@ -1,7 +1,7 @@
 # libscientific
 
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.05420/status.svg)](https://doi.org/10.21105/joss.05420)
-[![Licence: GPL v3](https://img.shields.io/github/license/gmrandazzo/libscientific)](https://github.com/gmrandazzo/libscientific/blob/master/LICENSE)
+[![Licence: AGPL v3](https://img.shields.io/github/license/gmrandazzo/libscientific)](https://github.com/gmrandazzo/libscientific/blob/master/LICENSE)
 [![Code Quality & Linting](https://github.com/gmrandazzo/libscientific/actions/workflows/lint.yml/badge.svg)](https://github.com/gmrandazzo/libscientific/actions/workflows/lint.yml)
 [![Pytest](https://github.com/gmrandazzo/libscientific/actions/workflows/pytest.yml/badge.svg)](https://github.com/gmrandazzo/libscientific/actions/workflows/pytest.yml)
 [![Coverage](https://sonarqube.gmrandazzo.com/api/project_badges/measure?project=libscientific&metric=coverage&token=sqb_f37b38679864cfa4294f7efa1f2509a46e00cee2)](https://sonarqube.gmrandazzo.com/dashboard?id=libscientific)
@@ -136,4 +136,4 @@ If you use `libscientific` in your research, please cite the following paper:
 6. R.D. Clark, P.C. Fox, *Statistical variation in progressive scrambling*, J Comput Aided Mol Des, 18, 2004.
 7. J. A. Westerhuis et al., *Analysis of multiblock and hierarchical PCA and PLS models*, Journal of Chemometrics, 12, 1998.
 ## License
-`libscientific` is distributed under the **GPLv3 License**. See the `LICENSE` file or [gnu.org/licenses/gpl-3.0.html](http://www.gnu.org/licenses/gpl-3.0.en.html) for details.
+`libscientific` is distributed under the **GNU Affero General Public License v3.0 or later (AGPL-3.0-or-later)**. See the `LICENSE` file or [gnu.org/licenses/agpl-3.0.html](https://www.gnu.org/licenses/agpl-3.0.html) for details.
