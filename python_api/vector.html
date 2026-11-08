@@ -1,0 +1,1062 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vectors &mdash; libscientific 1.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=b51e6972"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Tensor" href="tensor.html" />
+    <link rel="prev" title="Matrix" href="matrix.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            libscientific
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Overview.html">What is libscientific?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html">Getting started in C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#vector-operations">Vector operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#matrix-operations">Matrix operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#tensor-operations">Tensor operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#multivariate-analysis-algorithms">Multivariate analysis algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#model-persistence-and-serialization-lsm-and-lsb">Model persistence and serialization (.lsm and .lsb)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html">Getting started in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#vector-operations">Vector operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#matrix-operations">Matrix operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#tensor-operations">Tensor operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#multivariate-analysis-algorithms">Multivariate analysis algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#model-persistence-and-serialization-lsm-and-lsb">Model persistence and serialization (.lsm and .lsb)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Licensing.html">Licensing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../C-API.html">C API Reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../Python-API.html">Python API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../Python-API.html#models">Models</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../Python-API.html#data-structures-and-utilities">Data structures and utilities</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="matrix.html">Matrix</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Vectors</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#libscientific.vector.DVector"><code class="docutils literal notranslate"><span class="pre">DVector</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#libscientific.vector.UIVector"><code class="docutils literal notranslate"><span class="pre">UIVector</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#functions">Functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#low-level-api">Low-level API</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="tensor.html">Tensor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="vectlist.html">List of vectors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="misc.html">Missing values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="info.html">Library information</a></li>
+<li class="toctree-l3"><a class="reference internal" href="loadlibrary.html">Library loading</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">libscientific</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../Python-API.html">Python API Reference</a></li>
+      <li class="breadcrumb-item active">Vectors</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/python_api/vector.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-libscientific.vector">
+<span id="vectors"></span><h1>Vectors<a class="headerlink" href="#module-libscientific.vector" title="Link to this heading"></a></h1>
+<p>Vectors stored in the C library.</p>
+<ul>
+<li><p><a class="reference internal" href="#libscientific.vector.DVector" title="libscientific.vector.DVector"><code class="xref py py-class docutils literal notranslate"><span class="pre">DVector</span></code></a> (double values) and <a class="reference internal" href="#libscientific.vector.UIVector" title="libscientific.vector.UIVector"><code class="xref py py-class docutils literal notranslate"><span class="pre">UIVector</span></code></a> (unsigned
+integers): Pythonic vectors.</p></li>
+<li><p>Low-level functions for double (<code class="docutils literal notranslate"><span class="pre">dvector</span></code>), unsigned int (<code class="docutils literal notranslate"><span class="pre">uivector</span></code>)
+and int (<code class="docutils literal notranslate"><span class="pre">ivector</span></code>) C vectors.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">libscientific.vector</span><span class="w"> </span><span class="kn">import</span> <span class="n">DVector</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span> <span class="o">=</span> <span class="n">DVector</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">),</span> <span class="n">v</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="go">(3, 3.0)</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<dl class="py class">
+<dt class="sig sig-object py" id="libscientific.vector.DVector">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">DVector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dvect_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.DVector" title="Link to this definition"></a></dt>
+<dd><p>A double vector stored in the C library, with a Pythonic interface.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dvect</strong> (<em>list</em><em>[</em><em>float</em><em>]</em><em>, </em><a class="reference internal" href="#libscientific.vector.DVector" title="libscientific.vector.DVector"><em>DVector</em></a><em> or </em><em>None</em>) – Initial values (copied), or <code class="docutils literal notranslate"><span class="pre">None</span></code> for an empty vector.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.vector.DVector.dvect">
+<span class="sig-name descname"><span class="pre">dvect</span></span><a class="headerlink" href="#libscientific.vector.DVector.dvect" title="Link to this definition"></a></dt>
+<dd><p>The underlying C vector, owned by this object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ctypes.POINTER(<a class="reference internal" href="#libscientific.vector.DVECTOR" title="libscientific.vector.DVECTOR">DVECTOR</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p><code class="docutils literal notranslate"><span class="pre">v[i]</span></code> reads/writes one element (negative indexes count from the end and
+out-of-range indexes raise <code class="docutils literal notranslate"><span class="pre">IndexError</span></code>), <code class="docutils literal notranslate"><span class="pre">len(v)</span></code> is the size and
+iterating yields the values.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">v</span> <span class="o">=</span> <span class="n">DVector</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mf">4.0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">),</span> <span class="n">v</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="go">(4, 4.0)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="go">[1.0, 2.0, 3.0, 4.0]</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.vector.DVector.__len__">
+<span class="sig-name descname"><span class="pre">__len__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.DVector.__len__" title="Link to this definition"></a></dt>
+<dd><p>Return the number of elements.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.vector.DVector.__getitem__">
+<span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.DVector.__getitem__" title="Link to this definition"></a></dt>
+<dd><p>Return the element at an index (<code class="docutils literal notranslate"><span class="pre">v[i]</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>IndexError</strong> – If the index is out of range.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.vector.DVector.__setitem__">
+<span class="sig-name descname"><span class="pre">__setitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.DVector.__setitem__" title="Link to this definition"></a></dt>
+<dd><p>Set the element at an index (<code class="docutils literal notranslate"><span class="pre">v[i]</span> <span class="pre">=</span> <span class="pre">value</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>IndexError</strong> – If the index is out of range.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.vector.DVector.size">
+<span class="sig-name descname"><span class="pre">size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.DVector.size" title="Link to this definition"></a></dt>
+<dd><p>Return the number of elements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.vector.DVector.data_ptr">
+<span class="sig-name descname"><span class="pre">data_ptr</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.DVector.data_ptr" title="Link to this definition"></a></dt>
+<dd><p>Return the C data pointer (low-level access).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">data_ptr()[i]</span></code> is element <code class="docutils literal notranslate"><span class="pre">i</span></code>; valid while the vector exists.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>ctypes pointer</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.vector.DVector.append">
+<span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.DVector.append" title="Link to this definition"></a></dt>
+<dd><p>Append a value at the end.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>float</em>) – The value to append.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.vector.DVector.extend">
+<span class="sig-name descname"><span class="pre">extend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v_lst</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.DVector.extend" title="Link to this definition"></a></dt>
+<dd><p>Append all the values of a list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>v_lst</strong> (<em>list</em><em>[</em><em>float</em><em>]</em>) – The values to append.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.vector.DVector.tolist">
+<span class="sig-name descname"><span class="pre">tolist</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.DVector.tolist" title="Link to this definition"></a></dt>
+<dd><p>Return the values as a Python list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.vector.DVector.fromlist">
+<span class="sig-name descname"><span class="pre">fromlist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vlst_</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.DVector.fromlist" title="Link to this definition"></a></dt>
+<dd><p>Replace the content with the values of a list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>vlst</strong> (<em>list</em><em>[</em><em>float</em><em>]</em>) – The new values.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.vector.DVector.debug">
+<span class="sig-name descname"><span class="pre">debug</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.DVector.debug" title="Link to this definition"></a></dt>
+<dd><p>Print the vector to standard output.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="libscientific.vector.UIVector">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">UIVector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uivect_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.UIVector" title="Link to this definition"></a></dt>
+<dd><p>A unsigned int vector stored in the C library, with a Pythonic interface.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>uivect</strong> (<em>list</em><em>[</em><em>int</em><em>]</em><em>, </em><a class="reference internal" href="#libscientific.vector.UIVector" title="libscientific.vector.UIVector"><em>UIVector</em></a><em> or </em><em>None</em>) – Initial values (copied), or <code class="docutils literal notranslate"><span class="pre">None</span></code> for an empty vector.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.vector.UIVector.uivect">
+<span class="sig-name descname"><span class="pre">uivect</span></span><a class="headerlink" href="#libscientific.vector.UIVector.uivect" title="Link to this definition"></a></dt>
+<dd><p>The underlying C vector, owned by this object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ctypes.POINTER(<a class="reference internal" href="#libscientific.vector.UIVECTOR" title="libscientific.vector.UIVECTOR">UIVECTOR</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p><code class="docutils literal notranslate"><span class="pre">v[i]</span></code> reads/writes one element (negative indexes count from the end and
+out-of-range indexes raise <code class="docutils literal notranslate"><span class="pre">IndexError</span></code>), <code class="docutils literal notranslate"><span class="pre">len(v)</span></code> is the size and
+iterating yields the values.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">v</span> <span class="o">=</span> <span class="n">UIVector</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">),</span> <span class="n">v</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="go">(4, 4)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="go">[1, 2, 3, 4]</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.vector.UIVector.__len__">
+<span class="sig-name descname"><span class="pre">__len__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.UIVector.__len__" title="Link to this definition"></a></dt>
+<dd><p>Return the number of elements.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.vector.UIVector.__getitem__">
+<span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.UIVector.__getitem__" title="Link to this definition"></a></dt>
+<dd><p>Return the element at an index (<code class="docutils literal notranslate"><span class="pre">v[i]</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>IndexError</strong> – If the index is out of range.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.vector.UIVector.__setitem__">
+<span class="sig-name descname"><span class="pre">__setitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.UIVector.__setitem__" title="Link to this definition"></a></dt>
+<dd><p>Set the element at an index (<code class="docutils literal notranslate"><span class="pre">v[i]</span> <span class="pre">=</span> <span class="pre">value</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>IndexError</strong> – If the index is out of range.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.vector.UIVector.size">
+<span class="sig-name descname"><span class="pre">size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.UIVector.size" title="Link to this definition"></a></dt>
+<dd><p>Return the number of elements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.vector.UIVector.data_ptr">
+<span class="sig-name descname"><span class="pre">data_ptr</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.UIVector.data_ptr" title="Link to this definition"></a></dt>
+<dd><p>Return the C data pointer (low-level access).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">data_ptr()[i]</span></code> is element <code class="docutils literal notranslate"><span class="pre">i</span></code>; valid while the vector exists.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>ctypes pointer</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.vector.UIVector.append">
+<span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.UIVector.append" title="Link to this definition"></a></dt>
+<dd><p>Append a value at the end.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>int</em>) – The value to append.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.vector.UIVector.extend">
+<span class="sig-name descname"><span class="pre">extend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v_lst</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.UIVector.extend" title="Link to this definition"></a></dt>
+<dd><p>Append all the values of a list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>v_lst</strong> (<em>list</em><em>[</em><em>int</em><em>]</em>) – The values to append.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.vector.UIVector.tolist">
+<span class="sig-name descname"><span class="pre">tolist</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.UIVector.tolist" title="Link to this definition"></a></dt>
+<dd><p>Return the values as a Python list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.vector.UIVector.fromlist">
+<span class="sig-name descname"><span class="pre">fromlist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vlst_</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.UIVector.fromlist" title="Link to this definition"></a></dt>
+<dd><p>Replace the content with the values of a list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>vlst</strong> (<em>list</em><em>[</em><em>int</em><em>]</em>) – The new values.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.vector.UIVector.debug">
+<span class="sig-name descname"><span class="pre">debug</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.UIVector.debug" title="Link to this definition"></a></dt>
+<dd><p>Print the vector to standard output.</p>
+</dd></dl>
+
+</dd></dl>
+
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.xvector_tolist">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">xvector_tolist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dvect</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.vector.xvector_tolist" title="Link to this definition"></a></dt>
+<dd><p>Convert any C vector (double, unsigned int or int) into a Python list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dvect</strong> (<em>POINTER</em><em>(</em><a class="reference internal" href="#libscientific.vector.DVECTOR" title="libscientific.vector.DVECTOR"><em>DVECTOR</em></a><em>)</em><em>, </em><em>POINTER</em><em>(</em><a class="reference internal" href="#libscientific.vector.UIVECTOR" title="libscientific.vector.UIVECTOR"><em>UIVECTOR</em></a><em>) or </em><em>POINTER</em><em>(</em><a class="reference internal" href="#libscientific.vector.IVECTOR" title="libscientific.vector.IVECTOR"><em>IVECTOR</em></a><em>)</em>) – The vector (a pointer or the structure itself).</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.init_dvector">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">init_dvector</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.init_dvector" title="Link to this definition"></a></dt>
+<dd><p>Allocate an empty (size 0) C double vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A new vector; release it with <a class="reference internal" href="#libscientific.vector.del_dvector" title="libscientific.vector.del_dvector"><code class="xref py py-func docutils literal notranslate"><span class="pre">del_dvector()</span></code></a>.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>ctypes.POINTER(<a class="reference internal" href="#libscientific.vector.DVECTOR" title="libscientific.vector.DVECTOR">DVECTOR</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.new_dvector">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">new_dvector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v_lst</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.new_dvector" title="Link to this definition"></a></dt>
+<dd><p>Create a C double vector from a list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>v_lst</strong> (<em>list</em><em>[</em><em>float</em><em>]</em>) – The values. Non-numeric values (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;NA&quot;</span></code>) are stored as the missing
+value (see <a class="reference internal" href="misc.html#libscientific.misc.missing_value" title="libscientific.misc.missing_value"><code class="xref py py-func docutils literal notranslate"><span class="pre">libscientific.misc.missing_value()</span></code></a>).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new vector; release it with <a class="reference internal" href="#libscientific.vector.del_dvector" title="libscientific.vector.del_dvector"><code class="xref py py-func docutils literal notranslate"><span class="pre">del_dvector()</span></code></a>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ctypes.POINTER(<a class="reference internal" href="#libscientific.vector.DVECTOR" title="libscientific.vector.DVECTOR">DVECTOR</a>)</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">v</span> <span class="o">=</span> <span class="n">new_dvector</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dvector_tolist</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+<span class="go">[1.0, 2.0]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">del_dvector</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.del_dvector">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">del_dvector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dvect</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.del_dvector" title="Link to this definition"></a></dt>
+<dd><p>Free a C double vector created by this module.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dvect</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.vector.DVECTOR" title="libscientific.vector.DVECTOR"><em>DVECTOR</em></a><em>)</em>) – The vector to release. It must not be used afterwards.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.dvector_resize">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">dvector_resize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dvect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.dvector_resize" title="Link to this definition"></a></dt>
+<dd><p>Resize a C double vector; all its values are set to zero.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dvect</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.vector.DVECTOR" title="libscientific.vector.DVECTOR"><em>DVECTOR</em></a><em>)</em>) – The vector.</p></li>
+<li><p><strong>size</strong> (<em>int</em>) – The new size.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.print_dvector">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">print_dvector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dvect</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.print_dvector" title="Link to this definition"></a></dt>
+<dd><p>Print a C double vector to standard output.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dvect</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.vector.DVECTOR" title="libscientific.vector.DVECTOR"><em>DVECTOR</em></a><em>)</em>) – The vector to print.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.dvector_has_value">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">dvector_has_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dvect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.dvector_has_value" title="Link to this definition"></a></dt>
+<dd><p>Check whether a C double vector contains a value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dvect</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.vector.DVECTOR" title="libscientific.vector.DVECTOR"><em>DVECTOR</em></a><em>)</em>) – The vector to search.</p></li>
+<li><p><strong>val</strong> (<em>float</em>) – The value to look for (compared within the library tolerance <code class="docutils literal notranslate"><span class="pre">EPSILON</span></code>).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>0 if the value is present, 1 if it is not</strong> (C library convention).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">v</span> <span class="o">=</span> <span class="n">new_dvector</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dvector_has_value</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span> <span class="n">dvector_has_value</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">)</span>
+<span class="go">(0, 1)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.dvector_set">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">dvector_set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dvect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.dvector_set" title="Link to this definition"></a></dt>
+<dd><p>Set every element of a C double vector to the same value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dvect</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.vector.DVECTOR" title="libscientific.vector.DVECTOR"><em>DVECTOR</em></a><em>)</em>) – The vector, modified in place.</p></li>
+<li><p><strong>val</strong> (<em>float</em>) – The value to assign.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.set_dvector_value">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">set_dvector_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dvect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.set_dvector_value" title="Link to this definition"></a></dt>
+<dd><p>Set one element of a C double vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dvect</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.vector.DVECTOR" title="libscientific.vector.DVECTOR"><em>DVECTOR</em></a><em>)</em>) – The vector, modified in place.</p></li>
+<li><p><strong>indx</strong> (<em>int</em>) – Index of the element (0-based, smaller than the size).</p></li>
+<li><p><strong>val</strong> (<em>float</em>) – The new value.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.get_dvector_value">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">get_dvector_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dvect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.get_dvector_value" title="Link to this definition"></a></dt>
+<dd><p>Return one element of a C double vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dvect</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.vector.DVECTOR" title="libscientific.vector.DVECTOR"><em>DVECTOR</em></a><em>)</em>) – The vector.</p></li>
+<li><p><strong>indx</strong> (<em>int</em>) – Index of the element (0-based, smaller than the size).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.dvector_append">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">dvector_append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dvect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.dvector_append" title="Link to this definition"></a></dt>
+<dd><p>Append a value at the end of a C double vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dvect</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.vector.DVECTOR" title="libscientific.vector.DVECTOR"><em>DVECTOR</em></a><em>)</em>) – The vector; its size grows by one.</p></li>
+<li><p><strong>val</strong> (<em>float</em>) – The value to append.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.dvector_tolist">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">dvector_tolist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dvect</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.vector.dvector_tolist" title="Link to this definition"></a></dt>
+<dd><p>Convert a C double vector into a Python list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dvect</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.vector.DVECTOR" title="libscientific.vector.DVECTOR"><em>DVECTOR</em></a><em>)</em>) – The vector.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.dvector_remove_at">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">dvector_remove_at</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dvect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.dvector_remove_at" title="Link to this definition"></a></dt>
+<dd><p>Remove the element at an index; the following elements shift left.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dvect</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.vector.DVECTOR" title="libscientific.vector.DVECTOR"><em>DVECTOR</em></a><em>)</em>) – The vector; its size decreases by one.</p></li>
+<li><p><strong>indx</strong> (<em>int</em>) – Index of the element to remove.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.dvector_copy">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">dvector_copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dvect_src</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.dvector_copy" title="Link to this definition"></a></dt>
+<dd><p>Return an independent copy of a C double vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dvect_src</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.vector.DVECTOR" title="libscientific.vector.DVECTOR"><em>DVECTOR</em></a><em>)</em>) – The vector to copy.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new vector; release it with <a class="reference internal" href="#libscientific.vector.del_dvector" title="libscientific.vector.del_dvector"><code class="xref py py-func docutils literal notranslate"><span class="pre">del_dvector()</span></code></a>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ctypes.POINTER(<a class="reference internal" href="#libscientific.vector.DVECTOR" title="libscientific.vector.DVECTOR">DVECTOR</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.init_uivector">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">init_uivector</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.init_uivector" title="Link to this definition"></a></dt>
+<dd><p>Allocate an empty (size 0) C unsigned int vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A new vector; release it with <a class="reference internal" href="#libscientific.vector.del_uivector" title="libscientific.vector.del_uivector"><code class="xref py py-func docutils literal notranslate"><span class="pre">del_uivector()</span></code></a>.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>ctypes.POINTER(<a class="reference internal" href="#libscientific.vector.UIVECTOR" title="libscientific.vector.UIVECTOR">UIVECTOR</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.new_uivector">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">new_uivector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v_lst</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.new_uivector" title="Link to this definition"></a></dt>
+<dd><p>Create a C unsigned int vector from a list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>v_lst</strong> (<em>list</em><em>[</em><em>int</em><em>]</em>) – The values. They must be non-negative.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new vector; release it with <a class="reference internal" href="#libscientific.vector.del_uivector" title="libscientific.vector.del_uivector"><code class="xref py py-func docutils literal notranslate"><span class="pre">del_uivector()</span></code></a>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ctypes.POINTER(<a class="reference internal" href="#libscientific.vector.UIVECTOR" title="libscientific.vector.UIVECTOR">UIVECTOR</a>)</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">v</span> <span class="o">=</span> <span class="n">new_uivector</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">uivector_tolist</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+<span class="go">[1, 2]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">del_uivector</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.del_uivector">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">del_uivector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uivect</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.del_uivector" title="Link to this definition"></a></dt>
+<dd><p>Free a C unsigned int vector created by this module.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>uivect</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.vector.UIVECTOR" title="libscientific.vector.UIVECTOR"><em>UIVECTOR</em></a><em>)</em>) – The vector to release. It must not be used afterwards.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.uivector_resize">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">uivector_resize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uivect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.uivector_resize" title="Link to this definition"></a></dt>
+<dd><p>Resize a C unsigned int vector; all its values are set to zero.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>uivect</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.vector.UIVECTOR" title="libscientific.vector.UIVECTOR"><em>UIVECTOR</em></a><em>)</em>) – The vector.</p></li>
+<li><p><strong>size</strong> (<em>int</em>) – The new size.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.print_uivector">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">print_uivector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uivect</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.print_uivector" title="Link to this definition"></a></dt>
+<dd><p>Print a C unsigned int vector to standard output.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>uivect</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.vector.UIVECTOR" title="libscientific.vector.UIVECTOR"><em>UIVECTOR</em></a><em>)</em>) – The vector to print.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.set_uivector_value">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">set_uivector_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uivect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.set_uivector_value" title="Link to this definition"></a></dt>
+<dd><p>Set one element of a C unsigned int vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>uivect</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.vector.UIVECTOR" title="libscientific.vector.UIVECTOR"><em>UIVECTOR</em></a><em>)</em>) – The vector, modified in place.</p></li>
+<li><p><strong>indx</strong> (<em>int</em>) – Index of the element (0-based, smaller than the size).</p></li>
+<li><p><strong>val</strong> (<em>int</em>) – The new value.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.get_uivector_value">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">get_uivector_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uivect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.get_uivector_value" title="Link to this definition"></a></dt>
+<dd><p>Return one element of a C unsigned int vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>uivect</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.vector.UIVECTOR" title="libscientific.vector.UIVECTOR"><em>UIVECTOR</em></a><em>)</em>) – The vector.</p></li>
+<li><p><strong>indx</strong> (<em>int</em>) – Index of the element (0-based, smaller than the size).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.uivector_append">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">uivector_append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uivect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.uivector_append" title="Link to this definition"></a></dt>
+<dd><p>Append a value at the end of a C unsigned int vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>uivect</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.vector.UIVECTOR" title="libscientific.vector.UIVECTOR"><em>UIVECTOR</em></a><em>)</em>) – The vector; its size grows by one.</p></li>
+<li><p><strong>val</strong> (<em>int</em>) – The value to append.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.uivector_tolist">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">uivector_tolist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uivect</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.vector.uivector_tolist" title="Link to this definition"></a></dt>
+<dd><p>Convert a C unsigned int vector into a Python list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>uivect</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.vector.UIVECTOR" title="libscientific.vector.UIVECTOR"><em>UIVECTOR</em></a><em>)</em>) – The vector.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.uivector_remove_at">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">uivector_remove_at</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uivect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.uivector_remove_at" title="Link to this definition"></a></dt>
+<dd><p>Remove the element at an index; the following elements shift left.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>uivect</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.vector.UIVECTOR" title="libscientific.vector.UIVECTOR"><em>UIVECTOR</em></a><em>)</em>) – The vector; its size decreases by one.</p></li>
+<li><p><strong>indx</strong> (<em>int</em>) – Index of the element to remove.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.uivector_copy">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">uivector_copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uivect_src</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.uivector_copy" title="Link to this definition"></a></dt>
+<dd><p>Return an independent copy of a C unsigned int vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>uivect_src</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.vector.UIVECTOR" title="libscientific.vector.UIVECTOR"><em>UIVECTOR</em></a><em>)</em>) – The vector to copy.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new vector; release it with <a class="reference internal" href="#libscientific.vector.del_uivector" title="libscientific.vector.del_uivector"><code class="xref py py-func docutils literal notranslate"><span class="pre">del_uivector()</span></code></a>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ctypes.POINTER(<a class="reference internal" href="#libscientific.vector.UIVECTOR" title="libscientific.vector.UIVECTOR">UIVECTOR</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.init_ivector">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">init_ivector</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.init_ivector" title="Link to this definition"></a></dt>
+<dd><p>Allocate an empty (size 0) C int vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A new vector; release it with <a class="reference internal" href="#libscientific.vector.del_ivector" title="libscientific.vector.del_ivector"><code class="xref py py-func docutils literal notranslate"><span class="pre">del_ivector()</span></code></a>.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>ctypes.POINTER(<a class="reference internal" href="#libscientific.vector.IVECTOR" title="libscientific.vector.IVECTOR">IVECTOR</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.new_ivector">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">new_ivector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v_lst</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.new_ivector" title="Link to this definition"></a></dt>
+<dd><p>Create a C int vector from a list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>v_lst</strong> (<em>list</em><em>[</em><em>int</em><em>]</em>) – The values.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new vector; release it with <a class="reference internal" href="#libscientific.vector.del_ivector" title="libscientific.vector.del_ivector"><code class="xref py py-func docutils literal notranslate"><span class="pre">del_ivector()</span></code></a>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ctypes.POINTER(<a class="reference internal" href="#libscientific.vector.IVECTOR" title="libscientific.vector.IVECTOR">IVECTOR</a>)</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">v</span> <span class="o">=</span> <span class="n">new_ivector</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ivector_tolist</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+<span class="go">[-1, 2]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">del_ivector</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.del_ivector">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">del_ivector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ivect</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.del_ivector" title="Link to this definition"></a></dt>
+<dd><p>Free a C int vector created by this module.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ivect</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.vector.IVECTOR" title="libscientific.vector.IVECTOR"><em>IVECTOR</em></a><em>)</em>) – The vector to release. It must not be used afterwards.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.set_ivector_value">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">set_ivector_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ivect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.set_ivector_value" title="Link to this definition"></a></dt>
+<dd><p>Set one element of a C int vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ivect</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.vector.IVECTOR" title="libscientific.vector.IVECTOR"><em>IVECTOR</em></a><em>)</em>) – The vector, modified in place.</p></li>
+<li><p><strong>indx</strong> (<em>int</em>) – Index of the element (0-based, smaller than the size).</p></li>
+<li><p><strong>val</strong> (<em>int</em>) – The new value.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.get_ivector_value">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">get_ivector_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ivect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.get_ivector_value" title="Link to this definition"></a></dt>
+<dd><p>Return one element of a C int vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ivect</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.vector.IVECTOR" title="libscientific.vector.IVECTOR"><em>IVECTOR</em></a><em>)</em>) – The vector.</p></li>
+<li><p><strong>indx</strong> (<em>int</em>) – Index of the element (0-based, smaller than the size).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.ivector_tolist">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">ivector_tolist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ivect</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.vector.ivector_tolist" title="Link to this definition"></a></dt>
+<dd><p>Convert a C int vector into a Python list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ivect</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.vector.IVECTOR" title="libscientific.vector.IVECTOR"><em>IVECTOR</em></a><em>)</em>) – The vector.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.ivector_append">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">ivector_append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ivect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.ivector_append" title="Link to this definition"></a></dt>
+<dd><p>Append a value at the end of a C int vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ivect</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.vector.IVECTOR" title="libscientific.vector.IVECTOR"><em>IVECTOR</em></a><em>)</em>) – The vector; its size grows by one.</p></li>
+<li><p><strong>val</strong> (<em>int</em>) – The value to append.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.vector.ivector_remove_at">
+<span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">ivector_remove_at</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ivect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.vector.ivector_remove_at" title="Link to this definition"></a></dt>
+<dd><p>Remove the element at an index; the following elements shift left.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ivect</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.vector.IVECTOR" title="libscientific.vector.IVECTOR"><em>IVECTOR</em></a><em>)</em>) – The vector; its size decreases by one.</p></li>
+<li><p><strong>indx</strong> (<em>int</em>) – Index of the element to remove.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="low-level-api">
+<h2>Low-level API<a class="headerlink" href="#low-level-api" title="Link to this heading"></a></h2>
+<p>Thin ctypes wrappers around the C functions, working on raw C
+pointers. They are needed only to interoperate with other low-level code.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="libscientific.vector.STRVECTOR">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">STRVECTOR</span></span><a class="headerlink" href="#libscientific.vector.STRVECTOR" title="Link to this definition"></a></dt>
+<dd><p>C structure of a libscientific string vector (low-level API).</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.vector.STRVECTOR.data">
+<span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#libscientific.vector.STRVECTOR.data" title="Link to this definition"></a></dt>
+<dd><p>The strings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>POINTER(c_char_p)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.vector.STRVECTOR.size">
+<span class="sig-name descname"><span class="pre">size</span></span><a class="headerlink" href="#libscientific.vector.STRVECTOR.size" title="Link to this definition"></a></dt>
+<dd><p>Number of strings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="libscientific.vector.DVECTOR">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">DVECTOR</span></span><a class="headerlink" href="#libscientific.vector.DVECTOR" title="Link to this definition"></a></dt>
+<dd><p>C structure of a libscientific double vector (low-level API).</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.vector.DVECTOR.data">
+<span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#libscientific.vector.DVECTOR.data" title="Link to this definition"></a></dt>
+<dd><p>The values; <code class="docutils literal notranslate"><span class="pre">data[i]</span></code> is element <code class="docutils literal notranslate"><span class="pre">i</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>POINTER</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.vector.DVECTOR.size">
+<span class="sig-name descname"><span class="pre">size</span></span><a class="headerlink" href="#libscientific.vector.DVECTOR.size" title="Link to this definition"></a></dt>
+<dd><p>Number of values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="libscientific.vector.UIVECTOR">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">UIVECTOR</span></span><a class="headerlink" href="#libscientific.vector.UIVECTOR" title="Link to this definition"></a></dt>
+<dd><p>C structure of a libscientific unsigned int vector (low-level API).</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.vector.UIVECTOR.data">
+<span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#libscientific.vector.UIVECTOR.data" title="Link to this definition"></a></dt>
+<dd><p>The values; <code class="docutils literal notranslate"><span class="pre">data[i]</span></code> is element <code class="docutils literal notranslate"><span class="pre">i</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>POINTER</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.vector.UIVECTOR.size">
+<span class="sig-name descname"><span class="pre">size</span></span><a class="headerlink" href="#libscientific.vector.UIVECTOR.size" title="Link to this definition"></a></dt>
+<dd><p>Number of values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="libscientific.vector.IVECTOR">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.vector.</span></span><span class="sig-name descname"><span class="pre">IVECTOR</span></span><a class="headerlink" href="#libscientific.vector.IVECTOR" title="Link to this definition"></a></dt>
+<dd><p>C structure of a libscientific int vector (low-level API).</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.vector.IVECTOR.data">
+<span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#libscientific.vector.IVECTOR.data" title="Link to this definition"></a></dt>
+<dd><p>The values; <code class="docutils literal notranslate"><span class="pre">data[i]</span></code> is element <code class="docutils literal notranslate"><span class="pre">i</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>POINTER</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.vector.IVECTOR.size">
+<span class="sig-name descname"><span class="pre">size</span></span><a class="headerlink" href="#libscientific.vector.IVECTOR.size" title="Link to this definition"></a></dt>
+<dd><p>Number of values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="matrix.html" class="btn btn-neutral float-left" title="Matrix" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tensor.html" class="btn btn-neutral float-right" title="Tensor" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2011, Giuseppe Marco Randazzo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,1097 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Matrix &mdash; libscientific 1.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=b51e6972"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Vectors" href="vector.html" />
+    <link rel="prev" title="Model files and bundles" href="model_io.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            libscientific
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Overview.html">What is libscientific?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html">Getting started in C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#vector-operations">Vector operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#matrix-operations">Matrix operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#tensor-operations">Tensor operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#multivariate-analysis-algorithms">Multivariate analysis algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#model-persistence-and-serialization-lsm-and-lsb">Model persistence and serialization (.lsm and .lsb)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html">Getting started in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#vector-operations">Vector operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#matrix-operations">Matrix operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#tensor-operations">Tensor operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#multivariate-analysis-algorithms">Multivariate analysis algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#model-persistence-and-serialization-lsm-and-lsb">Model persistence and serialization (.lsm and .lsb)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Licensing.html">Licensing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../C-API.html">C API Reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../Python-API.html">Python API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../Python-API.html#models">Models</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../Python-API.html#data-structures-and-utilities">Data structures and utilities</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Matrix</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#libscientific.matrix.Matrix"><code class="docutils literal notranslate"><span class="pre">Matrix</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#libscientific.matrix.MatrixLike"><code class="docutils literal notranslate"><span class="pre">MatrixLike</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#functions">Functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#low-level-api">Low-level API</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="vector.html">Vectors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tensor.html">Tensor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="vectlist.html">List of vectors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="misc.html">Missing values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="info.html">Library information</a></li>
+<li class="toctree-l3"><a class="reference internal" href="loadlibrary.html">Library loading</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">libscientific</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../Python-API.html">Python API Reference</a></li>
+      <li class="breadcrumb-item active">Matrix</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/python_api/matrix.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-libscientific.matrix">
+<span id="matrix"></span><h1>Matrix<a class="headerlink" href="#module-libscientific.matrix" title="Link to this heading"></a></h1>
+<p>Matrices stored in the C library.</p>
+<ul>
+<li><p><a class="reference internal" href="#libscientific.matrix.Matrix" title="libscientific.matrix.Matrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">Matrix</span></code></a>: Pythonic matrix (indexing, shape, transpose, SVD, …).</p></li>
+<li><p><a class="reference internal" href="#libscientific.matrix.MatrixLike" title="libscientific.matrix.MatrixLike"><code class="xref py py-data docutils literal notranslate"><span class="pre">MatrixLike</span></code></a> and <a class="reference internal" href="#libscientific.matrix.as_c_matrix" title="libscientific.matrix.as_c_matrix"><code class="xref py py-func docutils literal notranslate"><span class="pre">as_c_matrix()</span></code></a>: the inputs accepted by all the
+models (lists of rows, numpy arrays, <a class="reference internal" href="#libscientific.matrix.Matrix" title="libscientific.matrix.Matrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">Matrix</span></code></a>).</p></li>
+<li><p>Low-level functions working on C matrix pointers (<code class="docutils literal notranslate"><span class="pre">new_matrix</span></code>,
+<code class="docutils literal notranslate"><span class="pre">matrix_to_list</span></code>, linear algebra, …), mainly for interoperability.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">libscientific.matrix</span><span class="w"> </span><span class="kn">import</span> <span class="n">Matrix</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">Matrix</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="go">((2, 2), 3.0)</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<dl class="py class">
+<dt class="sig sig-object py" id="libscientific.matrix.Matrix">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">Matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mx_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.Matrix" title="Link to this definition"></a></dt>
+<dd><p>A matrix stored in the C library, with a Pythonic interface.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mx</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>]</em><em>]</em><em>, </em><em>numpy.ndarray</em><em>, </em><a class="reference internal" href="#libscientific.matrix.Matrix" title="libscientific.matrix.Matrix"><em>Matrix</em></a><em>, </em><em>C matrix pointer</em><em> or </em><em>None</em>) – Initial content: a list of rows, a 2D numpy array, another
+<a class="reference internal" href="#libscientific.matrix.Matrix" title="libscientific.matrix.Matrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">Matrix</span></code></a> or C matrix (copied), or <code class="docutils literal notranslate"><span class="pre">None</span></code> for an empty matrix.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.matrix.Matrix.mtx">
+<span class="sig-name descname"><span class="pre">mtx</span></span><a class="headerlink" href="#libscientific.matrix.Matrix.mtx" title="Link to this definition"></a></dt>
+<dd><p>The underlying C matrix, owned by this object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ctypes.POINTER(<a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX">MATRIX</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>Indexing: <code class="docutils literal notranslate"><span class="pre">m[i,</span> <span class="pre">j]</span></code> reads/writes one element and <code class="docutils literal notranslate"><span class="pre">m[i]</span></code> returns row
+<code class="docutils literal notranslate"><span class="pre">i</span></code> as a list. <code class="docutils literal notranslate"><span class="pre">len(m)</span></code> is the number of rows and iterating yields the
+rows as lists.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">Matrix</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">m</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="go">((3, 2), [3.0, 4.0], 5.0)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">10.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">tolist</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+<span class="go">[10.0, 2.0]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(2, 3)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.matrix.Matrix.__len__">
+<span class="sig-name descname"><span class="pre">__len__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.Matrix.__len__" title="Link to this definition"></a></dt>
+<dd><p>Return the number of rows.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="libscientific.matrix.Matrix.shape">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shape</span></span><a class="headerlink" href="#libscientific.matrix.Matrix.shape" title="Link to this definition"></a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">(n_rows,</span> <span class="pre">n_columns)</span></code> of the matrix.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.matrix.Matrix.__getitem__">
+<span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.Matrix.__getitem__" title="Link to this definition"></a></dt>
+<dd><p>Return an element (<code class="docutils literal notranslate"><span class="pre">m[i,</span> <span class="pre">j]</span></code>) or a row (<code class="docutils literal notranslate"><span class="pre">m[i]</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>keys</strong> (<em>tuple</em><em>[</em><em>int</em><em>, </em><em>int</em><em>] or </em><em>int</em>) – <code class="docutils literal notranslate"><span class="pre">(row,</span> <span class="pre">column)</span></code> for an element, or a row index.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float or list[float]</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>TypeError</strong> – For any other kind of index.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.matrix.Matrix.__setitem__">
+<span class="sig-name descname"><span class="pre">__setitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.Matrix.__setitem__" title="Link to this definition"></a></dt>
+<dd><p>Set an element: <code class="docutils literal notranslate"><span class="pre">m[i,</span> <span class="pre">j]</span> <span class="pre">=</span> <span class="pre">value</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>keys</strong> (<em>tuple</em><em>[</em><em>int</em><em>, </em><em>int</em><em>]</em>) – <code class="docutils literal notranslate"><span class="pre">(row,</span> <span class="pre">column)</span></code>, inside the matrix.</p></li>
+<li><p><strong>value</strong> (<em>float</em>) – The new value.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.matrix.Matrix.nrow">
+<span class="sig-name descname"><span class="pre">nrow</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.Matrix.nrow" title="Link to this definition"></a></dt>
+<dd><p>Return the number of rows.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.matrix.Matrix.ncol">
+<span class="sig-name descname"><span class="pre">ncol</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.Matrix.ncol" title="Link to this definition"></a></dt>
+<dd><p>Return the number of columns.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.matrix.Matrix.data_ptr">
+<span class="sig-name descname"><span class="pre">data_ptr</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.Matrix.data_ptr" title="Link to this definition"></a></dt>
+<dd><p>Return the C row pointers of the matrix (low-level access).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">data_ptr()[i][j]</span></code> is element <code class="docutils literal notranslate"><span class="pre">(i,</span> <span class="pre">j)</span></code>; valid while the matrix exists.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>POINTER(POINTER(c_double))</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.matrix.Matrix.tolist">
+<span class="sig-name descname"><span class="pre">tolist</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.Matrix.tolist" title="Link to this definition"></a></dt>
+<dd><p>Return the content as a list of rows.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[list[float]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.matrix.Matrix.fromlist">
+<span class="sig-name descname"><span class="pre">fromlist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx_</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.Matrix.fromlist" title="Link to this definition"></a></dt>
+<dd><p>Replace the content with a list of rows.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mtx</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>]</em><em>]</em>) – The new rows.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.matrix.Matrix.fromnumpy">
+<span class="sig-name descname"><span class="pre">fromnumpy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">npmx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.Matrix.fromnumpy" title="Link to this definition"></a></dt>
+<dd><p>Replace the content with a numpy array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>npmx</strong> (<em>numpy.ndarray</em>) – A 2D array.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.matrix.Matrix.appendrow">
+<span class="sig-name descname"><span class="pre">appendrow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">row_lst_</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.Matrix.appendrow" title="Link to this definition"></a></dt>
+<dd><p>Append a row at the bottom.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>row_lst</strong> (<em>list</em><em>[</em><em>float</em><em>] or </em><a class="reference internal" href="vector.html#libscientific.vector.DVector" title="libscientific.vector.DVector"><em>DVector</em></a>) – The new row, with one value per column.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.matrix.Matrix.appendcol">
+<span class="sig-name descname"><span class="pre">appendcol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">col_lst_</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.Matrix.appendcol" title="Link to this definition"></a></dt>
+<dd><p>Append a column on the right.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>col_lst</strong> (<em>list</em><em>[</em><em>float</em><em>] or </em><a class="reference internal" href="vector.html#libscientific.vector.DVector" title="libscientific.vector.DVector"><em>DVector</em></a>) – The new column, with one value per row.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.matrix.Matrix.transpose">
+<span class="sig-name descname"><span class="pre">transpose</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.Matrix.transpose" title="Link to this definition"></a></dt>
+<dd><p>Transpose the matrix in place (<code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">x</span> <span class="pre">m</span></code> becomes <code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">x</span> <span class="pre">n</span></code>).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.matrix.Matrix.get_evect_evals">
+<span class="sig-name descname"><span class="pre">get_evect_evals</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.Matrix.get_evect_evals" title="Link to this definition"></a></dt>
+<dd><p>Return the eigenvalues and eigenvectors of the (square) matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><strong>eigenvalues</strong> (<em>list[float]</em>) – <code class="docutils literal notranslate"><span class="pre">n</span></code> values, in the order returned by LAPACK (not sorted).</p></li>
+<li><p><strong>eigenvectors</strong> (<em>list[list[float]]</em>) – <code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">x</span> <span class="pre">n</span></code> matrix whose <strong>columns</strong> are the eigenvectors: column <code class="docutils literal notranslate"><span class="pre">k</span></code>
+belongs to <code class="docutils literal notranslate"><span class="pre">eigenvalues[k]</span></code>.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">evals</span><span class="p">,</span> <span class="n">evects</span> <span class="o">=</span> <span class="n">Matrix</span><span class="p">([[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">]])</span><span class="o">.</span><span class="n">get_evect_evals</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">sorted</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">evals</span><span class="p">)</span>
+<span class="go">[2.0, 3.0]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.matrix.Matrix.svd">
+<span class="sig-name descname"><span class="pre">svd</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.Matrix.svd" title="Link to this definition"></a></dt>
+<dd><p>Return the thin singular value decomposition <code class="docutils literal notranslate"><span class="pre">M</span> <span class="pre">=</span> <span class="pre">U</span> <span class="pre">&#64;</span> <span class="pre">S</span> <span class="pre">&#64;</span> <span class="pre">VT</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><strong>U</strong> (<em>list[list[float]]</em>) – Left singular vectors, <code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">x</span> <span class="pre">k</span></code> with <code class="docutils literal notranslate"><span class="pre">k</span> <span class="pre">=</span> <span class="pre">min(n,</span> <span class="pre">m)</span></code>.</p></li>
+<li><p><strong>S</strong> (<em>list[list[float]]</em>) – Diagonal <code class="docutils literal notranslate"><span class="pre">k</span> <span class="pre">x</span> <span class="pre">k</span></code> matrix of the singular values, largest first.</p></li>
+<li><p><strong>VT</strong> (<em>list[list[float]]</em>) – Right singular vectors, transposed, <code class="docutils literal notranslate"><span class="pre">k</span> <span class="pre">x</span> <span class="pre">m</span></code>.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">U</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">VT</span> <span class="o">=</span> <span class="n">Matrix</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">]])</span><span class="o">.</span><span class="n">svd</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">U</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">U</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">len</span><span class="p">(</span><span class="n">S</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">VT</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">VT</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="go">(3, 2, 2, 2, 2)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="nb">round</span><span class="p">(</span><span class="n">S</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">i</span><span class="p">],</span> <span class="mi">4</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">)]</span>
+<span class="go">[9.5255, 0.5143]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.matrix.Matrix.debug">
+<span class="sig-name descname"><span class="pre">debug</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.Matrix.debug" title="Link to this definition"></a></dt>
+<dd><p>Print the matrix to standard output.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="libscientific.matrix.MatrixLike">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">MatrixLike</span></span><a class="headerlink" href="#libscientific.matrix.MatrixLike" title="Link to this definition"></a></dt>
+<dd><p>Any 2D input accepted by the libscientific models and matrix functions.</p>
+<p>One of:</p>
+<ul class="simple">
+<li><p>a list of rows (<code class="docutils literal notranslate"><span class="pre">list[list[float]]</span></code>), e.g. <code class="docutils literal notranslate"><span class="pre">[[1.0,</span> <span class="pre">2.0],</span> <span class="pre">[3.0,</span> <span class="pre">4.0]]</span></code>;</p></li>
+<li><p>a 2D <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> (any dtype convertible to <code class="docutils literal notranslate"><span class="pre">float64</span></code>);</p></li>
+<li><p>a <a class="reference internal" href="#libscientific.matrix.Matrix" title="libscientific.matrix.Matrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">Matrix</span></code></a>;</p></li>
+<li><p>a raw C matrix pointer (<code class="docutils literal notranslate"><span class="pre">ctypes.POINTER(MATRIX)</span></code>) from the low-level API.</p></li>
+</ul>
+<p>Rows are objects (samples) and columns are features (variables).</p>
+</dd></dl>
+
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.init_matrix">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">init_matrix</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.init_matrix" title="Link to this definition"></a></dt>
+<dd><p>Allocate an empty (0 x 0) C matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A new matrix; release it with <a class="reference internal" href="#libscientific.matrix.del_matrix" title="libscientific.matrix.del_matrix"><code class="xref py py-func docutils literal notranslate"><span class="pre">del_matrix()</span></code></a>. Functions that fill an
+output matrix (e.g. <a class="reference internal" href="#libscientific.matrix.matrix_inversion" title="libscientific.matrix.matrix_inversion"><code class="xref py py-func docutils literal notranslate"><span class="pre">matrix_inversion()</span></code></a>) resize it as needed.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>ctypes.POINTER(<a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX">MATRIX</a>)</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">init_matrix</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">row</span><span class="p">,</span> <span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">col</span><span class="p">)</span>
+<span class="go">(0, 0)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">del_matrix</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.new_matrix_from_list">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">new_matrix_from_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mx_lst</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.new_matrix_from_list" title="Link to this definition"></a></dt>
+<dd><p>Create a C matrix from a list of rows.</p>
+<p>Non-numeric values (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;NA&quot;</span></code>) are stored as the missing value (see
+<a class="reference internal" href="misc.html#libscientific.misc.missing_value" title="libscientific.misc.missing_value"><code class="xref py py-func docutils literal notranslate"><span class="pre">libscientific.misc.missing_value()</span></code></a>). A flat list becomes a single
+column.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mx_lst</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>]</em><em>] or </em><em>list</em><em>[</em><em>float</em><em>]</em>) – The rows of the matrix.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new matrix; release it with <a class="reference internal" href="#libscientific.matrix.del_matrix" title="libscientific.matrix.del_matrix"><code class="xref py py-func docutils literal notranslate"><span class="pre">del_matrix()</span></code></a>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ctypes.POINTER(<a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX">MATRIX</a>)</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">new_matrix_from_list</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;NA&quot;</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matrix_to_list</span><span class="p">(</span><span class="n">m</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">matrix_to_list</span><span class="p">(</span><span class="n">m</span><span class="p">)[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">1e7</span>
+<span class="go">([1.0, 2.0], True)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">del_matrix</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.new_matrix_from_csv">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">new_matrix_from_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fcsv</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.new_matrix_from_csv" title="Link to this definition"></a></dt>
+<dd><p>Create a C matrix from a CSV file (comma separated, one row per line).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fcsv</strong> (<em>str</em>) – Path of the CSV file. Every row must have the same number of values.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new matrix; release it with <a class="reference internal" href="#libscientific.matrix.del_matrix" title="libscientific.matrix.del_matrix"><code class="xref py py-func docutils literal notranslate"><span class="pre">del_matrix()</span></code></a>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ctypes.POINTER(<a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX">MATRIX</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.new_matrix">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">new_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx_input_</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.new_matrix" title="Link to this definition"></a></dt>
+<dd><p>Create a C matrix from a list of rows or from a CSV file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mtx_input</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>]</em><em>] or </em><em>str</em>) – The rows of the matrix, or the path of a CSV file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new matrix; release it with <a class="reference internal" href="#libscientific.matrix.del_matrix" title="libscientific.matrix.del_matrix"><code class="xref py py-func docutils literal notranslate"><span class="pre">del_matrix()</span></code></a>. To accept numpy arrays
+and <a class="reference internal" href="#libscientific.matrix.Matrix" title="libscientific.matrix.Matrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">Matrix</span></code></a> objects too, use <a class="reference internal" href="#libscientific.matrix.as_c_matrix" title="libscientific.matrix.as_c_matrix"><code class="xref py py-func docutils literal notranslate"><span class="pre">as_c_matrix()</span></code></a>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ctypes.POINTER(<a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX">MATRIX</a>)</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">new_matrix</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matrix_to_list</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+<span class="go">[[1.0, 2.0], [3.0, 4.0]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">del_matrix</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.as_c_matrix">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">as_c_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MatrixLike</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><span class="pre">MATRIX</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.matrix.as_c_matrix" title="Link to this definition"></a></dt>
+<dd><p>Convert any <a class="reference internal" href="#libscientific.matrix.MatrixLike" title="libscientific.matrix.MatrixLike"><code class="xref py py-data docutils literal notranslate"><span class="pre">MatrixLike</span></code></a> input into a C matrix pointer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>m_input</strong> (<em>MatrixLike</em>) – A list of rows, a 2D numpy array, a <a class="reference internal" href="#libscientific.matrix.Matrix" title="libscientific.matrix.Matrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">Matrix</span></code></a> or a C matrix pointer.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">(pointer,</span> <span class="pre">owned)</span></code>. When <code class="docutils literal notranslate"><span class="pre">owned</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code> the matrix was
+allocated by this call and the caller must release it with
+<a class="reference internal" href="#libscientific.matrix.del_matrix" title="libscientific.matrix.del_matrix"><code class="xref py py-func docutils literal notranslate"><span class="pre">del_matrix()</span></code></a>; when <code class="docutils literal notranslate"><span class="pre">False</span></code> the pointer belongs to <code class="docutils literal notranslate"><span class="pre">m_input</span></code>
+and must not be freed.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[ctypes.POINTER(<a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX">MATRIX</a>), bool]</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ptr</span><span class="p">,</span> <span class="n">owned</span> <span class="o">=</span> <span class="n">as_c_matrix</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">ptr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">row</span><span class="p">,</span> <span class="n">ptr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">col</span><span class="p">,</span> <span class="n">owned</span><span class="p">)</span>
+<span class="go">(2, 2, True)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">del_matrix</span><span class="p">(</span><span class="n">ptr</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.resize_matrix">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">resize_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nrows</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncols</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.resize_matrix" title="Link to this definition"></a></dt>
+<dd><p>Resize a C matrix; all its values are set to zero.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mtx</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – The matrix to resize.</p></li>
+<li><p><strong>nrows</strong> (<em>int</em>) – New shape.</p></li>
+<li><p><strong>ncols</strong> (<em>int</em>) – New shape.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.del_matrix">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">del_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.del_matrix" title="Link to this definition"></a></dt>
+<dd><p>Free a C matrix created by this module.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mtx</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – The matrix to release. It must not be used afterwards.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.matrix_check">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">matrix_check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.matrix_check" title="Link to this definition"></a></dt>
+<dd><p>Replace NaN and infinite values of a C matrix with the missing value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mtx</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – The matrix, modified in place.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">new_matrix</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;nan&quot;</span><span class="p">)]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matrix_check</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matrix_to_list</span><span class="p">(</span><span class="n">m</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">misc</span><span class="o">.</span><span class="n">missing_value</span><span class="p">()</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">del_matrix</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.print_matrix">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">print_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.print_matrix" title="Link to this definition"></a></dt>
+<dd><p>Print a C matrix to standard output.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mtx</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – The matrix to print.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.val_in_matrix">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">val_in_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.val_in_matrix" title="Link to this definition"></a></dt>
+<dd><p>Check whether a C matrix contains a value (exact comparison).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mtx</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – The matrix to search.</p></li>
+<li><p><strong>val</strong> (<em>float</em>) – The value to look for.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>1 if the value is present, 0 otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.matrix_set">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">matrix_set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.matrix_set" title="Link to this definition"></a></dt>
+<dd><p>Set every element of a C matrix to the same value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mtx</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – The matrix, modified in place.</p></li>
+<li><p><strong>val</strong> (<em>float</em>) – The value to assign.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.matrix_copy">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">matrix_copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msrc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mdst</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.matrix_copy" title="Link to this definition"></a></dt>
+<dd><p>Copy a C matrix into another one.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msrc</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – Source matrix.</p></li>
+<li><p><strong>mdst</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – Destination matrix (e.g. from <a class="reference internal" href="#libscientific.matrix.init_matrix" title="libscientific.matrix.init_matrix"><code class="xref py py-func docutils literal notranslate"><span class="pre">init_matrix()</span></code></a>); it is resized to the
+shape of <code class="docutils literal notranslate"><span class="pre">msrc</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.set_matrix_value">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">set_matrix_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">irow</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jcol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.set_matrix_value" title="Link to this definition"></a></dt>
+<dd><p>Set one element of a C matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mtx</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – The matrix, modified in place.</p></li>
+<li><p><strong>irow</strong> (<em>int</em>) – Row and column index (0-based, must be inside the matrix).</p></li>
+<li><p><strong>jcol</strong> (<em>int</em>) – Row and column index (0-based, must be inside the matrix).</p></li>
+<li><p><strong>value</strong> (<em>float</em>) – The new value.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.get_matrix_value">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">get_matrix_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">irow</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jcol</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.get_matrix_value" title="Link to this definition"></a></dt>
+<dd><p>Return one element of a C matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mtx</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – The matrix.</p></li>
+<li><p><strong>irow</strong> (<em>int</em>) – Row and column index (0-based).</p></li>
+<li><p><strong>jcol</strong> (<em>int</em>) – Row and column index (0-based).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.get_matrix_row">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">get_matrix_row</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">irow</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.get_matrix_row" title="Link to this definition"></a></dt>
+<dd><p>Return a row of a C matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mtx</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – The matrix.</p></li>
+<li><p><strong>irow</strong> (<em>int</em>) – Row index (0-based).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The <code class="docutils literal notranslate"><span class="pre">col</span></code> values of the row.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.get_matrix_column">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">get_matrix_column</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jcol</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.get_matrix_column" title="Link to this definition"></a></dt>
+<dd><p>Return a column of a C matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mtx</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – The matrix.</p></li>
+<li><p><strong>jcol</strong> (<em>int</em>) – Column index (0-based).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The <code class="docutils literal notranslate"><span class="pre">row</span></code> values of the column.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.matrix_to_list">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">matrix_to_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.matrix.matrix_to_list" title="Link to this definition"></a></dt>
+<dd><p>Convert a C matrix into a list of rows.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mtx</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>) or </em><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a>) – The matrix.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">row</span></code> lists of <code class="docutils literal notranslate"><span class="pre">col</span></code> values.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[list[float]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.matrix_to_numpy">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">matrix_to_numpy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.matrix_to_numpy" title="Link to this definition"></a></dt>
+<dd><p>Copy a C matrix into a new numpy array (requires numpy).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mtx</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>) or </em><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a>) – The matrix.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A <code class="docutils literal notranslate"><span class="pre">float64</span></code> array of shape <code class="docutils literal notranslate"><span class="pre">(row,</span> <span class="pre">col)</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.matrix_from_numpy">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">matrix_from_numpy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">npm</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.matrix_from_numpy" title="Link to this definition"></a></dt>
+<dd><p>Create a C matrix from a numpy array.</p>
+<p>The data are copied row by row (no intermediate Python list). NaN/inf
+values are kept; the algorithms convert them to the missing value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>npm</strong> (<em>numpy.ndarray</em>) – A 2D array (a 1D array becomes a single column), any dtype convertible
+to <code class="docutils literal notranslate"><span class="pre">float64</span></code>; non-contiguous arrays are accepted.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new matrix; release it with <a class="reference internal" href="#libscientific.matrix.del_matrix" title="libscientific.matrix.del_matrix"><code class="xref py py-func docutils literal notranslate"><span class="pre">del_matrix()</span></code></a>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ctypes.POINTER(<a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX">MATRIX</a>)</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the array has more than 2 dimensions.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.set_missing_matrix_value">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">set_missing_matrix_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">row_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.set_missing_matrix_value" title="Link to this definition"></a></dt>
+<dd><p>Mark one element of a C matrix as missing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mtx</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – The matrix, modified in place.</p></li>
+<li><p><strong>row_id</strong> (<em>int</em>) – Row and column index.</p></li>
+<li><p><strong>col_id</strong> (<em>int</em>) – Row and column index.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.matrix_append_row">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">matrix_append_row</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">row_vect</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.matrix_append_row" title="Link to this definition"></a></dt>
+<dd><p>Append a row at the bottom of a C matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mtx</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – The matrix, modified in place.</p></li>
+<li><p><strong>row_vect</strong> (<em>list</em><em>[</em><em>float</em><em>]</em><em>, </em><a class="reference internal" href="vector.html#libscientific.vector.DVector" title="libscientific.vector.DVector"><em>DVector</em></a><em> or </em><em>POINTER</em><em>(</em><a class="reference internal" href="vector.html#libscientific.vector.DVECTOR" title="libscientific.vector.DVECTOR"><em>DVECTOR</em></a><em>)</em>) – The new row; its size must equal the number of columns (any size for an
+empty matrix).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.matrix_append_col">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">matrix_append_col</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_vect</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.matrix_append_col" title="Link to this definition"></a></dt>
+<dd><p>Append a column on the right of a C matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mtx</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – The matrix, modified in place.</p></li>
+<li><p><strong>col_vect</strong> (<em>list</em><em>[</em><em>float</em><em>]</em><em>, </em><a class="reference internal" href="vector.html#libscientific.vector.DVector" title="libscientific.vector.DVector"><em>DVector</em></a><em> or </em><em>POINTER</em><em>(</em><a class="reference internal" href="vector.html#libscientific.vector.DVECTOR" title="libscientific.vector.DVECTOR"><em>DVECTOR</em></a><em>)</em>) – The new column; its size must equal the number of rows (any size for an
+empty matrix).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.matrix_dvector_dot_product">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">matrix_dvector_dot_product</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dvect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.matrix_dvector_dot_product" title="Link to this definition"></a></dt>
+<dd><p>Matrix-vector product <code class="docutils literal notranslate"><span class="pre">res</span> <span class="pre">+=</span> <span class="pre">mtx</span> <span class="pre">&#64;</span> <span class="pre">dvect</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mtx</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – Matrix, <code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">x</span> <span class="pre">m</span></code>.</p></li>
+<li><p><strong>dvect</strong> (<em>POINTER</em><em>(</em><a class="reference internal" href="vector.html#libscientific.vector.DVECTOR" title="libscientific.vector.DVECTOR"><em>DVECTOR</em></a><em>)</em>) – Vector of size <code class="docutils literal notranslate"><span class="pre">m</span></code>.</p></li>
+<li><p><strong>res</strong> (<em>POINTER</em><em>(</em><a class="reference internal" href="vector.html#libscientific.vector.DVECTOR" title="libscientific.vector.DVECTOR"><em>DVECTOR</em></a><em>)</em>) – Output vector of size <code class="docutils literal notranslate"><span class="pre">n</span></code>. The product is <strong>added</strong> to it: pass a
+vector of zeros, e.g. <code class="docutils literal notranslate"><span class="pre">vector.new_dvector([0.0]</span> <span class="pre">*</span> <span class="pre">n)</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">libscientific.vector</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">vector</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">new_matrix</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span><span class="p">,</span> <span class="n">r</span> <span class="o">=</span> <span class="n">vector</span><span class="o">.</span><span class="n">new_dvector</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]),</span> <span class="n">vector</span><span class="o">.</span><span class="n">new_dvector</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matrix_dvector_dot_product</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vector</span><span class="o">.</span><span class="n">dvector_tolist</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+<span class="go">[3.0, 7.0]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.mt_matrix_dvector_dot_product">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">mt_matrix_dvector_dot_product</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dvect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.mt_matrix_dvector_dot_product" title="Link to this definition"></a></dt>
+<dd><p>Multi-threaded version of <a class="reference internal" href="#libscientific.matrix.matrix_dvector_dot_product" title="libscientific.matrix.matrix_dvector_dot_product"><code class="xref py py-func docutils literal notranslate"><span class="pre">matrix_dvector_dot_product()</span></code></a>.</p>
+<p>Threads are used only for large matrices (at least 65536 elements). Pass
+<code class="docutils literal notranslate"><span class="pre">res</span></code> filled with zeros: depending on the size the product is either
+written or added to it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mtx</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – Matrix, <code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">x</span> <span class="pre">m</span></code>.</p></li>
+<li><p><strong>dvect</strong> (<em>POINTER</em><em>(</em><a class="reference internal" href="vector.html#libscientific.vector.DVECTOR" title="libscientific.vector.DVECTOR"><em>DVECTOR</em></a><em>)</em>) – Vector of size <code class="docutils literal notranslate"><span class="pre">m</span></code>.</p></li>
+<li><p><strong>res</strong> (<em>POINTER</em><em>(</em><a class="reference internal" href="vector.html#libscientific.vector.DVECTOR" title="libscientific.vector.DVECTOR"><em>DVECTOR</em></a><em>)</em>) – Output vector of size <code class="docutils literal notranslate"><span class="pre">n</span></code>, filled with zeros.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.dvector_matrix_dot_product">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">dvector_matrix_dot_product</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dvect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.dvector_matrix_dot_product" title="Link to this definition"></a></dt>
+<dd><p>Vector-matrix product <code class="docutils literal notranslate"><span class="pre">res</span> <span class="pre">+=</span> <span class="pre">dvect</span> <span class="pre">&#64;</span> <span class="pre">mtx</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mtx</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – Matrix, <code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">x</span> <span class="pre">m</span></code>.</p></li>
+<li><p><strong>dvect</strong> (<em>POINTER</em><em>(</em><a class="reference internal" href="vector.html#libscientific.vector.DVECTOR" title="libscientific.vector.DVECTOR"><em>DVECTOR</em></a><em>)</em>) – Vector of size <code class="docutils literal notranslate"><span class="pre">n</span></code>.</p></li>
+<li><p><strong>res</strong> (<em>POINTER</em><em>(</em><a class="reference internal" href="vector.html#libscientific.vector.DVECTOR" title="libscientific.vector.DVECTOR"><em>DVECTOR</em></a><em>)</em>) – Output vector of size <code class="docutils literal notranslate"><span class="pre">m</span></code>. The product is <strong>added</strong> to it: pass a
+vector of zeros.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">libscientific.vector</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">vector</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">new_matrix</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span><span class="p">,</span> <span class="n">r</span> <span class="o">=</span> <span class="n">vector</span><span class="o">.</span><span class="n">new_dvector</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]),</span> <span class="n">vector</span><span class="o">.</span><span class="n">new_dvector</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dvector_matrix_dot_product</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vector</span><span class="o">.</span><span class="n">dvector_tolist</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+<span class="go">[4.0, 6.0]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.mt_dvector_matrix_dot_product">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">mt_dvector_matrix_dot_product</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dvect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.mt_dvector_matrix_dot_product" title="Link to this definition"></a></dt>
+<dd><p>Multi-threaded version of <a class="reference internal" href="#libscientific.matrix.dvector_matrix_dot_product" title="libscientific.matrix.dvector_matrix_dot_product"><code class="xref py py-func docutils literal notranslate"><span class="pre">dvector_matrix_dot_product()</span></code></a>.</p>
+<p>Threads are used only for large matrices. Pass <code class="docutils literal notranslate"><span class="pre">res</span></code> filled with zeros.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mtx</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – Matrix, <code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">x</span> <span class="pre">m</span></code>.</p></li>
+<li><p><strong>dvect</strong> (<em>POINTER</em><em>(</em><a class="reference internal" href="vector.html#libscientific.vector.DVECTOR" title="libscientific.vector.DVECTOR"><em>DVECTOR</em></a><em>)</em>) – Vector of size <code class="docutils literal notranslate"><span class="pre">n</span></code>.</p></li>
+<li><p><strong>res</strong> (<em>POINTER</em><em>(</em><a class="reference internal" href="vector.html#libscientific.vector.DVECTOR" title="libscientific.vector.DVECTOR"><em>DVECTOR</em></a><em>)</em>) – Output vector of size <code class="docutils literal notranslate"><span class="pre">m</span></code>, filled with zeros.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.dvector_transposed_dvector_dot_product">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">dvector_transposed_dvector_dot_product</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dvect1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dvect2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.dvector_transposed_dvector_dot_product" title="Link to this definition"></a></dt>
+<dd><p>Outer product of two vectors: <code class="docutils literal notranslate"><span class="pre">res[i][j]</span> <span class="pre">=</span> <span class="pre">dvect1[i]</span> <span class="pre">*</span> <span class="pre">dvect2[j]</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dvect1</strong> (<em>POINTER</em><em>(</em><a class="reference internal" href="vector.html#libscientific.vector.DVECTOR" title="libscientific.vector.DVECTOR"><em>DVECTOR</em></a><em>)</em>) – Vector of size <code class="docutils literal notranslate"><span class="pre">n</span></code>.</p></li>
+<li><p><strong>dvect2</strong> (<em>POINTER</em><em>(</em><a class="reference internal" href="vector.html#libscientific.vector.DVECTOR" title="libscientific.vector.DVECTOR"><em>DVECTOR</em></a><em>)</em>) – Vector of size <code class="docutils literal notranslate"><span class="pre">m</span></code>.</p></li>
+<li><p><strong>res</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – Output matrix, already allocated with shape <code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">x</span> <span class="pre">m</span></code> (see
+<a class="reference internal" href="#libscientific.matrix.resize_matrix" title="libscientific.matrix.resize_matrix"><code class="xref py py-func docutils literal notranslate"><span class="pre">resize_matrix()</span></code></a>).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.dvector_transposed_matrix_division">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">dvector_transposed_matrix_division</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dvect</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.dvector_transposed_matrix_division" title="Link to this definition"></a></dt>
+<dd><p>Solve <code class="docutils literal notranslate"><span class="pre">res</span> <span class="pre">=</span> <span class="pre">inverse(mtx.T)</span> <span class="pre">&#64;</span> <span class="pre">dvect</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dvect</strong> (<em>POINTER</em><em>(</em><a class="reference internal" href="vector.html#libscientific.vector.DVECTOR" title="libscientific.vector.DVECTOR"><em>DVECTOR</em></a><em>)</em>) – Vector of size <code class="docutils literal notranslate"><span class="pre">m</span></code>.</p></li>
+<li><p><strong>mtx</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – Square matrix <code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">x</span> <span class="pre">m</span></code> (its transpose must be invertible).</p></li>
+<li><p><strong>res</strong> (<em>POINTER</em><em>(</em><a class="reference internal" href="vector.html#libscientific.vector.DVECTOR" title="libscientific.vector.DVECTOR"><em>DVECTOR</em></a><em>)</em>) – Output vector; resized to <code class="docutils literal notranslate"><span class="pre">m</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.matrix_dot_product">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">matrix_dot_product</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx_t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.matrix_dot_product" title="Link to this definition"></a></dt>
+<dd><p>Matrix product <code class="docutils literal notranslate"><span class="pre">res</span> <span class="pre">+=</span> <span class="pre">mtx_t</span> <span class="pre">&#64;</span> <span class="pre">mtx</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mtx_t</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – Left matrix, <code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">x</span> <span class="pre">k</span></code>.</p></li>
+<li><p><strong>mtx</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – Right matrix, <code class="docutils literal notranslate"><span class="pre">k</span> <span class="pre">x</span> <span class="pre">m</span></code>.</p></li>
+<li><p><strong>res</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – Output matrix. An empty matrix (from <a class="reference internal" href="#libscientific.matrix.init_matrix" title="libscientific.matrix.init_matrix"><code class="xref py py-func docutils literal notranslate"><span class="pre">init_matrix()</span></code></a>) is allocated
+with shape <code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">x</span> <span class="pre">m</span></code>; an already allocated <code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">x</span> <span class="pre">m</span></code> matrix gets the
+product <strong>added</strong> to its values.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">new_matrix</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">]]),</span> <span class="n">new_matrix</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span> <span class="o">=</span> <span class="n">init_matrix</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matrix_dot_product</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matrix_to_list</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+<span class="go">[[3.0], [7.0]]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.row_col_outer_product">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">row_col_outer_product</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dvect_a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dvect_b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.row_col_outer_product" title="Link to this definition"></a></dt>
+<dd><p>Outer product of two vectors: <code class="docutils literal notranslate"><span class="pre">res[i][j]</span> <span class="pre">=</span> <span class="pre">dvect_a[i]</span> <span class="pre">*</span> <span class="pre">dvect_b[j]</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dvect_a</strong> (<em>POINTER</em><em>(</em><a class="reference internal" href="vector.html#libscientific.vector.DVECTOR" title="libscientific.vector.DVECTOR"><em>DVECTOR</em></a><em>)</em>) – Vector of size <code class="docutils literal notranslate"><span class="pre">n</span></code>.</p></li>
+<li><p><strong>dvect_b</strong> (<em>POINTER</em><em>(</em><a class="reference internal" href="vector.html#libscientific.vector.DVECTOR" title="libscientific.vector.DVECTOR"><em>DVECTOR</em></a><em>)</em>) – Vector of size <code class="docutils literal notranslate"><span class="pre">m</span></code>.</p></li>
+<li><p><strong>res</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – Output matrix, already allocated with shape <code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">x</span> <span class="pre">m</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.matrix_transpose">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">matrix_transpose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtx_t</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.matrix_transpose" title="Link to this definition"></a></dt>
+<dd><p>Transpose a matrix: <code class="docutils literal notranslate"><span class="pre">mtx_t</span> <span class="pre">=</span> <span class="pre">mtx.T</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mtx</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – Matrix, <code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">x</span> <span class="pre">m</span></code>.</p></li>
+<li><p><strong>mtx_t</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – Output matrix; allocated or resized to <code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">x</span> <span class="pre">n</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">init_matrix</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matrix_transpose</span><span class="p">(</span><span class="n">new_matrix</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">]]),</span> <span class="n">t</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matrix_to_list</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="go">[[1.0], [2.0], [3.0]]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.matrix_inversion">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">matrix_inversion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtx_inv</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.matrix_inversion" title="Link to this definition"></a></dt>
+<dd><p>Invert a square matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mtx</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – Square, invertible matrix <code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">x</span> <span class="pre">n</span></code>. For singular or rectangular
+matrices use the pseudo-inverse of the C API (<code class="docutils literal notranslate"><span class="pre">MatrixPseudoinversion</span></code>).</p></li>
+<li><p><strong>mtx_inv</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – Output matrix; resized to <code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">x</span> <span class="pre">n</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">inv</span> <span class="o">=</span> <span class="n">init_matrix</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matrix_inversion</span><span class="p">(</span><span class="n">new_matrix</span><span class="p">([[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">]]),</span> <span class="n">inv</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matrix_to_list</span><span class="p">(</span><span class="n">inv</span><span class="p">)</span>
+<span class="go">[[0.5, 0.0], [0.0, 0.25]]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.evect_eval">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">evect_eval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">evals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">evects</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.evect_eval" title="Link to this definition"></a></dt>
+<dd><p>Eigenvalues and eigenvectors of a square matrix (LAPACK).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mtx</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – Square matrix <code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">x</span> <span class="pre">n</span></code>.</p></li>
+<li><p><strong>evals</strong> (<em>POINTER</em><em>(</em><a class="reference internal" href="vector.html#libscientific.vector.DVECTOR" title="libscientific.vector.DVECTOR"><em>DVECTOR</em></a><em>)</em>) – Output vector; receives the <code class="docutils literal notranslate"><span class="pre">n</span></code> eigenvalues, in the order returned by</p></li>
+<li><p><strong>sorted</strong><strong>)</strong><strong>.</strong> (<em>LAPACK</em><em> (</em><em>not</em>)</p></li>
+<li><p><strong>evects</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – Output matrix; receives the eigenvectors as <strong>columns</strong>, <code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">x</span> <span class="pre">n</span></code>:
+column <code class="docutils literal notranslate"><span class="pre">k</span></code> belongs to eigenvalue <code class="docutils literal notranslate"><span class="pre">k</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.svd">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">svd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u_mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s_mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vt_mtx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.svd" title="Link to this definition"></a></dt>
+<dd><p>Thin singular value decomposition <code class="docutils literal notranslate"><span class="pre">mtx</span> <span class="pre">=</span> <span class="pre">U</span> <span class="pre">&#64;</span> <span class="pre">S</span> <span class="pre">&#64;</span> <span class="pre">VT</span></code>.</p>
+<p>Same result as <a class="reference internal" href="#libscientific.matrix.svd_lapack" title="libscientific.matrix.svd_lapack"><code class="xref py py-func docutils literal notranslate"><span class="pre">svd_lapack()</span></code></a> (both use LAPACK).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mtx</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – Matrix, <code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">x</span> <span class="pre">m</span></code>; let <code class="docutils literal notranslate"><span class="pre">k</span> <span class="pre">=</span> <span class="pre">min(n,</span> <span class="pre">m)</span></code>.</p></li>
+<li><p><strong>u_mtx</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – Output: left singular vectors, <code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">x</span> <span class="pre">k</span></code>.</p></li>
+<li><p><strong>s_mtx</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – Output: diagonal matrix of the singular values (largest first), <code class="docutils literal notranslate"><span class="pre">k</span> <span class="pre">x</span> <span class="pre">k</span></code>.</p></li>
+<li><p><strong>vt_mtx</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – Output: right singular vectors, transposed, <code class="docutils literal notranslate"><span class="pre">k</span> <span class="pre">x</span> <span class="pre">m</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.matrix.svd_lapack">
+<span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">svd_lapack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u_mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s_mtx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vt_mtx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.matrix.svd_lapack" title="Link to this definition"></a></dt>
+<dd><p>Thin singular value decomposition <code class="docutils literal notranslate"><span class="pre">mtx</span> <span class="pre">=</span> <span class="pre">U</span> <span class="pre">&#64;</span> <span class="pre">S</span> <span class="pre">&#64;</span> <span class="pre">VT</span></code> with LAPACK <code class="docutils literal notranslate"><span class="pre">dgesdd</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mtx</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – Matrix, <code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">x</span> <span class="pre">m</span></code>; let <code class="docutils literal notranslate"><span class="pre">k</span> <span class="pre">=</span> <span class="pre">min(n,</span> <span class="pre">m)</span></code>.</p></li>
+<li><p><strong>u_mtx</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – Output: left singular vectors, <code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">x</span> <span class="pre">k</span></code>.</p></li>
+<li><p><strong>s_mtx</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – Output: diagonal matrix of the singular values (largest first), <code class="docutils literal notranslate"><span class="pre">k</span> <span class="pre">x</span> <span class="pre">k</span></code>.</p></li>
+<li><p><strong>vt_mtx</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – Output: right singular vectors, transposed, <code class="docutils literal notranslate"><span class="pre">k</span> <span class="pre">x</span> <span class="pre">m</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="low-level-api">
+<h2>Low-level API<a class="headerlink" href="#low-level-api" title="Link to this heading"></a></h2>
+<p>Thin ctypes wrappers around the C functions, working on raw C
+pointers. They are needed only to interoperate with other low-level code.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="libscientific.matrix.MATRIX">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.matrix.</span></span><span class="sig-name descname"><span class="pre">MATRIX</span></span><a class="headerlink" href="#libscientific.matrix.MATRIX" title="Link to this definition"></a></dt>
+<dd><p>C structure of a libscientific matrix (low-level API).</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.matrix.MATRIX.data">
+<span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#libscientific.matrix.MATRIX.data" title="Link to this definition"></a></dt>
+<dd><p>Row pointers: <code class="docutils literal notranslate"><span class="pre">data[i][j]</span></code> is the element in row <code class="docutils literal notranslate"><span class="pre">i</span></code>, column <code class="docutils literal notranslate"><span class="pre">j</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>POINTER(POINTER(c_double))</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">row,</span> <span class="pre">col</span></span></dt>
+<dd><p>Number of rows and columns.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">Use</span> <span class="pre">:class:`Matrix`</span> <span class="pre">or</span> <span class="pre">the</span> <span class="pre">functions</span> <span class="pre">of</span> <span class="pre">this</span> <span class="pre">module</span> <span class="pre">instead</span> <span class="pre">of</span> <span class="pre">accessing</span> <span class="pre">it</span></span></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">directly.</span></span></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="model_io.html" class="btn btn-neutral float-left" title="Model files and bundles" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="vector.html" class="btn btn-neutral float-right" title="Vectors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2011, Giuseppe Marco Randazzo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

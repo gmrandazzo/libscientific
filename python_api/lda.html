@@ -1,0 +1,598 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LDA — Linear Discriminant Analysis &mdash; libscientific 1.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=b51e6972"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="UPCA — Multi-way PCA" href="upca.html" />
+    <link rel="prev" title="MLR — Multiple Linear Regression" href="mlr.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            libscientific
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Overview.html">What is libscientific?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html">Getting started in C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#vector-operations">Vector operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#matrix-operations">Matrix operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#tensor-operations">Tensor operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#multivariate-analysis-algorithms">Multivariate analysis algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#model-persistence-and-serialization-lsm-and-lsb">Model persistence and serialization (.lsm and .lsb)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html">Getting started in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#vector-operations">Vector operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#matrix-operations">Matrix operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#tensor-operations">Tensor operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#multivariate-analysis-algorithms">Multivariate analysis algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#model-persistence-and-serialization-lsm-and-lsb">Model persistence and serialization (.lsm and .lsb)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Licensing.html">Licensing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../C-API.html">C API Reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../Python-API.html">Python API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../Python-API.html#models">Models</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="pca.html">PCA — Principal Component Analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pls.html">PLS — Partial Least Squares regression</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cpca.html">CPCA — Consensus (multi-block) PCA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mlr.html">MLR — Multiple Linear Regression</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">LDA — Linear Discriminant Analysis</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#libscientific.lda.LDA"><code class="docutils literal notranslate"><span class="pre">LDA</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#low-level-api">Low-level API</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="upca.html">UPCA — Multi-way PCA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="upls.html">UPLS — Multi-way PLS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="clustering.html">Clustering and object selection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="interpolate.html">Interpolation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="model_io.html">Model files and bundles</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../Python-API.html#data-structures-and-utilities">Data structures and utilities</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">libscientific</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../Python-API.html">Python API Reference</a></li>
+      <li class="breadcrumb-item active">LDA — Linear Discriminant Analysis</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/python_api/lda.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-libscientific.lda">
+<span id="lda-linear-discriminant-analysis"></span><h1>LDA — Linear Discriminant Analysis<a class="headerlink" href="#module-libscientific.lda" title="Link to this heading"></a></h1>
+<p>Linear Discriminant Analysis (Fisher LDA) for classification.</p>
+<p>LDA finds the directions that best separate the classes (maximum ratio of
+between-class to within-class scatter) and classifies an object into the
+class with the highest linear discriminant score:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">score_k</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">=</span> <span class="n">mu_k</span><span class="s1">&#39; S^-1 x - 1/2 mu_k&#39;</span> <span class="n">S</span><span class="o">^-</span><span class="mi">1</span> <span class="n">mu_k</span> <span class="o">+</span> <span class="n">ln</span><span class="p">(</span><span class="n">prior_k</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">mu_k</span></code> is the mean of class <code class="docutils literal notranslate"><span class="pre">k</span></code>, <code class="docutils literal notranslate"><span class="pre">S</span></code> the pooled within-class
+covariance and <code class="docutils literal notranslate"><span class="pre">prior_k</span></code> the fraction of training objects in class <code class="docutils literal notranslate"><span class="pre">k</span></code>.</p>
+<p>Class labels are integers numbered from 0 (<code class="docutils literal notranslate"><span class="pre">0..K-1</span></code>) or from 1 (<code class="docutils literal notranslate"><span class="pre">1..K</span></code>),
+without gaps; predictions use the same numbering.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">libscientific.lda</span><span class="w"> </span><span class="kn">import</span> <span class="n">LDA</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">X</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">],</span> <span class="p">[</span><span class="mf">6.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">6.5</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">7.0</span><span class="p">,</span> <span class="mf">5.5</span><span class="p">]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">LDA</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">([[</span><span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">],</span> <span class="p">[</span><span class="mf">6.8</span><span class="p">,</span> <span class="mf">5.9</span><span class="p">]])</span>
+<span class="go">[1, 2]</span>
+</pre></div>
+</div>
+<p>The functions after the class are the low-level ctypes wrappers of <code class="docutils literal notranslate"><span class="pre">lda.h</span></code>.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="libscientific.lda.LDA">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.lda.</span></span><span class="sig-name descname"><span class="pre">LDA</span></span><a class="headerlink" href="#libscientific.lda.LDA" title="Link to this definition"></a></dt>
+<dd><p>Linear Discriminant Analysis classifier.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.lda.LDA.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#libscientific.lda.LDA.model" title="Link to this definition"></a></dt>
+<dd><p>The underlying C model (low-level access, see <a class="reference internal" href="#libscientific.lda.LDAMODEL" title="libscientific.lda.LDAMODEL"><code class="xref py py-class docutils literal notranslate"><span class="pre">LDAMODEL</span></code></a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ctypes.POINTER(<a class="reference internal" href="#libscientific.lda.LDAMODEL" title="libscientific.lda.LDAMODEL">LDAMODEL</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Labels must be integers <code class="docutils literal notranslate"><span class="pre">0..K-1</span></code> or <code class="docutils literal notranslate"><span class="pre">1..K</span></code> with every class
+present; predictions use the same numbering.</p></li>
+<li><p>When the within-class scatter matrix is singular (e.g. more features
+than objects), its pseudo-inverse is used (Liu et al., Int. J. Patt.
+Recogn. Artif. Intell. 21, 1265, 2007).</p></li>
+</ul>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">X</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">],</span> <span class="p">[</span><span class="mf">6.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">6.5</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">7.0</span><span class="p">,</span> <span class="mf">5.5</span><span class="p">],</span>
+<span class="gp">... </span>     <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">7.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">6.5</span><span class="p">]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">LDA</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">nclass</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">classes</span>
+<span class="go">(3, [0, 1, 2])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">==</span> <span class="n">y</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="nb">round</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">get_priors</span><span class="p">()]</span>
+<span class="go">[0.3333, 0.3333, 0.3333]</span>
+</pre></div>
+</div>
+<dl class="py property">
+<dt class="sig sig-object py" id="libscientific.lda.LDA.nclass">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nclass</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#libscientific.lda.LDA.nclass" title="Link to this definition"></a></dt>
+<dd><p>Number of classes of the fitted model.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="libscientific.lda.LDA.classes">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">classes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#libscientific.lda.LDA.classes" title="Link to this definition"></a></dt>
+<dd><p>Class labels of the fitted model, e.g. <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1,</span> <span class="pre">2]</span></code> or <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2,</span> <span class="pre">3]</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.lda.LDA.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MatrixLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">MatrixLike</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#libscientific.lda.LDA.fit" title="Link to this definition"></a></dt>
+<dd><p>Fit the discriminant model.</p>
+<p>Calling <code class="docutils literal notranslate"><span class="pre">fit</span></code> again replaces the previous model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_input</strong> (<em>MatrixLike</em>) – Training objects, shape <code class="docutils literal notranslate"><span class="pre">(n_objects,</span> <span class="pre">n_features)</span></code>.</p></li>
+<li><p><strong>y_input</strong> (<em>list</em><em>[</em><em>int</em><em>] or </em><em>MatrixLike</em>) – Class label of each object: a flat list (<code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1,</span> <span class="pre">1,</span> <span class="pre">...]</span></code>) or a
+one-column matrix (<code class="docutils literal notranslate"><span class="pre">[[0],</span> <span class="pre">[1],</span> <span class="pre">[1],</span> <span class="pre">...]</span></code>).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The model is updated in place.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.lda.LDA.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">libscientific.matrix.MatrixLike</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.lda.LDA.predict" title="Link to this definition"></a></dt>
+<dd><p>Predict the class of new objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x_input</strong> (<em>MatrixLike</em>) – Objects, shape <code class="docutils literal notranslate"><span class="pre">(n_new_objects,</span> <span class="pre">n_features)</span></code>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>One label per object, in the numbering of the training labels.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[int]</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">LDA</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">],</span> <span class="p">[</span><span class="mf">6.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">6.5</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">7.0</span><span class="p">,</span> <span class="mf">5.5</span><span class="p">]],</span>
+<span class="gp">... </span>          <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">([[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">],</span> <span class="p">[</span><span class="mf">8.0</span><span class="p">,</span> <span class="mf">7.0</span><span class="p">]])</span>
+<span class="go">[1, 2]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.lda.LDA.predict_scores">
+<span class="sig-name descname"><span class="pre">predict_scores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">libscientific.matrix.MatrixLike</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.lda.LDA.predict_scores" title="Link to this definition"></a></dt>
+<dd><p>Return the linear discriminant score of each object for each class.</p>
+<p>The predicted class is the one with the highest score. Scores are
+log-scale values, not probabilities: only their differences matter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x_input</strong> (<em>MatrixLike</em>) – Objects, shape <code class="docutils literal notranslate"><span class="pre">(n_new_objects,</span> <span class="pre">n_features)</span></code>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Matrix of shape <code class="docutils literal notranslate"><span class="pre">(n_new_objects,</span> <span class="pre">nclass)</span></code>; column <code class="docutils literal notranslate"><span class="pre">k</span></code> refers
+to label <code class="docutils literal notranslate"><span class="pre">classes[k]</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[list[float]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.lda.LDA.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">libscientific.matrix.MatrixLike</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.lda.LDA.transform" title="Link to this definition"></a></dt>
+<dd><p>Project objects on the discriminant directions.</p>
+<p>Useful to plot the classes: the first columns (largest eigenvalues)
+separate them best.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x_input</strong> (<em>MatrixLike</em>) – Objects, shape <code class="docutils literal notranslate"><span class="pre">(n_new_objects,</span> <span class="pre">n_features)</span></code>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Matrix of shape <code class="docutils literal notranslate"><span class="pre">(n_new_objects,</span> <span class="pre">n_features)</span></code>: column <code class="docutils literal notranslate"><span class="pre">l</span></code> is
+the projection on eigenvector <code class="docutils literal notranslate"><span class="pre">l</span></code> (see <a class="reference internal" href="#libscientific.lda.LDA.get_eigenvectors" title="libscientific.lda.LDA.get_eigenvectors"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_eigenvectors()</span></code></a>).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[list[float]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.lda.LDA.get_eigenvalues">
+<span class="sig-name descname"><span class="pre">get_eigenvalues</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.lda.LDA.get_eigenvalues" title="Link to this definition"></a></dt>
+<dd><p>Return the eigenvalues of the discriminant directions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>One value per direction (<code class="docutils literal notranslate"><span class="pre">n_features</span></code> values); larger values
+mean better class separation. At most <code class="docutils literal notranslate"><span class="pre">nclass</span> <span class="pre">-</span> <span class="pre">1</span></code> are
+significantly different from zero.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.lda.LDA.get_eigenvectors">
+<span class="sig-name descname"><span class="pre">get_eigenvectors</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.lda.LDA.get_eigenvectors" title="Link to this definition"></a></dt>
+<dd><p>Return the discriminant directions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Matrix of shape <code class="docutils literal notranslate"><span class="pre">(n_features,</span> <span class="pre">n_features)</span></code>: column <code class="docutils literal notranslate"><span class="pre">l</span></code> is the
+direction associated with eigenvalue <code class="docutils literal notranslate"><span class="pre">l</span></code>.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[list[float]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.lda.LDA.get_class_means">
+<span class="sig-name descname"><span class="pre">get_class_means</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.lda.LDA.get_class_means" title="Link to this definition"></a></dt>
+<dd><p>Return the mean of each class in the original feature space.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Matrix of shape <code class="docutils literal notranslate"><span class="pre">(nclass,</span> <span class="pre">n_features)</span></code>; row <code class="docutils literal notranslate"><span class="pre">k</span></code> refers to label
+<code class="docutils literal notranslate"><span class="pre">classes[k]</span></code>.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[list[float]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.lda.LDA.get_priors">
+<span class="sig-name descname"><span class="pre">get_priors</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.lda.LDA.get_priors" title="Link to this definition"></a></dt>
+<dd><p>Return the prior probability of each class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">nclass</span></code> values: the fraction of training objects in each class.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.lda.LDA.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#libscientific.lda.LDA.save" title="Link to this definition"></a></dt>
+<dd><p>Save the model to a file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em>) – Destination path. <code class="docutils literal notranslate"><span class="pre">.sqlite3</span></code> or <code class="docutils literal notranslate"><span class="pre">.db</span></code> use the legacy SQLite
+format; any other extension (<code class="docutils literal notranslate"><span class="pre">.lsm</span></code> recommended) uses the binary
+libscientific model container.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>OSError</strong> – If the file cannot be written.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.lda.LDA.load">
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#libscientific.lda.LDA.load" title="Link to this definition"></a></dt>
+<dd><p>Load a model saved with <a class="reference internal" href="#libscientific.lda.LDA.save" title="libscientific.lda.LDA.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save()</span></code></a>, replacing the current one.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em>) – Path of the model file; the format is detected automatically.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>OSError</strong> – If a binary model file cannot be read.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span><span class="o">,</span><span class="w"> </span><span class="nn">tempfile</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">X</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">],</span> <span class="p">[</span><span class="mf">6.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">6.5</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">7.0</span><span class="p">,</span> <span class="mf">5.5</span><span class="p">]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">LDA</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">(),</span> <span class="s2">&quot;lda.lsm&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">loaded</span> <span class="o">=</span> <span class="n">LDA</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">loaded</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">loaded</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="go">[0, 0, 0, 1, 1, 1]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<section id="low-level-api">
+<h2>Low-level API<a class="headerlink" href="#low-level-api" title="Link to this heading"></a></h2>
+<p>Thin ctypes wrappers around the C functions, working on raw C
+pointers. They are needed only to interoperate with other low-level code.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="libscientific.lda.LDAMODEL">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.lda.</span></span><span class="sig-name descname"><span class="pre">LDAMODEL</span></span><a class="headerlink" href="#libscientific.lda.LDAMODEL" title="Link to this definition"></a></dt>
+<dd><p>C structure holding a fitted LDA model (low-level API).</p>
+<p>Use <a class="reference internal" href="#libscientific.lda.LDA" title="libscientific.lda.LDA"><code class="xref py py-class docutils literal notranslate"><span class="pre">LDA</span></code></a> instead of accessing this structure directly. With
+<code class="docutils literal notranslate"><span class="pre">n</span></code> objects, <code class="docutils literal notranslate"><span class="pre">f</span></code> features and <code class="docutils literal notranslate"><span class="pre">K</span></code> classes:</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.lda.LDAMODEL.inv_cov">
+<span class="sig-name descname"><span class="pre">inv_cov</span></span><a class="headerlink" href="#libscientific.lda.LDAMODEL.inv_cov" title="Link to this definition"></a></dt>
+<dd><p>Inverse (or pseudo-inverse) of the pooled within-class scatter, <code class="docutils literal notranslate"><span class="pre">f</span> <span class="pre">x</span> <span class="pre">f</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>POINTER(<a class="reference internal" href="matrix.html#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX">MATRIX</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">evect,</span> <span class="pre">eval</span></span></dt>
+<dd><p>Discriminant directions (<code class="docutils literal notranslate"><span class="pre">f</span> <span class="pre">x</span> <span class="pre">f</span></code>, one per column) and their
+eigenvalues (size <code class="docutils literal notranslate"><span class="pre">f</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>POINTER(<a class="reference internal" href="matrix.html#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX">MATRIX</a>), POINTER(<a class="reference internal" href="vector.html#libscientific.vector.DVECTOR" title="libscientific.vector.DVECTOR">DVECTOR</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.lda.LDAMODEL.mu">
+<span class="sig-name descname"><span class="pre">mu</span></span><a class="headerlink" href="#libscientific.lda.LDAMODEL.mu" title="Link to this definition"></a></dt>
+<dd><p>Class means, <code class="docutils literal notranslate"><span class="pre">K</span> <span class="pre">x</span> <span class="pre">f</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>POINTER(<a class="reference internal" href="matrix.html#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX">MATRIX</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.lda.LDAMODEL.pprob">
+<span class="sig-name descname"><span class="pre">pprob</span></span><a class="headerlink" href="#libscientific.lda.LDAMODEL.pprob" title="Link to this definition"></a></dt>
+<dd><p>Prior probability of each class (fraction of training objects).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>POINTER(<a class="reference internal" href="vector.html#libscientific.vector.DVECTOR" title="libscientific.vector.DVECTOR">DVECTOR</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">features,</span> <span class="pre">mnpdf</span></span></dt>
+<dd><p>Training objects projected on the discriminant directions, and their
+normal densities: one <code class="docutils literal notranslate"><span class="pre">n_k</span> <span class="pre">x</span> <span class="pre">f</span></code> matrix per class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>POINTER(<a class="reference internal" href="tensor.html#libscientific.tensor.TENSOR" title="libscientific.tensor.TENSOR">TENSOR</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">fmean,</span> <span class="pre">fsdev</span></span></dt>
+<dd><p>Mean and standard deviation of the projected features per class, <code class="docutils literal notranslate"><span class="pre">K</span> <span class="pre">x</span> <span class="pre">f</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>POINTER(<a class="reference internal" href="matrix.html#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX">MATRIX</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.lda.LDAMODEL.classid">
+<span class="sig-name descname"><span class="pre">classid</span></span><a class="headerlink" href="#libscientific.lda.LDAMODEL.classid" title="Link to this definition"></a></dt>
+<dd><p>Row indexes of the training objects, grouped by class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>POINTER(<a class="reference internal" href="vector.html#libscientific.vector.UIVECTOR" title="libscientific.vector.UIVECTOR">UIVECTOR</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">nclass,</span> <span class="pre">class_start</span></span></dt>
+<dd><p>Number of classes and first label (0 or 1).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.lda.new_lda_model">
+<span class="sig-prename descclassname"><span class="pre">libscientific.lda.</span></span><span class="sig-name descname"><span class="pre">new_lda_model</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#libscientific.lda.LDAMODEL" title="libscientific.lda.LDAMODEL"><span class="pre">LDAMODEL</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.lda.new_lda_model" title="Link to this definition"></a></dt>
+<dd><p>Allocate an empty C LDA model (low-level API).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A new, empty model; release it with <a class="reference internal" href="#libscientific.lda.del_lda_model" title="libscientific.lda.del_lda_model"><code class="xref py py-func docutils literal notranslate"><span class="pre">del_lda_model()</span></code></a>.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>ctypes.POINTER(<a class="reference internal" href="#libscientific.lda.LDAMODEL" title="libscientific.lda.LDAMODEL">LDAMODEL</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.lda.del_lda_model">
+<span class="sig-prename descclassname"><span class="pre">libscientific.lda.</span></span><span class="sig-name descname"><span class="pre">del_lda_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mlda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#libscientific.lda.LDAMODEL" title="libscientific.lda.LDAMODEL"><span class="pre">LDAMODEL</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#libscientific.lda.del_lda_model" title="Link to this definition"></a></dt>
+<dd><p>Free a C LDA model created with <a class="reference internal" href="#libscientific.lda.new_lda_model" title="libscientific.lda.new_lda_model"><code class="xref py py-func docutils literal notranslate"><span class="pre">new_lda_model()</span></code></a> (low-level API).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mlda</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.lda.LDAMODEL" title="libscientific.lda.LDAMODEL"><em>LDAMODEL</em></a><em>)</em>) – The model to release. It must not be used afterwards.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.lda.lda_algorithm">
+<span class="sig-prename descclassname"><span class="pre">libscientific.lda.</span></span><span class="sig-name descname"><span class="pre">lda_algorithm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><span class="pre">mx.MATRIX</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><span class="pre">mx.MATRIX</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mlda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#libscientific.lda.LDAMODEL" title="libscientific.lda.LDAMODEL"><span class="pre">LDAMODEL</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#libscientific.lda.lda_algorithm" title="Link to this definition"></a></dt>
+<dd><p>Fit an LDA model (low-level API, see <a class="reference internal" href="#libscientific.lda.LDA.fit" title="libscientific.lda.LDA.fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">LDA.fit()</span></code></a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_input</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="matrix.html#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – Training objects, <code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">x</span> <span class="pre">f</span></code>.</p></li>
+<li><p><strong>y_input</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="matrix.html#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – Class labels, <code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">x</span> <span class="pre">1</span></code> (<code class="docutils literal notranslate"><span class="pre">0..K-1</span></code> or <code class="docutils literal notranslate"><span class="pre">1..K</span></code>).</p></li>
+<li><p><strong>mlda</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.lda.LDAMODEL" title="libscientific.lda.LDAMODEL"><em>LDAMODEL</em></a><em>)</em>) – Model created with <a class="reference internal" href="#libscientific.lda.new_lda_model" title="libscientific.lda.new_lda_model"><code class="xref py py-func docutils literal notranslate"><span class="pre">new_lda_model()</span></code></a>; filled with the results.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.lda.lda_prediction">
+<span class="sig-prename descclassname"><span class="pre">libscientific.lda.</span></span><span class="sig-name descname"><span class="pre">lda_prediction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><span class="pre">mx.MATRIX</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mlda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#libscientific.lda.LDAMODEL" title="libscientific.lda.LDAMODEL"><span class="pre">LDAMODEL</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pfeatures</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><span class="pre">mx.MATRIX</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scores</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><span class="pre">mx.MATRIX</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mnpdf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><span class="pre">mx.MATRIX</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><span class="pre">mx.MATRIX</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#libscientific.lda.lda_prediction" title="Link to this definition"></a></dt>
+<dd><p>Classify new objects (low-level API, see <a class="reference internal" href="#libscientific.lda.LDA.predict" title="libscientific.lda.LDA.predict"><code class="xref py py-meth docutils literal notranslate"><span class="pre">LDA.predict()</span></code></a>).</p>
+<p>All outputs must be empty matrices created with
+<a class="reference internal" href="matrix.html#libscientific.matrix.init_matrix" title="libscientific.matrix.init_matrix"><code class="xref py py-func docutils literal notranslate"><span class="pre">libscientific.matrix.init_matrix()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_input</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="matrix.html#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – Objects, <code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">x</span> <span class="pre">f</span></code>.</p></li>
+<li><p><strong>mlda</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.lda.LDAMODEL" title="libscientific.lda.LDAMODEL"><em>LDAMODEL</em></a><em>)</em>) – A fitted model.</p></li>
+<li><p><strong>pfeatures</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="matrix.html#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – Output: projections on the discriminant directions, <code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">x</span> <span class="pre">f</span></code>.</p></li>
+<li><p><strong>scores</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="matrix.html#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – Output: discriminant score of each class, <code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">x</span> <span class="pre">K</span></code>.</p></li>
+<li><p><strong>mnpdf</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="matrix.html#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – Output: normal density of each projection in the predicted class, <code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">x</span> <span class="pre">f</span></code>.</p></li>
+<li><p><strong>labels</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="matrix.html#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – Output: predicted labels, <code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">x</span> <span class="pre">1</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.lda.write_lda">
+<span class="sig-prename descclassname"><span class="pre">libscientific.lda.</span></span><span class="sig-name descname"><span class="pre">write_lda</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mlda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#libscientific.lda.LDAMODEL" title="libscientific.lda.LDAMODEL"><span class="pre">LDAMODEL</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#libscientific.lda.write_lda" title="Link to this definition"></a></dt>
+<dd><p>Write a model to a SQLite database (legacy format, low-level API).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dbpath</strong> (<em>str</em>) – Path of the SQLite file to create.</p></li>
+<li><p><strong>mlda</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.lda.LDAMODEL" title="libscientific.lda.LDAMODEL"><em>LDAMODEL</em></a><em>)</em>) – The model to store.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.lda.read_lda">
+<span class="sig-prename descclassname"><span class="pre">libscientific.lda.</span></span><span class="sig-name descname"><span class="pre">read_lda</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mlda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#libscientific.lda.LDAMODEL" title="libscientific.lda.LDAMODEL"><span class="pre">LDAMODEL</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#libscientific.lda.read_lda" title="Link to this definition"></a></dt>
+<dd><p>Read a model from a SQLite database (legacy format, low-level API).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dbpath</strong> (<em>str</em>) – Path of the SQLite file written by <a class="reference internal" href="#libscientific.lda.write_lda" title="libscientific.lda.write_lda"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_lda()</span></code></a>.</p></li>
+<li><p><strong>mlda</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.lda.LDAMODEL" title="libscientific.lda.LDAMODEL"><em>LDAMODEL</em></a><em>)</em>) – Model created with <a class="reference internal" href="#libscientific.lda.new_lda_model" title="libscientific.lda.new_lda_model"><code class="xref py py-func docutils literal notranslate"><span class="pre">new_lda_model()</span></code></a>; filled with the stored data.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="mlr.html" class="btn btn-neutral float-left" title="MLR — Multiple Linear Regression" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="upca.html" class="btn btn-neutral float-right" title="UPCA — Multi-way PCA" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2011, Giuseppe Marco Randazzo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

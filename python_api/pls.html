@@ -1,0 +1,995 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PLS — Partial Least Squares regression &mdash; libscientific 1.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=b51e6972"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="CPCA — Consensus (multi-block) PCA" href="cpca.html" />
+    <link rel="prev" title="PCA — Principal Component Analysis" href="pca.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            libscientific
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Overview.html">What is libscientific?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html">Getting started in C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#vector-operations">Vector operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#matrix-operations">Matrix operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#tensor-operations">Tensor operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#multivariate-analysis-algorithms">Multivariate analysis algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#model-persistence-and-serialization-lsm-and-lsb">Model persistence and serialization (.lsm and .lsb)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html">Getting started in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#vector-operations">Vector operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#matrix-operations">Matrix operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#tensor-operations">Tensor operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#multivariate-analysis-algorithms">Multivariate analysis algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#model-persistence-and-serialization-lsm-and-lsb">Model persistence and serialization (.lsm and .lsb)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Licensing.html">Licensing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../C-API.html">C API Reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../Python-API.html">Python API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../Python-API.html#models">Models</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="pca.html">PCA — Principal Component Analysis</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">PLS — Partial Least Squares regression</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#libscientific.pls.PLS"><code class="docutils literal notranslate"><span class="pre">PLS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#functions">Functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#low-level-api">Low-level API</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="cpca.html">CPCA — Consensus (multi-block) PCA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mlr.html">MLR — Multiple Linear Regression</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lda.html">LDA — Linear Discriminant Analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="upca.html">UPCA — Multi-way PCA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="upls.html">UPLS — Multi-way PLS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="clustering.html">Clustering and object selection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="interpolate.html">Interpolation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="model_io.html">Model files and bundles</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../Python-API.html#data-structures-and-utilities">Data structures and utilities</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">libscientific</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../Python-API.html">Python API Reference</a></li>
+      <li class="breadcrumb-item active">PLS — Partial Least Squares regression</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/python_api/pls.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-libscientific.pls">
+<span id="pls-partial-least-squares-regression"></span><h1>PLS — Partial Least Squares regression<a class="headerlink" href="#module-libscientific.pls" title="Link to this heading"></a></h1>
+<p>Partial Least Squares regression (PLS).</p>
+<p>PLS models the relationship between a matrix of predictors <code class="docutils literal notranslate"><span class="pre">X</span></code>
+(<code class="docutils literal notranslate"><span class="pre">n_objects</span> <span class="pre">x</span> <span class="pre">n_features</span></code>) and a matrix of responses <code class="docutils literal notranslate"><span class="pre">Y</span></code>
+(<code class="docutils literal notranslate"><span class="pre">n_objects</span> <span class="pre">x</span> <span class="pre">n_y</span></code>) through <code class="docutils literal notranslate"><span class="pre">nlv</span></code> latent variables:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">X</span> <span class="o">=</span> <span class="n">T</span> <span class="o">@</span> <span class="n">P</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="n">E</span>        <span class="n">Y</span> <span class="o">=</span> <span class="n">T</span> <span class="o">@</span> <span class="n">diag</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">@</span> <span class="n">Q</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="n">F</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">T</span></code> are the X <strong>scores</strong> (<code class="docutils literal notranslate"><span class="pre">n_objects</span> <span class="pre">x</span> <span class="pre">nlv</span></code>), <code class="docutils literal notranslate"><span class="pre">P</span></code> the X <strong>loadings</strong>
+(<code class="docutils literal notranslate"><span class="pre">n_features</span> <span class="pre">x</span> <span class="pre">nlv</span></code>), <code class="docutils literal notranslate"><span class="pre">W</span></code> the X <strong>weights</strong> used to compute the scores
+of new objects, <code class="docutils literal notranslate"><span class="pre">U</span></code> the Y scores, <code class="docutils literal notranslate"><span class="pre">Q</span></code> the Y loadings (<code class="docutils literal notranslate"><span class="pre">n_y</span> <span class="pre">x</span> <span class="pre">nlv</span></code>)
+and <code class="docutils literal notranslate"><span class="pre">b</span></code> the inner regression coefficients. Latent variables are computed
+one at a time with the NIPALS algorithm.</p>
+<p>Most users only need the <a class="reference internal" href="#libscientific.pls.PLS" title="libscientific.pls.PLS"><code class="xref py py-class docutils literal notranslate"><span class="pre">PLS</span></code></a> class:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">libscientific.pls</span><span class="w"> </span><span class="kn">import</span> <span class="n">PLS</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">X</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">],</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
+<span class="gp">... </span>     <span class="p">[</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">],</span> <span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">6.0</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">3.1</span><span class="p">],</span> <span class="p">[</span><span class="mf">3.9</span><span class="p">],</span> <span class="p">[</span><span class="mf">7.2</span><span class="p">],</span> <span class="p">[</span><span class="mf">7.8</span><span class="p">],</span> <span class="p">[</span><span class="mf">10.1</span><span class="p">],</span> <span class="p">[</span><span class="mf">10.9</span><span class="p">]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">PLS</span><span class="p">(</span><span class="n">nlv</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">xscaling</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">yscaling</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y_pred</span><span class="p">,</span> <span class="n">scores</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">([[</span><span class="mf">3.5</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">]],</span> <span class="n">nlv_</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">round</span><span class="p">(</span><span class="n">y_pred</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span>
+<span class="go">7.02</span>
+</pre></div>
+</div>
+<p>The functions after the class (<code class="docutils literal notranslate"><span class="pre">new_pls_model</span></code>, <code class="docutils literal notranslate"><span class="pre">pls_algorithm</span></code>, …)
+are the low-level ctypes wrappers of the C API.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="libscientific.pls.PLS">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.pls.</span></span><span class="sig-name descname"><span class="pre">PLS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nlv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xscaling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yscaling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.pls.PLS" title="Link to this definition"></a></dt>
+<dd><p>Partial Least Squares regression model (NIPALS algorithm).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nlv</strong> (<em>int</em><em>, </em><em>default 2</em>) – Number of latent variables to compute. It is capped to the number of
+features: after <a class="reference internal" href="#libscientific.pls.PLS.fit" title="libscientific.pls.PLS.fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fit()</span></code></a>, <code class="docutils literal notranslate"><span class="pre">nlv</span></code> holds the number actually computed.</p></li>
+<li><p><strong>xscaling</strong> (<em>int</em><em>, </em><em>default 1</em>) – Column preprocessing of <code class="docutils literal notranslate"><span class="pre">X</span></code>. Every option mean-centers the columns,
+then: 0 = no scaling, 1 = unit variance (autoscaling), 2 = root mean
+square, 3 = Pareto, 4 = range, 5 = level (see
+<a class="reference internal" href="pca.html#libscientific.pca.PCA" title="libscientific.pca.PCA"><code class="xref py py-class docutils literal notranslate"><span class="pre">PCA</span></code></a> for details).</p></li>
+<li><p><strong>yscaling</strong> (<em>int</em><em>, </em><em>default 0</em>) – Column preprocessing of <code class="docutils literal notranslate"><span class="pre">Y</span></code>, same options as <code class="docutils literal notranslate"><span class="pre">xscaling</span></code>.
+Predictions are always returned in the original units of <code class="docutils literal notranslate"><span class="pre">Y</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.pls.PLS.nlv">
+<span class="sig-name descname"><span class="pre">nlv</span></span><a class="headerlink" href="#libscientific.pls.PLS.nlv" title="Link to this definition"></a></dt>
+<dd><p>Number of latent variables of the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">xscaling,</span> <span class="pre">yscaling</span></span></dt>
+<dd><p>The preprocessing options given at construction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.pls.PLS.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#libscientific.pls.PLS.model" title="Link to this definition"></a></dt>
+<dd><p>The underlying C model (low-level access, see <a class="reference internal" href="#libscientific.pls.PLSMODEL" title="libscientific.pls.PLSMODEL"><code class="xref py py-class docutils literal notranslate"><span class="pre">PLSMODEL</span></code></a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ctypes.POINTER(<a class="reference internal" href="#libscientific.pls.PLSMODEL" title="libscientific.pls.PLSMODEL">PLSMODEL</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Y</span></code> is always 2D: one column per response. A single response is
+<code class="docutils literal notranslate"><span class="pre">[[y1],</span> <span class="pre">[y2],</span> <span class="pre">...]</span></code>.</p></li>
+<li><p>The sign of each latent variable is arbitrary: scores, loadings and
+weights of a latent variable can change sign between platforms without
+changing the predictions.</p></li>
+<li><p>Inputs can be lists of rows, numpy arrays or
+<a class="reference internal" href="matrix.html#libscientific.matrix.Matrix" title="libscientific.matrix.Matrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">Matrix</span></code></a> objects (see
+<a class="reference internal" href="matrix.html#libscientific.matrix.MatrixLike" title="libscientific.matrix.MatrixLike"><code class="xref py py-data docutils literal notranslate"><span class="pre">MatrixLike</span></code></a>); results are Python lists.</p></li>
+</ul>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">libscientific.pls</span><span class="w"> </span><span class="kn">import</span> <span class="n">PLS</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">X</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">],</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
+<span class="gp">... </span>     <span class="p">[</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">],</span> <span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">6.0</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">3.1</span><span class="p">],</span> <span class="p">[</span><span class="mf">3.9</span><span class="p">],</span> <span class="p">[</span><span class="mf">7.2</span><span class="p">],</span> <span class="p">[</span><span class="mf">7.8</span><span class="p">],</span> <span class="p">[</span><span class="mf">10.1</span><span class="p">],</span> <span class="p">[</span><span class="mf">10.9</span><span class="p">]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">PLS</span><span class="p">(</span><span class="n">nlv</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">xscaling</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">yscaling</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="nb">round</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">get_exp_variance</span><span class="p">()]</span>   <span class="c1"># % of X variance per LV</span>
+<span class="go">[82.3, 17.47]</span>
+</pre></div>
+</div>
+<p>Predict with 1 and 2 latent variables at once (one column per latent
+variable for a single response):</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">y_pred</span><span class="p">,</span> <span class="n">t_scores</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="nb">round</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">y_pred</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+<span class="go">[3.27, 3.42]</span>
+</pre></div>
+</div>
+<p>Predict new objects with 2 latent variables:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">y_new</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">([[</span><span class="mf">3.5</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">]],</span> <span class="n">nlv_</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">round</span><span class="p">(</span><span class="n">y_new</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span>
+<span class="go">7.02</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.pls.PLS.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">libscientific.matrix.MatrixLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">libscientific.matrix.MatrixLike</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#libscientific.pls.PLS.fit" title="Link to this definition"></a></dt>
+<dd><p>Fit the model on training data.</p>
+<p><code class="docutils literal notranslate"><span class="pre">X</span></code> and <code class="docutils literal notranslate"><span class="pre">Y</span></code> are preprocessed according to <code class="xref py py-attr docutils literal notranslate"><span class="pre">xscaling</span></code> and
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">yscaling</span></code>, then <a class="reference internal" href="#libscientific.pls.PLS.nlv" title="libscientific.pls.PLS.nlv"><code class="xref py py-attr docutils literal notranslate"><span class="pre">nlv</span></code></a> latent variables are extracted.
+Calling <code class="docutils literal notranslate"><span class="pre">fit</span></code> again replaces the previous model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_input</strong> (<em>MatrixLike</em>) – Predictors, shape <code class="docutils literal notranslate"><span class="pre">(n_objects,</span> <span class="pre">n_features)</span></code>.</p></li>
+<li><p><strong>y_input</strong> (<em>MatrixLike</em>) – Responses, shape <code class="docutils literal notranslate"><span class="pre">(n_objects,</span> <span class="pre">n_y)</span></code>: one column per response
+(<code class="docutils literal notranslate"><span class="pre">[[y1],</span> <span class="pre">[y2],</span> <span class="pre">...]</span></code> for a single response).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The model is updated in place.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">PLS</span><span class="p">(</span><span class="n">nlv</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">]],</span>
+<span class="gp">... </span>          <span class="p">[[</span><span class="mf">1.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">4.0</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">nlv</span>        <span class="c1"># capped to the number of features</span>
+<span class="go">2</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.pls.PLS.get_tscores">
+<span class="sig-name descname"><span class="pre">get_tscores</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.pls.PLS.get_tscores" title="Link to this definition"></a></dt>
+<dd><p>Return the X scores <code class="docutils literal notranslate"><span class="pre">T</span></code> of the training objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Matrix of shape <code class="docutils literal notranslate"><span class="pre">(n_objects,</span> <span class="pre">nlv)</span></code>: coordinates of each training
+object on each latent variable.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[list[float]]</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#libscientific.pls.PLS.predict" title="libscientific.pls.PLS.predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code></a></dt><dd><p>also returns the X scores of new objects.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">PLS</span><span class="p">(</span><span class="n">nlv</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">]],</span>
+<span class="gp">... </span>          <span class="p">[[</span><span class="mf">1.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">4.0</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">get_tscores</span><span class="p">()),</span> <span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">get_tscores</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+<span class="go">(4, 2)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.pls.PLS.get_uscores">
+<span class="sig-name descname"><span class="pre">get_uscores</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.pls.PLS.get_uscores" title="Link to this definition"></a></dt>
+<dd><p>Return the Y scores <code class="docutils literal notranslate"><span class="pre">U</span></code> of the training objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Matrix of shape <code class="docutils literal notranslate"><span class="pre">(n_objects,</span> <span class="pre">nlv)</span></code>. Plotting <code class="docutils literal notranslate"><span class="pre">U[:,</span> <span class="pre">k]</span></code> against
+<code class="docutils literal notranslate"><span class="pre">T[:,</span> <span class="pre">k]</span></code> shows the inner relation of latent variable <code class="docutils literal notranslate"><span class="pre">k</span></code>.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[list[float]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.pls.PLS.get_ploadings">
+<span class="sig-name descname"><span class="pre">get_ploadings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.pls.PLS.get_ploadings" title="Link to this definition"></a></dt>
+<dd><p>Return the X loadings <code class="docutils literal notranslate"><span class="pre">P</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Matrix of shape <code class="docutils literal notranslate"><span class="pre">(n_features,</span> <span class="pre">nlv)</span></code>: how each feature is
+reconstructed from each latent variable (<code class="docutils literal notranslate"><span class="pre">X</span> <span class="pre">≈</span> <span class="pre">T</span> <span class="pre">&#64;</span> <span class="pre">P.T</span></code>).</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[list[float]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.pls.PLS.get_qloadings">
+<span class="sig-name descname"><span class="pre">get_qloadings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.pls.PLS.get_qloadings" title="Link to this definition"></a></dt>
+<dd><p>Return the Y loadings <code class="docutils literal notranslate"><span class="pre">Q</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Matrix of shape <code class="docutils literal notranslate"><span class="pre">(n_y,</span> <span class="pre">nlv)</span></code>. For a single response all the
+values are <code class="docutils literal notranslate"><span class="pre">1.0</span></code>.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[list[float]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.pls.PLS.get_weights">
+<span class="sig-name descname"><span class="pre">get_weights</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.pls.PLS.get_weights" title="Link to this definition"></a></dt>
+<dd><p>Return the X weights <code class="docutils literal notranslate"><span class="pre">W</span></code>.</p>
+<p>The weights define how the scores are computed from the
+(preprocessed) features; they are the usual way to interpret which
+features drive each latent variable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Matrix of shape <code class="docutils literal notranslate"><span class="pre">(n_features,</span> <span class="pre">nlv)</span></code>.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[list[float]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.pls.PLS.get_beta_coefficients">
+<span class="sig-name descname"><span class="pre">get_beta_coefficients</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nlv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.pls.PLS.get_beta_coefficients" title="Link to this definition"></a></dt>
+<dd><p>Return the regression coefficients of the model with <code class="docutils literal notranslate"><span class="pre">nlv</span></code> latent variables.</p>
+<p>The coefficients <code class="docutils literal notranslate"><span class="pre">B</span> <span class="pre">=</span> <span class="pre">W</span> <span class="pre">(P'</span> <span class="pre">W)^-1</span> <span class="pre">b</span></code> turn the PLS model into a
+linear equation on the <strong>preprocessed</strong> data:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">y_average</span><span class="p">)</span> <span class="o">/</span> <span class="n">y_scaling</span> <span class="o">=</span> <span class="n">sum_j</span> <span class="n">B</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="n">x_average</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="o">/</span> <span class="n">x_scaling</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>so predictions can be computed without the model, e.g. with
+<a class="reference internal" href="#libscientific.pls.pls_beta_inference" title="libscientific.pls.pls_beta_inference"><code class="xref py py-func docutils literal notranslate"><span class="pre">pls_beta_inference()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>nlv</strong> (<em>int</em><em>, </em><em>default 1</em>) – Number of latent variables, from 1 to <a class="reference internal" href="#libscientific.pls.PLS.nlv" title="libscientific.pls.PLS.nlv"><code class="xref py py-attr docutils literal notranslate"><span class="pre">nlv</span></code></a>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">n_features</span></code> coefficients, one per feature.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[float]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the model has more than one response: the coefficients are
+    computed for a single response only.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">X</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">],</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
+<span class="gp">... </span>     <span class="p">[</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">],</span> <span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">6.0</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">PLS</span><span class="p">(</span><span class="n">nlv</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="p">[[</span><span class="mf">3.1</span><span class="p">],</span> <span class="p">[</span><span class="mf">3.9</span><span class="p">],</span> <span class="p">[</span><span class="mf">7.2</span><span class="p">],</span> <span class="p">[</span><span class="mf">7.8</span><span class="p">],</span> <span class="p">[</span><span class="mf">10.1</span><span class="p">],</span> <span class="p">[</span><span class="mf">10.9</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">get_beta_coefficients</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<span class="go">3</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.pls.PLS.get_vip">
+<span class="sig-name descname"><span class="pre">get_vip</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.pls.PLS.get_vip" title="Link to this definition"></a></dt>
+<dd><p>Return the Variable Importance in Projection (VIP) of each feature.</p>
+<p>VIP summarizes how much each feature contributes to explaining <code class="docutils literal notranslate"><span class="pre">Y</span></code>
+over all the latent variables of the model (S. Wold’s definition).
+The average of the squared VIP values is 1, so features with
+<code class="docutils literal notranslate"><span class="pre">VIP</span> <span class="pre">&gt;</span> <span class="pre">1</span></code> are usually considered important and features with
+<code class="docutils literal notranslate"><span class="pre">VIP</span> <span class="pre">&lt;</span> <span class="pre">0.8</span></code> candidates for removal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">n_features</span></code> values, one per feature.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[float]</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">X</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">],</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
+<span class="gp">... </span>     <span class="p">[</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">],</span> <span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">6.0</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">PLS</span><span class="p">(</span><span class="n">nlv</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="p">[[</span><span class="mf">3.1</span><span class="p">],</span> <span class="p">[</span><span class="mf">3.9</span><span class="p">],</span> <span class="p">[</span><span class="mf">7.2</span><span class="p">],</span> <span class="p">[</span><span class="mf">7.8</span><span class="p">],</span> <span class="p">[</span><span class="mf">10.1</span><span class="p">],</span> <span class="p">[</span><span class="mf">10.9</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vip</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_vip</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">vip</span><span class="p">),</span> <span class="nb">round</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">v</span> <span class="o">*</span> <span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vip</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">vip</span><span class="p">),</span> <span class="mi">6</span><span class="p">)</span>
+<span class="go">(3, 1.0)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.pls.PLS.get_exp_variance">
+<span class="sig-name descname"><span class="pre">get_exp_variance</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.pls.PLS.get_exp_variance" title="Link to this definition"></a></dt>
+<dd><p>Return the percentage of the variance of <code class="docutils literal notranslate"><span class="pre">X</span></code> explained by each latent variable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">nlv</span></code> values, not cumulative.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.pls.PLS.get_x_column_scaling">
+<span class="sig-name descname"><span class="pre">get_x_column_scaling</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.pls.PLS.get_x_column_scaling" title="Link to this definition"></a></dt>
+<dd><p>Return the scaling factor applied to each column of <code class="docutils literal notranslate"><span class="pre">X</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">n_features</span></code> values (all <code class="docutils literal notranslate"><span class="pre">1.0</span></code> when <code class="docutils literal notranslate"><span class="pre">xscaling=0</span></code>).</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.pls.PLS.get_x_averages">
+<span class="sig-name descname"><span class="pre">get_x_averages</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.pls.PLS.get_x_averages" title="Link to this definition"></a></dt>
+<dd><p>Return the mean of each column of the training <code class="docutils literal notranslate"><span class="pre">X</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">n_features</span></code> values.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.pls.PLS.get_y_column_scaling">
+<span class="sig-name descname"><span class="pre">get_y_column_scaling</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.pls.PLS.get_y_column_scaling" title="Link to this definition"></a></dt>
+<dd><p>Return the scaling factor applied to each column of <code class="docutils literal notranslate"><span class="pre">Y</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">n_y</span></code> values (all <code class="docutils literal notranslate"><span class="pre">1.0</span></code> when <code class="docutils literal notranslate"><span class="pre">yscaling=0</span></code>).</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.pls.PLS.get_y_averages">
+<span class="sig-name descname"><span class="pre">get_y_averages</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.pls.PLS.get_y_averages" title="Link to this definition"></a></dt>
+<dd><p>Return the mean of each column of the training <code class="docutils literal notranslate"><span class="pre">Y</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">n_y</span></code> values.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.pls.PLS.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">libscientific.matrix.MatrixLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nlv_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.pls.PLS.predict" title="Link to this definition"></a></dt>
+<dd><p>Predict the responses of new objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_input</strong> (<em>MatrixLike</em>) – Objects to predict, shape <code class="docutils literal notranslate"><span class="pre">(n_new_objects,</span> <span class="pre">n_features)</span></code>, with the
+same features (same order) as the training data.</p></li>
+<li><p><strong>nlv_</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of latent variables to use, from 1 to <a class="reference internal" href="#libscientific.pls.PLS.nlv" title="libscientific.pls.PLS.nlv"><code class="xref py py-attr docutils literal notranslate"><span class="pre">nlv</span></code></a>. If
+omitted, the predictions of <strong>every</strong> number of latent variables
+are returned side by side (see Returns).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>y_pred</strong> (<em>list[list[float]]</em>) – Predicted responses in the original units of <code class="docutils literal notranslate"><span class="pre">Y</span></code>.</p>
+<ul>
+<li><p>With <code class="docutils literal notranslate"><span class="pre">nlv_</span></code>: shape <code class="docutils literal notranslate"><span class="pre">(n_new_objects,</span> <span class="pre">n_y)</span></code>.</p></li>
+<li><p>Without <code class="docutils literal notranslate"><span class="pre">nlv_</span></code>: shape <code class="docutils literal notranslate"><span class="pre">(n_new_objects,</span> <span class="pre">n_y</span> <span class="pre">*</span> <span class="pre">nlv)</span></code>, where
+column <code class="docutils literal notranslate"><span class="pre">n_y</span> <span class="pre">*</span> <span class="pre">k</span> <span class="pre">+</span> <span class="pre">j</span></code> is response <code class="docutils literal notranslate"><span class="pre">j</span></code> predicted with
+<code class="docutils literal notranslate"><span class="pre">k</span> <span class="pre">+</span> <span class="pre">1</span></code> latent variables. For a single response, column <code class="docutils literal notranslate"><span class="pre">k</span></code>
+is the prediction with <code class="docutils literal notranslate"><span class="pre">k</span> <span class="pre">+</span> <span class="pre">1</span></code> latent variables.</p></li>
+</ul>
+</li>
+<li><p><strong>t_scores</strong> (<em>list[list[float]]</em>) – X scores of the new objects, shape <code class="docutils literal notranslate"><span class="pre">(n_new_objects,</span> <span class="pre">nlv)</span></code>.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If <code class="docutils literal notranslate"><span class="pre">nlv_</span></code> is not between 1 and <a class="reference internal" href="#libscientific.pls.PLS.nlv" title="libscientific.pls.PLS.nlv"><code class="xref py py-attr docutils literal notranslate"><span class="pre">nlv</span></code></a>.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Two responses, three latent variables:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">X</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">],</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
+<span class="gp">... </span>     <span class="p">[</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">],</span> <span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">6.0</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Y</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">3.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span> <span class="p">[</span><span class="mf">3.9</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">],</span> <span class="p">[</span><span class="mf">7.2</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">],</span> <span class="p">[</span><span class="mf">7.8</span><span class="p">,</span> <span class="mf">1.9</span><span class="p">],</span> <span class="p">[</span><span class="mf">10.1</span><span class="p">,</span> <span class="mf">1.7</span><span class="p">],</span> <span class="p">[</span><span class="mf">10.9</span><span class="p">,</span> <span class="mf">2.8</span><span class="p">]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">PLS</span><span class="p">(</span><span class="n">nlv</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y_all</span><span class="p">,</span> <span class="n">t</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">y_all</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>      <span class="c1"># 2 responses x 3 LVs, 3 LVs</span>
+<span class="go">(6, 3)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y_2lv</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">nlv_</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">y_2lv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>                 <span class="c1"># both responses, 2 LVs</span>
+<span class="go">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y_2lv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">y_all</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.pls.PLS.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#libscientific.pls.PLS.save" title="Link to this definition"></a></dt>
+<dd><p>Save the model to a file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em>) – Destination path. <code class="docutils literal notranslate"><span class="pre">.sqlite3</span></code> or <code class="docutils literal notranslate"><span class="pre">.db</span></code> use the legacy SQLite
+format; any other extension (<code class="docutils literal notranslate"><span class="pre">.lsm</span></code> recommended) uses the binary
+libscientific model container.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>OSError</strong> – If the file cannot be written.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.pls.PLS.load">
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#libscientific.pls.PLS.load" title="Link to this definition"></a></dt>
+<dd><p>Load a model saved with <a class="reference internal" href="#libscientific.pls.PLS.save" title="libscientific.pls.PLS.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save()</span></code></a>, replacing the current one.</p>
+<p>The format is detected from the file content or the extension. After
+loading, <a class="reference internal" href="#libscientific.pls.PLS.nlv" title="libscientific.pls.PLS.nlv"><code class="xref py py-attr docutils literal notranslate"><span class="pre">nlv</span></code></a> is set to the number of latent variables stored
+in the file; <code class="xref py py-attr docutils literal notranslate"><span class="pre">xscaling</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">yscaling</span></code> are left unchanged
+(predictions use the stored column averages and scalings).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em>) – Path of the model file.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>OSError</strong> – If a binary model file cannot be read.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span><span class="o">,</span><span class="w"> </span><span class="nn">tempfile</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">X</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">PLS</span><span class="p">(</span><span class="n">nlv</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="p">[[</span><span class="mf">1.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">4.0</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">(),</span> <span class="s2">&quot;pls.lsm&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">loaded</span> <span class="o">=</span> <span class="n">PLS</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">loaded</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">loaded</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">==</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.pls.apply_scaling">
+<span class="sig-prename descclassname"><span class="pre">libscientific.pls.</span></span><span class="sig-name descname"><span class="pre">apply_scaling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_avg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_scal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.pls.apply_scaling" title="Link to this definition"></a></dt>
+<dd><p>Center and scale a matrix with given column averages and scalings.</p>
+<p>Computes <code class="docutils literal notranslate"><span class="pre">(x[i][j]</span> <span class="pre">-</span> <span class="pre">x_avg[j])</span> <span class="pre">/</span> <span class="pre">x_scal[j]</span></code> for every element.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_input</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>]</em><em>]</em>) – Matrix, shape <code class="docutils literal notranslate"><span class="pre">(n_objects,</span> <span class="pre">n_features)</span></code>.</p></li>
+<li><p><strong>x_avg</strong> (<em>list</em><em>[</em><em>float</em><em>]</em>) – Column averages and scalings (size <code class="docutils literal notranslate"><span class="pre">n_features</span></code>), e.g. from
+<a class="reference internal" href="#libscientific.pls.PLS.get_x_averages" title="libscientific.pls.PLS.get_x_averages"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PLS.get_x_averages()</span></code></a> and <a class="reference internal" href="#libscientific.pls.PLS.get_x_column_scaling" title="libscientific.pls.PLS.get_x_column_scaling"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PLS.get_x_column_scaling()</span></code></a>.</p></li>
+<li><p><strong>x_scal</strong> (<em>list</em><em>[</em><em>float</em><em>]</em>) – Column averages and scalings (size <code class="docutils literal notranslate"><span class="pre">n_features</span></code>), e.g. from
+<a class="reference internal" href="#libscientific.pls.PLS.get_x_averages" title="libscientific.pls.PLS.get_x_averages"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PLS.get_x_averages()</span></code></a> and <a class="reference internal" href="#libscientific.pls.PLS.get_x_column_scaling" title="libscientific.pls.PLS.get_x_column_scaling"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PLS.get_x_column_scaling()</span></code></a>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The preprocessed matrix, same shape as <code class="docutils literal notranslate"><span class="pre">x_input</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[list[float]]</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">apply_scaling</span><span class="p">([[</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">]],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">])</span>
+<span class="go">[[1.0, 2.0]]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.pls.revert_scaling">
+<span class="sig-prename descclassname"><span class="pre">libscientific.pls.</span></span><span class="sig-name descname"><span class="pre">revert_scaling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_avg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_scal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.pls.revert_scaling" title="Link to this definition"></a></dt>
+<dd><p>Undo <a class="reference internal" href="#libscientific.pls.apply_scaling" title="libscientific.pls.apply_scaling"><code class="xref py py-func docutils literal notranslate"><span class="pre">apply_scaling()</span></code></a>: <code class="docutils literal notranslate"><span class="pre">x[i][j]</span> <span class="pre">*</span> <span class="pre">x_scal[j]</span> <span class="pre">+</span> <span class="pre">x_avg[j]</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_input</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>]</em><em>] or </em><em>list</em><em>[</em><em>float</em><em>]</em>) – Preprocessed matrix, or a flat list of values of a single column.</p></li>
+<li><p><strong>x_avg</strong> (<em>list</em><em>[</em><em>float</em><em>]</em>) – Column averages and scalings.</p></li>
+<li><p><strong>x_scal</strong> (<em>list</em><em>[</em><em>float</em><em>]</em>) – Column averages and scalings.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The matrix in the original units. A flat input list gives one row
+per value (<code class="docutils literal notranslate"><span class="pre">[[v1],</span> <span class="pre">[v2],</span> <span class="pre">...]</span></code>).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[list[float]]</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">revert_scaling</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">]],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">])</span>
+<span class="go">[[3.0, 10.0]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">revert_scaling</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">10.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.0</span><span class="p">])</span>
+<span class="go">[[11.0], [12.0]]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.pls.pls_beta_inference">
+<span class="sig-prename descclassname"><span class="pre">libscientific.pls.</span></span><span class="sig-name descname"><span class="pre">pls_beta_inference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.pls.pls_beta_inference" title="Link to this definition"></a></dt>
+<dd><p>Predict a single response from the beta coefficients only.</p>
+<p>Useful to deploy a model as a simple linear equation, without the
+library or the full model. The result is the same as
+<a class="reference internal" href="#libscientific.pls.PLS.predict" title="libscientific.pls.PLS.predict"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PLS.predict()</span></code></a> with the same number of latent variables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_input</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>]</em><em>]</em>) – Objects to predict, shape <code class="docutils literal notranslate"><span class="pre">(n_objects,</span> <span class="pre">n_features)</span></code>.</p></li>
+<li><p><strong>**kwargs</strong> – <p>All required:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">x_averages</span></code>, <code class="docutils literal notranslate"><span class="pre">x_scaling</span></code>: from <a class="reference internal" href="#libscientific.pls.PLS.get_x_averages" title="libscientific.pls.PLS.get_x_averages"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PLS.get_x_averages()</span></code></a> and
+<a class="reference internal" href="#libscientific.pls.PLS.get_x_column_scaling" title="libscientific.pls.PLS.get_x_column_scaling"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PLS.get_x_column_scaling()</span></code></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">y_averages</span></code>, <code class="docutils literal notranslate"><span class="pre">y_scaling</span></code>: from <a class="reference internal" href="#libscientific.pls.PLS.get_y_averages" title="libscientific.pls.PLS.get_y_averages"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PLS.get_y_averages()</span></code></a> and
+<a class="reference internal" href="#libscientific.pls.PLS.get_y_column_scaling" title="libscientific.pls.PLS.get_y_column_scaling"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PLS.get_y_column_scaling()</span></code></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">beta_coeff</span></code>: from <a class="reference internal" href="#libscientific.pls.PLS.get_beta_coefficients" title="libscientific.pls.PLS.get_beta_coefficients"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PLS.get_beta_coefficients()</span></code></a>.</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Predictions, shape <code class="docutils literal notranslate"><span class="pre">(n_objects,</span> <span class="pre">1)</span></code>, in the original units of <code class="docutils literal notranslate"><span class="pre">Y</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[list[float]]</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">X</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">],</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
+<span class="gp">... </span>     <span class="p">[</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">],</span> <span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">6.0</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">PLS</span><span class="p">(</span><span class="n">nlv</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">xscaling</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">yscaling</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="p">[[</span><span class="mf">3.1</span><span class="p">],</span> <span class="p">[</span><span class="mf">3.9</span><span class="p">],</span> <span class="p">[</span><span class="mf">7.2</span><span class="p">],</span> <span class="p">[</span><span class="mf">7.8</span><span class="p">],</span> <span class="p">[</span><span class="mf">10.1</span><span class="p">],</span> <span class="p">[</span><span class="mf">10.9</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y_beta</span> <span class="o">=</span> <span class="n">pls_beta_inference</span><span class="p">([[</span><span class="mf">3.5</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">]],</span>
+<span class="gp">... </span>                            <span class="n">x_averages</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">get_x_averages</span><span class="p">(),</span>
+<span class="gp">... </span>                            <span class="n">x_scaling</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">get_x_column_scaling</span><span class="p">(),</span>
+<span class="gp">... </span>                            <span class="n">y_averages</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">get_y_averages</span><span class="p">(),</span>
+<span class="gp">... </span>                            <span class="n">y_scaling</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">get_y_column_scaling</span><span class="p">(),</span>
+<span class="gp">... </span>                            <span class="n">beta_coeff</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">get_beta_coefficients</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y_model</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">([[</span><span class="mf">3.5</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">]],</span> <span class="n">nlv_</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">round</span><span class="p">(</span><span class="n">y_beta</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="mi">8</span><span class="p">)</span> <span class="o">==</span> <span class="nb">round</span><span class="p">(</span><span class="n">y_model</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="mi">8</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="low-level-api">
+<h2>Low-level API<a class="headerlink" href="#low-level-api" title="Link to this heading"></a></h2>
+<p>Thin ctypes wrappers around the C functions, working on raw C
+pointers. They are needed only to interoperate with other low-level code.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="libscientific.pls.PLSMODEL">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.pls.</span></span><span class="sig-name descname"><span class="pre">PLSMODEL</span></span><a class="headerlink" href="#libscientific.pls.PLSMODEL" title="Link to this definition"></a></dt>
+<dd><p>C structure holding a fitted PLS model (low-level API).</p>
+<p>Use <a class="reference internal" href="#libscientific.pls.PLS" title="libscientific.pls.PLS"><code class="xref py py-class docutils literal notranslate"><span class="pre">PLS</span></code></a> instead of accessing this structure directly. All fields
+are pointers to C matrices/vectors/tensors; convert them with
+<a class="reference internal" href="matrix.html#libscientific.matrix.matrix_to_list" title="libscientific.matrix.matrix_to_list"><code class="xref py py-func docutils literal notranslate"><span class="pre">libscientific.matrix.matrix_to_list()</span></code></a> or
+<a class="reference internal" href="vector.html#libscientific.vector.dvector_tolist" title="libscientific.vector.dvector_tolist"><code class="xref py py-func docutils literal notranslate"><span class="pre">libscientific.vector.dvector_tolist()</span></code></a>.</p>
+<p>With <code class="docutils literal notranslate"><span class="pre">n</span></code> objects, <code class="docutils literal notranslate"><span class="pre">f</span></code> features, <code class="docutils literal notranslate"><span class="pre">n_y</span></code> responses and <code class="docutils literal notranslate"><span class="pre">nlv</span></code> latent
+variables, the fields filled by <a class="reference internal" href="#libscientific.pls.pls_algorithm" title="libscientific.pls.pls_algorithm"><code class="xref py py-func docutils literal notranslate"><span class="pre">pls_algorithm()</span></code></a> are:</p>
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">xscores,</span> <span class="pre">xloadings,</span> <span class="pre">xweights</span></span></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">T</span></code> (<code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">x</span> <span class="pre">nlv</span></code>), <code class="docutils literal notranslate"><span class="pre">P</span></code> (<code class="docutils literal notranslate"><span class="pre">f</span> <span class="pre">x</span> <span class="pre">nlv</span></code>) and <code class="docutils literal notranslate"><span class="pre">W</span></code> (<code class="docutils literal notranslate"><span class="pre">f</span> <span class="pre">x</span> <span class="pre">nlv</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>POINTER(<a class="reference internal" href="matrix.html#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX">MATRIX</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">yscores,</span> <span class="pre">yloadings</span></span></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">U</span></code> (<code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">x</span> <span class="pre">nlv</span></code>) and <code class="docutils literal notranslate"><span class="pre">Q</span></code> (<code class="docutils literal notranslate"><span class="pre">n_y</span> <span class="pre">x</span> <span class="pre">nlv</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>POINTER(<a class="reference internal" href="matrix.html#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX">MATRIX</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.pls.PLSMODEL.b">
+<span class="sig-name descname"><span class="pre">b</span></span><a class="headerlink" href="#libscientific.pls.PLSMODEL.b" title="Link to this definition"></a></dt>
+<dd><p>Inner regression coefficients, one per latent variable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>POINTER(<a class="reference internal" href="vector.html#libscientific.vector.DVECTOR" title="libscientific.vector.DVECTOR">DVECTOR</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.pls.PLSMODEL.xvarexp">
+<span class="sig-name descname"><span class="pre">xvarexp</span></span><a class="headerlink" href="#libscientific.pls.PLSMODEL.xvarexp" title="Link to this definition"></a></dt>
+<dd><p>Percentage of the X variance explained by each latent variable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>POINTER(<a class="reference internal" href="vector.html#libscientific.vector.DVECTOR" title="libscientific.vector.DVECTOR">DVECTOR</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">xcolaverage,</span> <span class="pre">xcolscaling,</span> <span class="pre">ycolaverage,</span> <span class="pre">ycolscaling</span></span></dt>
+<dd><p>Column means and scaling factors of X (size <code class="docutils literal notranslate"><span class="pre">f</span></code>) and Y (size <code class="docutils literal notranslate"><span class="pre">n_y</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>POINTER(<a class="reference internal" href="vector.html#libscientific.vector.DVECTOR" title="libscientific.vector.DVECTOR">DVECTOR</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">recalculated_y,</span> <span class="pre">recalc_residuals</span></span></dt>
+<dd><p>Fitted Y of the training objects and their residuals,
+<code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">x</span> <span class="pre">(n_y</span> <span class="pre">*</span> <span class="pre">nlv)</span></code>; column <code class="docutils literal notranslate"><span class="pre">n_y</span> <span class="pre">*</span> <span class="pre">lv</span> <span class="pre">+</span> <span class="pre">j</span></code> refers to response <code class="docutils literal notranslate"><span class="pre">j</span></code>
+with <code class="docutils literal notranslate"><span class="pre">lv</span> <span class="pre">+</span> <span class="pre">1</span></code> latent variables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>POINTER(<a class="reference internal" href="matrix.html#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX">MATRIX</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">The</span> <span class="pre">remaining</span> <span class="pre">fields</span> <span class="pre">(``predicted_y``,</span> <span class="pre">``q2y``,</span> <span class="pre">``sdep``,</span> <span class="pre">``roc_*``,</span></span></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">``yscrambling``,</span> <span class="pre">...)</span> <span class="pre">are</span> <span class="pre">filled</span> <span class="pre">by</span> <span class="pre">the</span> <span class="pre">validation</span> <span class="pre">functions</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">C</span></span></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">library</span> <span class="pre">(cross-validation,</span> <span class="pre">y-scrambling)</span> <span class="pre">and</span> <span class="pre">are</span> <span class="pre">empty</span> <span class="pre">after</span> <span class="pre">a</span> <span class="pre">plain</span> <span class="pre">fit.</span></span></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.pls.new_pls_model">
+<span class="sig-prename descclassname"><span class="pre">libscientific.pls.</span></span><span class="sig-name descname"><span class="pre">new_pls_model</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#libscientific.pls.PLSMODEL" title="libscientific.pls.PLSMODEL"><span class="pre">PLSMODEL</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.pls.new_pls_model" title="Link to this definition"></a></dt>
+<dd><p>Allocate an empty C PLS model (low-level API).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A new, empty model. It must be released with <a class="reference internal" href="#libscientific.pls.del_pls_model" title="libscientific.pls.del_pls_model"><code class="xref py py-func docutils literal notranslate"><span class="pre">del_pls_model()</span></code></a>.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>ctypes.POINTER(<a class="reference internal" href="#libscientific.pls.PLSMODEL" title="libscientific.pls.PLSMODEL">PLSMODEL</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.pls.del_pls_model">
+<span class="sig-prename descclassname"><span class="pre">libscientific.pls.</span></span><span class="sig-name descname"><span class="pre">del_pls_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mpls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#libscientific.pls.PLSMODEL" title="libscientific.pls.PLSMODEL"><span class="pre">PLSMODEL</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#libscientific.pls.del_pls_model" title="Link to this definition"></a></dt>
+<dd><p>Free a C PLS model created with <a class="reference internal" href="#libscientific.pls.new_pls_model" title="libscientific.pls.new_pls_model"><code class="xref py py-func docutils literal notranslate"><span class="pre">new_pls_model()</span></code></a> (low-level API).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mpls</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.pls.PLSMODEL" title="libscientific.pls.PLSMODEL"><em>PLSMODEL</em></a><em>)</em>) – The model to release. It must not be used afterwards.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.pls.pls_algorithm">
+<span class="sig-prename descclassname"><span class="pre">libscientific.pls.</span></span><span class="sig-name descname"><span class="pre">pls_algorithm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><span class="pre">mx.MATRIX</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><span class="pre">mx.MATRIX</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mpls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#libscientific.pls.PLSMODEL" title="libscientific.pls.PLSMODEL"><span class="pre">PLSMODEL</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#libscientific.pls.pls_algorithm" title="Link to this definition"></a></dt>
+<dd><p>Fit a PLS model with the NIPALS algorithm (low-level API, see <a class="reference internal" href="#libscientific.pls.PLS.fit" title="libscientific.pls.PLS.fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PLS.fit()</span></code></a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_input</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="matrix.html#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – Predictors, shape <code class="docutils literal notranslate"><span class="pre">(n_objects,</span> <span class="pre">n_features)</span></code>.</p></li>
+<li><p><strong>y_input</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="matrix.html#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – Responses, shape <code class="docutils literal notranslate"><span class="pre">(n_objects,</span> <span class="pre">n_y)</span></code>.</p></li>
+<li><p><strong>mpls</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.pls.PLSMODEL" title="libscientific.pls.PLSMODEL"><em>PLSMODEL</em></a><em>)</em>) – Model created with <a class="reference internal" href="#libscientific.pls.new_pls_model" title="libscientific.pls.new_pls_model"><code class="xref py py-func docutils literal notranslate"><span class="pre">new_pls_model()</span></code></a>; filled with the results.</p></li>
+<li><p><strong>**kwargs</strong> – Required: <code class="docutils literal notranslate"><span class="pre">nlv</span></code> (number of latent variables), <code class="docutils literal notranslate"><span class="pre">x_scaling</span></code> and
+<code class="docutils literal notranslate"><span class="pre">y_scaling</span></code> (preprocessing options 0-5, see <a class="reference internal" href="#libscientific.pls.PLS" title="libscientific.pls.PLS"><code class="xref py py-class docutils literal notranslate"><span class="pre">PLS</span></code></a>).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.pls.pls_beta_coefficients">
+<span class="sig-prename descclassname"><span class="pre">libscientific.pls.</span></span><span class="sig-name descname"><span class="pre">pls_beta_coefficients</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mpls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#libscientific.pls.PLSMODEL" title="libscientific.pls.PLSMODEL"><span class="pre">PLSMODEL</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nlv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bcoeff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><span class="pre">vect.DVECTOR</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#libscientific.pls.pls_beta_coefficients" title="Link to this definition"></a></dt>
+<dd><p>Compute the beta coefficients of a single-response model (low-level API).</p>
+<p>See <a class="reference internal" href="#libscientific.pls.PLS.get_beta_coefficients" title="libscientific.pls.PLS.get_beta_coefficients"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PLS.get_beta_coefficients()</span></code></a>; the result is wrong for models
+with more than one response.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mpls</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.pls.PLSMODEL" title="libscientific.pls.PLSMODEL"><em>PLSMODEL</em></a><em>)</em>) – A fitted model.</p></li>
+<li><p><strong>nlv</strong> (<em>int</em>) – Number of latent variables to use.</p></li>
+<li><p><strong>bcoeff</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="vector.html#libscientific.vector.DVECTOR" title="libscientific.vector.DVECTOR"><em>DVECTOR</em></a><em>)</em>) – Output vector created with <a class="reference internal" href="vector.html#libscientific.vector.init_dvector" title="libscientific.vector.init_dvector"><code class="xref py py-func docutils literal notranslate"><span class="pre">libscientific.vector.init_dvector()</span></code></a>;
+filled with <code class="docutils literal notranslate"><span class="pre">n_features</span></code> coefficients.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.pls.pls_vip">
+<span class="sig-prename descclassname"><span class="pre">libscientific.pls.</span></span><span class="sig-name descname"><span class="pre">pls_vip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mpls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#libscientific.pls.PLSMODEL" title="libscientific.pls.PLSMODEL"><span class="pre">PLSMODEL</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vip</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><span class="pre">mx.MATRIX</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#libscientific.pls.pls_vip" title="Link to this definition"></a></dt>
+<dd><p>Compute the VIP of each feature (low-level API, see <a class="reference internal" href="#libscientific.pls.PLS.get_vip" title="libscientific.pls.PLS.get_vip"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PLS.get_vip()</span></code></a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mpls</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.pls.PLSMODEL" title="libscientific.pls.PLSMODEL"><em>PLSMODEL</em></a><em>)</em>) – A fitted model.</p></li>
+<li><p><strong>vip</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="matrix.html#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – Output matrix created with <a class="reference internal" href="matrix.html#libscientific.matrix.init_matrix" title="libscientific.matrix.init_matrix"><code class="xref py py-func docutils literal notranslate"><span class="pre">libscientific.matrix.init_matrix()</span></code></a>;
+resized to <code class="docutils literal notranslate"><span class="pre">(n_features,</span> <span class="pre">1)</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.pls.pls_score_predictor">
+<span class="sig-prename descclassname"><span class="pre">libscientific.pls.</span></span><span class="sig-name descname"><span class="pre">pls_score_predictor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><span class="pre">mx.MATRIX</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mpls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#libscientific.pls.PLSMODEL" title="libscientific.pls.PLSMODEL"><span class="pre">PLSMODEL</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nlv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_scores</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><span class="pre">mx.MATRIX</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#libscientific.pls.pls_score_predictor" title="Link to this definition"></a></dt>
+<dd><p>Compute the X scores of new objects (low-level API).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_input</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="matrix.html#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – Objects, shape <code class="docutils literal notranslate"><span class="pre">(n_new_objects,</span> <span class="pre">n_features)</span></code>.</p></li>
+<li><p><strong>mpls</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.pls.PLSMODEL" title="libscientific.pls.PLSMODEL"><em>PLSMODEL</em></a><em>)</em>) – A fitted model.</p></li>
+<li><p><strong>nlv</strong> (<em>int</em>) – Number of latent variables to use.</p></li>
+<li><p><strong>p_scores</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="matrix.html#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – Output matrix created with <a class="reference internal" href="matrix.html#libscientific.matrix.init_matrix" title="libscientific.matrix.init_matrix"><code class="xref py py-func docutils literal notranslate"><span class="pre">libscientific.matrix.init_matrix()</span></code></a>;
+filled with the scores, shape <code class="docutils literal notranslate"><span class="pre">(n_new_objects,</span> <span class="pre">nlv)</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.pls.pls_y_predictor">
+<span class="sig-prename descclassname"><span class="pre">libscientific.pls.</span></span><span class="sig-name descname"><span class="pre">pls_y_predictor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_scores</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mpls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#libscientific.pls.PLSMODEL" title="libscientific.pls.PLSMODEL"><span class="pre">PLSMODEL</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nlv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predicted_y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#libscientific.pls.pls_y_predictor" title="Link to this definition"></a></dt>
+<dd><p>Compute the responses from X scores (low-level API).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_scores</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="matrix.html#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>) or </em><a class="reference internal" href="matrix.html#libscientific.matrix.Matrix" title="libscientific.matrix.Matrix"><em>Matrix</em></a>) – X scores, e.g. from <a class="reference internal" href="#libscientific.pls.pls_score_predictor" title="libscientific.pls.pls_score_predictor"><code class="xref py py-func docutils literal notranslate"><span class="pre">pls_score_predictor()</span></code></a>, shape <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">&gt;=</span> <span class="pre">nlv)</span></code>.</p></li>
+<li><p><strong>mpls</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.pls.PLSMODEL" title="libscientific.pls.PLSMODEL"><em>PLSMODEL</em></a><em>)</em>) – A fitted model.</p></li>
+<li><p><strong>nlv</strong> (<em>int</em>) – Number of latent variables to use.</p></li>
+<li><p><strong>predicted_y</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="matrix.html#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>) or </em><a class="reference internal" href="matrix.html#libscientific.matrix.Matrix" title="libscientific.matrix.Matrix"><em>Matrix</em></a>) – Output matrix; filled with the responses in original units, shape
+<code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">n_y)</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.pls.pls_y_predictor_all_lv">
+<span class="sig-prename descclassname"><span class="pre">libscientific.pls.</span></span><span class="sig-name descname"><span class="pre">pls_y_predictor_all_lv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><span class="pre">mx.MATRIX</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mpls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#libscientific.pls.PLSMODEL" title="libscientific.pls.PLSMODEL"><span class="pre">PLSMODEL</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predicted_scores</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><span class="pre">mx.MATRIX</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predicted_y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><span class="pre">mx.MATRIX</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#libscientific.pls.pls_y_predictor_all_lv" title="Link to this definition"></a></dt>
+<dd><p>Predict the responses for every number of latent variables (low-level API).</p>
+<p>See <a class="reference internal" href="#libscientific.pls.PLS.predict" title="libscientific.pls.PLS.predict"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PLS.predict()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_input</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="matrix.html#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – Objects, shape <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">n_features)</span></code>.</p></li>
+<li><p><strong>mpls</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.pls.PLSMODEL" title="libscientific.pls.PLSMODEL"><em>PLSMODEL</em></a><em>)</em>) – A fitted model.</p></li>
+<li><p><strong>predicted_scores</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="matrix.html#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – Output: X scores, shape <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">nlv)</span></code>.</p></li>
+<li><p><strong>predicted_y</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="matrix.html#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – Output: responses, shape <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">n_y</span> <span class="pre">*</span> <span class="pre">nlv)</span></code>; column <code class="docutils literal notranslate"><span class="pre">n_y</span> <span class="pre">*</span> <span class="pre">k</span> <span class="pre">+</span> <span class="pre">j</span></code> is
+response <code class="docutils literal notranslate"><span class="pre">j</span></code> with <code class="docutils literal notranslate"><span class="pre">k</span> <span class="pre">+</span> <span class="pre">1</span></code> latent variables.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.pls.print_pls">
+<span class="sig-prename descclassname"><span class="pre">libscientific.pls.</span></span><span class="sig-name descname"><span class="pre">print_pls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mpls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#libscientific.pls.PLSMODEL" title="libscientific.pls.PLSMODEL"><span class="pre">PLSMODEL</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#libscientific.pls.print_pls" title="Link to this definition"></a></dt>
+<dd><p>Print the content of a model to standard output (low-level API).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mpls</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.pls.PLSMODEL" title="libscientific.pls.PLSMODEL"><em>PLSMODEL</em></a><em>)</em>) – The model to print (e.g. <code class="docutils literal notranslate"><span class="pre">PLS().model</span></code>).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.pls.write_pls">
+<span class="sig-prename descclassname"><span class="pre">libscientific.pls.</span></span><span class="sig-name descname"><span class="pre">write_pls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#libscientific.pls.PLSMODEL" title="libscientific.pls.PLSMODEL"><span class="pre">PLSMODEL</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#libscientific.pls.write_pls" title="Link to this definition"></a></dt>
+<dd><p>Write a model to a SQLite database (legacy format, low-level API).</p>
+<p>Prefer <a class="reference internal" href="#libscientific.pls.PLS.save" title="libscientific.pls.PLS.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PLS.save()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dbpath</strong> (<em>str</em>) – Path of the SQLite file to create.</p></li>
+<li><p><strong>pls</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.pls.PLSMODEL" title="libscientific.pls.PLSMODEL"><em>PLSMODEL</em></a><em>)</em>) – The model to store.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.pls.read_pls">
+<span class="sig-prename descclassname"><span class="pre">libscientific.pls.</span></span><span class="sig-name descname"><span class="pre">read_pls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#libscientific.pls.PLSMODEL" title="libscientific.pls.PLSMODEL"><span class="pre">PLSMODEL</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#libscientific.pls.read_pls" title="Link to this definition"></a></dt>
+<dd><p>Read a model from a SQLite database (legacy format, low-level API).</p>
+<p>Prefer <a class="reference internal" href="#libscientific.pls.PLS.load" title="libscientific.pls.PLS.load"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PLS.load()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dbpath</strong> (<em>str</em>) – Path of the SQLite file written by <a class="reference internal" href="#libscientific.pls.write_pls" title="libscientific.pls.write_pls"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_pls()</span></code></a>.</p></li>
+<li><p><strong>pls</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.pls.PLSMODEL" title="libscientific.pls.PLSMODEL"><em>PLSMODEL</em></a><em>)</em>) – Model created with <a class="reference internal" href="#libscientific.pls.new_pls_model" title="libscientific.pls.new_pls_model"><code class="xref py py-func docutils literal notranslate"><span class="pre">new_pls_model()</span></code></a>; filled with the stored data.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pca.html" class="btn btn-neutral float-left" title="PCA — Principal Component Analysis" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="cpca.html" class="btn btn-neutral float-right" title="CPCA — Consensus (multi-block) PCA" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2011, Giuseppe Marco Randazzo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

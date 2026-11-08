@@ -1,0 +1,455 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>upls.h &mdash; libscientific 1.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=b51e6972"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            libscientific
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../Overview.html">What is libscientific?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html">Getting started in C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#vector-operations">Vector operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#matrix-operations">Matrix operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#tensor-operations">Tensor operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#multivariate-analysis-algorithms">Multivariate analysis algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#model-persistence-and-serialization-lsm-and-lsb">Model persistence and serialization (.lsm and .lsb)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html">Getting started in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#vector-operations">Vector operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#matrix-operations">Matrix operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#tensor-operations">Tensor operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#multivariate-analysis-algorithms">Multivariate analysis algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#model-persistence-and-serialization-lsm-and-lsb">Model persistence and serialization (.lsm and .lsb)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Licensing.html">Licensing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../C-API.html">C API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Python-API.html">Python API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">libscientific</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">upls.h</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for upls.h</h1><div class="highlight"><pre>
+<span></span><span class="cm">/* Implements UPLS algorithms.</span>
+<span class="cm"> * Copyright (C) 2016-2026 designed, written and maintained by Giuseppe Marco Randazzo &lt;gmrandazzo@gmail.com&gt;</span>
+<span class="cm"> *</span>
+<span class="cm"> * This program is free software: you can redistribute it and/or modify</span>
+<span class="cm"> * it under the terms of the GNU Affero General Public License as published by</span>
+<span class="cm"> * the Free Software Foundation, either version 3 of the License, or</span>
+<span class="cm"> * (at your option) any later version.</span>
+<span class="cm"> *</span>
+<span class="cm"> * This program is distributed in the hope that it will be useful,</span>
+<span class="cm"> * but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="cm"> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the</span>
+<span class="cm"> * GNU Affero General Public License for more details.</span>
+<span class="cm"> *</span>
+<span class="cm"> * You should have received a copy of the GNU Affero General Public License</span>
+<span class="cm"> * along with this program. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
+<span class="cm"> */</span>
+
+<span class="cp">#ifndef UPLS_H</span>
+<div class="viewcode-block" id="c.UPLS_H"><span class="cp">#define UPLS_H</span></div>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;tensor.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;matrix.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;vector.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;preprocessing.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;scientificinfo.h&quot;</span>
+
+<div class="viewcode-block" id="c.UPLSCONVERGENCE"><span class="cp">#define UPLSCONVERGENCE 1e-3</span></div>
+
+<div class="viewcode-block" id="c.UPLSMODEL"><a class="viewcode-back" href="../C-API.html#c.UPLSMODEL">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Multi-way (unfolded) Partial Least Squares regression model.</span>
+<span class="cm"> *</span>
+<span class="cm"> * X and Y are tensors of layers with the same objects: ``X-&gt;m[k]`` is</span>
+<span class="cm"> * ``n x f`` (``Kx`` layers), ``Y-&gt;m[k]`` is ``n x ny`` (``Ky`` layers; a single</span>
+<span class="cm"> * response matrix is a tensor with one layer). Create the model with</span>
+<span class="cm"> * :c:func:`NewUPLSModel`, fill it with :c:func:`UPLS` and free it with</span>
+<span class="cm"> * :c:func:`DelUPLSModel`. With ``nlv`` latent variables:</span>
+<span class="cm"> *</span>
+<span class="cm"> * Members:</span>
+<span class="cm"> *   xscores: X scores, ``n x nlv``.</span>
+<span class="cm"> *   xloadings: One ``f x Kx`` X loading matrix per latent variable.</span>
+<span class="cm"> *   xweights: One ``f x Kx`` X weight matrix per latent variable.</span>
+<span class="cm"> *   xvarexp: Percentage of the X variance explained by each latent variable.</span>
+<span class="cm"> *   yscores: Y scores, ``n x nlv``.</span>
+<span class="cm"> *   yloadings: One ``ny x Ky`` Y loading matrix per latent variable.</span>
+<span class="cm"> *   b: Inner regression coefficient of each latent variable (1 for a single</span>
+<span class="cm"> *     response: the coefficient is carried by the Y loadings).</span>
+<span class="cm"> *   xcolaverage: Column means of each X layer.</span>
+<span class="cm"> *   xcolscaling: Column scalings of each X layer.</span>
+<span class="cm"> *   ycolaverage: Column means of each Y layer.</span>
+<span class="cm"> *   ycolscaling: Column scalings of each Y layer.</span>
+<span class="cm"> *   r2x_model: R² of X for 1..nlv latent variables (:c:func:`UPLSRSquared`).</span>
+<span class="cm"> *   r2x_validation: Cross-validated R² of X.</span>
+<span class="cm"> *   r2y_model: R² of Y: one ``ny x Ky`` matrix per latent variable.</span>
+<span class="cm"> *   r2y_validation: Cross-validated R² of Y, same layout.</span>
+<span class="cm"> *   q2y: Q² of Y, same layout (validation functions).</span>
+<span class="cm"> *   sdep: Standard deviation of the prediction errors, same layout.</span>
+<span class="cm"> *   sdec: Standard deviation of the recalculation errors, same layout.</span>
+<span class="cm"> *   recalculated_y: Fitted Y of the training objects: one matrix per Y</span>
+<span class="cm"> *     layer, ``n x (ny*nlv)``.</span>
+<span class="cm"> *   predicted_y: Cross-validated Y, same layout.</span>
+<span class="cm"> *   recalc_residuals: Fitted minus true Y, same layout.</span>
+<span class="cm"> *   pred_residuals: Cross-validated residuals, same layout.</span>
+<span class="cm"> *   q2y_yscrambling: Q² of the y-scrambling models.</span>
+<span class="cm"> *   sdep_yscrambling: SDEP of the y-scrambling models.</span>
+<span class="cm"> */</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="p">{</span>
+<div class="viewcode-block" id="c.UPLSMODEL.xscores"><a class="viewcode-back" href="../C-API.html#c.UPLSMODEL.xscores">[docs]</a><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">xscores</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.UPLSMODEL.xloadings"><a class="viewcode-back" href="../C-API.html#c.UPLSMODEL.xloadings">[docs]</a><span class="w">  </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">xloadings</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.UPLSMODEL.xweights"><a class="viewcode-back" href="../C-API.html#c.UPLSMODEL.xweights">[docs]</a><span class="w">  </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">xweights</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.UPLSMODEL.xvarexp"><a class="viewcode-back" href="../C-API.html#c.UPLSMODEL.xvarexp">[docs]</a><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">xvarexp</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.UPLSMODEL.yscores"><a class="viewcode-back" href="../C-API.html#c.UPLSMODEL.yscores">[docs]</a><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">yscores</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.UPLSMODEL.yloadings"><a class="viewcode-back" href="../C-API.html#c.UPLSMODEL.yloadings">[docs]</a><span class="w">  </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">yloadings</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.UPLSMODEL.b"><a class="viewcode-back" href="../C-API.html#c.UPLSMODEL.b">[docs]</a><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">b</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.UPLSMODEL.xcolaverage"><a class="viewcode-back" href="../C-API.html#c.UPLSMODEL.xcolaverage">[docs]</a><span class="w">  </span><span class="n">dvectorlist</span><span class="w"> </span><span class="o">*</span><span class="n">xcolaverage</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.UPLSMODEL.xcolscaling"><a class="viewcode-back" href="../C-API.html#c.UPLSMODEL.xcolscaling">[docs]</a><span class="w">  </span><span class="n">dvectorlist</span><span class="w"> </span><span class="o">*</span><span class="n">xcolscaling</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.UPLSMODEL.ycolaverage"><a class="viewcode-back" href="../C-API.html#c.UPLSMODEL.ycolaverage">[docs]</a><span class="w">  </span><span class="n">dvectorlist</span><span class="w"> </span><span class="o">*</span><span class="n">ycolaverage</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.UPLSMODEL.ycolscaling"><a class="viewcode-back" href="../C-API.html#c.UPLSMODEL.ycolscaling">[docs]</a><span class="w">  </span><span class="n">dvectorlist</span><span class="w"> </span><span class="o">*</span><span class="n">ycolscaling</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.UPLSMODEL.r2x_model"><a class="viewcode-back" href="../C-API.html#c.UPLSMODEL.r2x_model">[docs]</a><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">r2x_model</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.UPLSMODEL.r2x_validation"><a class="viewcode-back" href="../C-API.html#c.UPLSMODEL.r2x_validation">[docs]</a><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">r2x_validation</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.UPLSMODEL.r2y_model"><a class="viewcode-back" href="../C-API.html#c.UPLSMODEL.r2y_model">[docs]</a><span class="w">  </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">r2y_model</span><span class="p">;</span><span class="w"> </span><span class="cm">/* each order correspond to a principal component; each row correspond to an y dependent variable and each col to an order */</span></div>
+<div class="viewcode-block" id="c.UPLSMODEL.r2y_validation"><a class="viewcode-back" href="../C-API.html#c.UPLSMODEL.r2y_validation">[docs]</a><span class="w">  </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">r2y_validation</span><span class="p">;</span><span class="w">  </span><span class="cm">/* each order correspond to a principal component; each row correspond to an y dependent variable and each col to an order */</span></div>
+<div class="viewcode-block" id="c.UPLSMODEL.q2y"><a class="viewcode-back" href="../C-API.html#c.UPLSMODEL.q2y">[docs]</a><span class="w">  </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">q2y</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.UPLSMODEL.sdep"><a class="viewcode-back" href="../C-API.html#c.UPLSMODEL.sdep">[docs]</a><span class="w">  </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">sdep</span><span class="p">;</span><span class="w"> </span><span class="cm">/* Standard Deviation over Prediction */</span></div>
+<div class="viewcode-block" id="c.UPLSMODEL.sdec"><a class="viewcode-back" href="../C-API.html#c.UPLSMODEL.sdec">[docs]</a><span class="w">  </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">sdec</span><span class="p">;</span><span class="w"> </span><span class="cm">/* Standard Deviation over Recalculating */</span></div>
+<div class="viewcode-block" id="c.UPLSMODEL.recalculated_y"><a class="viewcode-back" href="../C-API.html#c.UPLSMODEL.recalculated_y">[docs]</a><span class="w">  </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">recalculated_y</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.UPLSMODEL.predicted_y"><a class="viewcode-back" href="../C-API.html#c.UPLSMODEL.predicted_y">[docs]</a><span class="w">  </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">predicted_y</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.UPLSMODEL.recalc_residuals"><a class="viewcode-back" href="../C-API.html#c.UPLSMODEL.recalc_residuals">[docs]</a><span class="w">  </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">recalc_residuals</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.UPLSMODEL.pred_residuals"><a class="viewcode-back" href="../C-API.html#c.UPLSMODEL.pred_residuals">[docs]</a><span class="w">  </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">pred_residuals</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.UPLSMODEL.q2y_yscrambling"><a class="viewcode-back" href="../C-API.html#c.UPLSMODEL.q2y_yscrambling">[docs]</a><span class="w">  </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">q2y_yscrambling</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.UPLSMODEL.sdep_yscrambling"><a class="viewcode-back" href="../C-API.html#c.UPLSMODEL.sdep_yscrambling">[docs]</a><span class="w">  </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">sdep_yscrambling</span><span class="p">;</span></div>
+<span class="p">}</span><span class="w"> </span><span class="n">UPLSMODEL</span><span class="p">;</span></div>
+
+<div class="viewcode-block" id="c.NewUPLSModel"><a class="viewcode-back" href="../C-API.html#c.NewUPLSModel">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Allocate an empty UPLS model.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   m: [out] Address of the pointer that receives the new model.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Note:</span>
+<span class="cm"> *   Release the model with :c:func:`DelUPLSModel`.</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">NewUPLSModel</span><span class="p">(</span><span class="n">UPLSMODEL</span><span class="w"> </span><span class="o">**</span><span class="n">m</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.DelUPLSModel"><a class="viewcode-back" href="../C-API.html#c.DelUPLSModel">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Free a UPLS model and all its members, and set the pointer to ``NULL``.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   m: [in,out] Address of the model pointer created with :c:func:`NewUPLSModel`.</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">DelUPLSModel</span><span class="p">(</span><span class="n">UPLSMODEL</span><span class="w"> </span><span class="o">**</span><span class="n">m</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.UPLS"><a class="viewcode-back" href="../C-API.html#c.UPLS">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Fit a multi-way PLS regression model (Wold, Geladi and Esbensen,</span>
+<span class="cm"> * J. Chemometrics 1, 41-56, 1987).</span>
+<span class="cm"> *</span>
+<span class="cm"> * Every column of every X and Y layer is preprocessed, then the latent</span>
+<span class="cm"> * variables are extracted one at a time with NIPALS (up to 1000 iterations,</span>
+<span class="cm"> * relative tolerance ``UPLSCONVERGENCE`` = 1e-3). When Y is fully explained</span>
+<span class="cm"> * the remaining latent variables are skipped (a message is printed on</span>
+<span class="cm"> * standard error), so the model can have fewer than ``npc`` latent</span>
+<span class="cm"> * variables. Fitting an already fitted model replaces its results.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   X_: [in] X layers, all ``n x f``.</span>
+<span class="cm"> *   Y_: [in] Y layers, all ``n x ny``.</span>
+<span class="cm"> *   npc: [in] Number of latent variables; capped to ``f``.</span>
+<span class="cm"> *   xautoscaling: [in] Column preprocessing of X: 0 = mean centering only,</span>
+<span class="cm"> *     1 = standard deviation, 2 = root mean square, 3 = Pareto, 4 = range,</span>
+<span class="cm"> *     5 = level.</span>
+<span class="cm"> *   yautoscaling: [in] Column preprocessing of Y, same options.</span>
+<span class="cm"> *   m: [out] Model created with :c:func:`NewUPLSModel`; filled with the</span>
+<span class="cm"> *     results (see :c:type:`UPLSMODEL`).</span>
+<span class="cm"> *   s: [in] Unused, pass ``NULL``.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Returns:</span>
+<span class="cm"> *   Nothing, the results are written into ``m``.</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">UPLS</span><span class="p">(</span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">X_</span><span class="p">,</span>
+<span class="w">          </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">Y_</span><span class="p">,</span>
+<span class="w">          </span><span class="kt">size_t</span><span class="w"> </span><span class="n">npc</span><span class="p">,</span>
+<span class="w">          </span><span class="kt">size_t</span><span class="w"> </span><span class="n">xautoscaling</span><span class="p">,</span>
+<span class="w">          </span><span class="kt">size_t</span><span class="w"> </span><span class="n">yautoscaling</span><span class="p">,</span>
+<span class="w">          </span><span class="n">UPLSMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span>
+<span class="w">          </span><span class="n">scisignal</span><span class="w"> </span><span class="o">*</span><span class="n">s</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.UPLSScorePredictor"><a class="viewcode-back" href="../C-API.html#c.UPLSScorePredictor">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Compute the X scores of new objects.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   X_: [in] X layers of the new objects (same layers and features as the</span>
+<span class="cm"> *     training X, ``m`` rows each).</span>
+<span class="cm"> *   m: [in] Model fitted with :c:func:`UPLS`.</span>
+<span class="cm"> *   npc: [in] Number of latent variables to use.</span>
+<span class="cm"> *   ptscores: [out] Matrix created with ``initMatrix``; resized to</span>
+<span class="cm"> *     ``m x npc``.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Returns:</span>
+<span class="cm"> *   Nothing, the scores are written into ``ptscores``.</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">UPLSScorePredictor</span><span class="p">(</span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">X_</span><span class="p">,</span>
+<span class="w">                        </span><span class="n">UPLSMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span>
+<span class="w">                        </span><span class="kt">size_t</span><span class="w"> </span><span class="n">npc</span><span class="p">,</span>
+<span class="w">                        </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">ptscores</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.UPLSYPredictor"><a class="viewcode-back" href="../C-API.html#c.UPLSYPredictor">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Compute the responses from X scores.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   tscores: [in] X scores (from :c:func:`UPLSScorePredictor`).</span>
+<span class="cm"> *   m: [in] Model fitted with :c:func:`UPLS`.</span>
+<span class="cm"> *   npc: [in] Number of latent variables to use.</span>
+<span class="cm"> *   py: [out] Tensor created with ``initTensor``; receives one ``m x ny``</span>
+<span class="cm"> *     matrix per Y layer, in the original units of Y.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Returns:</span>
+<span class="cm"> *   Nothing, the responses are written into ``py``.</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">UPLSYPredictor</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">tscores</span><span class="p">,</span>
+<span class="w">                    </span><span class="n">UPLSMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span>
+<span class="w">                    </span><span class="kt">size_t</span><span class="w"> </span><span class="n">npc</span><span class="p">,</span>
+<span class="w">                    </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">py</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.UPLSRSquared"><a class="viewcode-back" href="../C-API.html#c.UPLSRSquared">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Compute R² of X and Y and the SDEC for 1..npc latent variables.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   X_: [in] X layers (training or test objects).</span>
+<span class="cm"> *   Y_: [in] True Y layers of the same objects.</span>
+<span class="cm"> *   m: [in] Model fitted with :c:func:`UPLS`.</span>
+<span class="cm"> *   npc: [in] Maximum number of latent variables.</span>
+<span class="cm"> *   r2x: [out] Vector created with ``initDVector``; one cumulative R² of X</span>
+<span class="cm"> *     per number of latent variables.</span>
+<span class="cm"> *   r2y: [out] Tensor created with ``initTensor``; one ``ny x Ky`` matrix of</span>
+<span class="cm"> *     R² values per number of latent variables.</span>
+<span class="cm"> *   sdec: [out] Tensor; standard deviation of the errors, same layout.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Returns:</span>
+<span class="cm"> *   Nothing, the statistics are written into the outputs.</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">UPLSRSquared</span><span class="p">(</span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">X_</span><span class="p">,</span>
+<span class="w">                  </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">Y_</span><span class="p">,</span>
+<span class="w">                  </span><span class="n">UPLSMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span>
+<span class="w">                  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">npc</span><span class="p">,</span>
+<span class="w">                  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">r2x</span><span class="p">,</span>
+<span class="w">                  </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">r2y</span><span class="p">,</span>
+<span class="w">                  </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">sdec</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.UPLSRSquared_SSErr_SStot"><a class="viewcode-back" href="../C-API.html#c.UPLSRSquared_SSErr_SStot">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Compute the residual and total sums of squares of X and Y for 1..npc</span>
+<span class="cm"> * latent variables (used by the cross-validation functions).</span>
+<span class="cm"> *</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   X_: [in] X layers.</span>
+<span class="cm"> *   Y_: [in] True Y layers.</span>
+<span class="cm"> *   m: [in] Model fitted with :c:func:`UPLS`.</span>
+<span class="cm"> *   npc: [in] Maximum number of latent variables.</span>
+<span class="cm"> *   xss_err: [out] Residual sum of squares of X, one value per number of</span>
+<span class="cm"> *     latent variables.</span>
+<span class="cm"> *   xss_tot: [out] Total sum of squares of X, same size.</span>
+<span class="cm"> *   yss_err: [out] Residual sums of squares of Y: one ``ny x Ky`` matrix per</span>
+<span class="cm"> *     number of latent variables.</span>
+<span class="cm"> *   yss_tot: [out] Total sums of squares of Y, same layout.</span>
+<span class="cm"> *   predicted_y: [out] Predicted Y layers. ``NULL`` to skip.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Returns:</span>
+<span class="cm"> *   Nothing, the results are written into the outputs.</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">UPLSRSquared_SSErr_SStot</span><span class="p">(</span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">X_</span><span class="p">,</span>
+<span class="w">                              </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">Y_</span><span class="p">,</span>
+<span class="w">                              </span><span class="n">UPLSMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">,</span>
+<span class="w">                              </span><span class="kt">size_t</span><span class="w"> </span><span class="n">npc</span><span class="p">,</span>
+<span class="w">                              </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">xss_err</span><span class="p">,</span>
+<span class="w">                              </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">xss_tot</span><span class="p">,</span>
+<span class="w">                              </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">yss_err</span><span class="p">,</span>
+<span class="w">                              </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">yss_tot</span><span class="p">,</span>
+<span class="w">                              </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">predicted_y</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.UPLSYScrambling"><a class="viewcode-back" href="../C-API.html#c.UPLSYScrambling">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Y-scrambling test: refit models on permuted Y to detect chance</span>
+<span class="cm"> * correlation (overfitting).</span>
+<span class="cm"> *</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   X_: [in] X layers.</span>
+<span class="cm"> *   Y_: [in] Y layers.</span>
+<span class="cm"> *   xautoscaling: [in] X preprocessing (see :c:func:`UPLS`).</span>
+<span class="cm"> *   yautoscaling: [in] Y preprocessing.</span>
+<span class="cm"> *   npc: [in] Number of latent variables.</span>
+<span class="cm"> *   block: [in] Number of scrambling blocks.</span>
+<span class="cm"> *   valtype: [in] Validation of each scrambled model: 0 = leave-one-out,</span>
+<span class="cm"> *     otherwise random groups.</span>
+<span class="cm"> *   rgcv_groups: [in] Number of groups for random-group validation.</span>
+<span class="cm"> *   rgcv_iterations: [in] Number of iterations for random-group validation.</span>
+<span class="cm"> *   q2y: [out] Address of a tensor receiving the Q² of the scrambled models.</span>
+<span class="cm"> *   sdep: [out] Address of a tensor receiving their SDEP.</span>
+<span class="cm"> *   s: [in] Optional stop signal; ``NULL`` if unused.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Returns:</span>
+<span class="cm"> *   Nothing, the results are written into ``q2y`` and ``sdep``.</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">UPLSYScrambling</span><span class="p">(</span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">X_</span><span class="p">,</span><span class="w"> </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">Y_</span><span class="p">,</span>
+<span class="w">                        </span><span class="kt">size_t</span><span class="w"> </span><span class="n">xautoscaling</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">yautoscaling</span><span class="p">,</span>
+<span class="w">                        </span><span class="kt">size_t</span><span class="w"> </span><span class="n">npc</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">block</span><span class="p">,</span>
+<span class="w">                        </span><span class="kt">size_t</span><span class="w"> </span><span class="n">valtype</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">rgcv_groups</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">rgcv_iterations</span><span class="p">,</span>
+<span class="w">                        </span><span class="n">tensor</span><span class="w"> </span><span class="o">**</span><span class="n">q2y</span><span class="p">,</span><span class="w"> </span><span class="n">tensor</span><span class="w"> </span><span class="o">**</span><span class="n">sdep</span><span class="p">,</span><span class="w"> </span><span class="n">scisignal</span><span class="w"> </span><span class="o">*</span><span class="n">s</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.UPLSRandomGroupsCV"><a class="viewcode-back" href="../C-API.html#c.UPLSRandomGroupsCV">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Estimate the predictive ability of a UPLS model by random-group</span>
+<span class="cm"> * cross-validation.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   X_: [in] X layers.</span>
+<span class="cm"> *   Y_: [in] Y layers.</span>
+<span class="cm"> *   xautoscaling: [in] X preprocessing (see :c:func:`UPLS`).</span>
+<span class="cm"> *   yautoscaling: [in] Y preprocessing.</span>
+<span class="cm"> *   npc: [in] Maximum number of latent variables.</span>
+<span class="cm"> *   group: [in] Number of cross-validation groups.</span>
+<span class="cm"> *   iterations: [in] Number of random repetitions.</span>
+<span class="cm"> *   r2x: [out] Cross-validated R² of X for 1..npc latent variables.</span>
+<span class="cm"> *   q2y: [out] Q² of Y: one ``ny x Ky`` matrix per number of latent variables.</span>
+<span class="cm"> *   sdep: [out] Standard deviation of the prediction errors, same layout.</span>
+<span class="cm"> *   predicted_y: [out] Cross-validated predictions.</span>
+<span class="cm"> *   pred_residuals: [out] Cross-validated residuals.</span>
+<span class="cm"> *   s: [in] Optional stop signal; ``NULL`` if unused.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Returns:</span>
+<span class="cm"> *   Nothing, the results are written into the outputs.</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">UPLSRandomGroupsCV</span><span class="p">(</span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">X_</span><span class="p">,</span><span class="w"> </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">Y_</span><span class="p">,</span>
+<span class="w">                         </span><span class="kt">size_t</span><span class="w"> </span><span class="n">xautoscaling</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">yautoscaling</span><span class="p">,</span>
+<span class="w">                         </span><span class="kt">size_t</span><span class="w"> </span><span class="n">npc</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">group</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">iterations</span><span class="p">,</span>
+<span class="w">                         </span><span class="n">dvector</span><span class="w"> </span><span class="o">**</span><span class="n">r2x</span><span class="p">,</span><span class="w"> </span><span class="n">tensor</span><span class="w"> </span><span class="o">**</span><span class="n">q2y</span><span class="p">,</span><span class="w"> </span><span class="n">tensor</span><span class="w"> </span><span class="o">**</span><span class="n">sdep</span><span class="p">,</span><span class="w"> </span><span class="n">tensor</span><span class="w"> </span><span class="o">**</span><span class="n">predicted_y</span><span class="p">,</span><span class="w"> </span><span class="n">tensor</span><span class="w"> </span><span class="o">**</span><span class="n">pred_residuals</span><span class="p">,</span><span class="w"> </span><span class="n">scisignal</span><span class="w"> </span><span class="o">*</span><span class="n">s</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.UPLSLOOCV"><a class="viewcode-back" href="../C-API.html#c.UPLSLOOCV">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Estimate the predictive ability of a UPLS model by leave-one-out</span>
+<span class="cm"> * cross-validation.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   X_: [in] X layers.</span>
+<span class="cm"> *   Y_: [in] Y layers.</span>
+<span class="cm"> *   xautoscaling: [in] X preprocessing (see :c:func:`UPLS`).</span>
+<span class="cm"> *   yautoscaling: [in] Y preprocessing.</span>
+<span class="cm"> *   npc: [in] Maximum number of latent variables.</span>
+<span class="cm"> *   r2x: [out] Cross-validated R² of X for 1..npc latent variables.</span>
+<span class="cm"> *   q2y: [out] Q² of Y: one ``ny x Ky`` matrix per number of latent variables.</span>
+<span class="cm"> *   sdep: [out] Standard deviation of the prediction errors, same layout.</span>
+<span class="cm"> *   predicted_y: [out] Cross-validated predictions.</span>
+<span class="cm"> *   pred_residuals: [out] Cross-validated residuals.</span>
+<span class="cm"> *   s: [in] Optional stop signal; ``NULL`` if unused.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Returns:</span>
+<span class="cm"> *   Nothing, the results are written into the outputs.</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">UPLSLOOCV</span><span class="p">(</span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">X_</span><span class="p">,</span><span class="w"> </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">Y_</span><span class="p">,</span>
+<span class="w">                         </span><span class="kt">size_t</span><span class="w"> </span><span class="n">xautoscaling</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">yautoscaling</span><span class="p">,</span>
+<span class="w">                         </span><span class="kt">size_t</span><span class="w"> </span><span class="n">npc</span><span class="p">,</span>
+<span class="w">                         </span><span class="n">dvector</span><span class="w"> </span><span class="o">**</span><span class="n">r2x</span><span class="p">,</span><span class="w"> </span><span class="n">tensor</span><span class="w"> </span><span class="o">**</span><span class="n">q2y</span><span class="p">,</span><span class="w"> </span><span class="n">tensor</span><span class="w"> </span><span class="o">**</span><span class="n">sdep</span><span class="p">,</span><span class="w"> </span><span class="n">tensor</span><span class="w"> </span><span class="o">**</span><span class="n">predicted_y</span><span class="p">,</span><span class="w"> </span><span class="n">tensor</span><span class="w"> </span><span class="o">**</span><span class="n">pred_residuals</span><span class="p">,</span><span class="w"> </span><span class="n">scisignal</span><span class="w"> </span><span class="o">*</span><span class="n">s</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.UPLSGetPCModelCutOff"><a class="viewcode-back" href="../C-API.html#c.UPLSGetPCModelCutOff">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Choose the number of latent variables from a table of R² or Q² values.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Looks for the best value and stops when it drops.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   rq2: [in] R² or Q² values: one matrix per number of latent variables</span>
+<span class="cm"> *     (e.g. ``model-&gt;q2y``).</span>
+<span class="cm"> *</span>
+<span class="cm"> * Returns:</span>
+<span class="cm"> *   The **0-based** index of the selected latent variable: the number of</span>
+<span class="cm"> *   latent variables to use is the return value + 1.</span>
+<span class="cm"> */</span>
+<span class="kt">size_t</span><span class="w"> </span><span class="nf">UPLSGetPCModelCutOff</span><span class="p">(</span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">rq2</span><span class="p">);</span></div>
+
+<div class="viewcode-block" id="c.PrintUPLSModel"><a class="viewcode-back" href="../C-API.html#c.PrintUPLSModel">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Print the content of a UPLS model to standard output.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   m: [in] The model to print.</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">PrintUPLSModel</span><span class="p">(</span><span class="n">UPLSMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">);</span></div>
+
+<span class="cp">#endif</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2011, Giuseppe Marco Randazzo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

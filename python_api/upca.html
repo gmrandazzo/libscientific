@@ -1,0 +1,558 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UPCA — Multi-way PCA &mdash; libscientific 1.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=b51e6972"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="UPLS — Multi-way PLS" href="upls.html" />
+    <link rel="prev" title="LDA — Linear Discriminant Analysis" href="lda.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            libscientific
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Overview.html">What is libscientific?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html">Getting started in C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#vector-operations">Vector operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#matrix-operations">Matrix operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#tensor-operations">Tensor operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#multivariate-analysis-algorithms">Multivariate analysis algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#model-persistence-and-serialization-lsm-and-lsb">Model persistence and serialization (.lsm and .lsb)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html">Getting started in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#vector-operations">Vector operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#matrix-operations">Matrix operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#tensor-operations">Tensor operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#multivariate-analysis-algorithms">Multivariate analysis algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#model-persistence-and-serialization-lsm-and-lsb">Model persistence and serialization (.lsm and .lsb)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Licensing.html">Licensing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../C-API.html">C API Reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../Python-API.html">Python API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../Python-API.html#models">Models</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="pca.html">PCA — Principal Component Analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pls.html">PLS — Partial Least Squares regression</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cpca.html">CPCA — Consensus (multi-block) PCA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mlr.html">MLR — Multiple Linear Regression</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lda.html">LDA — Linear Discriminant Analysis</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">UPCA — Multi-way PCA</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#libscientific.upca.UPCA"><code class="docutils literal notranslate"><span class="pre">UPCA</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#functions">Functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#low-level-api">Low-level API</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="upls.html">UPLS — Multi-way PLS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="clustering.html">Clustering and object selection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="interpolate.html">Interpolation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="model_io.html">Model files and bundles</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../Python-API.html#data-structures-and-utilities">Data structures and utilities</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">libscientific</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../Python-API.html">Python API Reference</a></li>
+      <li class="breadcrumb-item active">UPCA — Multi-way PCA</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/python_api/upca.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-libscientific.upca">
+<span id="upca-multi-way-pca"></span><h1>UPCA — Multi-way PCA<a class="headerlink" href="#module-libscientific.upca" title="Link to this heading"></a></h1>
+<p>Multi-way (unfolded) Principal Component Analysis (UPCA).</p>
+<p>UPCA analyses three-way data: <code class="docutils literal notranslate"><span class="pre">n_objects</span></code> objects, each described by
+<code class="docutils literal notranslate"><span class="pre">n_features</span></code> variables measured in <code class="docutils literal notranslate"><span class="pre">n_layers</span></code> conditions (e.g. time
+points, wavelengths, batches). The data are given as a list of layers:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">X</span> <span class="o">=</span> <span class="p">[</span><span class="n">layer_0</span><span class="p">,</span> <span class="n">layer_1</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="n">layer_</span><span class="p">{</span><span class="n">K</span><span class="o">-</span><span class="mi">1</span><span class="p">}]</span>      <span class="c1"># each n_objects x n_features</span>
+</pre></div>
+</div>
+<p>and every layer must have the same shape. Each component has one score per
+object and a loading <strong>matrix</strong> <code class="docutils literal notranslate"><span class="pre">n_features</span> <span class="pre">x</span> <span class="pre">n_layers</span></code> constrained to be
+the outer product of a feature profile and a layer profile (Wold, Geladi and
+Esbensen, <em>Multi-way principal components and PLS analysis</em>,
+J. Chemometrics 1, 41-56, 1987).</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">libscientific.upca</span><span class="w"> </span><span class="kn">import</span> <span class="n">UPCA</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">X</span> <span class="o">=</span> <span class="p">[[[</span><span class="mf">3.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mf">0.9</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">j</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mf">0.7</span> <span class="o">*</span> <span class="n">k</span><span class="p">)</span>
+<span class="gp">... </span>       <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">15</span><span class="p">)]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">UPCA</span><span class="p">(</span><span class="n">npc</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">scaling</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>                      <span class="c1"># 3 layers of 15 objects x 4 features</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="nb">round</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">get_exp_variance</span><span class="p">()]</span>
+<span class="go">[100.0]</span>
+</pre></div>
+</div>
+<p>The functions after the class are the low-level ctypes wrappers of <code class="docutils literal notranslate"><span class="pre">upca.h</span></code>.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="libscientific.upca.UPCA">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.upca.</span></span><span class="sig-name descname"><span class="pre">UPCA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">npc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.upca.UPCA" title="Link to this definition"></a></dt>
+<dd><p>Multi-way Principal Component Analysis model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>npc</strong> (<em>int</em><em>, </em><em>default 2</em>) – Number of components; capped to <code class="docutils literal notranslate"><span class="pre">n_features</span></code>. After <a class="reference internal" href="#libscientific.upca.UPCA.fit" title="libscientific.upca.UPCA.fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fit()</span></code></a>,
+<code class="docutils literal notranslate"><span class="pre">npc</span></code> holds the number of components actually computed.</p></li>
+<li><p><strong>scaling</strong> (<em>int</em><em>, </em><em>default 1</em>) – Column preprocessing applied to every layer: all options mean-center
+each column, then 0 = no scaling, 1 = unit variance (autoscaling),
+2 = root mean square, 3 = Pareto, 4 = range, 5 = level.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">npc,</span> <span class="pre">scaling</span></span></dt>
+<dd><p>See Parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.upca.UPCA.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#libscientific.upca.UPCA.model" title="Link to this definition"></a></dt>
+<dd><p>The underlying C model (low-level access, see <a class="reference internal" href="#libscientific.upca.UPCAMODEL" title="libscientific.upca.UPCAMODEL"><code class="xref py py-class docutils literal notranslate"><span class="pre">UPCAMODEL</span></code></a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ctypes.POINTER(<a class="reference internal" href="#libscientific.upca.UPCAMODEL" title="libscientific.upca.UPCAMODEL">UPCAMODEL</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>Because the loading matrix of each component is constrained to rank 1,
+the components are computed one after another and are not exactly
+orthogonal: with several components the explained variances can add up
+to slightly more than 100%, and the reconstruction of general data is
+approximate. Data that follow the model exactly (a sum of
+<code class="docutils literal notranslate"><span class="pre">score</span> <span class="pre">x</span> <span class="pre">feature</span> <span class="pre">profile</span> <span class="pre">x</span> <span class="pre">layer</span> <span class="pre">profile</span></code> terms with orthogonal
+profiles) are reconstructed exactly.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.upca.UPCA.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#libscientific.upca.UPCA.fit" title="Link to this definition"></a></dt>
+<dd><p>Compute the multi-way components.</p>
+<p>Calling <code class="docutils literal notranslate"><span class="pre">fit</span></code> again replaces the previous model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x_input</strong> (<em>list</em><em> of </em><em>matrices</em><em> or </em><em>3D numpy array</em>) – <code class="docutils literal notranslate"><span class="pre">n_layers</span></code> layers of shape <code class="docutils literal notranslate"><span class="pre">(n_objects,</span> <span class="pre">n_features)</span></code> (see
+<a class="reference internal" href="#libscientific.upca.as_c_tensor" title="libscientific.upca.as_c_tensor"><code class="xref py py-func docutils literal notranslate"><span class="pre">as_c_tensor()</span></code></a>). All layers must have the same shape.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The model is updated in place.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.upca.UPCA.get_scores">
+<span class="sig-name descname"><span class="pre">get_scores</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.upca.UPCA.get_scores" title="Link to this definition"></a></dt>
+<dd><p>Return the scores of the training objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Matrix of shape <code class="docutils literal notranslate"><span class="pre">(n_objects,</span> <span class="pre">npc)</span></code>.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[list[float]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.upca.UPCA.get_loadings">
+<span class="sig-name descname"><span class="pre">get_loadings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.upca.UPCA.get_loadings" title="Link to this definition"></a></dt>
+<dd><p>Return the loading matrix of each component.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">npc</span></code> matrices of shape <code class="docutils literal notranslate"><span class="pre">(n_features,</span> <span class="pre">n_layers)</span></code>: element
+<code class="docutils literal notranslate"><span class="pre">[k][j][l]</span></code> is the weight of feature <code class="docutils literal notranslate"><span class="pre">j</span></code> in layer <code class="docutils literal notranslate"><span class="pre">l</span></code> for
+component <code class="docutils literal notranslate"><span class="pre">k</span></code>.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[list[list[float]]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.upca.UPCA.get_exp_variance">
+<span class="sig-name descname"><span class="pre">get_exp_variance</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.upca.UPCA.get_exp_variance" title="Link to this definition"></a></dt>
+<dd><p>Return the percentage of variance explained by each component.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">npc</span></code> values, not cumulative.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.upca.UPCA.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.upca.UPCA.predict" title="Link to this definition"></a></dt>
+<dd><p>Project new objects into the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x_input</strong> (<em>list</em><em> of </em><em>matrices</em><em> or </em><em>3D numpy array</em>) – Same number of layers and features as the training data, any
+number of objects.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Scores of the new objects, shape <code class="docutils literal notranslate"><span class="pre">(n_new_objects,</span> <span class="pre">npc)</span></code>.
+Projecting the training data gives <a class="reference internal" href="#libscientific.upca.UPCA.get_scores" title="libscientific.upca.UPCA.get_scores"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_scores()</span></code></a>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[list[float]]</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">X</span> <span class="o">=</span> <span class="p">[[[</span><span class="mf">3.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mf">0.9</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">j</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mf">0.7</span> <span class="o">*</span> <span class="n">k</span><span class="p">)</span>
+<span class="gp">... </span>       <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">15</span><span class="p">)]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">UPCA</span><span class="p">(</span><span class="n">npc</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">scores</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">([</span><span class="n">layer</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">X</span><span class="p">])</span>   <span class="c1"># first 2 objects</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="nb">round</span><span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="n">b</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">scores</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">model</span><span class="o">.</span><span class="n">get_scores</span><span class="p">()[</span><span class="mi">0</span><span class="p">])]</span>
+<span class="go">[0.0]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.upca.UPCA.reconstruct_original_tensor">
+<span class="sig-name descname"><span class="pre">reconstruct_original_tensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">npc_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scores_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.upca.UPCA.reconstruct_original_tensor" title="Link to this definition"></a></dt>
+<dd><p>Rebuild three-way data in the original units from scores.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>npc_input</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of components to use (default: all).</p></li>
+<li><p><strong>scores_input</strong> (<em>MatrixLike</em><em>, </em><em>optional</em>) – Scores, shape <code class="docutils literal notranslate"><span class="pre">(n_objects,</span> <span class="pre">npc)</span></code>, e.g. from <a class="reference internal" href="#libscientific.upca.UPCA.predict" title="libscientific.upca.UPCA.predict"><code class="xref py py-meth docutils literal notranslate"><span class="pre">predict()</span></code></a>.
+Default: the training scores.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">n_layers</span></code> matrices of shape <code class="docutils literal notranslate"><span class="pre">(n_objects,</span> <span class="pre">n_features)</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[list[list[float]]]</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Data that follow a one-component model are rebuilt exactly:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">X</span> <span class="o">=</span> <span class="p">[[[</span><span class="mf">3.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mf">0.9</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">j</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mf">0.7</span> <span class="o">*</span> <span class="n">k</span><span class="p">)</span>
+<span class="gp">... </span>       <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">15</span><span class="p">)]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">UPCA</span><span class="p">(</span><span class="n">npc</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">scaling</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Xr</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">reconstruct_original_tensor</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">Xr</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="n">X</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">])</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mf">1e-9</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.upca.UPCA.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#libscientific.upca.UPCA.save" title="Link to this definition"></a></dt>
+<dd><p>Save the model to a file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em>) – Destination path. <code class="docutils literal notranslate"><span class="pre">.sqlite3</span></code> or <code class="docutils literal notranslate"><span class="pre">.db</span></code> use the legacy SQLite
+format; any other extension (<code class="docutils literal notranslate"><span class="pre">.lsm</span></code> recommended) uses the binary
+libscientific model container.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>OSError</strong> – If the file cannot be written.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.upca.UPCA.load">
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#libscientific.upca.UPCA.load" title="Link to this definition"></a></dt>
+<dd><p>Load a model saved with <a class="reference internal" href="#libscientific.upca.UPCA.save" title="libscientific.upca.UPCA.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save()</span></code></a>, replacing the current one.</p>
+<p>After loading, <code class="xref py py-attr docutils literal notranslate"><span class="pre">npc</span></code> is set to the number of stored components.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em>) – Path of the model file; the format is detected automatically.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>OSError</strong> – If a binary model file cannot be read.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.upca.as_c_tensor">
+<span class="sig-prename descclassname"><span class="pre">libscientific.upca.</span></span><span class="sig-name descname"><span class="pre">as_c_tensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.upca.as_c_tensor" title="Link to this definition"></a></dt>
+<dd><p>Convert three-way data into a C tensor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>layers</strong> (<em>list</em><em> of </em><em>matrices</em><em>, </em><em>3D numpy array</em><em>, </em><a class="reference internal" href="tensor.html#libscientific.tensor.Tensor" title="libscientific.tensor.Tensor"><em>Tensor</em></a><em> or </em><em>C tensor</em>) – <code class="docutils literal notranslate"><span class="pre">[layer_0,</span> <span class="pre">layer_1,</span> <span class="pre">...]</span></code> with every layer <code class="docutils literal notranslate"><span class="pre">n_objects</span> <span class="pre">x</span> <span class="pre">n_columns</span></code>
+(list of rows or 2D numpy array), or a numpy array of shape
+<code class="docutils literal notranslate"><span class="pre">(n_layers,</span> <span class="pre">n_objects,</span> <span class="pre">n_columns)</span></code>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">(pointer,</span> <span class="pre">owned)</span></code>; free the pointer with
+<a class="reference internal" href="tensor.html#libscientific.tensor.del_tensor" title="libscientific.tensor.del_tensor"><code class="xref py py-func docutils literal notranslate"><span class="pre">libscientific.tensor.del_tensor()</span></code></a> when <code class="docutils literal notranslate"><span class="pre">owned</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[ctypes.POINTER(<a class="reference internal" href="tensor.html#libscientific.tensor.TENSOR" title="libscientific.tensor.TENSOR">TENSOR</a>), bool]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="low-level-api">
+<h2>Low-level API<a class="headerlink" href="#low-level-api" title="Link to this heading"></a></h2>
+<p>Thin ctypes wrappers around the C functions, working on raw C
+pointers. They are needed only to interoperate with other low-level code.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="libscientific.upca.UPCAMODEL">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.upca.</span></span><span class="sig-name descname"><span class="pre">UPCAMODEL</span></span><a class="headerlink" href="#libscientific.upca.UPCAMODEL" title="Link to this definition"></a></dt>
+<dd><p>C structure holding a fitted UPCA model (low-level API).</p>
+<p>Use <a class="reference internal" href="#libscientific.upca.UPCA" title="libscientific.upca.UPCA"><code class="xref py py-class docutils literal notranslate"><span class="pre">UPCA</span></code></a> instead of accessing this structure directly. With
+<code class="docutils literal notranslate"><span class="pre">n</span></code> objects, <code class="docutils literal notranslate"><span class="pre">f</span></code> features, <code class="docutils literal notranslate"><span class="pre">K</span></code> layers and <code class="docutils literal notranslate"><span class="pre">npc</span></code> components:</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.upca.UPCAMODEL.scores">
+<span class="sig-name descname"><span class="pre">scores</span></span><a class="headerlink" href="#libscientific.upca.UPCAMODEL.scores" title="Link to this definition"></a></dt>
+<dd><p>Scores, <code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">x</span> <span class="pre">npc</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>POINTER(<a class="reference internal" href="matrix.html#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX">MATRIX</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.upca.UPCAMODEL.loadings">
+<span class="sig-name descname"><span class="pre">loadings</span></span><a class="headerlink" href="#libscientific.upca.UPCAMODEL.loadings" title="Link to this definition"></a></dt>
+<dd><p>One <code class="docutils literal notranslate"><span class="pre">f</span> <span class="pre">x</span> <span class="pre">K</span></code> loading matrix per component.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>POINTER(<a class="reference internal" href="tensor.html#libscientific.tensor.TENSOR" title="libscientific.tensor.TENSOR">TENSOR</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.upca.UPCAMODEL.varexp">
+<span class="sig-name descname"><span class="pre">varexp</span></span><a class="headerlink" href="#libscientific.upca.UPCAMODEL.varexp" title="Link to this definition"></a></dt>
+<dd><p>Percentage of variance explained by each component.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>POINTER(<a class="reference internal" href="vector.html#libscientific.vector.DVECTOR" title="libscientific.vector.DVECTOR">DVECTOR</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">colaverage,</span> <span class="pre">colscaling</span></span></dt>
+<dd><p>Column means and scalings of each layer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>POINTER(<a class="reference internal" href="vectlist.html#libscientific.vectlist.DVECTLIST" title="libscientific.vectlist.DVECTLIST">DVECTLIST</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.upca.new_upca_model">
+<span class="sig-prename descclassname"><span class="pre">libscientific.upca.</span></span><span class="sig-name descname"><span class="pre">new_upca_model</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#libscientific.upca.UPCAMODEL" title="libscientific.upca.UPCAMODEL"><span class="pre">UPCAMODEL</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.upca.new_upca_model" title="Link to this definition"></a></dt>
+<dd><p>Allocate an empty C UPCA model (low-level API).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A new, empty model; release it with <a class="reference internal" href="#libscientific.upca.del_upca_model" title="libscientific.upca.del_upca_model"><code class="xref py py-func docutils literal notranslate"><span class="pre">del_upca_model()</span></code></a>.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>ctypes.POINTER(<a class="reference internal" href="#libscientific.upca.UPCAMODEL" title="libscientific.upca.UPCAMODEL">UPCAMODEL</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.upca.del_upca_model">
+<span class="sig-prename descclassname"><span class="pre">libscientific.upca.</span></span><span class="sig-name descname"><span class="pre">del_upca_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mupca</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#libscientific.upca.UPCAMODEL" title="libscientific.upca.UPCAMODEL"><span class="pre">UPCAMODEL</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#libscientific.upca.del_upca_model" title="Link to this definition"></a></dt>
+<dd><p>Free a C UPCA model created with <a class="reference internal" href="#libscientific.upca.new_upca_model" title="libscientific.upca.new_upca_model"><code class="xref py py-func docutils literal notranslate"><span class="pre">new_upca_model()</span></code></a> (low-level API).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mupca</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.upca.UPCAMODEL" title="libscientific.upca.UPCAMODEL"><em>UPCAMODEL</em></a><em>)</em>) – The model to release. It must not be used afterwards.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.upca.upca_algorithm">
+<span class="sig-prename descclassname"><span class="pre">libscientific.upca.</span></span><span class="sig-name descname"><span class="pre">upca_algorithm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><span class="pre">tns.TENSOR</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mupca</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#libscientific.upca.UPCAMODEL" title="libscientific.upca.UPCAMODEL"><span class="pre">UPCAMODEL</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#libscientific.upca.upca_algorithm" title="Link to this definition"></a></dt>
+<dd><p>Fit a UPCA model (low-level API, see <a class="reference internal" href="#libscientific.upca.UPCA.fit" title="libscientific.upca.UPCA.fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">UPCA.fit()</span></code></a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_input</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="tensor.html#libscientific.tensor.TENSOR" title="libscientific.tensor.TENSOR"><em>TENSOR</em></a><em>)</em>) – The layers, all <code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">x</span> <span class="pre">f</span></code>.</p></li>
+<li><p><strong>npc</strong> (<em>int</em>) – Number of components.</p></li>
+<li><p><strong>scaling</strong> (<em>int</em>) – Column preprocessing, 0-5.</p></li>
+<li><p><strong>mupca</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.upca.UPCAMODEL" title="libscientific.upca.UPCAMODEL"><em>UPCAMODEL</em></a><em>)</em>) – Model created with <a class="reference internal" href="#libscientific.upca.new_upca_model" title="libscientific.upca.new_upca_model"><code class="xref py py-func docutils literal notranslate"><span class="pre">new_upca_model()</span></code></a>; filled with the results.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.upca.upca_score_predictor">
+<span class="sig-prename descclassname"><span class="pre">libscientific.upca.</span></span><span class="sig-name descname"><span class="pre">upca_score_predictor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><span class="pre">tns.TENSOR</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mupca</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#libscientific.upca.UPCAMODEL" title="libscientific.upca.UPCAMODEL"><span class="pre">UPCAMODEL</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pscores</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><span class="pre">mx.MATRIX</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#libscientific.upca.upca_score_predictor" title="Link to this definition"></a></dt>
+<dd><p>Project new objects into a UPCA model (low-level API, see <a class="reference internal" href="#libscientific.upca.UPCA.predict" title="libscientific.upca.UPCA.predict"><code class="xref py py-meth docutils literal notranslate"><span class="pre">UPCA.predict()</span></code></a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_input</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="tensor.html#libscientific.tensor.TENSOR" title="libscientific.tensor.TENSOR"><em>TENSOR</em></a><em>)</em>) – The layers of the new objects.</p></li>
+<li><p><strong>mupca</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.upca.UPCAMODEL" title="libscientific.upca.UPCAMODEL"><em>UPCAMODEL</em></a><em>)</em>) – A fitted model.</p></li>
+<li><p><strong>npc</strong> (<em>int</em>) – Number of components to use.</p></li>
+<li><p><strong>pscores</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="matrix.html#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – Output matrix created with <a class="reference internal" href="matrix.html#libscientific.matrix.init_matrix" title="libscientific.matrix.init_matrix"><code class="xref py py-func docutils literal notranslate"><span class="pre">libscientific.matrix.init_matrix()</span></code></a>;
+filled with the scores, <code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">x</span> <span class="pre">npc</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.upca.upca_ind_var_predictor">
+<span class="sig-prename descclassname"><span class="pre">libscientific.upca.</span></span><span class="sig-name descname"><span class="pre">upca_ind_var_predictor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scores</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><span class="pre">mx.MATRIX</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mupca</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#libscientific.upca.UPCAMODEL" title="libscientific.upca.UPCAMODEL"><span class="pre">UPCAMODEL</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><span class="pre">tns.TENSOR</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#libscientific.upca.upca_ind_var_predictor" title="Link to this definition"></a></dt>
+<dd><p>Rebuild original-space layers from scores (low-level API).</p>
+<p>See <a class="reference internal" href="#libscientific.upca.UPCA.reconstruct_original_tensor" title="libscientific.upca.UPCA.reconstruct_original_tensor"><code class="xref py py-meth docutils literal notranslate"><span class="pre">UPCA.reconstruct_original_tensor()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scores</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="matrix.html#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX"><em>MATRIX</em></a><em>)</em>) – Scores, <code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">x</span> <span class="pre">&gt;=</span> <span class="pre">npc</span></code>.</p></li>
+<li><p><strong>mupca</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.upca.UPCAMODEL" title="libscientific.upca.UPCAMODEL"><em>UPCAMODEL</em></a><em>)</em>) – A fitted model.</p></li>
+<li><p><strong>npc</strong> (<em>int</em>) – Number of components to use.</p></li>
+<li><p><strong>x_out</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="tensor.html#libscientific.tensor.TENSOR" title="libscientific.tensor.TENSOR"><em>TENSOR</em></a><em>)</em>) – Output tensor created with <a class="reference internal" href="tensor.html#libscientific.tensor.init_tensor" title="libscientific.tensor.init_tensor"><code class="xref py py-func docutils literal notranslate"><span class="pre">libscientific.tensor.init_tensor()</span></code></a>;
+receives one <code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">x</span> <span class="pre">f</span></code> matrix per layer.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.upca.write_upca">
+<span class="sig-prename descclassname"><span class="pre">libscientific.upca.</span></span><span class="sig-name descname"><span class="pre">write_upca</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mupca</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#libscientific.upca.UPCAMODEL" title="libscientific.upca.UPCAMODEL"><span class="pre">UPCAMODEL</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#libscientific.upca.write_upca" title="Link to this definition"></a></dt>
+<dd><p>Write a model to a SQLite database (legacy format, low-level API).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dbpath</strong> (<em>str</em>) – Path of the SQLite file to create.</p></li>
+<li><p><strong>mupca</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.upca.UPCAMODEL" title="libscientific.upca.UPCAMODEL"><em>UPCAMODEL</em></a><em>)</em>) – The model to store.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.upca.read_upca">
+<span class="sig-prename descclassname"><span class="pre">libscientific.upca.</span></span><span class="sig-name descname"><span class="pre">read_upca</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dbpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mupca</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ctypes._Pointer</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#libscientific.upca.UPCAMODEL" title="libscientific.upca.UPCAMODEL"><span class="pre">UPCAMODEL</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#libscientific.upca.read_upca" title="Link to this definition"></a></dt>
+<dd><p>Read a model from a SQLite database (legacy format, low-level API).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dbpath</strong> (<em>str</em>) – Path of the SQLite file written by <a class="reference internal" href="#libscientific.upca.write_upca" title="libscientific.upca.write_upca"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_upca()</span></code></a>.</p></li>
+<li><p><strong>mupca</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.upca.UPCAMODEL" title="libscientific.upca.UPCAMODEL"><em>UPCAMODEL</em></a><em>)</em>) – Model created with <a class="reference internal" href="#libscientific.upca.new_upca_model" title="libscientific.upca.new_upca_model"><code class="xref py py-func docutils literal notranslate"><span class="pre">new_upca_model()</span></code></a>; filled with the stored data.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="lda.html" class="btn btn-neutral float-left" title="LDA — Linear Discriminant Analysis" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="upls.html" class="btn btn-neutral float-right" title="UPLS — Multi-way PLS" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2011, Giuseppe Marco Randazzo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

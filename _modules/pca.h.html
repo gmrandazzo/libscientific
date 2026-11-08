@@ -1,39 +1,87 @@
-<!DOCTYPE html>
 
-<html lang="en" data-content_root="../">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pca.h &#8212; libscientific 1.8.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=2bf1fcf8" />
-    
-    <script src="../_static/documentation_options.js?v=b51e6972"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pca.h &mdash; libscientific 1.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=b51e6972"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
-  </head><body>
-    <div class="related" role="navigation" aria-label="Related">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.8.0 documentation</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">pca.h</a></li> 
-      </ul>
-    </div>  
+</head>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            libscientific
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../Overview.html">What is libscientific?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html">Getting started in C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#vector-operations">Vector operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#matrix-operations">Matrix operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#tensor-operations">Tensor operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#multivariate-analysis-algorithms">Multivariate analysis algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#model-persistence-and-serialization-lsm-and-lsb">Model persistence and serialization (.lsm and .lsb)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html">Getting started in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#vector-operations">Vector operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#matrix-operations">Matrix operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#tensor-operations">Tensor operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#multivariate-analysis-algorithms">Multivariate analysis algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#model-persistence-and-serialization-lsm-and-lsb">Model persistence and serialization (.lsm and .lsb)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Licensing.html">Licensing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../C-API.html">C API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Python-API.html">Python API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">libscientific</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">pca.h</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
   <h1>Source code for pca.h</h1><div class="highlight"><pre>
 <span></span><span class="cm">/* Implements Principal Component Analysis (PCA).</span>
 <span class="cm"> * Copyright (C) 2016-2026 designed, written and maintained by Giuseppe Marco Randazzo &lt;gmrandazzo@gmail.com&gt;</span>
@@ -61,75 +109,110 @@
 <div class="viewcode-block" id="c.PCACONVERGENCE"><span class="cp">#define PCACONVERGENCE 1e-10</span></div>
 
 <div class="viewcode-block" id="c.PCAMODEL"><a class="viewcode-back" href="../C-API.html#c.PCAMODEL">[docs]</a><span class="cm">/**</span>
-<span class="cm"> * PCA model data structure.</span>
+<span class="cm"> * Principal Component Analysis model.</span>
 <span class="cm"> *</span>
-<span class="cm"> * - **scores** matrix of scores</span>
-<span class="cm"> * - **loadings** matrix of loadings</span>
-<span class="cm"> * - **varexp** vector of explained variance by every component</span>
-<span class="cm"> * - **dmodx** object distance from the model</span>
-<span class="cm"> * - **colaverage** input matrix column average</span>
-<span class="cm"> * - **colscaling** input matrix column scaling</span>
+<span class="cm"> * Create it with :c:func:`NewPCAModel`, fill it with :c:func:`PCA` and free</span>
+<span class="cm"> * it with :c:func:`DelPCAModel`. All the members are allocated and owned by</span>
+<span class="cm"> * the model: read them, but do not free or resize them.</span>
+<span class="cm"> *</span>
+<span class="cm"> * With ``n`` objects (rows), ``f`` features (columns) and ``npc`` components:</span>
+<span class="cm"> *</span>
+<span class="cm"> * Members:</span>
+<span class="cm"> *   scores: Scores ``T``, ``n x npc``: coordinates of each object in the</span>
+<span class="cm"> *     component space.</span>
+<span class="cm"> *   loadings: Loadings ``P``, ``f x npc``: weight of each feature in each</span>
+<span class="cm"> *     component. Each column has unit length.</span>
+<span class="cm"> *   dmodx: Distance of each object to the model, ``n x npc``: element</span>
+<span class="cm"> *     ``[i][k]`` is the norm of the residual of object ``i`` after removing</span>
+<span class="cm"> *     components ``0..k``.</span>
+<span class="cm"> *   varexp: Variance explained by each component, in percent of the total</span>
+<span class="cm"> *     variance of the preprocessed matrix (size ``npc``, not cumulative).</span>
+<span class="cm"> *   colaverage: Column means of the training matrix (size ``f``).</span>
+<span class="cm"> *   colscaling: Column scaling factors (size ``f``; all ``1`` for scaling 0).</span>
 <span class="cm"> */</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="p">{</span>
-<div class="viewcode-block" id="c.PCAMODEL.scores"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">scores</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.PCAMODEL.loadings"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">loadings</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.PCAMODEL.dmodx"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">dmodx</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.PCAMODEL.varexp"><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">varexp</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.PCAMODEL.colaverage"><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">colaverage</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.PCAMODEL.colscaling"><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">colscaling</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.PCAMODEL.scores"><a class="viewcode-back" href="../C-API.html#c.PCAMODEL.scores">[docs]</a><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">scores</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.PCAMODEL.loadings"><a class="viewcode-back" href="../C-API.html#c.PCAMODEL.loadings">[docs]</a><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">loadings</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.PCAMODEL.dmodx"><a class="viewcode-back" href="../C-API.html#c.PCAMODEL.dmodx">[docs]</a><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">dmodx</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.PCAMODEL.varexp"><a class="viewcode-back" href="../C-API.html#c.PCAMODEL.varexp">[docs]</a><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">varexp</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.PCAMODEL.colaverage"><a class="viewcode-back" href="../C-API.html#c.PCAMODEL.colaverage">[docs]</a><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">colaverage</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.PCAMODEL.colscaling"><a class="viewcode-back" href="../C-API.html#c.PCAMODEL.colscaling">[docs]</a><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">colscaling</span><span class="p">;</span></div>
 <span class="p">}</span><span class="w"> </span><span class="n">PCAMODEL</span><span class="p">;</span></div>
 
 <div class="viewcode-block" id="c.NewPCAModel"><a class="viewcode-back" href="../C-API.html#c.NewPCAModel">[docs]</a><span class="cm">/**</span>
-<span class="cm"> * Initialize an empty PCAMODEL</span>
+<span class="cm"> * Allocate an empty PCA model.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   m: [out] Address of the pointer that receives the new model.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Note:</span>
+<span class="cm"> *   Release the model with :c:func:`DelPCAModel`.</span>
 <span class="cm"> */</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">NewPCAModel</span><span class="p">(</span><span class="n">PCAMODEL</span><span class="w"> </span><span class="o">**</span><span class="n">m</span><span class="p">);</span></div>
 
 <div class="viewcode-block" id="c.DelPCAModel"><a class="viewcode-back" href="../C-API.html#c.DelPCAModel">[docs]</a><span class="cm">/**</span>
-<span class="cm"> * Delete a PCAMODEL</span>
+<span class="cm"> * Free a PCA model and all its members, and set the pointer to ``NULL``.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   m: [in,out] Address of the model pointer created with :c:func:`NewPCAModel`.</span>
 <span class="cm"> */</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">DelPCAModel</span><span class="p">(</span><span class="n">PCAMODEL</span><span class="w"> </span><span class="o">**</span><span class="n">m</span><span class="p">);</span></div>
 
+<span class="cm">/*</span>
+<span class="cm"> * Internal helper (used by PCA, PLS and CPCA): fill varexp with the</span>
+<span class="cm"> * percentage of the total sum of squares ss explained by each eigenvalue.</span>
+<span class="cm"> */</span>
 <div class="viewcode-block" id="c.calcVarExpressed"><span class="kt">void</span><span class="w"> </span><span class="nf">calcVarExpressed</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">ss</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">eval</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">varexp</span><span class="p">);</span></div>
 
 <span class="cm">/*</span>
-<span class="cm"> * Calculate the object distance.</span>
-<span class="cm"> * THIS METHOD IS USED INSIDE THE PCA ALGORITHM</span>
+<span class="cm"> * Internal helper: object distance used inside the PCA algorithm.</span>
 <span class="cm"> */</span>
 <div class="viewcode-block" id="c.calcObjectDistance"><span class="kt">double</span><span class="w"> </span><span class="nf">calcObjectDistance</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">);</span></div>
 
 <span class="cm">/*</span>
-<span class="cm"> * Calculate convergence criteria as described in</span>
-<span class="cm"> * DOI: 10.1002/cem.1180010107 page 51 d = ...</span>
-<span class="cm"> * THIS METHOD IS USED INSIDE THE PCA/CPCA/PLS ALGORITHM</span>
+<span class="cm"> * Internal helper: NIPALS convergence criterion</span>
+<span class="cm"> * (DOI: 10.1002/cem.1180010107, page 51), used by PCA/CPCA/PLS.</span>
 <span class="cm"> */</span>
 <div class="viewcode-block" id="c.calcConvergence"><span class="kt">double</span><span class="w"> </span><span class="nf">calcConvergence</span><span class="p">(</span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">t_new</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">t_old</span><span class="p">);</span></div>
 
 
 <div class="viewcode-block" id="c.PCA"><a class="viewcode-back" href="../C-API.html#c.PCA">[docs]</a><span class="cm">/**</span>
-<span class="cm"> * @brief Calculate a principal component analysis using the NIPALS algorithm.</span>
+<span class="cm"> * Fit a PCA model with the NIPALS algorithm.</span>
 <span class="cm"> *</span>
-<span class="cm"> * @param [in] mx libscientific matrix data input</span>
-<span class="cm"> * @param [in] scaling scaling type expressed as unsigned int type</span>
-<span class="cm"> * @param [in] npc number of desired principal components</span>
-<span class="cm"> * @param [out] PCAMODEL initialized model using NewPCAModel(...). The datastructure will be populated with results</span>
-<span class="cm"> * @param [in] scisignal libscientific signal. Default value is NULL</span>
+<span class="cm"> * The columns of ``mx`` are preprocessed according to ``scaling``, then the</span>
+<span class="cm"> * ``npc`` components are extracted one at a time. Each component gets up to</span>
+<span class="cm"> * 1000 NIPALS iterations; a component that does not converge keeps its best</span>
+<span class="cm"> * estimate. Missing values (``MISSING``, NaN, inf) are skipped.</span>
 <span class="cm"> *</span>
-<span class="cm"> * Available scalings:</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   mx: [in] Training matrix, ``n x f`` (objects x features). Not modified,</span>
+<span class="cm"> *     except that NaN/inf values are replaced by ``MISSING``.</span>
+<span class="cm"> *   scaling: [in] Column preprocessing. All the options mean-center the</span>
+<span class="cm"> *     columns, then: 0 = no scaling, 1 = standard deviation (autoscaling),</span>
+<span class="cm"> *     2 = root mean square, 3 = Pareto (square root of the standard</span>
+<span class="cm"> *     deviation), 4 = range (max - min), 5 = level (column mean).</span>
+<span class="cm"> *   npc: [in] Number of components to compute; capped to ``f``.</span>
+<span class="cm"> *   model: [out] Model created with :c:func:`NewPCAModel`. Its members are</span>
+<span class="cm"> *     resized and filled with the results (see :c:type:`PCAMODEL`).</span>
+<span class="cm"> *   s: [in] Optional stop signal: when ``*s == SIGSCIENTIFICSTOP`` the</span>
+<span class="cm"> *     computation stops after the current component. Pass ``NULL`` if unused.</span>
 <span class="cm"> *</span>
-<span class="cm"> * - 0: No scaling. Only mean centering</span>
+<span class="cm"> * Returns:</span>
+<span class="cm"> *   Nothing, the results are written into ``model``.</span>
 <span class="cm"> *</span>
-<span class="cm"> * - 1: Mean centering and STDEV scaling</span>
+<span class="cm"> * Example:</span>
+<span class="cm"> *   .. code-block:: c</span>
 <span class="cm"> *</span>
-<span class="cm"> * - 2: Mean centering and Root-Mean-Square column scaling</span>
-<span class="cm"> *</span>
-<span class="cm"> * - 3: Mean centering and Pareto scaling</span>
-<span class="cm"> *</span>
-<span class="cm"> * - 4: Mean centering and min-max range scaling</span>
-<span class="cm"> *</span>
-<span class="cm"> * - 5: Mean centering and level scaling</span>
-<span class="cm"> *</span>
-<span class="cm"> * @par Returns</span>
-<span class="cm"> *    Nothing.</span>
+<span class="cm"> *      matrix *x;</span>
+<span class="cm"> *      PCAMODEL *model;</span>
+<span class="cm"> *      NewMatrix(&amp;x, 5, 3);          // 5 objects, 3 features</span>
+<span class="cm"> *      // ... fill x-&gt;data[i][j] ...</span>
+<span class="cm"> *      NewPCAModel(&amp;model);</span>
+<span class="cm"> *      PCA(x, 1, 2, model, NULL);    // autoscaling, 2 components</span>
+<span class="cm"> *      // model-&gt;scores: 5 x 2, model-&gt;loadings: 3 x 2,</span>
+<span class="cm"> *      // model-&gt;varexp-&gt;data[k]: % of variance of component k</span>
+<span class="cm"> *      DelPCAModel(&amp;model);</span>
+<span class="cm"> *      DelMatrix(&amp;x);</span>
 <span class="cm"> */</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">PCA</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">mx</span><span class="p">,</span>
 <span class="w">         </span><span class="kt">int</span><span class="w"> </span><span class="n">scaling</span><span class="p">,</span>
@@ -139,15 +222,32 @@
 
 
 <div class="viewcode-block" id="c.PCAScorePredictor"><a class="viewcode-back" href="../C-API.html#c.PCAScorePredictor">[docs]</a><span class="cm">/**</span>
-<span class="cm"> * @brief Predict scores given a principal component analysis and a matrix as input.</span>
+<span class="cm"> * Project new objects into a fitted PCA model.</span>
 <span class="cm"> *</span>
-<span class="cm"> * @param [in] mx libscientific matrix data input</span>
-<span class="cm"> * @param [in] PCAMODEL pca model input</span>
-<span class="cm"> * @param [in] npc number of desired principal components</span>
-<span class="cm"> * @param [in] pscores predicted scores</span>
+<span class="cm"> * The objects are preprocessed with the column means and scalings of the</span>
+<span class="cm"> * training data, then projected onto the loadings. Projecting the training</span>
+<span class="cm"> * matrix gives the same values as ``model-&gt;scores``.</span>
 <span class="cm"> *</span>
-<span class="cm"> * @par Returns</span>
-<span class="cm"> *    Nothing.</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   mx: [in] Objects to project, ``m x f``, with the same features (same</span>
+<span class="cm"> *     order) as the training matrix.</span>
+<span class="cm"> *   model: [in] Model fitted with :c:func:`PCA`.</span>
+<span class="cm"> *   npc: [in] Number of components to use; capped to the model components.</span>
+<span class="cm"> *   pscores: [out] Matrix created with ``initMatrix`` or ``NewMatrix``. It is</span>
+<span class="cm"> *     resized and filled with the predicted scores, ``m x npc``. The caller</span>
+<span class="cm"> *     frees it with ``DelMatrix``.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Returns:</span>
+<span class="cm"> *   Nothing, the scores are written into ``pscores``.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Example:</span>
+<span class="cm"> *   .. code-block:: c</span>
+<span class="cm"> *</span>
+<span class="cm"> *      matrix *pscores;</span>
+<span class="cm"> *      initMatrix(&amp;pscores);</span>
+<span class="cm"> *      PCAScorePredictor(xnew, model, 2, pscores);   // xnew: m x f</span>
+<span class="cm"> *      // pscores-&gt;data[i][k]: score of new object i on component k</span>
+<span class="cm"> *      DelMatrix(&amp;pscores);</span>
 <span class="cm"> */</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">PCAScorePredictor</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">mx</span><span class="p">,</span>
 <span class="w">                       </span><span class="n">PCAMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">model</span><span class="p">,</span>
@@ -155,17 +255,25 @@
 <span class="w">                       </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">pscores</span><span class="p">);</span></div>
 
 <div class="viewcode-block" id="c.PCAIndVarPredictor"><a class="viewcode-back" href="../C-API.html#c.PCAIndVarPredictor">[docs]</a><span class="cm">/**</span>
-<span class="cm"> * @brief Reconstruct the original input matrix from PCA model using scores and loadings.</span>
+<span class="cm"> * Rebuild data in the original feature space from scores: ``X = T P&#39;``.</span>
 <span class="cm"> *</span>
-<span class="cm"> * @param [in] t pca scores with size #objects x npc</span>
-<span class="cm"> * @param [in] p pca loadings with size npc x #features</span>
-<span class="cm"> * @param [in] colaverage input column average with size #features</span>
-<span class="cm"> * @param [in] colscaling input column scaling with size #features</span>
-<span class="cm"> * @param [in] npc desired principal components to use for the matrix reconstruction</span>
-<span class="cm"> * @param [in] mx ouptut reconstructed matrix</span>
+<span class="cm"> * The product of the first ``npc`` scores and loadings is computed, then the</span>
+<span class="cm"> * scaling and centering are reverted, so the result is in the units of the</span>
+<span class="cm"> * training data. With all the components the training matrix is rebuilt</span>
+<span class="cm"> * exactly.</span>
 <span class="cm"> *</span>
-<span class="cm"> * @par Returns</span>
-<span class="cm"> *    Nothing.</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   t: [in] Scores, ``n x a`` with ``a &gt;= npc`` (e.g. ``model-&gt;scores`` or the</span>
+<span class="cm"> *     output of :c:func:`PCAScorePredictor`).</span>
+<span class="cm"> *   p: [in] Loadings, ``f x a`` (``model-&gt;loadings``).</span>
+<span class="cm"> *   colaverage: [in] Column means, size ``f`` (``model-&gt;colaverage``).</span>
+<span class="cm"> *   colscaling: [in] Column scalings, size ``f`` (``model-&gt;colscaling``).</span>
+<span class="cm"> *   npc: [in] Number of components to use; capped to the columns of ``t``.</span>
+<span class="cm"> *   mx: [out] Matrix created with ``initMatrix``; resized and filled with the</span>
+<span class="cm"> *     reconstructed data, ``n x f``. The caller frees it with ``DelMatrix``.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Returns:</span>
+<span class="cm"> *   Nothing, the result is written into ``mx``.</span>
 <span class="cm"> */</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">PCAIndVarPredictor</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">t</span><span class="p">,</span>
 <span class="w">                        </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">p</span><span class="p">,</span>
@@ -174,12 +282,55 @@
 <span class="w">                        </span><span class="kt">size_t</span><span class="w"> </span><span class="n">npc</span><span class="p">,</span>
 <span class="w">                        </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">mx</span><span class="p">);</span></div>
 
-<div class="viewcode-block" id="c.PCARSquared"><span class="kt">void</span><span class="w"> </span><span class="nf">PCARSquared</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">mx</span><span class="p">,</span>
+<div class="viewcode-block" id="c.PCARSquared"><a class="viewcode-back" href="../C-API.html#c.PCARSquared">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Compute how well a model reconstructs a matrix (R²) for 1..npc components.</span>
+<span class="cm"> *</span>
+<span class="cm"> * For each number of components ``a = 1..npc`` the objects of ``mx`` are</span>
+<span class="cm"> * projected and reconstructed with ``a`` components, and</span>
+<span class="cm"> * ``R²(a) = 1 - SS(residual) / SS(mx centered on the model column means)`` is</span>
+<span class="cm"> * appended to ``r2``. The values are cumulative: ``r2[a-1]`` refers to the</span>
+<span class="cm"> * first ``a`` components together.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   mx: [in] Matrix to reconstruct, ``n x f`` (training data or new objects).</span>
+<span class="cm"> *   model: [in] Model fitted with :c:func:`PCA`.</span>
+<span class="cm"> *   npc: [in] Maximum number of components; capped to the model components.</span>
+<span class="cm"> *   r2: [out] Empty vector created with ``initDVector``: ``npc`` values are</span>
+<span class="cm"> *     appended to it. The caller frees it with ``DelDVector``.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Returns:</span>
+<span class="cm"> *   Nothing, the values are appended to ``r2``.</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">PCARSquared</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">mx</span><span class="p">,</span>
 <span class="w">                 </span><span class="n">PCAMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">model</span><span class="p">,</span>
 <span class="w">                 </span><span class="kt">size_t</span><span class="w"> </span><span class="n">npc</span><span class="p">,</span>
 <span class="w">                 </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">r2</span><span class="p">);</span></div>
 
-<div class="viewcode-block" id="c.PCARankValidation"><span class="kt">void</span><span class="w"> </span><span class="nf">PCARankValidation</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">mx</span><span class="p">,</span>
+<div class="viewcode-block" id="c.PCARankValidation"><a class="viewcode-back" href="../C-API.html#c.PCARankValidation">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Estimate the number of significant components by cross-validation.</span>
+<span class="cm"> *</span>
+<span class="cm"> * The objects are split at random into ``group`` groups. Each group in turn</span>
+<span class="cm"> * is left out, a PCA model is fitted on the other objects and</span>
+<span class="cm"> * :c:func:`PCARSquared` is computed on the left-out group. The procedure is</span>
+<span class="cm"> * repeated ``iterations`` times and the results are averaged, giving the</span>
+<span class="cm"> * cross-validated R² (Q²) for 1..npc components (S. Wold, Technometrics 20,</span>
+<span class="cm"> * 397-405, 1978). Choose the number of components where Q² stops increasing.</span>
+<span class="cm"> * The random split is deterministic for a given input size.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   mx: [in] Data matrix, ``n x f``.</span>
+<span class="cm"> *   npc: [in] Maximum number of components to evaluate.</span>
+<span class="cm"> *   scaling: [in] Column preprocessing, as in :c:func:`PCA`.</span>
+<span class="cm"> *   group: [in] Number of cross-validation groups (e.g. 5 or 7).</span>
+<span class="cm"> *   iterations: [in] Number of random repetitions of the split.</span>
+<span class="cm"> *   r2: [out] Empty vector created with ``initDVector``: receives ``npc``</span>
+<span class="cm"> *     values, element ``a-1`` being Q² with ``a`` components.</span>
+<span class="cm"> *   s: [in] Optional stop signal (see :c:func:`PCA`); ``NULL`` if unused.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Returns:</span>
+<span class="cm"> *   Nothing, the values are written into ``r2``.</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">PCARankValidation</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">mx</span><span class="p">,</span>
 <span class="w">                       </span><span class="kt">size_t</span><span class="w"> </span><span class="n">npc</span><span class="p">,</span>
 <span class="w">                       </span><span class="kt">size_t</span><span class="w"> </span><span class="n">scaling</span><span class="p">,</span>
 <span class="w">                       </span><span class="kt">size_t</span><span class="w"> </span><span class="n">group</span><span class="p">,</span>
@@ -187,15 +338,27 @@
 <span class="w">                       </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">r2</span><span class="p">,</span>
 <span class="w">                       </span><span class="n">scisignal</span><span class="w"> </span><span class="o">*</span><span class="n">s</span><span class="p">);</span></div>
 
-<div class="viewcode-block" id="c.PCATsqContributions"><span class="cm">/**</span>
-<span class="cm"> * @brief Compute the T squared feature contributions and SPE for every object.</span>
+<div class="viewcode-block" id="c.PCATsqContributions"><a class="viewcode-back" href="../C-API.html#c.PCATsqContributions">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Compute the squared prediction error (SPE) of each object and its</span>
+<span class="cm"> * per-feature contributions.</span>
 <span class="cm"> *</span>
-<span class="cm"> * @param [in] x matrix of objects to project and calculate contributions</span>
-<span class="cm"> * @param [in] model computed pca model</span>
-<span class="cm"> * @param [in] npc number of principal component to use</span>
-<span class="cm"> * @param [out] spe square prediction error value on each object</span>
-<span class="cm"> * @param [out] contributions objects features contributions</span>
+<span class="cm"> * Despite the name, the statistic is the SPE (Q residual), not Hotelling&#39;s</span>
+<span class="cm"> * T². Each object is projected and reconstructed with ``npc`` components;</span>
+<span class="cm"> * the residuals are computed in the preprocessed (centered and scaled)</span>
+<span class="cm"> * space. ``contributions[i][j]`` is the squared residual of feature ``j`` for</span>
+<span class="cm"> * object ``i`` and ``spe[i]`` is their sum. Large values identify objects</span>
+<span class="cm"> * (and the features responsible) that the model does not describe well.</span>
 <span class="cm"> *</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   x: [in] Objects to evaluate, ``n x f``.</span>
+<span class="cm"> *   model: [in] Model fitted with :c:func:`PCA`.</span>
+<span class="cm"> *   npc: [in] Number of components of the model to use.</span>
+<span class="cm"> *   spe: [out] Vector created with ``initDVector``; resized to ``n``.</span>
+<span class="cm"> *   contributions: [out] Matrix created with ``initMatrix``; resized to</span>
+<span class="cm"> *     ``n x f``.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Returns:</span>
+<span class="cm"> *   Nothing, the results are written into ``spe`` and ``contributions``.</span>
 <span class="cm"> */</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">PCATsqContributions</span><span class="p">(</span>
 <span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">x</span><span class="p">,</span>
@@ -205,15 +368,22 @@
 <span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">contributions</span><span class="p">);</span></div>
 
 <div class="viewcode-block" id="c.GetResidualMatrix"><a class="viewcode-back" href="../C-API.html#c.GetResidualMatrix">[docs]</a><span class="cm">/**</span>
-<span class="cm"> * @brief Compute the residual matrix for a specific number of component.</span>
+<span class="cm"> * Compute the residual matrix of the training data after ``pc`` components.</span>
 <span class="cm"> *</span>
-<span class="cm"> * @param [in] mx original input matrix</span>
-<span class="cm"> * @param [in] model computed pca model</span>
-<span class="cm"> * @param [in] pc max component to extract the residual matrix</span>
-<span class="cm"> * @param [in] rmx residual matrix of output</span>
+<span class="cm"> * Returns ``E = X_preprocessed - T P&#39;`` using the first ``pc`` components.</span>
+<span class="cm"> * It uses the training scores stored in the model, so ``mx`` must be the</span>
+<span class="cm"> * same matrix used to fit the model; for new objects use</span>
+<span class="cm"> * :c:func:`PCAScorePredictor` and :c:func:`PCAIndVarPredictor`.</span>
 <span class="cm"> *</span>
-<span class="cm"> * @par Returns</span>
-<span class="cm"> *    Nothing.</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   mx: [in] The training matrix, ``n x f``.</span>
+<span class="cm"> *   model: [in] Model fitted on ``mx`` with :c:func:`PCA`.</span>
+<span class="cm"> *   pc: [in] Number of components to remove; capped to ``f``.</span>
+<span class="cm"> *   rmx: [out] Matrix created with ``initMatrix``; resized and filled with</span>
+<span class="cm"> *     the residuals in the preprocessed (centered and scaled) space, ``n x f``.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Returns:</span>
+<span class="cm"> *   Nothing, the residuals are written into ``rmx``.</span>
 <span class="cm"> */</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">GetResidualMatrix</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">mx</span><span class="p">,</span>
 <span class="w">                       </span><span class="n">PCAMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">model</span><span class="p">,</span>
@@ -221,51 +391,42 @@
 <span class="w">                       </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">rmx</span><span class="p">);</span></div>
 
 <div class="viewcode-block" id="c.PrintPCA"><a class="viewcode-back" href="../C-API.html#c.PrintPCA">[docs]</a><span class="cm">/**</span>
-<span class="cm"> * @brief Print PCAMODEL to video.</span>
+<span class="cm"> * Print the explained variance, scores, loadings and DModX of a model to</span>
+<span class="cm"> * standard output.</span>
 <span class="cm"> *</span>
-<span class="cm"> * @param [in] m computed pca model</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   m: [in] The model to print.</span>
 <span class="cm"> */</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">PrintPCA</span><span class="p">(</span><span class="n">PCAMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">);</span></div>
 
 <span class="cp">#endif</span>
 </pre></div>
 
-            <div class="clearer"></div>
+           </div>
           </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2011, Giuseppe Marco Randazzo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="Main">
-        <div class="sphinxsidebarwrapper">
-<search id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</search>
-<script>document.getElementById('searchbox').style.display = "block"</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="Related">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.8.0 documentation</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">pca.h</a></li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-    &#169; Copyright 2011, Giuseppe Marco Randazzo.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
-    </div>
-  </body>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
 </html>

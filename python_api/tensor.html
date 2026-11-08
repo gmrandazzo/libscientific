@@ -1,0 +1,535 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tensor &mdash; libscientific 1.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=b51e6972"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="List of vectors" href="vectlist.html" />
+    <link rel="prev" title="Vectors" href="vector.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            libscientific
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Overview.html">What is libscientific?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html">Getting started in C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#vector-operations">Vector operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#matrix-operations">Matrix operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#tensor-operations">Tensor operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#multivariate-analysis-algorithms">Multivariate analysis algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#model-persistence-and-serialization-lsm-and-lsb">Model persistence and serialization (.lsm and .lsb)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html">Getting started in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#vector-operations">Vector operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#matrix-operations">Matrix operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#tensor-operations">Tensor operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#multivariate-analysis-algorithms">Multivariate analysis algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#model-persistence-and-serialization-lsm-and-lsb">Model persistence and serialization (.lsm and .lsb)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Licensing.html">Licensing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../C-API.html">C API Reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../Python-API.html">Python API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../Python-API.html#models">Models</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../Python-API.html#data-structures-and-utilities">Data structures and utilities</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="matrix.html">Matrix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="vector.html">Vectors</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Tensor</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#libscientific.tensor.Tensor"><code class="docutils literal notranslate"><span class="pre">Tensor</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#functions">Functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#low-level-api">Low-level API</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="vectlist.html">List of vectors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="misc.html">Missing values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="info.html">Library information</a></li>
+<li class="toctree-l3"><a class="reference internal" href="loadlibrary.html">Library loading</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">libscientific</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../Python-API.html">Python API Reference</a></li>
+      <li class="breadcrumb-item active">Tensor</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/python_api/tensor.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-libscientific.tensor">
+<span id="tensor"></span><h1>Tensor<a class="headerlink" href="#module-libscientific.tensor" title="Link to this heading"></a></h1>
+<p>Tensors (lists of matrices) stored in the C library.</p>
+<p>A tensor is a list of layers (matrices). It is the input of the multi-way
+models (<a class="reference internal" href="upca.html#module-libscientific.upca" title="libscientific.upca"><code class="xref py py-mod docutils literal notranslate"><span class="pre">upca</span></code></a>, <a class="reference internal" href="upls.html#module-libscientific.upls" title="libscientific.upls"><code class="xref py py-mod docutils literal notranslate"><span class="pre">upls</span></code></a>) and of
+<a class="reference internal" href="cpca.html#module-libscientific.cpca" title="libscientific.cpca"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cpca</span></code></a> (one layer per block).</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">libscientific.tensor</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tensor</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">Tensor</span><span class="p">([[[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">]],</span> <span class="p">[[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">7.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">]]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="go">(2, 5.0)</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="libscientific.tensor.Tensor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.tensor.</span></span><span class="sig-name descname"><span class="pre">Tensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tns_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.Tensor" title="Link to this definition"></a></dt>
+<dd><p>A tensor (list of matrices) stored in the C library.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tns</strong> (<em>list</em><em> of </em><em>matrices</em><em>, </em><em>3D numpy array</em><em>, </em><a class="reference internal" href="#libscientific.tensor.Tensor" title="libscientific.tensor.Tensor"><em>Tensor</em></a><em>, </em><em>C tensor</em><em> or </em><em>None</em>) – Initial content (copied); see <a class="reference internal" href="#libscientific.tensor.new_tensor" title="libscientific.tensor.new_tensor"><code class="xref py py-func docutils literal notranslate"><span class="pre">new_tensor()</span></code></a>. <code class="docutils literal notranslate"><span class="pre">None</span></code> gives an
+empty tensor.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.tensor.Tensor.tns">
+<span class="sig-name descname"><span class="pre">tns</span></span><a class="headerlink" href="#libscientific.tensor.Tensor.tns" title="Link to this definition"></a></dt>
+<dd><p>The underlying C tensor, owned by this object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ctypes.POINTER(<a class="reference internal" href="#libscientific.tensor.TENSOR" title="libscientific.tensor.TENSOR">TENSOR</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p><code class="docutils literal notranslate"><span class="pre">t[k,</span> <span class="pre">i,</span> <span class="pre">j]</span></code> reads/writes one element and <code class="docutils literal notranslate"><span class="pre">t[k]</span></code> returns layer <code class="docutils literal notranslate"><span class="pre">k</span></code> as a
+list of rows; out-of-range indexes raise <code class="docutils literal notranslate"><span class="pre">IndexError</span></code>. <code class="docutils literal notranslate"><span class="pre">len(t)</span></code> is the
+number of layers.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">Tensor</span><span class="p">([[[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">]],</span> <span class="p">[[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">7.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">]]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="go">(2, 6.0, [[1.0, 2.0], [3.0, 4.0]])</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.tensor.Tensor.__len__">
+<span class="sig-name descname"><span class="pre">__len__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.Tensor.__len__" title="Link to this definition"></a></dt>
+<dd><p>Return the number of layers.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.tensor.Tensor.__getitem__">
+<span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.Tensor.__getitem__" title="Link to this definition"></a></dt>
+<dd><p>Return an element (<code class="docutils literal notranslate"><span class="pre">t[k,</span> <span class="pre">i,</span> <span class="pre">j]</span></code>) or a layer (<code class="docutils literal notranslate"><span class="pre">t[k]</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>IndexError</strong> – If an index is out of range.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.tensor.Tensor.__setitem__">
+<span class="sig-name descname"><span class="pre">__setitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.Tensor.__setitem__" title="Link to this definition"></a></dt>
+<dd><p>Set an element: <code class="docutils literal notranslate"><span class="pre">t[k,</span> <span class="pre">i,</span> <span class="pre">j]</span> <span class="pre">=</span> <span class="pre">value</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>IndexError</strong> – If an index is out of range.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.tensor.Tensor.order">
+<span class="sig-name descname"><span class="pre">order</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.Tensor.order" title="Link to this definition"></a></dt>
+<dd><p>Return the number of layers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.tensor.Tensor.nrow">
+<span class="sig-name descname"><span class="pre">nrow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.Tensor.nrow" title="Link to this definition"></a></dt>
+<dd><p>Return the number of rows of a layer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>k</strong> (<em>int</em>) – Index of the layer.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.tensor.Tensor.ncol">
+<span class="sig-name descname"><span class="pre">ncol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.Tensor.ncol" title="Link to this definition"></a></dt>
+<dd><p>Return the number of columns of a layer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>k</strong> (<em>int</em>) – Index of the layer.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.tensor.Tensor.data_ptr">
+<span class="sig-name descname"><span class="pre">data_ptr</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.Tensor.data_ptr" title="Link to this definition"></a></dt>
+<dd><p>Return the C tensor structure (low-level access).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#libscientific.tensor.TENSOR" title="libscientific.tensor.TENSOR">TENSOR</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.tensor.Tensor.tolist">
+<span class="sig-name descname"><span class="pre">tolist</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.Tensor.tolist" title="Link to this definition"></a></dt>
+<dd><p>Return the content as nested lists <code class="docutils literal notranslate"><span class="pre">[layer][row][column]</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[list[list[float]]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.tensor.Tensor.fromlist">
+<span class="sig-name descname"><span class="pre">fromlist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tns_</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.Tensor.fromlist" title="Link to this definition"></a></dt>
+<dd><p>Replace the content with a list of matrices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tns</strong> (<em>list</em><em> of </em><em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>]</em><em>]</em>) – The new layers.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.tensor.Tensor.fromnumpy">
+<span class="sig-name descname"><span class="pre">fromnumpy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">npt</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.Tensor.fromnumpy" title="Link to this definition"></a></dt>
+<dd><p>Replace the content with a 3D numpy array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>npt</strong> (<em>numpy.ndarray</em>) – Array of shape <code class="docutils literal notranslate"><span class="pre">(n_layers,</span> <span class="pre">n_rows,</span> <span class="pre">n_cols)</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.tensor.Tensor.debug">
+<span class="sig-name descname"><span class="pre">debug</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.Tensor.debug" title="Link to this definition"></a></dt>
+<dd><p>Print the tensor to standard output.</p>
+</dd></dl>
+
+</dd></dl>
+
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.tensor.init_tensor">
+<span class="sig-prename descclassname"><span class="pre">libscientific.tensor.</span></span><span class="sig-name descname"><span class="pre">init_tensor</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.init_tensor" title="Link to this definition"></a></dt>
+<dd><p>Allocate an empty C tensor (no layers).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A new tensor; release it with <a class="reference internal" href="#libscientific.tensor.del_tensor" title="libscientific.tensor.del_tensor"><code class="xref py py-func docutils literal notranslate"><span class="pre">del_tensor()</span></code></a>.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>ctypes.POINTER(<a class="reference internal" href="#libscientific.tensor.TENSOR" title="libscientific.tensor.TENSOR">TENSOR</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.tensor.new_tensor_matrix">
+<span class="sig-prename descclassname"><span class="pre">libscientific.tensor.</span></span><span class="sig-name descname"><span class="pre">new_tensor_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_indx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_row</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_col</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.new_tensor_matrix" title="Link to this definition"></a></dt>
+<dd><p>Allocate layer <code class="docutils literal notranslate"><span class="pre">k_indx</span></code> of a tensor created with <code class="docutils literal notranslate"><span class="pre">NewTensor</span></code> (low-level).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tns</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.tensor.TENSOR" title="libscientific.tensor.TENSOR"><em>TENSOR</em></a><em>)</em>) – The tensor.</p></li>
+<li><p><strong>k_indx</strong> (<em>int</em>) – Index of the layer to allocate.</p></li>
+<li><p><strong>num_row</strong> (<em>int</em>) – Shape of the layer (filled with zeros).</p></li>
+<li><p><strong>num_col</strong> (<em>int</em>) – Shape of the layer (filled with zeros).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.tensor.add_tensor_matrix">
+<span class="sig-prename descclassname"><span class="pre">libscientific.tensor.</span></span><span class="sig-name descname"><span class="pre">add_tensor_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_row</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_col</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.add_tensor_matrix" title="Link to this definition"></a></dt>
+<dd><p>Append a new layer filled with zeros.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tns</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.tensor.TENSOR" title="libscientific.tensor.TENSOR"><em>TENSOR</em></a><em>)</em>) – The tensor; its order grows by one.</p></li>
+<li><p><strong>num_row</strong> (<em>int</em>) – Shape of the new layer.</p></li>
+<li><p><strong>num_col</strong> (<em>int</em>) – Shape of the new layer.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.tensor.new_tensor">
+<span class="sig-prename descclassname"><span class="pre">libscientific.tensor.</span></span><span class="sig-name descname"><span class="pre">new_tensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tns_input_</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.new_tensor" title="Link to this definition"></a></dt>
+<dd><p>Create a C tensor from a list of matrices or a 3D numpy array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tns_input</strong> (<em>list</em><em> of </em><em>list</em><em>[</em><em>list</em><em>[</em><em>float</em><em>]</em><em>]</em><em>, or </em><em>numpy.ndarray</em>) – <code class="docutils literal notranslate"><span class="pre">[layer_0,</span> <span class="pre">layer_1,</span> <span class="pre">...]</span></code> where every layer is a list of rows (or a
+2D numpy array), or a 3D array of shape <code class="docutils literal notranslate"><span class="pre">(n_layers,</span> <span class="pre">n_rows,</span> <span class="pre">n_cols)</span></code>.
+Non-numeric values are stored as the missing value.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new tensor; release it with <a class="reference internal" href="#libscientific.tensor.del_tensor" title="libscientific.tensor.del_tensor"><code class="xref py py-func docutils literal notranslate"><span class="pre">del_tensor()</span></code></a>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ctypes.POINTER(<a class="reference internal" href="#libscientific.tensor.TENSOR" title="libscientific.tensor.TENSOR">TENSOR</a>)</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">new_tensor</span><span class="p">([[[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">]],</span> <span class="p">[[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">7.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">]]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">order</span><span class="p">,</span> <span class="n">tensor_tolist</span><span class="p">(</span><span class="n">t</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+<span class="go">(2, [[5.0, 6.0], [7.0, 8.0]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">del_tensor</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.tensor.del_tensor">
+<span class="sig-prename descclassname"><span class="pre">libscientific.tensor.</span></span><span class="sig-name descname"><span class="pre">del_tensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tns</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.del_tensor" title="Link to this definition"></a></dt>
+<dd><p>Free a C tensor and all its layers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tns</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.tensor.TENSOR" title="libscientific.tensor.TENSOR"><em>TENSOR</em></a><em>)</em>) – The tensor to release. It must not be used afterwards.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.tensor.print_tensor">
+<span class="sig-prename descclassname"><span class="pre">libscientific.tensor.</span></span><span class="sig-name descname"><span class="pre">print_tensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tns</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.print_tensor" title="Link to this definition"></a></dt>
+<dd><p>Print a C tensor to standard output.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tns</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.tensor.TENSOR" title="libscientific.tensor.TENSOR"><em>TENSOR</em></a><em>)</em>) – The tensor to print.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.tensor.set_tensor_value">
+<span class="sig-prename descclassname"><span class="pre">libscientific.tensor.</span></span><span class="sig-name descname"><span class="pre">set_tensor_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_indx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i_indx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j_indx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.set_tensor_value" title="Link to this definition"></a></dt>
+<dd><p>Set one element of a C tensor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tns</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.tensor.TENSOR" title="libscientific.tensor.TENSOR"><em>TENSOR</em></a><em>)</em>) – The tensor, modified in place.</p></li>
+<li><p><strong>k_indx</strong> (<em>int</em>) – Layer, row and column index (0-based).</p></li>
+<li><p><strong>i_indx</strong> (<em>int</em>) – Layer, row and column index (0-based).</p></li>
+<li><p><strong>j_indx</strong> (<em>int</em>) – Layer, row and column index (0-based).</p></li>
+<li><p><strong>val</strong> (<em>float</em>) – The new value.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.tensor.tensor_append_column">
+<span class="sig-prename descclassname"><span class="pre">libscientific.tensor.</span></span><span class="sig-name descname"><span class="pre">tensor_append_column</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_indx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dvect</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.tensor_append_column" title="Link to this definition"></a></dt>
+<dd><p>Append a column to one layer of a tensor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tns</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.tensor.TENSOR" title="libscientific.tensor.TENSOR"><em>TENSOR</em></a><em>)</em>) – The tensor.</p></li>
+<li><p><strong>k_indx</strong> (<em>int</em>) – Index of the layer.</p></li>
+<li><p><strong>dvect</strong> (<em>POINTER</em><em>(</em><a class="reference internal" href="vector.html#libscientific.vector.DVECTOR" title="libscientific.vector.DVECTOR"><em>DVECTOR</em></a><em>)</em>) – The column, with one value per row of the layer.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.tensor.tensor_append_row">
+<span class="sig-prename descclassname"><span class="pre">libscientific.tensor.</span></span><span class="sig-name descname"><span class="pre">tensor_append_row</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_indx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dvect</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.tensor_append_row" title="Link to this definition"></a></dt>
+<dd><p>Append a row to one layer of a tensor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tns</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.tensor.TENSOR" title="libscientific.tensor.TENSOR"><em>TENSOR</em></a><em>)</em>) – The tensor.</p></li>
+<li><p><strong>k_indx</strong> (<em>int</em>) – Index of the layer.</p></li>
+<li><p><strong>dvect</strong> (<em>POINTER</em><em>(</em><a class="reference internal" href="vector.html#libscientific.vector.DVECTOR" title="libscientific.vector.DVECTOR"><em>DVECTOR</em></a><em>)</em>) – The row, with one value per column of the layer.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.tensor.tensor_set">
+<span class="sig-prename descclassname"><span class="pre">libscientific.tensor.</span></span><span class="sig-name descname"><span class="pre">tensor_set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.tensor_set" title="Link to this definition"></a></dt>
+<dd><p>Set every element of every layer to the same value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tns</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.tensor.TENSOR" title="libscientific.tensor.TENSOR"><em>TENSOR</em></a><em>)</em>) – The tensor, modified in place.</p></li>
+<li><p><strong>val</strong> (<em>float</em>) – The value to assign.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.tensor.tensor_copy">
+<span class="sig-prename descclassname"><span class="pre">libscientific.tensor.</span></span><span class="sig-name descname"><span class="pre">tensor_copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src_tns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dst_tns</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.tensor.tensor_copy" title="Link to this definition"></a></dt>
+<dd><p>Copy a C tensor into another one.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>src_tns</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.tensor.TENSOR" title="libscientific.tensor.TENSOR"><em>TENSOR</em></a><em>)</em>) – Source tensor.</p></li>
+<li><p><strong>dst_tns</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.tensor.TENSOR" title="libscientific.tensor.TENSOR"><em>TENSOR</em></a><em>)</em>) – Destination tensor (e.g. from <a class="reference internal" href="#libscientific.tensor.init_tensor" title="libscientific.tensor.init_tensor"><code class="xref py py-func docutils literal notranslate"><span class="pre">init_tensor()</span></code></a>); it receives a copy of
+every layer.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.tensor.tensor_tolist">
+<span class="sig-prename descclassname"><span class="pre">libscientific.tensor.</span></span><span class="sig-name descname"><span class="pre">tensor_tolist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.tensor.tensor_tolist" title="Link to this definition"></a></dt>
+<dd><p>Convert a C tensor into nested Python lists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tns</strong> (<em>ctypes.POINTER</em><em>(</em><a class="reference internal" href="#libscientific.tensor.TENSOR" title="libscientific.tensor.TENSOR"><em>TENSOR</em></a><em>)</em>) – The tensor.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>One list of rows per layer: <code class="docutils literal notranslate"><span class="pre">result[k][i][j]</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[list[list[float]]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="low-level-api">
+<h2>Low-level API<a class="headerlink" href="#low-level-api" title="Link to this heading"></a></h2>
+<p>Thin ctypes wrappers around the C functions, working on raw C
+pointers. They are needed only to interoperate with other low-level code.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="libscientific.tensor.TENSOR">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.tensor.</span></span><span class="sig-name descname"><span class="pre">TENSOR</span></span><a class="headerlink" href="#libscientific.tensor.TENSOR" title="Link to this definition"></a></dt>
+<dd><p>C structure of a libscientific tensor (low-level API): a list of matrices.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.tensor.TENSOR.m">
+<span class="sig-name descname"><span class="pre">m</span></span><a class="headerlink" href="#libscientific.tensor.TENSOR.m" title="Link to this definition"></a></dt>
+<dd><p>The matrices (layers); <code class="docutils literal notranslate"><span class="pre">m[k]</span></code> is layer <code class="docutils literal notranslate"><span class="pre">k</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>POINTER(POINTER(<a class="reference internal" href="matrix.html#libscientific.matrix.MATRIX" title="libscientific.matrix.MATRIX">MATRIX</a>))</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="libscientific.tensor.TENSOR.order">
+<span class="sig-name descname"><span class="pre">order</span></span><a class="headerlink" href="#libscientific.tensor.TENSOR.order" title="Link to this definition"></a></dt>
+<dd><p>Number of layers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">Layers</span> <span class="pre">can</span> <span class="pre">have</span> <span class="pre">different</span> <span class="pre">shapes.</span> <span class="pre">The</span> <span class="pre">multi-way</span> <span class="pre">models</span> <span class="pre">(UPCA,</span> <span class="pre">UPLS)</span> <span class="pre">need</span></span></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">every</span> <span class="pre">layer</span> <span class="pre">with</span> <span class="pre">the</span> <span class="pre">same</span> <span class="pre">shape;</span> <span class="pre">CPCA</span> <span class="pre">uses</span> <span class="pre">one</span> <span class="pre">layer</span> <span class="pre">per</span> <span class="pre">block.</span></span></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="vector.html" class="btn btn-neutral float-left" title="Vectors" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="vectlist.html" class="btn btn-neutral float-right" title="List of vectors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2011, Giuseppe Marco Randazzo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -160,49 +160,50 @@ Here is a simple example that shows how to calculate a PLS model.
    :linenos:
 
 
+Multiple Linear Regression (MLR)
+--------------------------------
+
+Ordinary least squares regression of one or more responses.
+
+.. literalinclude:: python_code_examples/mlrexample1.py
+   :language: python
+   :linenos:
+
+Linear Discriminant Analysis (LDA)
+----------------------------------
+
+Classification of objects into classes labelled ``0..K-1`` or ``1..K``.
+
+.. literalinclude:: python_code_examples/ldaexample1.py
+   :language: python
+   :linenos:
+
+Multi-way Principal Component Analysis (UPCA)
+---------------------------------------------
+
+Three-way data are given as a list of layers (or a 3D numpy array of shape
+``(n_layers, n_objects, n_features)``).
+
+.. literalinclude:: python_code_examples/upcaexample1.py
+   :language: python
+   :linenos:
+
+Multi-way Partial Least Squares (UPLS)
+--------------------------------------
+
+.. literalinclude:: python_code_examples/uplsexample1.py
+   :language: python
+   :linenos:
+
+
 Model persistence and serialization (.lsm and .lsb)
 ===================================================
 
-Libscientific allows saving and loading models in Python with zero external dependencies.
+Libscientific saves and loads models with zero external dependencies:
+``.lsm`` files contain one model, ``.lsb`` bundles contain several named
+models. Every model has ``save``/``load`` methods; :mod:`libscientific.model_io`
+adds bundles and automatic detection of the file content.
 
-Saving and loading a single model (.lsm)
-----------------------------------------
-
-.. code-block:: python
+.. literalinclude:: python_code_examples/modelioexample1.py
+   :language: python
    :linenos:
-
-   from libscientific.pca import PCA
-   from libscientific.model_io import save_pca_model, load_pca_model
-
-   # Train PCA model
-   model = PCA(matrix, n_components=3)
-
-   # Save model to .lsm container
-   save_pca_model("pca_model.lsm", model)
-
-   # Load model back from disk
-   loaded_model = load_pca_model("pca_model.lsm")
-
-
-Working with multi-model bundles (.lsb)
----------------------------------------
-
-Bundles allow grouping multiple related models together into a single file:
-
-.. code-block:: python
-   :linenos:
-
-   from libscientific.model_io import ModelBundle
-
-   # Create and populate a project bundle
-   bundle = ModelBundle()
-   bundle.add_pca("screening_pca", pca_model)
-   bundle.add_pls("activity_pls", pls_model)
-
-   # Save bundle to disk
-   bundle.save("project.lsb")
-
-   # Load bundle back
-   loaded_bundle = ModelBundle.load("project.lsb")
-   retrieved_pca = loaded_bundle.get_pca("screening_pca")
-   retrieved_pls = loaded_bundle.get_pls("activity_pls")

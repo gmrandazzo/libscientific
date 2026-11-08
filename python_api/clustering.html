@@ -1,0 +1,326 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clustering and object selection &mdash; libscientific 1.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=b51e6972"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Interpolation" href="interpolate.html" />
+    <link rel="prev" title="UPLS — Multi-way PLS" href="upls.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            libscientific
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Overview.html">What is libscientific?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html">Getting started in C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#vector-operations">Vector operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#matrix-operations">Matrix operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#tensor-operations">Tensor operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#multivariate-analysis-algorithms">Multivariate analysis algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#model-persistence-and-serialization-lsm-and-lsb">Model persistence and serialization (.lsm and .lsb)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html">Getting started in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#vector-operations">Vector operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#matrix-operations">Matrix operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#tensor-operations">Tensor operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#multivariate-analysis-algorithms">Multivariate analysis algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#model-persistence-and-serialization-lsm-and-lsb">Model persistence and serialization (.lsm and .lsb)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Licensing.html">Licensing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../C-API.html">C API Reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../Python-API.html">Python API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../Python-API.html#models">Models</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="pca.html">PCA — Principal Component Analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pls.html">PLS — Partial Least Squares regression</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cpca.html">CPCA — Consensus (multi-block) PCA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mlr.html">MLR — Multiple Linear Regression</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lda.html">LDA — Linear Discriminant Analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="upca.html">UPCA — Multi-way PCA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="upls.html">UPLS — Multi-way PLS</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Clustering and object selection</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#functions">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="interpolate.html">Interpolation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="model_io.html">Model files and bundles</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../Python-API.html#data-structures-and-utilities">Data structures and utilities</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">libscientific</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../Python-API.html">Python API Reference</a></li>
+      <li class="breadcrumb-item active">Clustering and object selection</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/python_api/clustering.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-libscientific.clustering">
+<span id="clustering-and-object-selection"></span><h1>Clustering and object selection<a class="headerlink" href="#module-libscientific.clustering" title="Link to this heading"></a></h1>
+<p>Object selection and clustering.</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#libscientific.clustering.most_descriptive_compound" title="libscientific.clustering.most_descriptive_compound"><code class="xref py py-func docutils literal notranslate"><span class="pre">most_descriptive_compound()</span></code></a> and <a class="reference internal" href="#libscientific.clustering.max_dissimilarity_selection" title="libscientific.clustering.max_dissimilarity_selection"><code class="xref py py-func docutils literal notranslate"><span class="pre">max_dissimilarity_selection()</span></code></a>
+pick a representative subset of objects (rows), e.g. to build a diverse
+training set;</p></li>
+<li><p><a class="reference internal" href="#libscientific.clustering.k_means_pp_centers" title="libscientific.clustering.k_means_pp_centers"><code class="xref py py-func docutils literal notranslate"><span class="pre">k_means_pp_centers()</span></code></a> picks well spread starting centers;</p></li>
+<li><p><a class="reference internal" href="#libscientific.clustering.k_means_plus_plus" title="libscientific.clustering.k_means_plus_plus"><code class="xref py py-func docutils literal notranslate"><span class="pre">k_means_plus_plus()</span></code></a> assigns every object to one of <code class="docutils literal notranslate"><span class="pre">k</span></code> clusters.</p></li>
+</ul>
+<p>All functions accept a list of rows, a numpy array or a
+<a class="reference internal" href="matrix.html#libscientific.matrix.Matrix" title="libscientific.matrix.Matrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">Matrix</span></code></a>, and work on multiple threads
+(<code class="docutils literal notranslate"><span class="pre">nthreads</span></code> defaults to the number of CPUs).</p>
+<p>Distance metrics (<code class="docutils literal notranslate"><span class="pre">metric</span></code>): 0 = euclidean, 1 = manhattan, 2 = cosine
+(<code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">-</span> <span class="pre">cosine</span> <span class="pre">similarity</span></code>).</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">libscientific.clustering</span><span class="w"> </span><span class="kn">import</span> <span class="n">max_dissimilarity_selection</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">X</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">5.1</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">sorted</span><span class="p">(</span><span class="n">max_dissimilarity_selection</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>   <span class="c1"># 3 far apart objects</span>
+<span class="go">[3, 4, 5]</span>
+</pre></div>
+</div>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.clustering.most_descriptive_compound">
+<span class="sig-prename descclassname"><span class="pre">libscientific.clustering.</span></span><span class="sig-name descname"><span class="pre">most_descriptive_compound</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">libscientific.matrix.MatrixLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nobjects</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nthreads</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.clustering.most_descriptive_compound" title="Link to this definition"></a></dt>
+<dd><p>Select the most descriptive objects (MDC algorithm).</p>
+<p>The first selected object is the one closest to all the others (the most
+representative); each following object is the one that best describes
+the objects not yet represented by the selection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_input</strong> (<em>MatrixLike</em>) – Data, shape <code class="docutils literal notranslate"><span class="pre">(n_objects,</span> <span class="pre">n_features)</span></code>.</p></li>
+<li><p><strong>nobjects</strong> (<em>int</em>) – Number of objects to select (at most <code class="docutils literal notranslate"><span class="pre">n_objects</span></code>).</p></li>
+<li><p><strong>metric</strong> (<em>int</em><em>, </em><em>default 0</em>) – Distance: 0 = euclidean, 1 = manhattan, 2 = cosine.</p></li>
+<li><p><strong>nthreads</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of threads (default: number of CPUs).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Row indexes of the selected objects, in selection order.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[int]</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#libscientific.clustering.most_descriptive_compound_fast" title="libscientific.clustering.most_descriptive_compound_fast"><code class="xref py py-obj docutils literal notranslate"><span class="pre">most_descriptive_compound_fast</span></code></a></dt><dd><p>same selection, lower memory use.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">X</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span> <span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">5.1</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ids</span> <span class="o">=</span> <span class="n">most_descriptive_compound</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">ids</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">ids</span><span class="p">))</span>
+<span class="go">(2, 2)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.clustering.most_descriptive_compound_fast">
+<span class="sig-prename descclassname"><span class="pre">libscientific.clustering.</span></span><span class="sig-name descname"><span class="pre">most_descriptive_compound_fast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">libscientific.matrix.MatrixLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nobjects</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nthreads</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.clustering.most_descriptive_compound_fast" title="Link to this definition"></a></dt>
+<dd><p>Memory-efficient version of <a class="reference internal" href="#libscientific.clustering.most_descriptive_compound" title="libscientific.clustering.most_descriptive_compound"><code class="xref py py-func docutils literal notranslate"><span class="pre">most_descriptive_compound()</span></code></a>.</p>
+<p>The distances are computed on the fly instead of being stored, so it
+works on data sets that do not fit an <code class="docutils literal notranslate"><span class="pre">n_objects</span> <span class="pre">x</span> <span class="pre">n_objects</span></code> distance
+matrix in memory. It selects the same objects as
+<a class="reference internal" href="#libscientific.clustering.most_descriptive_compound" title="libscientific.clustering.most_descriptive_compound"><code class="xref py py-func docutils literal notranslate"><span class="pre">most_descriptive_compound()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_input</strong> (<em>MatrixLike</em>) – Data, shape <code class="docutils literal notranslate"><span class="pre">(n_objects,</span> <span class="pre">n_features)</span></code>.</p></li>
+<li><p><strong>nobjects</strong> (<em>int</em>) – Number of objects to select.</p></li>
+<li><p><strong>metric</strong> (<em>int</em><em>, </em><em>default 0</em>) – Distance: 0 = euclidean, 1 = manhattan, 2 = cosine.</p></li>
+<li><p><strong>nthreads</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of threads (default: number of CPUs).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Row indexes of the selected objects, in selection order.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.clustering.max_dissimilarity_selection">
+<span class="sig-prename descclassname"><span class="pre">libscientific.clustering.</span></span><span class="sig-name descname"><span class="pre">max_dissimilarity_selection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">libscientific.matrix.MatrixLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nobjects</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nthreads</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.clustering.max_dissimilarity_selection" title="Link to this definition"></a></dt>
+<dd><p>Select objects as different as possible from each other (MaxMin).</p>
+<p>Each new object is the one whose distance to the closest already
+selected object is the largest, which spreads the selection over the
+whole data space (including outliers).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_input</strong> (<em>MatrixLike</em>) – Data, shape <code class="docutils literal notranslate"><span class="pre">(n_objects,</span> <span class="pre">n_features)</span></code>.</p></li>
+<li><p><strong>nobjects</strong> (<em>int</em>) – Number of objects to select.</p></li>
+<li><p><strong>metric</strong> (<em>int</em><em>, </em><em>default 0</em>) – Distance: 0 = euclidean, 1 = manhattan, 2 = cosine.</p></li>
+<li><p><strong>nthreads</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of threads (default: number of CPUs).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Row indexes of the selected objects, in selection order.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[int]</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">X</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">5.1</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">sorted</span><span class="p">(</span><span class="n">max_dissimilarity_selection</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="go">[3, 4, 5]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.clustering.k_means_pp_centers">
+<span class="sig-prename descclassname"><span class="pre">libscientific.clustering.</span></span><span class="sig-name descname"><span class="pre">k_means_pp_centers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">libscientific.matrix.MatrixLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_centers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nthreads</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.clustering.k_means_pp_centers" title="Link to this definition"></a></dt>
+<dd><p>Choose well spread starting centers with the k-means++ seeding.</p>
+<p>The first center is chosen at random; each following one is drawn with a
+probability proportional to its squared distance from the nearest center
+already chosen (D. Arthur and S. Vassilvitskii, 2007).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_input</strong> (<em>MatrixLike</em>) – Data, shape <code class="docutils literal notranslate"><span class="pre">(n_objects,</span> <span class="pre">n_features)</span></code>.</p></li>
+<li><p><strong>n_centers</strong> (<em>int</em>) – Number of centers.</p></li>
+<li><p><strong>nthreads</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of threads (default: number of CPUs).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Row indexes of the chosen objects. The choice is random: it can
+change between runs.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[int]</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">X</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">5.1</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">centers</span> <span class="o">=</span> <span class="n">k_means_pp_centers</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">centers</span><span class="p">),</span> <span class="nb">all</span><span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">c</span> <span class="o">&lt;</span> <span class="mi">6</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">centers</span><span class="p">)</span>
+<span class="go">(3, True)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.clustering.k_means_plus_plus">
+<span class="sig-prename descclassname"><span class="pre">libscientific.clustering.</span></span><span class="sig-name descname"><span class="pre">k_means_plus_plus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">libscientific.matrix.MatrixLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_clusters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nthreads</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.clustering.k_means_plus_plus" title="Link to this definition"></a></dt>
+<dd><p>Cluster objects with k-means, initialized with k-means++.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_input</strong> (<em>MatrixLike</em>) – Data, shape <code class="docutils literal notranslate"><span class="pre">(n_objects,</span> <span class="pre">n_features)</span></code>.</p></li>
+<li><p><strong>n_clusters</strong> (<em>int</em>) – Number of clusters <code class="docutils literal notranslate"><span class="pre">k</span></code>.</p></li>
+<li><p><strong>nthreads</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of threads (default: number of CPUs).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Cluster label of every object, from 0 to <code class="docutils literal notranslate"><span class="pre">k</span> <span class="pre">-</span> <span class="pre">1</span></code>. The
+initialization is random: the numbering of the clusters (and, for
+poorly separated data, the clusters themselves) can change between
+runs.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[int]</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Two well separated groups always end up in two different clusters:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">X</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span> <span class="p">[</span><span class="mf">9.0</span><span class="p">,</span> <span class="mf">9.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">9.1</span><span class="p">,</span> <span class="mf">9.2</span><span class="p">],</span> <span class="p">[</span><span class="mf">9.2</span><span class="p">,</span> <span class="mf">9.1</span><span class="p">]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">labels</span> <span class="o">=</span> <span class="n">k_means_plus_plus</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">),</span> <span class="n">labels</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">labels</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">labels</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">labels</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">labels</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+<span class="go">(6, True, True)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="upls.html" class="btn btn-neutral float-left" title="UPLS — Multi-way PLS" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="interpolate.html" class="btn btn-neutral float-right" title="Interpolation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2011, Giuseppe Marco Randazzo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

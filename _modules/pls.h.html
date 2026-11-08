@@ -1,39 +1,87 @@
-<!DOCTYPE html>
 
-<html lang="en" data-content_root="../">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pls.h &#8212; libscientific 1.8.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=2bf1fcf8" />
-    
-    <script src="../_static/documentation_options.js?v=b51e6972"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pls.h &mdash; libscientific 1.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=b51e6972"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
-  </head><body>
-    <div class="related" role="navigation" aria-label="Related">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.8.0 documentation</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">pls.h</a></li> 
-      </ul>
-    </div>  
+</head>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            libscientific
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../Overview.html">What is libscientific?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html">Getting started in C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#vector-operations">Vector operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#matrix-operations">Matrix operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#tensor-operations">Tensor operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#multivariate-analysis-algorithms">Multivariate analysis algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#model-persistence-and-serialization-lsm-and-lsb">Model persistence and serialization (.lsm and .lsb)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html">Getting started in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#vector-operations">Vector operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#matrix-operations">Matrix operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#tensor-operations">Tensor operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#multivariate-analysis-algorithms">Multivariate analysis algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#model-persistence-and-serialization-lsm-and-lsb">Model persistence and serialization (.lsm and .lsb)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Licensing.html">Licensing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../C-API.html">C API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Python-API.html">Python API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">libscientific</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">pls.h</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
   <h1>Source code for pls.h</h1><div class="highlight"><pre>
 <span></span><span class="cm">/* Implements Partial Least Squares (PLS) regression.</span>
 <span class="cm"> * Copyright (C) 2016-2026 designed, written and maintained by Giuseppe Marco Randazzo &lt;gmrandazzo@gmail.com&gt;</span>
@@ -62,127 +110,152 @@
 <div class="viewcode-block" id="c.PLSCONVERGENCE"><span class="cp">#define PLSCONVERGENCE 1e-8</span></div>
 
 <div class="viewcode-block" id="c.PLSMODEL"><a class="viewcode-back" href="../C-API.html#c.PLSMODEL">[docs]</a><span class="cm">/**</span>
-<span class="cm"> * PLS model data structure</span>
+<span class="cm"> * Partial Least Squares regression model.</span>
 <span class="cm"> *</span>
-<span class="cm"> * - **xscores** x space scores</span>
-<span class="cm"> * - **xloadings** x space loadings</span>
-<span class="cm"> * - **xweights** x space weights</span>
-<span class="cm"> * - **yscores** y space scores</span>
-<span class="cm"> * - **yloadings** y space loadings</span>
-<span class="cm"> * - **b** pls regression coefficients</span>
-<span class="cm"> * - **xvarexp** variance explained in the x space</span>
-<span class="cm"> * - **xcolaverage** x independent variable column average</span>
-<span class="cm"> * - **xcolscaling** x independent variable column scaling</span>
-<span class="cm"> * - **ycolaverage** y independent variable column average</span>
-<span class="cm"> * - **ycolscaling** y independent variable column scaling</span>
-<span class="cm"> * - **recalculated_y** y recalculated</span>
-<span class="cm"> * - **recalc_residuals** y recalculated residuals</span>
-<span class="cm"> * - **predicted_y** y predicted</span>
-<span class="cm"> * - **pred_residuals** y predicted residuals</span>
-<span class="cm"> * - **r2y_recalculated** r squared using y recalculated values</span>
-<span class="cm"> * - **r2y_validation**</span>
-<span class="cm"> * - **q2y** q squared using y predicted values</span>
-<span class="cm"> * - **sdep** standard deviation over prediction using y predictions</span>
-<span class="cm"> * - **sdec** standard deviation over recalculation using y recalculated</span>
-<span class="cm"> * - **bias** bias</span>
-<span class="cm"> * - **roc_recalculated** receiver operating characteristic using y recalculated</span>
-<span class="cm"> * - **roc_validation** receiver operating characteristic using y predicted</span>
-<span class="cm"> * - **roc_auc_recalculated** receiver operating characteristic area under the curve using y recalculated</span>
-<span class="cm"> * - **roc_auc_validation** eceiver operating characteristic area under the curve using y predicted</span>
-<span class="cm"> * - **precision_recall_recalculated** precision-recall curve using y recalculated</span>
-<span class="cm"> * - **precision_recall_validation** precision-recall curve using y predicted</span>
-<span class="cm"> * - **precision_recall_ap_recalculated** precision-recall aread under the curve using y recalculated</span>
-<span class="cm"> * - **precision_recall_ap_validation** precision-recall aread under the curve using y predicted</span>
-<span class="cm"> * - **yscrambling** y-scrambling r-squared and q-squared</span>
+<span class="cm"> * Create it with :c:func:`NewPLSModel`, fill it with :c:func:`PLS` and free</span>
+<span class="cm"> * it with :c:func:`DelPLSModel`. All the members are owned by the model.</span>
+<span class="cm"> * With ``n`` objects, ``f`` features, ``ny`` responses and ``nlv`` latent</span>
+<span class="cm"> * variables:</span>
+<span class="cm"> *</span>
+<span class="cm"> * Members:</span>
+<span class="cm"> *   xscores: X scores ``T``, ``n x nlv``.</span>
+<span class="cm"> *   xloadings: X loadings ``P``, ``f x nlv``.</span>
+<span class="cm"> *   xweights: X weights ``W``, ``f x nlv`` (used to compute the scores of</span>
+<span class="cm"> *     new objects; not unit length).</span>
+<span class="cm"> *   yscores: Y scores ``U``, ``n x nlv``.</span>
+<span class="cm"> *   yloadings: Y loadings ``Q``, ``ny x nlv`` (all ``1`` for one response).</span>
+<span class="cm"> *   b: Inner regression coefficient of each latent variable (size ``nlv``).</span>
+<span class="cm"> *   xvarexp: Percentage of the X variance explained by each latent variable.</span>
+<span class="cm"> *   xcolaverage: Column means of X (size ``f``).</span>
+<span class="cm"> *   xcolscaling: Column scalings of X (size ``f``).</span>
+<span class="cm"> *   ycolaverage: Column means of Y (size ``ny``).</span>
+<span class="cm"> *   ycolscaling: Column scalings of Y (size ``ny``).</span>
+<span class="cm"> *   recalculated_y: Fitted Y of the training objects, ``n x (ny*nlv)``:</span>
+<span class="cm"> *     column ``ny*lv + j`` is response ``j`` with ``lv+1`` latent variables.</span>
+<span class="cm"> *   recalc_residuals: ``recalculated_y`` minus the true Y, same layout.</span>
+<span class="cm"> *   predicted_y: Cross-validated predictions (filled by the validation</span>
+<span class="cm"> *     functions of ``modelvalidation.h``), same layout.</span>
+<span class="cm"> *   pred_residuals: Cross-validated residuals, same layout.</span>
+<span class="cm"> *   r2y_recalculated: R² of the fitted Y, ``nlv x ny``.</span>
+<span class="cm"> *   r2y_validation: R² of the cross-validated Y, ``nlv x ny``.</span>
+<span class="cm"> *   q2y: Q² (cross-validated R²), ``nlv x ny``.</span>
+<span class="cm"> *   sdep: Standard deviation of the prediction errors, ``nlv x ny``.</span>
+<span class="cm"> *   sdec: Standard deviation of the recalculation errors, ``nlv x ny``.</span>
+<span class="cm"> *   bias: Prediction bias, ``nlv x ny``.</span>
+<span class="cm"> *   roc_recalculated: PLS-DA ROC curves of the fitted Y (one matrix per</span>
+<span class="cm"> *     latent variable).</span>
+<span class="cm"> *   roc_validation: PLS-DA ROC curves of the cross-validated Y.</span>
+<span class="cm"> *   roc_auc_recalculated: ROC AUC of the fitted Y, ``nlv x ny``.</span>
+<span class="cm"> *   roc_auc_validation: ROC AUC of the cross-validated Y, ``nlv x ny``.</span>
+<span class="cm"> *   precision_recall_recalculated: Precision-recall curves of the fitted Y.</span>
+<span class="cm"> *   precision_recall_validation: Precision-recall curves of the</span>
+<span class="cm"> *     cross-validated Y.</span>
+<span class="cm"> *   precision_recall_ap_recalculated: Average precision of the fitted Y.</span>
+<span class="cm"> *   precision_recall_ap_validation: Average precision of the</span>
+<span class="cm"> *     cross-validated Y.</span>
+<span class="cm"> *   yscrambling: Y-scrambling results (R² and Q² of models fitted on</span>
+<span class="cm"> *     permuted Y).</span>
 <span class="cm"> */</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="p">{</span>
-<div class="viewcode-block" id="c.PLSMODEL.xscores"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">xscores</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.PLSMODEL.xloadings"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">xloadings</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.PLSMODEL.xweights"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">xweights</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.PLSMODEL.yscores"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">yscores</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.PLSMODEL.yloadings"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">yloadings</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.PLSMODEL.b"><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">b</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.PLSMODEL.xvarexp"><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">xvarexp</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.PLSMODEL.xcolaverage"><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">xcolaverage</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.PLSMODEL.xcolscaling"><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">xcolscaling</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.PLSMODEL.ycolaverage"><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">ycolaverage</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.PLSMODEL.ycolscaling"><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">ycolscaling</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.PLSMODEL.recalculated_y"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">recalculated_y</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.PLSMODEL.recalc_residuals"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">recalc_residuals</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.PLSMODEL.predicted_y"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">predicted_y</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.PLSMODEL.pred_residuals"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">pred_residuals</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.PLSMODEL.xscores"><a class="viewcode-back" href="../C-API.html#c.PLSMODEL.xscores">[docs]</a><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">xscores</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.PLSMODEL.xloadings"><a class="viewcode-back" href="../C-API.html#c.PLSMODEL.xloadings">[docs]</a><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">xloadings</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.PLSMODEL.xweights"><a class="viewcode-back" href="../C-API.html#c.PLSMODEL.xweights">[docs]</a><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">xweights</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.PLSMODEL.yscores"><a class="viewcode-back" href="../C-API.html#c.PLSMODEL.yscores">[docs]</a><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">yscores</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.PLSMODEL.yloadings"><a class="viewcode-back" href="../C-API.html#c.PLSMODEL.yloadings">[docs]</a><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">yloadings</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.PLSMODEL.b"><a class="viewcode-back" href="../C-API.html#c.PLSMODEL.b">[docs]</a><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">b</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.PLSMODEL.xvarexp"><a class="viewcode-back" href="../C-API.html#c.PLSMODEL.xvarexp">[docs]</a><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">xvarexp</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.PLSMODEL.xcolaverage"><a class="viewcode-back" href="../C-API.html#c.PLSMODEL.xcolaverage">[docs]</a><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">xcolaverage</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.PLSMODEL.xcolscaling"><a class="viewcode-back" href="../C-API.html#c.PLSMODEL.xcolscaling">[docs]</a><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">xcolscaling</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.PLSMODEL.ycolaverage"><a class="viewcode-back" href="../C-API.html#c.PLSMODEL.ycolaverage">[docs]</a><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">ycolaverage</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.PLSMODEL.ycolscaling"><a class="viewcode-back" href="../C-API.html#c.PLSMODEL.ycolscaling">[docs]</a><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">ycolscaling</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.PLSMODEL.recalculated_y"><a class="viewcode-back" href="../C-API.html#c.PLSMODEL.recalculated_y">[docs]</a><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">recalculated_y</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.PLSMODEL.recalc_residuals"><a class="viewcode-back" href="../C-API.html#c.PLSMODEL.recalc_residuals">[docs]</a><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">recalc_residuals</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.PLSMODEL.predicted_y"><a class="viewcode-back" href="../C-API.html#c.PLSMODEL.predicted_y">[docs]</a><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">predicted_y</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.PLSMODEL.pred_residuals"><a class="viewcode-back" href="../C-API.html#c.PLSMODEL.pred_residuals">[docs]</a><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">pred_residuals</span><span class="p">;</span></div>
 <span class="w">  </span><span class="cm">/* Regression variables */</span>
-<div class="viewcode-block" id="c.PLSMODEL.r2y_recalculated"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">r2y_recalculated</span><span class="p">;</span><span class="w"> </span><span class="cm">/* each column correspond to an y dependent variable and each row correspond to a principal component*/</span></div>
-<div class="viewcode-block" id="c.PLSMODEL.r2y_validation"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">r2y_validation</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.PLSMODEL.q2y"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">q2y</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.PLSMODEL.sdep"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">sdep</span><span class="p">;</span><span class="w"> </span><span class="cm">/* Standard Deviation over Prediction */</span></div>
-<div class="viewcode-block" id="c.PLSMODEL.sdec"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">sdec</span><span class="p">;</span><span class="w"> </span><span class="cm">/* Standard Deviation over Recalculating */</span></div>
-<div class="viewcode-block" id="c.PLSMODEL.bias"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">bias</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.PLSMODEL.r2y_recalculated"><a class="viewcode-back" href="../C-API.html#c.PLSMODEL.r2y_recalculated">[docs]</a><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">r2y_recalculated</span><span class="p">;</span><span class="w"> </span><span class="cm">/* each column correspond to an y dependent variable and each row correspond to a principal component*/</span></div>
+<div class="viewcode-block" id="c.PLSMODEL.r2y_validation"><a class="viewcode-back" href="../C-API.html#c.PLSMODEL.r2y_validation">[docs]</a><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">r2y_validation</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.PLSMODEL.q2y"><a class="viewcode-back" href="../C-API.html#c.PLSMODEL.q2y">[docs]</a><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">q2y</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.PLSMODEL.sdep"><a class="viewcode-back" href="../C-API.html#c.PLSMODEL.sdep">[docs]</a><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">sdep</span><span class="p">;</span><span class="w"> </span><span class="cm">/* Standard Deviation over Prediction */</span></div>
+<div class="viewcode-block" id="c.PLSMODEL.sdec"><a class="viewcode-back" href="../C-API.html#c.PLSMODEL.sdec">[docs]</a><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">sdec</span><span class="p">;</span><span class="w"> </span><span class="cm">/* Standard Deviation over Recalculating */</span></div>
+<div class="viewcode-block" id="c.PLSMODEL.bias"><a class="viewcode-back" href="../C-API.html#c.PLSMODEL.bias">[docs]</a><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">bias</span><span class="p">;</span></div>
 <span class="w">  </span><span class="cm">/* Discriminant Analyisis variables */</span>
-<div class="viewcode-block" id="c.PLSMODEL.roc_recalculated"><span class="w">  </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">roc_recalculated</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.PLSMODEL.roc_validation"><span class="w">  </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">roc_validation</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.PLSMODEL.roc_auc_recalculated"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">roc_auc_recalculated</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.PLSMODEL.roc_auc_validation"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">roc_auc_validation</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.PLSMODEL.precision_recall_recalculated"><span class="w">  </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">precision_recall_recalculated</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.PLSMODEL.precision_recall_validation"><span class="w">  </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">precision_recall_validation</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.PLSMODEL.precision_recall_ap_recalculated"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">precision_recall_ap_recalculated</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.PLSMODEL.precision_recall_ap_validation"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">precision_recall_ap_validation</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.PLSMODEL.yscrambling"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">yscrambling</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.PLSMODEL.roc_recalculated"><a class="viewcode-back" href="../C-API.html#c.PLSMODEL.roc_recalculated">[docs]</a><span class="w">  </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">roc_recalculated</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.PLSMODEL.roc_validation"><a class="viewcode-back" href="../C-API.html#c.PLSMODEL.roc_validation">[docs]</a><span class="w">  </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">roc_validation</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.PLSMODEL.roc_auc_recalculated"><a class="viewcode-back" href="../C-API.html#c.PLSMODEL.roc_auc_recalculated">[docs]</a><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">roc_auc_recalculated</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.PLSMODEL.roc_auc_validation"><a class="viewcode-back" href="../C-API.html#c.PLSMODEL.roc_auc_validation">[docs]</a><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">roc_auc_validation</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.PLSMODEL.precision_recall_recalculated"><a class="viewcode-back" href="../C-API.html#c.PLSMODEL.precision_recall_recalculated">[docs]</a><span class="w">  </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">precision_recall_recalculated</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.PLSMODEL.precision_recall_validation"><a class="viewcode-back" href="../C-API.html#c.PLSMODEL.precision_recall_validation">[docs]</a><span class="w">  </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">precision_recall_validation</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.PLSMODEL.precision_recall_ap_recalculated"><a class="viewcode-back" href="../C-API.html#c.PLSMODEL.precision_recall_ap_recalculated">[docs]</a><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">precision_recall_ap_recalculated</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.PLSMODEL.precision_recall_ap_validation"><a class="viewcode-back" href="../C-API.html#c.PLSMODEL.precision_recall_ap_validation">[docs]</a><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">precision_recall_ap_validation</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.PLSMODEL.yscrambling"><a class="viewcode-back" href="../C-API.html#c.PLSMODEL.yscrambling">[docs]</a><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">yscrambling</span><span class="p">;</span></div>
 <span class="p">}</span><span class="w"> </span><span class="n">PLSMODEL</span><span class="p">;</span></div>
 
 <div class="viewcode-block" id="c.NewPLSModel"><a class="viewcode-back" href="../C-API.html#c.NewPLSModel">[docs]</a><span class="cm">/**</span>
-<span class="cm"> * Create a new PLSMODEL</span>
+<span class="cm"> * Allocate an empty PLS model.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   m: [out] Address of the pointer that receives the new model.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Note:</span>
+<span class="cm"> *   Release the model with :c:func:`DelPLSModel`.</span>
 <span class="cm"> */</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">NewPLSModel</span><span class="p">(</span><span class="n">PLSMODEL</span><span class="w"> </span><span class="o">**</span><span class="n">m</span><span class="p">);</span></div>
 
 <div class="viewcode-block" id="c.DelPLSModel"><a class="viewcode-back" href="../C-API.html#c.DelPLSModel">[docs]</a><span class="cm">/**</span>
-<span class="cm"> * Delete a PLSMODEL</span>
+<span class="cm"> * Free a PLS model and all its members, and set the pointer to ``NULL``.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   m: [in,out] Address of the model pointer created with :c:func:`NewPLSModel`.</span>
 <span class="cm"> */</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">DelPLSModel</span><span class="p">(</span><span class="n">PLSMODEL</span><span class="w"> </span><span class="o">**</span><span class="n">m</span><span class="p">);</span></div>
 
 <span class="cm">/*</span>
-<span class="cm"> * Calculate the latent variables according the NIPALS algorithm</span>
-<span class="cm"> * The function use X, Y and return</span>
-<span class="cm"> * - deflated X</span>
-<span class="cm"> * - deflated Y</span>
-<span class="cm"> * - scores t, u</span>
-<span class="cm"> * - loadings p, q</span>
-<span class="cm"> * - weights w (or c)</span>
-<span class="cm"> * - the beta coefficient bcoef</span>
-<span class="cm"> *</span>
-<span class="cm"> * N.B.: all the dvector must be initialised.</span>
-<span class="cm"> * See Geladi ref. for details</span>
+<span class="cm"> * Internal helper: compute one latent variable with NIPALS (Geladi &amp;</span>
+<span class="cm"> * Kowalski, Anal. Chim. Acta 185, 1986), returning the scores t, u, the</span>
+<span class="cm"> * loadings p, q, the weights w and the inner coefficient bcoef.</span>
+<span class="cm"> * All the vectors must be allocated. Used by PLS().</span>
 <span class="cm"> */</span>
 <div class="viewcode-block" id="c.LVCalc"><span class="kt">void</span><span class="w"> </span><span class="nf">LVCalc</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">X</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">Y</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">u</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">q</span><span class="p">,</span><span class="w"> </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">w</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="o">*</span><span class="n">bcoef</span><span class="p">);</span></div>
 
 
 <div class="viewcode-block" id="c.PLS"><a class="viewcode-back" href="../C-API.html#c.PLS">[docs]</a><span class="cm">/**</span>
-<span class="cm"> * @brief Calculate a partial least squares model using the NIPALS algorithm.</span>
+<span class="cm"> * Fit a PLS regression model with the NIPALS algorithm.</span>
 <span class="cm"> *</span>
-<span class="cm"> * @param [in] mx libscientific matrix data input: x independent variables</span>
-<span class="cm"> * @param [in] my libscientific matrix data input: y dependent variables</span>
-<span class="cm"> * @param [in] nlv number of desired latent variables</span>
-<span class="cm"> * @param [in] xautoscaling scaling typeon the x independent variables expressed as unsigned int type</span>
-<span class="cm"> * @param [in] yautoscaling scaling typeon the y dependent variables expressed as unsigned int type</span>
-<span class="cm"> * @param [out] PLSMODEL output -initialized model using NewPLSAModel(...). The datastructure will be populated with results</span>
-<span class="cm"> * @param [in] scisignal libscientific signal. Default value is NULL.</span>
+<span class="cm"> * X and Y are preprocessed, then ``nlv`` latent variables are extracted one</span>
+<span class="cm"> * at a time (up to 1000 iterations each). The model also stores the fitted Y</span>
+<span class="cm"> * of the training objects for every number of latent variables.</span>
 <span class="cm"> *</span>
-<span class="cm"> * Available scalings:</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   mx: [in] Predictors, ``n x f``.</span>
+<span class="cm"> *   my: [in] Responses, ``n x ny`` (one column per response).</span>
+<span class="cm"> *   nlv: [in] Number of latent variables; capped to ``f``.</span>
+<span class="cm"> *   xautoscaling: [in] Column preprocessing of X: 0 = mean centering only,</span>
+<span class="cm"> *     1 = standard deviation, 2 = root mean square, 3 = Pareto, 4 = range,</span>
+<span class="cm"> *     5 = level (all options mean-center first).</span>
+<span class="cm"> *   yautoscaling: [in] Column preprocessing of Y, same options.</span>
+<span class="cm"> *   model: [out] Model created with :c:func:`NewPLSModel`; filled with the</span>
+<span class="cm"> *     results (see :c:type:`PLSMODEL`).</span>
+<span class="cm"> *   s: [in] Optional stop signal (``*s == SIGSCIENTIFICSTOP`` stops the</span>
+<span class="cm"> *     computation); ``NULL`` if unused.</span>
 <span class="cm"> *</span>
-<span class="cm"> * - 0: No scaling. Only mean centering</span>
+<span class="cm"> * Returns:</span>
+<span class="cm"> *   Nothing, the results are written into ``model``.</span>
 <span class="cm"> *</span>
-<span class="cm"> * - 1: Mean centering and STDEV scaling</span>
+<span class="cm"> * Example:</span>
+<span class="cm"> *   .. code-block:: c</span>
 <span class="cm"> *</span>
-<span class="cm"> * - 2: Mean centering and Root-Mean-Square column scaling</span>
-<span class="cm"> *</span>
-<span class="cm"> * - 3: Mean centering and Pareto scaling</span>
-<span class="cm"> *</span>
-<span class="cm"> * - 4: Mean centering and min-max range scaling</span>
-<span class="cm"> *</span>
-<span class="cm"> * - 5: Mean centering and level scaling</span>
-<span class="cm"> *</span>
-<span class="cm"> * @par Returns</span>
-<span class="cm"> *    Nothing.</span>
+<span class="cm"> *      PLSMODEL *model;</span>
+<span class="cm"> *      matrix *ypred, *tscores;</span>
+<span class="cm"> *      NewPLSModel(&amp;model);</span>
+<span class="cm"> *      PLS(x, y, 3, 1, 0, model, NULL);   // 3 LVs, autoscale X, center Y</span>
+<span class="cm"> *      initMatrix(&amp;tscores);</span>
+<span class="cm"> *      initMatrix(&amp;ypred);</span>
+<span class="cm"> *      PLSYPredictorAllLV(xnew, model, tscores, ypred);</span>
+<span class="cm"> *      // ypred-&gt;data[i][ny*lv + j]: response j of object i with lv+1 LVs</span>
+<span class="cm"> *      DelMatrix(&amp;ypred);</span>
+<span class="cm"> *      DelMatrix(&amp;tscores);</span>
+<span class="cm"> *      DelPLSModel(&amp;model);</span>
 <span class="cm"> */</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">PLS</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">mx</span><span class="p">,</span>
 <span class="w">         </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">my</span><span class="p">,</span>
@@ -193,22 +266,40 @@
 <span class="w">         </span><span class="n">scisignal</span><span class="w"> </span><span class="o">*</span><span class="n">s</span><span class="p">);</span></div>
 
 <div class="viewcode-block" id="c.PLSBetasCoeff"><a class="viewcode-back" href="../C-API.html#c.PLSBetasCoeff">[docs]</a><span class="cm">/**</span>
-<span class="cm"> * Calculate betas coefficients from a pls model at specific nlv latent variables</span>
-<span class="cm"> * @param [in] model libscientific matrix data input: x independent variables</span>
-<span class="cm"> * @param [in] nlv number of desired latent variables</span>
-<span class="cm"> * @param [out] betas output - initialized libscientific dvector</span>
+<span class="cm"> * Compute the regression coefficients ``B = W (P&#39; W)^-1 b`` with ``nlv``</span>
+<span class="cm"> * latent variables.</span>
+<span class="cm"> *</span>
+<span class="cm"> * They express the model as a linear equation on the preprocessed data:</span>
+<span class="cm"> * ``(y - ycolaverage) / ycolscaling = sum_j B[j] (x[j] - xcolaverage[j]) / xcolscaling[j]``.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   model: [in] Model fitted with :c:func:`PLS` on a **single** response.</span>
+<span class="cm"> *   nlv: [in] Number of latent variables to use.</span>
+<span class="cm"> *   betas: [out] Vector created with ``initDVector``; filled with ``f``</span>
+<span class="cm"> *     coefficients.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Returns:</span>
+<span class="cm"> *   Nothing, the coefficients are written into ``betas``.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Warning:</span>
+<span class="cm"> *   Only valid for models with one response: the Y loadings are not used,</span>
+<span class="cm"> *   so the result is meaningless when ``ny &gt; 1``.</span>
 <span class="cm"> */</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">PLSBetasCoeff</span><span class="p">(</span><span class="n">PLSMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">model</span><span class="p">,</span>
 <span class="w">                   </span><span class="kt">size_t</span><span class="w"> </span><span class="n">nlv</span><span class="p">,</span>
 <span class="w">                   </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">betas</span><span class="p">);</span></div>
 
 <div class="viewcode-block" id="c.PLSScorePredictor"><a class="viewcode-back" href="../C-API.html#c.PLSScorePredictor">[docs]</a><span class="cm">/**</span>
-<span class="cm"> * Project a matrix and predict the scores into the new space.</span>
-<span class="cm"> * This function is used before predict the Y values</span>
-<span class="cm"> * @param [in] mx libscientific matrix data input: x independent variables</span>
-<span class="cm"> * @param [in] model PLSMODEL</span>
-<span class="cm"> * @param [in] nlv number of desired latent variables</span>
-<span class="cm"> * @param [out] xscores output - initialized libscientific matrix</span>
+<span class="cm"> * Compute the X scores of new objects.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   mx: [in] Objects, ``m x f``, same features as the training X.</span>
+<span class="cm"> *   model: [in] Model fitted with :c:func:`PLS`.</span>
+<span class="cm"> *   nlv: [in] Number of latent variables to use.</span>
+<span class="cm"> *   xscores: [out] Matrix created with ``initMatrix``; resized to ``m x nlv``.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Returns:</span>
+<span class="cm"> *   Nothing, the scores are written into ``xscores``.</span>
 <span class="cm"> */</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">PLSScorePredictor</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">mx</span><span class="p">,</span>
 <span class="w">                       </span><span class="n">PLSMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">model</span><span class="p">,</span>
@@ -216,13 +307,18 @@
 <span class="w">                       </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">xscores</span><span class="p">);</span></div>
 
 <div class="viewcode-block" id="c.PLSYPredictor"><a class="viewcode-back" href="../C-API.html#c.PLSYPredictor">[docs]</a><span class="cm">/**</span>
-<span class="cm"> * Calculate the Y values at a specific lv number (nlv).</span>
+<span class="cm"> * Compute the responses from X scores with ``nlv`` latent variables.</span>
 <span class="cm"> *</span>
-<span class="cm"> * N.B.: The output of y will be: [y-&gt;row][y-col]</span>
-<span class="cm"> * @param [in] tscore input matrix of scores calculated using PLSScorePredictor</span>
-<span class="cm"> * @param [in] model PLSMODEL</span>
-<span class="cm"> * @param [in] nlv number of desired latent variables</span>
-<span class="cm"> * @param [out] y output - initialized libscientific matrix</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   tscore: [in] X scores, ``m x a`` with ``a &gt;= nlv`` (from</span>
+<span class="cm"> *     :c:func:`PLSScorePredictor` or ``model-&gt;xscores``).</span>
+<span class="cm"> *   model: [in] Model fitted with :c:func:`PLS`.</span>
+<span class="cm"> *   nlv: [in] Number of latent variables to use.</span>
+<span class="cm"> *   y: [out] Matrix created with ``initMatrix``; resized to ``m x ny`` and</span>
+<span class="cm"> *     filled with the responses in the original units of Y.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Returns:</span>
+<span class="cm"> *   Nothing, the responses are written into ``y``.</span>
 <span class="cm"> */</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">PLSYPredictor</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">tscore</span><span class="p">,</span>
 <span class="w">                   </span><span class="n">PLSMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">model</span><span class="p">,</span>
@@ -230,13 +326,19 @@
 <span class="w">                   </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">y</span><span class="p">);</span></div>
 
 <div class="viewcode-block" id="c.PLSYPredictorAllLV"><a class="viewcode-back" href="../C-API.html#c.PLSYPredictorAllLV">[docs]</a><span class="cm">/**</span>
-<span class="cm"> * Calculate the Y values at all the lv.</span>
+<span class="cm"> * Predict the responses of new objects for every number of latent variables.</span>
 <span class="cm"> *</span>
-<span class="cm"> * N.B.: The output of y will be: [y-&gt;row][y-&gt;col*nlv]</span>
-<span class="cm"> * @param [in] mx input matrix of scores calculated using PLSScorePredictor</span>
-<span class="cm"> * @param [in] model PLSMODEL</span>
-<span class="cm"> * @param [out] tscores output - predicted scores</span>
-<span class="cm"> * @param [out] y output - y predicted</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   mx: [in] Objects, ``m x f``, same features as the training X.</span>
+<span class="cm"> *   model: [in] Model fitted with :c:func:`PLS`.</span>
+<span class="cm"> *   tscores: [out] Matrix created with ``initMatrix``; receives the X</span>
+<span class="cm"> *     scores, ``m x nlv``. Pass ``NULL`` if not needed.</span>
+<span class="cm"> *   y: [out] Matrix created with ``initMatrix``; resized to</span>
+<span class="cm"> *     ``m x (ny*nlv)``: column ``ny*lv + j`` is response ``j`` with ``lv+1``</span>
+<span class="cm"> *     latent variables.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Returns:</span>
+<span class="cm"> *   Nothing, the results are written into ``tscores`` and ``y``.</span>
 <span class="cm"> */</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">PLSYPredictorAllLV</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">mx</span><span class="p">,</span>
 <span class="w">                        </span><span class="n">PLSMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">model</span><span class="p">,</span>
@@ -245,16 +347,21 @@
 
 
 <div class="viewcode-block" id="c.PLSRegressionStatistics"><a class="viewcode-back" href="../C-API.html#c.PLSRegressionStatistics">[docs]</a><span class="cm">/**</span>
-<span class="cm"> * Calculate the correlation coefficient (ccoeff),</span>
-<span class="cm"> * the root mean square error of the prediction (rmse),</span>
-<span class="cm"> * the bias of the prediction (bias) in a regression model.</span>
-<span class="cm"> * mx and my could be the training or the test datasets.</span>
+<span class="cm"> * Compute R², RMSE and bias of regression predictions for every number of</span>
+<span class="cm"> * latent variables.</span>
 <span class="cm"> *</span>
-<span class="cm"> * @param [in] my_true input matrix of y true values</span>
-<span class="cm"> * @param [in] my_pred input matrix of y predicted or recalculated values</span>
-<span class="cm"> * @param [out] ccoeff output - correlation coefficients q-squared or r-squared if my_pred is respectivelly predicted or recalculated</span>
-<span class="cm"> * @param [out] rmse output - root mean square error</span>
-<span class="cm"> * @param [out] bias output - bias defined as how distant are we from the diagonal</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   my_true: [in] True responses, ``n x ny``.</span>
+<span class="cm"> *   my_pred: [in] Predictions in the layout of :c:func:`PLSYPredictorAllLV`,</span>
+<span class="cm"> *     ``n x (ny*nlv)`` (fitted values give R², cross-validated ones Q²).</span>
+<span class="cm"> *   ccoeff: [out] Matrix created with ``initMatrix``; resized to</span>
+<span class="cm"> *     ``nlv x ny``: element ``[lv][j]`` is R² of response ``j`` with</span>
+<span class="cm"> *     ``lv+1`` latent variables. ``NULL`` to skip.</span>
+<span class="cm"> *   rmse: [out] Root mean squared error, ``nlv x ny``. ``NULL`` to skip.</span>
+<span class="cm"> *   bias: [out] Bias of the predictions, ``nlv x ny``. ``NULL`` to skip.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Returns:</span>
+<span class="cm"> *   Nothing, the statistics are written into the output matrices.</span>
 <span class="cm"> */</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">PLSRegressionStatistics</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">my_true</span><span class="p">,</span>
 <span class="w">                             </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">my_pred</span><span class="p">,</span>
@@ -263,16 +370,27 @@
 <span class="w">                             </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">bias</span><span class="p">);</span></div>
 
 <div class="viewcode-block" id="c.PLSDiscriminantAnalysisStatistics"><a class="viewcode-back" href="../C-API.html#c.PLSDiscriminantAnalysisStatistics">[docs]</a><span class="cm">/**</span>
-<span class="cm"> * Calculate the roc curve, the auc, the precision recall curve,</span>
-<span class="cm"> * the precision_recall_auc of a classification model.</span>
-<span class="cm"> * mx and my could be the training or the test datasets.</span>
+<span class="cm"> * Compute ROC and precision-recall curves of a PLS discriminant analysis</span>
+<span class="cm"> * (PLS-DA) for every number of latent variables.</span>
 <span class="cm"> *</span>
-<span class="cm"> * @param [in] my_true input matrix of y true values</span>
-<span class="cm"> * @param [in] my_scores input matrix of y predicted or recalculated class scores/probabilities</span>
-<span class="cm"> * @param [out] roc output - roc curves</span>
-<span class="cm"> * @param [out] roc_auc output - roc AUCs</span>
-<span class="cm"> * @param [out] precision_recall output - precision-recall curves</span>
-<span class="cm"> * @param [out] precision_recall_ap output - precision-recall AUCs</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   my_true: [in] True classes, ``n x ny`` (one 0/1 column per class).</span>
+<span class="cm"> *   my_score: [in] Predicted class scores in the layout of</span>
+<span class="cm"> *     :c:func:`PLSYPredictorAllLV`, ``n x (ny*nlv)``.</span>
+<span class="cm"> *   roc: [out] Tensor created with ``initTensor``; receives one ``n x 2ny``</span>
+<span class="cm"> *     matrix per latent variable (columns ``2j``, ``2j+1``: false and true</span>
+<span class="cm"> *     positive rates of class ``j``). ``NULL`` to skip.</span>
+<span class="cm"> *   roc_auc: [out] Matrix created with ``initMatrix``; one row per latent</span>
+<span class="cm"> *     variable, one column per class (area under the ROC curve).</span>
+<span class="cm"> *     ``NULL`` to skip.</span>
+<span class="cm"> *   precision_recall: [out] Tensor created with ``initTensor``; one</span>
+<span class="cm"> *     ``n x 2ny`` matrix per latent variable (columns ``2j``, ``2j+1``:</span>
+<span class="cm"> *     recall and precision of class ``j``). ``NULL`` to skip.</span>
+<span class="cm"> *   precision_recall_ap: [out] Matrix; average precision, same layout as</span>
+<span class="cm"> *     ``roc_auc``. ``NULL`` to skip.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Returns:</span>
+<span class="cm"> *   Nothing, the results are written into the outputs.</span>
 <span class="cm"> */</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">PLSDiscriminantAnalysisStatistics</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">my_true</span><span class="p">,</span>
 <span class="w">                                       </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">my_score</span><span class="p">,</span>
@@ -281,68 +399,76 @@
 <span class="w">                                       </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">precision_recall</span><span class="p">,</span>
 <span class="w">                                       </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">precision_recall_ap</span><span class="p">);</span></div>
 
-<span class="cm">/*</span>
-<span class="cm"> * Description: Calculate the ROC curve with AUC and the Precision-Recall crurve with his</span>
-<span class="cm"> * area usefull in PLS-DA case</span>
-
-<span class="cm">void PLSBinaryClassificationScores(matrix *mx, matrix *my, PLSMODEL *model, size_t nlv, dvector** roc_auc, dvector **pr_ap, matrix **roc_curve, matrix **pr_curve);</span>
-<span class="cm">*/</span>
-
-<div class="viewcode-block" id="c.PLSVIP"><span class="cm">/**</span>
-<span class="cm"> * Calculate the PLS Very important variables</span>
+<div class="viewcode-block" id="c.PLSVIP"><a class="viewcode-back" href="../C-API.html#c.PLSVIP">[docs]</a><span class="cm">/**</span>
+<span class="cm"> * Compute the Variable Importance in Projection (VIP) of each feature.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Uses S. Wold&#39;s definition over all the latent variables of the model:</span>
+<span class="cm"> * ``VIP_j = sqrt(f * sum_a (w_ja² / ||w_a||²) SSY_a / SSY)``. The average of</span>
+<span class="cm"> * the squared VIP values is 1; features with ``VIP &gt; 1`` are usually</span>
+<span class="cm"> * considered important.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   model: [in] Model fitted with :c:func:`PLS`.</span>
+<span class="cm"> *   vip: [out] Matrix created with ``initMatrix``; resized to ``f x 1``.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Returns:</span>
+<span class="cm"> *   Nothing, the values are written into ``vip``.</span>
 <span class="cm"> */</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">PLSVIP</span><span class="p">(</span><span class="n">PLSMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">vip</span><span class="p">);</span></div>
 
 <div class="viewcode-block" id="c.GetLVCCutoff"><a class="viewcode-back" href="../C-API.html#c.GetLVCCutoff">[docs]</a><span class="cm">/**</span>
-<span class="cm"> * Get the Cutoff based on the grow of r2, q2 in case of regression</span>
-<span class="cm"> * or auc in case of classification.</span>
+<span class="cm"> * Choose the number of latent variables from a table of R²/Q² or AUC values.</span>
+<span class="cm"> *</span>
+<span class="cm"> * The values of each row are summed over the responses; the function walks</span>
+<span class="cm"> * the rows while the sum increases by more than 3% and stops at the first</span>
+<span class="cm"> * smaller improvement.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   coeff: [in] Statistics, ``nlv x ny`` (e.g. ``model-&gt;q2y`` or the</span>
+<span class="cm"> *     ``ccoeff`` output of :c:func:`PLSRegressionStatistics`).</span>
+<span class="cm"> *</span>
+<span class="cm"> * Returns:</span>
+<span class="cm"> *   The **0-based** index of the selected row: the number of latent</span>
+<span class="cm"> *   variables to use is the return value + 1.</span>
 <span class="cm"> */</span>
 <span class="kt">int</span><span class="w"> </span><span class="nf">GetLVCCutoff</span><span class="p">(</span><span class="n">matrix</span><span class="o">*</span><span class="w"> </span><span class="n">coeff</span><span class="p">);</span></div>
 
 <div class="viewcode-block" id="c.PrintPLSModel"><a class="viewcode-back" href="../C-API.html#c.PrintPLSModel">[docs]</a><span class="cm">/**</span>
-<span class="cm"> * Print to video a PLSMODEL</span>
+<span class="cm"> * Print the content of a PLS model to standard output.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   model: [in] The model to print.</span>
 <span class="cm"> */</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">PrintPLSModel</span><span class="p">(</span><span class="n">PLSMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">model</span><span class="p">);</span></div>
 
 <span class="cp">#endif</span>
 </pre></div>
 
-            <div class="clearer"></div>
+           </div>
           </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2011, Giuseppe Marco Randazzo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="Main">
-        <div class="sphinxsidebarwrapper">
-<search id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</search>
-<script>document.getElementById('searchbox').style.display = "block"</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="Related">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.8.0 documentation</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">pls.h</a></li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-    &#169; Copyright 2011, Giuseppe Marco Randazzo.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
-    </div>
-  </body>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
 </html>

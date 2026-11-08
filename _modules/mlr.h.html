@@ -1,39 +1,87 @@
-<!DOCTYPE html>
 
-<html lang="en" data-content_root="../">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mlr.h &#8212; libscientific 1.8.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=2bf1fcf8" />
-    
-    <script src="../_static/documentation_options.js?v=b51e6972"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mlr.h &mdash; libscientific 1.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=b51e6972"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
-  </head><body>
-    <div class="related" role="navigation" aria-label="Related">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.8.0 documentation</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">mlr.h</a></li> 
-      </ul>
-    </div>  
+</head>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            libscientific
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../Overview.html">What is libscientific?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html">Getting started in C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#vector-operations">Vector operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#matrix-operations">Matrix operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#tensor-operations">Tensor operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#multivariate-analysis-algorithms">Multivariate analysis algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#model-persistence-and-serialization-lsm-and-lsb">Model persistence and serialization (.lsm and .lsb)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html">Getting started in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#vector-operations">Vector operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#matrix-operations">Matrix operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#tensor-operations">Tensor operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#multivariate-analysis-algorithms">Multivariate analysis algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#model-persistence-and-serialization-lsm-and-lsb">Model persistence and serialization (.lsm and .lsb)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Licensing.html">Licensing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../C-API.html">C API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Python-API.html">Python API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">libscientific</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">mlr.h</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
   <h1>Source code for mlr.h</h1><div class="highlight"><pre>
 <span></span><span class="cm">/* Implements Multiple Linear Regression (MLR).</span>
 <span class="cm"> * Copyright (C) 2016-2026 designed, written and maintained by Giuseppe Marco Randazzo &lt;gmrandazzo@gmail.com&gt;</span>
@@ -59,54 +107,94 @@
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;scientificinfo.h&quot;</span>
 
 <div class="viewcode-block" id="c.MLRMODEL"><a class="viewcode-back" href="../C-API.html#c.MLRMODEL">[docs]</a><span class="cm">/**</span>
-<span class="cm"> * Multiple Linear Regression data structure</span>
+<span class="cm"> * Multiple Linear Regression model (ordinary least squares).</span>
 <span class="cm"> *</span>
-<span class="cm"> * - **b** beta coefficients</span>
-<span class="cm"> * - **recalculated_y** y recalculated</span>
-<span class="cm"> * - **predicted_y** y predicted</span>
-<span class="cm"> * - **recalc_residuals** residuals using recalculated values</span>
-<span class="cm"> * - **pred_residuals** residuals using predicted values</span>
-<span class="cm"> * - **ymean** y averages</span>
-<span class="cm"> * - **r2y_model** model r-squared using y recalculated</span>
-<span class="cm"> * - **q2y** model q-squared using y predicted</span>
-<span class="cm"> * - **sdep** standard deviation over prediction</span>
-<span class="cm"> * - **sdec** standard deviation over recalculation</span>
-<span class="cm"> * - **bias** model bias</span>
-<span class="cm"> * - **r2q2scrambling** y scrambling results</span>
+<span class="cm"> * Create it with :c:func:`NewMLRModel`, fill it with :c:func:`MLR` and free</span>
+<span class="cm"> * it with :c:func:`DelMLRModel`. With ``n`` objects, ``f`` features and</span>
+<span class="cm"> * ``ny`` responses:</span>
+<span class="cm"> *</span>
+<span class="cm"> * Members:</span>
+<span class="cm"> *   b: Coefficients, ``(f+1) x ny``: row 0 is the intercept, row ``j+1`` the</span>
+<span class="cm"> *     coefficient of feature ``j``; column ``k`` refers to response ``k``.</span>
+<span class="cm"> *   recalculated_y: Fitted responses of the training objects, ``n x ny``.</span>
+<span class="cm"> *   predicted_y: Cross-validated predictions (filled by the validation</span>
+<span class="cm"> *     functions of ``modelvalidation.h``), ``n x ny``.</span>
+<span class="cm"> *   recalc_residuals: Fitted minus true responses, ``n x ny``.</span>
+<span class="cm"> *   pred_residuals: Cross-validated residuals, ``n x ny``.</span>
+<span class="cm"> *   ymean: Mean of each training response (size ``ny``).</span>
+<span class="cm"> *   r2y_model: R² of the training fit, one value per response.</span>
+<span class="cm"> *   q2y: Cross-validated R² (Q²), one value per response.</span>
+<span class="cm"> *   sdep: Standard deviation of the prediction errors, per response.</span>
+<span class="cm"> *   sdec: Standard deviation of the training errors, per response.</span>
+<span class="cm"> *   bias: Bias of the predictions, per response.</span>
+<span class="cm"> *   r2q2scrambling: Y-scrambling results.</span>
 <span class="cm"> */</span>
 
 <span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="p">{</span>
-<div class="viewcode-block" id="c.MLRMODEL.b"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">b</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.MLRMODEL.recalculated_y"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">recalculated_y</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.MLRMODEL.predicted_y"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">predicted_y</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.MLRMODEL.recalc_residuals"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">recalc_residuals</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.MLRMODEL.pred_residuals"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">pred_residuals</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.MLRMODEL.ymean"><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">ymean</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.MLRMODEL.r2y_model"><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">r2y_model</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.MLRMODEL.q2y"><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">q2y</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.MLRMODEL.sdep"><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">sdep</span><span class="p">;</span><span class="cm">/* Standard Deviation over Prediction */</span></div>
-<div class="viewcode-block" id="c.MLRMODEL.sdec"><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">sdec</span><span class="p">;</span><span class="w"> </span><span class="cm">/* Standard Deviation over Recalculating */</span></div>
-<div class="viewcode-block" id="c.MLRMODEL.bias"><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">bias</span><span class="p">;</span><span class="w"> </span><span class="cm">/* model bias */</span></div>
-<div class="viewcode-block" id="c.MLRMODEL.r2q2scrambling"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">r2q2scrambling</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.MLRMODEL.b"><a class="viewcode-back" href="../C-API.html#c.MLRMODEL.b">[docs]</a><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">b</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.MLRMODEL.recalculated_y"><a class="viewcode-back" href="../C-API.html#c.MLRMODEL.recalculated_y">[docs]</a><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">recalculated_y</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.MLRMODEL.predicted_y"><a class="viewcode-back" href="../C-API.html#c.MLRMODEL.predicted_y">[docs]</a><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">predicted_y</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.MLRMODEL.recalc_residuals"><a class="viewcode-back" href="../C-API.html#c.MLRMODEL.recalc_residuals">[docs]</a><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">recalc_residuals</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.MLRMODEL.pred_residuals"><a class="viewcode-back" href="../C-API.html#c.MLRMODEL.pred_residuals">[docs]</a><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">pred_residuals</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.MLRMODEL.ymean"><a class="viewcode-back" href="../C-API.html#c.MLRMODEL.ymean">[docs]</a><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">ymean</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.MLRMODEL.r2y_model"><a class="viewcode-back" href="../C-API.html#c.MLRMODEL.r2y_model">[docs]</a><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">r2y_model</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.MLRMODEL.q2y"><a class="viewcode-back" href="../C-API.html#c.MLRMODEL.q2y">[docs]</a><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">q2y</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.MLRMODEL.sdep"><a class="viewcode-back" href="../C-API.html#c.MLRMODEL.sdep">[docs]</a><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">sdep</span><span class="p">;</span><span class="cm">/* Standard Deviation over Prediction */</span></div>
+<div class="viewcode-block" id="c.MLRMODEL.sdec"><a class="viewcode-back" href="../C-API.html#c.MLRMODEL.sdec">[docs]</a><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">sdec</span><span class="p">;</span><span class="w"> </span><span class="cm">/* Standard Deviation over Recalculating */</span></div>
+<div class="viewcode-block" id="c.MLRMODEL.bias"><a class="viewcode-back" href="../C-API.html#c.MLRMODEL.bias">[docs]</a><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">bias</span><span class="p">;</span><span class="w"> </span><span class="cm">/* model bias */</span></div>
+<div class="viewcode-block" id="c.MLRMODEL.r2q2scrambling"><a class="viewcode-back" href="../C-API.html#c.MLRMODEL.r2q2scrambling">[docs]</a><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">r2q2scrambling</span><span class="p">;</span></div>
 <span class="p">}</span><span class="w"> </span><span class="n">MLRMODEL</span><span class="p">;</span></div>
 
 <div class="viewcode-block" id="c.NewMLRModel"><a class="viewcode-back" href="../C-API.html#c.NewMLRModel">[docs]</a><span class="cm">/**</span>
-<span class="cm"> * Initialize an MLR model</span>
-<span class="cm">*/</span>
+<span class="cm"> * Allocate an empty MLR model.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   m: [out] Address of the pointer that receives the new model.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Note:</span>
+<span class="cm"> *   Release the model with :c:func:`DelMLRModel`.</span>
+<span class="cm"> */</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">NewMLRModel</span><span class="p">(</span><span class="n">MLRMODEL</span><span class="w"> </span><span class="o">**</span><span class="n">m</span><span class="p">);</span></div>
 
 <div class="viewcode-block" id="c.DelMLRModel"><a class="viewcode-back" href="../C-API.html#c.DelMLRModel">[docs]</a><span class="cm">/**</span>
-<span class="cm"> * Delete a MLR model</span>
+<span class="cm"> * Free an MLR model and all its members, and set the pointer to ``NULL``.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   m: [in,out] Address of the model pointer created with :c:func:`NewMLRModel`.</span>
 <span class="cm"> */</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">DelMLRModel</span><span class="p">(</span><span class="n">MLRMODEL</span><span class="w"> </span><span class="o">**</span><span class="n">m</span><span class="p">);</span></div>
 
 <div class="viewcode-block" id="c.MLR"><a class="viewcode-back" href="../C-API.html#c.MLR">[docs]</a><span class="cm">/**</span>
-<span class="cm"> * Calculate a MLR model using OLS algorithm</span>
+<span class="cm"> * Fit a multiple linear regression model by ordinary least squares.</span>
 <span class="cm"> *</span>
-<span class="cm"> * @param [in] mx x independent variables input</span>
-<span class="cm"> * @param [in] my y dependent variables input</span>
-<span class="cm"> * @param [out] model initialized model using NewMLRModel(...). The datastructure will be populated with results</span>
+<span class="cm"> * Every response is fitted independently with an intercept:</span>
+<span class="cm"> * ``y_k = b[0][k] + sum_j b[j+1][k] x_j``. The training fit (fitted values,</span>
+<span class="cm"> * residuals, R², SDEC) is stored in the model. Fitting an already fitted</span>
+<span class="cm"> * model replaces its results.</span>
 <span class="cm"> *</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   mx: [in] Predictors, ``n x f`` (``n &gt; f``). NaN/inf values are replaced</span>
+<span class="cm"> *     by ``MISSING``.</span>
+<span class="cm"> *   my: [in] Responses, ``n x ny``.</span>
+<span class="cm"> *   model: [out] Model created with :c:func:`NewMLRModel`; filled with the</span>
+<span class="cm"> *     results (see :c:type:`MLRMODEL`).</span>
+<span class="cm"> *   s: [in] Unused, pass ``NULL``.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Returns:</span>
+<span class="cm"> *   Nothing, the results are written into ``model``.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Example:</span>
+<span class="cm"> *   .. code-block:: c</span>
+<span class="cm"> *</span>
+<span class="cm"> *      MLRMODEL *model;</span>
+<span class="cm"> *      matrix *ypred;</span>
+<span class="cm"> *      NewMLRModel(&amp;model);</span>
+<span class="cm"> *      MLR(x, y, model, NULL);</span>
+<span class="cm"> *      // model-&gt;b-&gt;data[0][k]: intercept of response k</span>
+<span class="cm"> *      initMatrix(&amp;ypred);</span>
+<span class="cm"> *      MLRPredictY(xnew, NULL, model, ypred, NULL, NULL, NULL);</span>
+<span class="cm"> *      DelMatrix(&amp;ypred);</span>
+<span class="cm"> *      DelMLRModel(&amp;model);</span>
 <span class="cm"> */</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">MLR</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">mx</span><span class="p">,</span>
 <span class="w">         </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">my</span><span class="p">,</span>
@@ -114,16 +202,27 @@
 <span class="w">         </span><span class="n">scisignal</span><span class="w"> </span><span class="o">*</span><span class="n">s</span><span class="p">);</span></div>
 
 <div class="viewcode-block" id="c.MLRPredictY"><a class="viewcode-back" href="../C-API.html#c.MLRPredictY">[docs]</a><span class="cm">/**</span>
-<span class="cm"> * Predict Y targets using a MLR model</span>
+<span class="cm"> * Predict the responses of new objects and, if their true values are known,</span>
+<span class="cm"> * compute the prediction statistics.</span>
 <span class="cm"> *</span>
-<span class="cm"> * @param [in] mx x independent variables input</span>
-<span class="cm"> * @param [in] my y dependent variables input (if known)</span>
-<span class="cm"> * @param [in] model computed MLRMODEL</span>
-<span class="cm"> * @param [out] predicted_y y predicted</span>
-<span class="cm"> * @param [out] predicted_residuals residuals using y predicted</span>
-<span class="cm"> * @param [out] r2y r-squared of the prediction if my known</span>
-<span class="cm"> * @param [out] sdep standard deviation over prediction if my known</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   mx: [in] Objects, ``m x f`` (same features as the training data).</span>
+<span class="cm"> *   my: [in] True responses ``m x ny``, or ``NULL`` if unknown.</span>
+<span class="cm"> *   model: [in] Model fitted with :c:func:`MLR`.</span>
+<span class="cm"> *   predicted_y: [out] Matrix created with ``initMatrix``; resized to</span>
+<span class="cm"> *     ``m x ny`` and filled with the predictions.</span>
+<span class="cm"> *   predicted_residuals: [out] Predicted minus true responses, ``m x ny``.</span>
+<span class="cm"> *     Only computed when ``my`` is given; ``NULL`` to skip.</span>
+<span class="cm"> *   r2y: [out] Empty vector created with ``initDVector``: one R² value per</span>
+<span class="cm"> *     response is **appended** (relative to the training mean). Only when</span>
+<span class="cm"> *     ``my`` is given; ``NULL`` to skip.</span>
+<span class="cm"> *   sdep: [out] Empty vector: one standard deviation of the errors per</span>
+<span class="cm"> *     response is appended. Only when ``my`` is given; ``NULL`` to skip.</span>
 <span class="cm"> *</span>
+<span class="cm"> * Returns:</span>
+<span class="cm"> *   Nothing, the results are written into the outputs. If the number of</span>
+<span class="cm"> *   features differs from the model, an error is printed and nothing is</span>
+<span class="cm"> *   computed.</span>
 <span class="cm"> */</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">MLRPredictY</span><span class="p">(</span><span class="n">matrix</span><span class="o">*</span><span class="w"> </span><span class="n">mx</span><span class="p">,</span>
 <span class="w">                 </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">my</span><span class="p">,</span>
@@ -134,16 +233,19 @@
 <span class="w">                 </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">sdep</span><span class="p">);</span></div>
 
 <div class="viewcode-block" id="c.MLRRegressionStatistics"><a class="viewcode-back" href="../C-API.html#c.MLRRegressionStatistics">[docs]</a><span class="cm">/**</span>
-<span class="cm"> * Calculate the correlation coefficient (ccoeff),</span>
-<span class="cm"> * the standard deviation of the prediction (stdev),</span>
-<span class="cm"> * the bias of the prediction (bias) in a regression model.</span>
-<span class="cm"> * mx and my could be the training or the test datasets.</span>
+<span class="cm"> * Compute R², RMSE and bias of regression predictions.</span>
 <span class="cm"> *</span>
-<span class="cm"> * @param [in] my_true input matrix of y true values</span>
-<span class="cm"> * @param [in] my_pred input matrix of y predicted or recalculated values</span>
-<span class="cm"> * @param [out] ccoeff output - correlation coefficients q-squared or r-squared if my_pred is respectivelly predicted or recalculated</span>
-<span class="cm"> * @param [out] rmse output - root mean square error</span>
-<span class="cm"> * @param [out] bias output - bias defined as how distant are we from the diagonal</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   my_true: [in] True responses, ``n x ny``.</span>
+<span class="cm"> *   my_pred: [in] Predicted (or fitted) responses, ``n x ny``.</span>
+<span class="cm"> *   ccoeff: [out] Vector created with ``initDVector``; resized to ``ny``:</span>
+<span class="cm"> *     R² of each response (Q² for cross-validated predictions).</span>
+<span class="cm"> *     ``NULL`` to skip.</span>
+<span class="cm"> *   rmse: [out] Root mean squared error of each response. ``NULL`` to skip.</span>
+<span class="cm"> *   bias: [out] Bias of each response. ``NULL`` to skip.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Returns:</span>
+<span class="cm"> *   Nothing, the statistics are written into the output vectors.</span>
 <span class="cm"> */</span>
 <span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">MLRRegressionStatistics</span><span class="p">(</span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">my_true</span><span class="p">,</span>
 <span class="w">                              </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">my_pred</span><span class="p">,</span>
@@ -152,54 +254,41 @@
 <span class="w">                              </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">bias</span><span class="p">);</span></div>
 
 <div class="viewcode-block" id="c.PrintMLR"><a class="viewcode-back" href="../C-API.html#c.PrintMLR">[docs]</a><span class="cm">/**</span>
-<span class="cm"> * @brief Print MRLMODEL to video.</span>
+<span class="cm"> * Print the content of an MLR model to standard output.</span>
 <span class="cm"> *</span>
-<span class="cm"> * @param [in] m computed mlr model</span>
-<span class="cm"> *</span>
-<span class="cm"> * @par Returns</span>
-<span class="cm"> *    Nothing.</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   m: [in] The model to print.</span>
 <span class="cm"> */</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">PrintMLR</span><span class="p">(</span><span class="n">MLRMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">);</span></div>
 
 <span class="cp">#endif</span>
 </pre></div>
 
-            <div class="clearer"></div>
+           </div>
           </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2011, Giuseppe Marco Randazzo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="Main">
-        <div class="sphinxsidebarwrapper">
-<search id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</search>
-<script>document.getElementById('searchbox').style.display = "block"</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="Related">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.8.0 documentation</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">mlr.h</a></li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-    &#169; Copyright 2011, Giuseppe Marco Randazzo.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
-    </div>
-  </body>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
 </html>

@@ -1,39 +1,87 @@
-<!DOCTYPE html>
 
-<html lang="en" data-content_root="../">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cpca.h &#8212; libscientific 1.8.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=2bf1fcf8" />
-    
-    <script src="../_static/documentation_options.js?v=b51e6972"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>cpca.h &mdash; libscientific 1.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=b51e6972"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
-  </head><body>
-    <div class="related" role="navigation" aria-label="Related">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.8.0 documentation</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">cpca.h</a></li> 
-      </ul>
-    </div>  
+</head>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            libscientific
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../Overview.html">What is libscientific?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html">Getting started in C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#vector-operations">Vector operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#matrix-operations">Matrix operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#tensor-operations">Tensor operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#multivariate-analysis-algorithms">Multivariate analysis algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#model-persistence-and-serialization-lsm-and-lsb">Model persistence and serialization (.lsm and .lsb)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html">Getting started in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#vector-operations">Vector operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#matrix-operations">Matrix operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#tensor-operations">Tensor operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#multivariate-analysis-algorithms">Multivariate analysis algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#model-persistence-and-serialization-lsm-and-lsb">Model persistence and serialization (.lsm and .lsb)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Licensing.html">Licensing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../C-API.html">C API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Python-API.html">Python API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">libscientific</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">cpca.h</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
   <h1>Source code for cpca.h</h1><div class="highlight"><pre>
 <span></span><span class="cm">/* Implements Consensus Principal Component Analysis (CPCA).</span>
 <span class="cm"> * Copyright (C) 2016-2026 designed, written and maintained by Giuseppe Marco Randazzo &lt;gmrandazzo@gmail.com&gt;</span>
@@ -64,75 +112,120 @@
 <div class="viewcode-block" id="c.CPCACONVERGENCE"><span class="cp">#define CPCACONVERGENCE 1e-10</span></div>
 
 <div class="viewcode-block" id="c.CPCAMODEL"><a class="viewcode-back" href="../C-API.html#c.CPCAMODEL">[docs]</a><span class="cm">/**</span>
-<span class="cm"> * CPCA model data structure.</span>
+<span class="cm"> * Consensus Principal Component Analysis model (multi-block PCA).</span>
 <span class="cm"> *</span>
-<span class="cm"> * - **block_scores** matrix of scores</span>
-<span class="cm"> * - **block_loadings** matrix of loadings</span>
-<span class="cm"> * - **super_scores** matrix of super scores</span>
-<span class="cm"> * - **super_weights** matrix of super weigths</span>
-<span class="cm"> * - **scaling_factor** dvector of scaling factors</span>
-<span class="cm"> * - **total_expvar** dvector of total explained variance</span>
-<span class="cm"> * - **block_expvar** dvector list of block explained variance</span>
-<span class="cm"> * - **colaverage** dvector list of column average</span>
-<span class="cm"> * - **colscaling** dvector list of column scaling</span>
+<span class="cm"> * Create it with :c:func:`NewCPCAModel`, fill it with :c:func:`CPCA` and free</span>
+<span class="cm"> * it with :c:func:`DelCPCAModel`. All the members are owned by the model.</span>
+<span class="cm"> * With ``n`` objects, ``B`` blocks (block ``b`` has ``f_b`` columns) and</span>
+<span class="cm"> * ``npc`` components:</span>
+<span class="cm"> *</span>
+<span class="cm"> * Members:</span>
+<span class="cm"> *   block_scores: One ``n x B`` matrix per component (``block_scores-&gt;m[k]``):</span>
+<span class="cm"> *     column ``b`` holds the scores of block ``b`` on component ``k``.</span>
+<span class="cm"> *   block_loadings: One ``f_b x npc`` matrix per block</span>
+<span class="cm"> *     (``block_loadings-&gt;m[b]``).</span>
+<span class="cm"> *   super_scores: Consensus scores, ``n x npc``. They equal the PCA scores</span>
+<span class="cm"> *     of the concatenated blocks, each divided by ``sqrt(f_b)``.</span>
+<span class="cm"> *   super_weights: Contribution of each block to each component, ``B x npc``</span>
+<span class="cm"> *     (unit-length columns).</span>
+<span class="cm"> *   scaling_factor: Block scaling ``sqrt(f_b)`` of each block (size ``B``).</span>
+<span class="cm"> *   total_expvar: Percentage of the total variance explained by each</span>
+<span class="cm"> *     component (size ``npc``, not cumulative).</span>
+<span class="cm"> *   block_expvar: One vector of size ``B`` per component: the cumulative</span>
+<span class="cm"> *     percentage of the variance of each block explained so far.</span>
+<span class="cm"> *   colaverage: Column means of each block (one vector per block).</span>
+<span class="cm"> *   colscaling: Column scalings of each block (one vector per block).</span>
 <span class="cm"> */</span>
 <span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
-<div class="viewcode-block" id="c.CPCAMODEL.block_scores"><span class="w">  </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">block_scores</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.CPCAMODEL.block_loadings"><span class="w">  </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">block_loadings</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.CPCAMODEL.super_scores"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">super_scores</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.CPCAMODEL.super_weights"><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">super_weights</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.CPCAMODEL.scaling_factor"><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">scaling_factor</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.CPCAMODEL.total_expvar"><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">total_expvar</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.CPCAMODEL.block_expvar"><span class="w">  </span><span class="n">dvectorlist</span><span class="w"> </span><span class="o">*</span><span class="n">block_expvar</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.CPCAMODEL.colaverage"><span class="w">  </span><span class="n">dvectorlist</span><span class="w"> </span><span class="o">*</span><span class="n">colaverage</span><span class="p">;</span></div>
-<div class="viewcode-block" id="c.CPCAMODEL.colscaling"><span class="w">  </span><span class="n">dvectorlist</span><span class="w"> </span><span class="o">*</span><span class="n">colscaling</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.CPCAMODEL.block_scores"><a class="viewcode-back" href="../C-API.html#c.CPCAMODEL.block_scores">[docs]</a><span class="w">  </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">block_scores</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.CPCAMODEL.block_loadings"><a class="viewcode-back" href="../C-API.html#c.CPCAMODEL.block_loadings">[docs]</a><span class="w">  </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">block_loadings</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.CPCAMODEL.super_scores"><a class="viewcode-back" href="../C-API.html#c.CPCAMODEL.super_scores">[docs]</a><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">super_scores</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.CPCAMODEL.super_weights"><a class="viewcode-back" href="../C-API.html#c.CPCAMODEL.super_weights">[docs]</a><span class="w">  </span><span class="n">matrix</span><span class="w"> </span><span class="o">*</span><span class="n">super_weights</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.CPCAMODEL.scaling_factor"><a class="viewcode-back" href="../C-API.html#c.CPCAMODEL.scaling_factor">[docs]</a><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">scaling_factor</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.CPCAMODEL.total_expvar"><a class="viewcode-back" href="../C-API.html#c.CPCAMODEL.total_expvar">[docs]</a><span class="w">  </span><span class="n">dvector</span><span class="w"> </span><span class="o">*</span><span class="n">total_expvar</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.CPCAMODEL.block_expvar"><a class="viewcode-back" href="../C-API.html#c.CPCAMODEL.block_expvar">[docs]</a><span class="w">  </span><span class="n">dvectorlist</span><span class="w"> </span><span class="o">*</span><span class="n">block_expvar</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.CPCAMODEL.colaverage"><a class="viewcode-back" href="../C-API.html#c.CPCAMODEL.colaverage">[docs]</a><span class="w">  </span><span class="n">dvectorlist</span><span class="w"> </span><span class="o">*</span><span class="n">colaverage</span><span class="p">;</span></div>
+<div class="viewcode-block" id="c.CPCAMODEL.colscaling"><a class="viewcode-back" href="../C-API.html#c.CPCAMODEL.colscaling">[docs]</a><span class="w">  </span><span class="n">dvectorlist</span><span class="w"> </span><span class="o">*</span><span class="n">colscaling</span><span class="p">;</span></div>
 <span class="p">}</span><span class="w"> </span><span class="n">CPCAMODEL</span><span class="p">;</span></div>
 
 <div class="viewcode-block" id="c.NewCPCAModel"><a class="viewcode-back" href="../C-API.html#c.NewCPCAModel">[docs]</a><span class="cm">/**</span>
-<span class="cm"> * Inizialize a new CPCA Model</span>
+<span class="cm"> * Allocate an empty CPCA model.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   m: [out] Address of the pointer that receives the new model.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Note:</span>
+<span class="cm"> *   Release the model with :c:func:`DelCPCAModel`.</span>
 <span class="cm"> */</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">NewCPCAModel</span><span class="p">(</span><span class="n">CPCAMODEL</span><span class="w"> </span><span class="o">**</span><span class="n">m</span><span class="p">);</span></div>
 
 <div class="viewcode-block" id="c.DelCPCAModel"><a class="viewcode-back" href="../C-API.html#c.DelCPCAModel">[docs]</a><span class="cm">/**</span>
-<span class="cm"> * Delete a new CPCA Model</span>
+<span class="cm"> * Free a CPCA model and all its members, and set the pointer to ``NULL``.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   m: [in,out] Address of the model pointer created with :c:func:`NewCPCAModel`.</span>
 <span class="cm"> */</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">DelCPCAModel</span><span class="p">(</span><span class="n">CPCAMODEL</span><span class="w"> </span><span class="o">**</span><span class="n">m</span><span class="p">);</span></div>
 
 <div class="viewcode-block" id="c.CPCA"><a class="viewcode-back" href="../C-API.html#c.CPCA">[docs]</a><span class="cm">/**</span>
-<span class="cm"> * Consensus Principal Component Analysis</span>
+<span class="cm"> * Fit a Consensus PCA model on a set of blocks.</span>
 <span class="cm"> *</span>
-<span class="cm"> * @param [in] x libscientific tensor data input</span>
-<span class="cm"> * @param [in] scaling scaling type expressed as unsigned int type</span>
-<span class="cm"> * @param [in] npc number of desired principal components</span>
-<span class="cm"> * @param [out] model initialized model using NewCPCAModel(...). The datastructure will be populated with results</span>
+<span class="cm"> * Every block is preprocessed column by column according to ``scaling`` and</span>
+<span class="cm"> * divided by ``sqrt(f_b)``; the consensus components are then extracted one</span>
+<span class="cm"> * at a time (Westerhuis, Kourti and MacGregor, J. Chemometrics 12, 301-321,</span>
+<span class="cm"> * 1998), with up to 1000 iterations per component. Fitting an already</span>
+<span class="cm"> * fitted model replaces its results.</span>
 <span class="cm"> *</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   x: [in] The blocks: one tensor matrix per block (``x-&gt;m[b]``, ``n x f_b``),</span>
+<span class="cm"> *     all with the same rows in the same object order.</span>
+<span class="cm"> *   scaling: [in] Column preprocessing: 0 = mean centering only, 1 = standard</span>
+<span class="cm"> *     deviation, 2 = root mean square, 3 = Pareto, 4 = range, 5 = level.</span>
+<span class="cm"> *   npc: [in] Number of components; capped to the columns of the smallest</span>
+<span class="cm"> *     block.</span>
+<span class="cm"> *   model: [out] Model created with :c:func:`NewCPCAModel`; filled with the</span>
+<span class="cm"> *     results (see :c:type:`CPCAMODEL`).</span>
 <span class="cm"> *</span>
-<span class="cm"> * Available scalings:</span>
+<span class="cm"> * Returns:</span>
+<span class="cm"> *   Nothing, the results are written into ``model``.</span>
 <span class="cm"> *</span>
-<span class="cm"> * - 0: No scaling. Only mean centering</span>
+<span class="cm"> * Example:</span>
+<span class="cm"> *   .. code-block:: c</span>
 <span class="cm"> *</span>
-<span class="cm"> * - 1: Mean centering and STDEV scaling</span>
-<span class="cm"> *</span>
-<span class="cm"> * - 2: Mean centering and Root-Mean-Square column scaling</span>
-<span class="cm"> *</span>
-<span class="cm"> * - 3: Mean centering and Pareto scaling</span>
-<span class="cm"> *</span>
-<span class="cm"> * - 4: Mean centering and min-max range scaling</span>
-<span class="cm"> *</span>
-<span class="cm"> * - 5: Mean centering and level scaling</span>
-<span class="cm"> *</span>
+<span class="cm"> *      tensor *blocks;</span>
+<span class="cm"> *      CPCAMODEL *model;</span>
+<span class="cm"> *      NewTensor(&amp;blocks, 2);</span>
+<span class="cm"> *      NewTensorMatrix(blocks, 0, 20, 10);   // block 0: 20 objects x 10 columns</span>
+<span class="cm"> *      NewTensorMatrix(blocks, 1, 20, 7);    // block 1: 20 objects x 7 columns</span>
+<span class="cm"> *      // ... fill blocks-&gt;m[b]-&gt;data[i][j] ...</span>
+<span class="cm"> *      NewCPCAModel(&amp;model);</span>
+<span class="cm"> *      CPCA(blocks, 1, 3, model);</span>
+<span class="cm"> *      // model-&gt;super_scores: 20 x 3, model-&gt;super_weights: 2 x 3</span>
+<span class="cm"> *      DelCPCAModel(&amp;model);</span>
+<span class="cm"> *      DelTensor(&amp;blocks);</span>
 <span class="cm"> */</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">CPCA</span><span class="p">(</span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">scaling</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">npc</span><span class="p">,</span><span class="w"> </span><span class="n">CPCAMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">model</span><span class="p">);</span></div>
 
 
 <div class="viewcode-block" id="c.CPCAScorePredictor"><a class="viewcode-back" href="../C-API.html#c.CPCAScorePredictor">[docs]</a><span class="cm">/**</span>
-<span class="cm"> * Project objects in a CPCA model.</span>
+<span class="cm"> * Project new objects into a CPCA model.</span>
 <span class="cm"> *</span>
-<span class="cm"> * @param [in] x libscientific tensor data input</span>
-<span class="cm"> * @param [in] model CPCA model</span>
-<span class="cm"> * @param [in] npc number of desired principal components</span>
-<span class="cm"> * @param [out] p_super_scores predicted super scores</span>
-<span class="cm"> * @param [out] p_block_scores predicted block of scores</span>
+<span class="cm"> * Projecting the training blocks reproduces ``model-&gt;super_scores`` within</span>
+<span class="cm"> * the convergence tolerance of the algorithm.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   x: [in] The blocks of the new objects: same number of blocks and</span>
+<span class="cm"> *     columns, in the same order, as the training data (``m`` rows each).</span>
+<span class="cm"> *   model: [in] Model fitted with :c:func:`CPCA`.</span>
+<span class="cm"> *   npc: [in] Number of components to use; capped to the model components.</span>
+<span class="cm"> *   p_super_scores: [out] Matrix created with ``initMatrix``; resized to</span>
+<span class="cm"> *     ``m x npc``.</span>
+<span class="cm"> *   p_block_scores: [out] Tensor created with ``initTensor``; receives one</span>
+<span class="cm"> *     ``m x B`` matrix per component (same layout as</span>
+<span class="cm"> *     ``model-&gt;block_scores``).</span>
+<span class="cm"> *</span>
+<span class="cm"> * Returns:</span>
+<span class="cm"> *   Nothing, the scores are written into the outputs.</span>
 <span class="cm"> */</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">CPCAScorePredictor</span><span class="p">(</span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">x</span><span class="p">,</span>
 <span class="w">                        </span><span class="n">CPCAMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">model</span><span class="p">,</span>
@@ -141,54 +234,41 @@
 <span class="w">                        </span><span class="n">tensor</span><span class="w"> </span><span class="o">*</span><span class="n">p_block_scores</span><span class="p">);</span></div>
 
 <div class="viewcode-block" id="c.PrintCPCA"><a class="viewcode-back" href="../C-API.html#c.PrintCPCA">[docs]</a><span class="cm">/**</span>
-<span class="cm"> * @brief Print CPCAMODEL to video.</span>
+<span class="cm"> * Print the content of a CPCA model to standard output.</span>
 <span class="cm"> *</span>
-<span class="cm"> * @param [in] m computed cpca model</span>
-<span class="cm"> *</span>
-<span class="cm"> * @par Returns</span>
-<span class="cm"> *    Nothing.</span>
+<span class="cm"> * Args:</span>
+<span class="cm"> *   m: [in] The model to print.</span>
 <span class="cm"> */</span>
 <span class="kt">void</span><span class="w"> </span><span class="nf">PrintCPCA</span><span class="p">(</span><span class="n">CPCAMODEL</span><span class="w"> </span><span class="o">*</span><span class="n">m</span><span class="p">);</span></div>
 
 <span class="cp">#endif</span>
 </pre></div>
 
-            <div class="clearer"></div>
+           </div>
           </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2011, Giuseppe Marco Randazzo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="Main">
-        <div class="sphinxsidebarwrapper">
-<search id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</search>
-<script>document.getElementById('searchbox').style.display = "block"</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="Related">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">libscientific 1.8.0 documentation</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">cpca.h</a></li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-    &#169; Copyright 2011, Giuseppe Marco Randazzo.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
-    </div>
-  </body>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
 </html>

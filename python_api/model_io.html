@@ -1,0 +1,438 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Model files and bundles &mdash; libscientific 1.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=b51e6972"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Matrix" href="matrix.html" />
+    <link rel="prev" title="Interpolation" href="interpolate.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            libscientific
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Overview.html">What is libscientific?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html">Getting started in C</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#vector-operations">Vector operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#matrix-operations">Matrix operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#tensor-operations">Tensor operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#multivariate-analysis-algorithms">Multivariate analysis algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInC.html#model-persistence-and-serialization-lsm-and-lsb">Model persistence and serialization (.lsm and .lsb)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html">Getting started in Python</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#vector-operations">Vector operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#matrix-operations">Matrix operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#tensor-operations">Tensor operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#multivariate-analysis-algorithms">Multivariate analysis algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../GettingStartedInPython.html#model-persistence-and-serialization-lsm-and-lsb">Model persistence and serialization (.lsm and .lsb)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Licensing.html">Licensing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../C-API.html">C API Reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../Python-API.html">Python API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../Python-API.html#models">Models</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="pca.html">PCA — Principal Component Analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pls.html">PLS — Partial Least Squares regression</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cpca.html">CPCA — Consensus (multi-block) PCA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mlr.html">MLR — Multiple Linear Regression</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lda.html">LDA — Linear Discriminant Analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="upca.html">UPCA — Multi-way PCA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="upls.html">UPLS — Multi-way PLS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="clustering.html">Clustering and object selection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="interpolate.html">Interpolation</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Model files and bundles</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#libscientific.model_io.ModelType"><code class="docutils literal notranslate"><span class="pre">ModelType</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#libscientific.model_io.ModelBundle"><code class="docutils literal notranslate"><span class="pre">ModelBundle</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#functions">Functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#low-level-api">Low-level API</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../Python-API.html#data-structures-and-utilities">Data structures and utilities</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">libscientific</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../Python-API.html">Python API Reference</a></li>
+      <li class="breadcrumb-item active">Model files and bundles</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/python_api/model_io.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-libscientific.model_io">
+<span id="model-files-and-bundles"></span><h1>Model files and bundles<a class="headerlink" href="#module-libscientific.model_io" title="Link to this heading"></a></h1>
+<p>Saving and loading models in the libscientific binary formats.</p>
+<p>Two file formats, both without external dependencies:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">.lsm</span></code>: a single model;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.lsb</span></code>: a bundle of named models (e.g. a PCA and a PLS of the same
+project) in one file.</p></li>
+</ul>
+<p>Most of the time the <code class="docutils literal notranslate"><span class="pre">save</span></code>/<code class="docutils literal notranslate"><span class="pre">load</span></code> methods of the models are enough
+(<code class="docutils literal notranslate"><span class="pre">PCA.save(&quot;model.lsm&quot;)</span></code>). This module adds bundles and automatic
+detection of the file content:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span><span class="o">,</span><span class="w"> </span><span class="nn">tempfile</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">libscientific.pca</span><span class="w"> </span><span class="kn">import</span> <span class="n">PCA</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">libscientific.pls</span><span class="w"> </span><span class="kn">import</span> <span class="n">PLS</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">libscientific.model_io</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelBundle</span><span class="p">,</span> <span class="n">import_auto</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">X</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pca</span> <span class="o">=</span> <span class="n">PCA</span><span class="p">(</span><span class="n">npc</span><span class="o">=</span><span class="mi">2</span><span class="p">);</span> <span class="n">pca</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pls</span> <span class="o">=</span> <span class="n">PLS</span><span class="p">(</span><span class="n">nlv</span><span class="o">=</span><span class="mi">2</span><span class="p">);</span> <span class="n">pls</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="p">[[</span><span class="mf">1.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">4.0</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">(),</span> <span class="s2">&quot;project.lsb&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ModelBundle</span><span class="p">({</span><span class="s2">&quot;pca&quot;</span><span class="p">:</span> <span class="n">pca</span><span class="p">,</span> <span class="s2">&quot;pls&quot;</span><span class="p">:</span> <span class="n">pls</span><span class="p">})</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bundle</span> <span class="o">=</span> <span class="n">import_auto</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">sorted</span><span class="p">(</span><span class="n">bundle</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span> <span class="n">bundle</span><span class="p">[</span><span class="s2">&quot;pca&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">npc</span>
+<span class="go">([&#39;pca&#39;, &#39;pls&#39;], 2)</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="libscientific.model_io.ModelType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.model_io.</span></span><span class="sig-name descname"><span class="pre">ModelType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.model_io.ModelType" title="Link to this definition"></a></dt>
+<dd><p>Type of a model stored in a model file.</p>
+<p>Members: <code class="docutils literal notranslate"><span class="pre">UNKNOWN</span></code> (0), <code class="docutils literal notranslate"><span class="pre">PCA</span></code> (1), <code class="docutils literal notranslate"><span class="pre">PLS</span></code> (2), <code class="docutils literal notranslate"><span class="pre">CPCA</span></code> (3), <code class="docutils literal notranslate"><span class="pre">MLR</span></code> (4),
+<code class="docutils literal notranslate"><span class="pre">LDA</span></code> (5), <code class="docutils literal notranslate"><span class="pre">ICA</span></code> (6), <code class="docutils literal notranslate"><span class="pre">UPCA</span></code> (7), <code class="docutils literal notranslate"><span class="pre">UPLS</span></code> (8), <code class="docutils literal notranslate"><span class="pre">ANY</span></code> (255, accept any
+type when importing).</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="libscientific.model_io.ModelBundle">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.model_io.</span></span><span class="sig-name descname"><span class="pre">ModelBundle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">models</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.model_io.ModelBundle" title="Link to this definition"></a></dt>
+<dd><p>A dictionary-like collection of named models, saved to one <code class="docutils literal notranslate"><span class="pre">.lsb</span></code> file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>models</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>model</em><em>]</em><em>, </em><em>list</em><em> of </em><em>models</em><em> or </em><em>None</em>) – Initial models. A list gets the names <code class="docutils literal notranslate"><span class="pre">model_0</span></code>, <code class="docutils literal notranslate"><span class="pre">model_1</span></code>, …</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Supports <code class="docutils literal notranslate"><span class="pre">bundle[name]</span></code>, <code class="docutils literal notranslate"><span class="pre">bundle[name]</span> <span class="pre">=</span> <span class="pre">model</span></code>, <code class="docutils literal notranslate"><span class="pre">del</span> <span class="pre">bundle[name]</span></code>,
+<code class="docutils literal notranslate"><span class="pre">name</span> <span class="pre">in</span> <span class="pre">bundle</span></code>, <code class="docutils literal notranslate"><span class="pre">len(bundle)</span></code>, iteration over the names, <code class="docutils literal notranslate"><span class="pre">keys()</span></code>,
+<code class="docutils literal notranslate"><span class="pre">values()</span></code> and <code class="docutils literal notranslate"><span class="pre">items()</span></code>.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">libscientific.pca</span><span class="w"> </span><span class="kn">import</span> <span class="n">PCA</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pca</span> <span class="o">=</span> <span class="n">PCA</span><span class="p">(</span><span class="n">npc</span><span class="o">=</span><span class="mi">1</span><span class="p">);</span> <span class="n">pca</span><span class="o">.</span><span class="n">fit</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bundle</span> <span class="o">=</span> <span class="n">ModelBundle</span><span class="p">({</span><span class="s2">&quot;pca&quot;</span><span class="p">:</span> <span class="n">pca</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">bundle</span><span class="p">),</span> <span class="s2">&quot;pca&quot;</span> <span class="ow">in</span> <span class="n">bundle</span>
+<span class="go">(1, True)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.model_io.ModelBundle.add_model">
+<span class="sig-name descname"><span class="pre">add_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#libscientific.model_io.ModelType" title="libscientific.model_io.ModelType"><span class="pre">ModelType</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.model_io.ModelBundle.add_model" title="Link to this definition"></a></dt>
+<dd><p>Add (or replace) a named model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the model inside the bundle.</p></li>
+<li><p><strong>model</strong> (<a class="reference internal" href="pca.html#libscientific.pca.PCA" title="libscientific.pca.PCA"><em>PCA</em></a><em>, </em><a class="reference internal" href="pls.html#libscientific.pls.PLS" title="libscientific.pls.PLS"><em>PLS</em></a><em>, </em><a class="reference internal" href="cpca.html#libscientific.cpca.CPCA" title="libscientific.cpca.CPCA"><em>CPCA</em></a><em>, </em><a class="reference internal" href="mlr.html#libscientific.mlr.MLR" title="libscientific.mlr.MLR"><em>MLR</em></a><em>, </em><a class="reference internal" href="lda.html#libscientific.lda.LDA" title="libscientific.lda.LDA"><em>LDA</em></a><em>, </em><a class="reference internal" href="upca.html#libscientific.upca.UPCA" title="libscientific.upca.UPCA"><em>UPCA</em></a><em>, </em><a class="reference internal" href="upls.html#libscientific.upls.UPLS" title="libscientific.upls.UPLS"><em>UPLS</em></a><em> or </em><em>C model pointer</em>) – The model.</p></li>
+<li><p><strong>model_type</strong> (<a class="reference internal" href="#libscientific.model_io.ModelType" title="libscientific.model_io.ModelType"><em>ModelType</em></a><em>, </em><em>optional</em>) – Needed only for raw C pointers whose type cannot be detected.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.model_io.ModelBundle.get_model">
+<span class="sig-name descname"><span class="pre">get_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#libscientific.model_io.ModelBundle.get_model" title="Link to this definition"></a></dt>
+<dd><p>Return a model by name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – Name of the model.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>model</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>KeyError</strong> – If there is no model with that name.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.model_io.ModelBundle.keys">
+<span class="sig-name descname"><span class="pre">keys</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.model_io.ModelBundle.keys" title="Link to this definition"></a></dt>
+<dd><p>Return the model names.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.model_io.ModelBundle.values">
+<span class="sig-name descname"><span class="pre">values</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.model_io.ModelBundle.values" title="Link to this definition"></a></dt>
+<dd><p>Return the models.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.model_io.ModelBundle.items">
+<span class="sig-name descname"><span class="pre">items</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.model_io.ModelBundle.items" title="Link to this definition"></a></dt>
+<dd><p>Return <code class="docutils literal notranslate"><span class="pre">(name,</span> <span class="pre">model)</span></code> pairs.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="libscientific.model_io.ModelBundle.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.model_io.ModelBundle.save" title="Link to this definition"></a></dt>
+<dd><p>Save all the models to a bundle file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em>) – Destination path (<code class="docutils literal notranslate"><span class="pre">.lsb</span></code> recommended).</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>OSError</strong><strong>, </strong><strong>ValueError</strong> – If a model cannot be stored or the file cannot be written.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.model_io.inspect_model_file">
+<span class="sig-prename descclassname"><span class="pre">libscientific.model_io.</span></span><span class="sig-name descname"><span class="pre">inspect_model_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#libscientific.model_io.inspect_model_file" title="Link to this definition"></a></dt>
+<dd><p>Read the header of a model file without loading the models.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em>) – Path of a <code class="docutils literal notranslate"><span class="pre">.lsm</span></code> or <code class="docutils literal notranslate"><span class="pre">.lsb</span></code> file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">num_models</span></code> (int), <code class="docutils literal notranslate"><span class="pre">is_single</span></code> (bool), <code class="docutils literal notranslate"><span class="pre">primary_type</span></code>
+(<a class="reference internal" href="#libscientific.model_io.ModelType" title="libscientific.model_io.ModelType"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelType</span></code></a> of the first model), <code class="docutils literal notranslate"><span class="pre">primary_name</span></code> (str),
+<code class="docutils literal notranslate"><span class="pre">format_version</span></code> (int) and <code class="docutils literal notranslate"><span class="pre">total_size</span></code> (bytes).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>FileNotFoundError</strong> – If the file does not exist.</p></li>
+<li><p><strong>OSError</strong> – If it is not a libscientific model file.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.model_io.is_bundle">
+<span class="sig-prename descclassname"><span class="pre">libscientific.model_io.</span></span><span class="sig-name descname"><span class="pre">is_bundle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#libscientific.model_io.is_bundle" title="Link to this definition"></a></dt>
+<dd><p>Return <code class="docutils literal notranslate"><span class="pre">True</span></code> if a file contains more than one model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em>) – Path of a <code class="docutils literal notranslate"><span class="pre">.lsm</span></code> or <code class="docutils literal notranslate"><span class="pre">.lsb</span></code> file.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.model_io.save_model">
+<span class="sig-prename descclassname"><span class="pre">libscientific.model_io.</span></span><span class="sig-name descname"><span class="pre">save_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#libscientific.model_io.ModelType" title="libscientific.model_io.ModelType"><span class="pre">ModelType</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.model_io.save_model" title="Link to this definition"></a></dt>
+<dd><p>Save one model to a <code class="docutils literal notranslate"><span class="pre">.lsm</span></code> file.</p>
+<p>Equivalent to the <code class="docutils literal notranslate"><span class="pre">save</span></code> method of the models, with a custom name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> (<em>str</em>) – Destination path.</p></li>
+<li><p><strong>model</strong> (<a class="reference internal" href="pca.html#libscientific.pca.PCA" title="libscientific.pca.PCA"><em>PCA</em></a><em>, </em><a class="reference internal" href="pls.html#libscientific.pls.PLS" title="libscientific.pls.PLS"><em>PLS</em></a><em>, </em><a class="reference internal" href="cpca.html#libscientific.cpca.CPCA" title="libscientific.cpca.CPCA"><em>CPCA</em></a><em>, </em><a class="reference internal" href="mlr.html#libscientific.mlr.MLR" title="libscientific.mlr.MLR"><em>MLR</em></a><em>, </em><a class="reference internal" href="lda.html#libscientific.lda.LDA" title="libscientific.lda.LDA"><em>LDA</em></a><em>, </em><a class="reference internal" href="upca.html#libscientific.upca.UPCA" title="libscientific.upca.UPCA"><em>UPCA</em></a><em>, </em><a class="reference internal" href="upls.html#libscientific.upls.UPLS" title="libscientific.upls.UPLS"><em>UPLS</em></a><em> or </em><em>C model pointer</em>) – The model to save.</p></li>
+<li><p><strong>model_name</strong> (<em>str</em><em>, </em><em>default &quot;default&quot;</em>) – Name stored in the file.</p></li>
+<li><p><strong>model_type</strong> (<a class="reference internal" href="#libscientific.model_io.ModelType" title="libscientific.model_io.ModelType"><em>ModelType</em></a><em>, </em><em>optional</em>) – Needed only for raw C pointers whose type cannot be detected.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>OSError</strong><strong>, </strong><strong>ValueError</strong> – If the model cannot be saved.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.model_io.import_model">
+<span class="sig-prename descclassname"><span class="pre">libscientific.model_io.</span></span><span class="sig-name descname"><span class="pre">import_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#libscientific.model_io.ModelType" title="libscientific.model_io.ModelType"><span class="pre">ModelType</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">ModelType.ANY</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#libscientific.model_io.import_model" title="Link to this definition"></a></dt>
+<dd><p>Load a single model from a file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> (<em>str</em>) – Path of a <code class="docutils literal notranslate"><span class="pre">.lsm</span></code> file (or a <code class="docutils literal notranslate"><span class="pre">.lsb</span></code> file with one model).</p></li>
+<li><p><strong>expected_type</strong> (<a class="reference internal" href="#libscientific.model_io.ModelType" title="libscientific.model_io.ModelType"><em>ModelType</em></a><em>, </em><em>default ModelType.ANY</em>) – Raise <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> if the file contains another type of model.</p></li>
+<li><p><strong>target_model</strong> (<em>model</em><em>, </em><em>optional</em>) – An existing model object to fill; by default a new object of the right
+class is created.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The loaded model.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="pca.html#libscientific.pca.PCA" title="libscientific.pca.PCA">PCA</a>, <a class="reference internal" href="pls.html#libscientific.pls.PLS" title="libscientific.pls.PLS">PLS</a>, <a class="reference internal" href="cpca.html#libscientific.cpca.CPCA" title="libscientific.cpca.CPCA">CPCA</a>, <a class="reference internal" href="mlr.html#libscientific.mlr.MLR" title="libscientific.mlr.MLR">MLR</a>, <a class="reference internal" href="lda.html#libscientific.lda.LDA" title="libscientific.lda.LDA">LDA</a>, <a class="reference internal" href="upca.html#libscientific.upca.UPCA" title="libscientific.upca.UPCA">UPCA</a> or <a class="reference internal" href="upls.html#libscientific.upls.UPLS" title="libscientific.upls.UPLS">UPLS</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – If the type does not match <code class="docutils literal notranslate"><span class="pre">expected_type</span></code>, or the file contains
+    several models (use <a class="reference internal" href="#libscientific.model_io.import_model_bundle" title="libscientific.model_io.import_model_bundle"><code class="xref py py-func docutils literal notranslate"><span class="pre">import_model_bundle()</span></code></a> or <a class="reference internal" href="#libscientific.model_io.import_auto" title="libscientific.model_io.import_auto"><code class="xref py py-func docutils literal notranslate"><span class="pre">import_auto()</span></code></a>).</p></li>
+<li><p><strong>FileNotFoundError</strong><strong>, </strong><strong>OSError</strong> – If the file cannot be read.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.model_io.save_model_bundle">
+<span class="sig-prename descclassname"><span class="pre">libscientific.model_io.</span></span><span class="sig-name descname"><span class="pre">save_model_bundle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bundle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#libscientific.model_io.ModelBundle" title="libscientific.model_io.ModelBundle"><span class="pre">ModelBundle</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libscientific.model_io.save_model_bundle" title="Link to this definition"></a></dt>
+<dd><p>Save several models to one <code class="docutils literal notranslate"><span class="pre">.lsb</span></code> file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> (<em>str</em>) – Destination path.</p></li>
+<li><p><strong>bundle</strong> (<a class="reference internal" href="#libscientific.model_io.ModelBundle" title="libscientific.model_io.ModelBundle"><em>ModelBundle</em></a><em>, </em><em>dict</em><em>[</em><em>str</em><em>, </em><em>model</em><em>] or </em><em>list</em><em> of </em><em>models</em>) – The models; a list gets the names <code class="docutils literal notranslate"><span class="pre">model_0</span></code>, <code class="docutils literal notranslate"><span class="pre">model_1</span></code>, …</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – If <code class="docutils literal notranslate"><span class="pre">bundle</span></code> has an unsupported type.</p></li>
+<li><p><strong>OSError</strong><strong>, </strong><strong>ValueError</strong> – If a model cannot be stored or the file cannot be written.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.model_io.import_model_bundle">
+<span class="sig-prename descclassname"><span class="pre">libscientific.model_io.</span></span><span class="sig-name descname"><span class="pre">import_model_bundle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#libscientific.model_io.ModelBundle" title="libscientific.model_io.ModelBundle"><span class="pre">ModelBundle</span></a></span></span><a class="headerlink" href="#libscientific.model_io.import_model_bundle" title="Link to this definition"></a></dt>
+<dd><p>Load all the models of a bundle file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em>) – Path of a <code class="docutils literal notranslate"><span class="pre">.lsb</span></code> file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The models, by name.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#libscientific.model_io.ModelBundle" title="libscientific.model_io.ModelBundle">ModelBundle</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>OSError</strong> – If the file cannot be read.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="libscientific.model_io.import_auto">
+<span class="sig-prename descclassname"><span class="pre">libscientific.model_io.</span></span><span class="sig-name descname"><span class="pre">import_auto</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#libscientific.model_io.ModelBundle" title="libscientific.model_io.ModelBundle"><span class="pre">ModelBundle</span></a></span></span><a class="headerlink" href="#libscientific.model_io.import_auto" title="Link to this definition"></a></dt>
+<dd><p>Load a model file, whatever it contains.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em>) – Path of a <code class="docutils literal notranslate"><span class="pre">.lsm</span></code> or <code class="docutils literal notranslate"><span class="pre">.lsb</span></code> file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The model for single-model files, a <a class="reference internal" href="#libscientific.model_io.ModelBundle" title="libscientific.model_io.ModelBundle"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelBundle</span></code></a> otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>model or <a class="reference internal" href="#libscientific.model_io.ModelBundle" title="libscientific.model_io.ModelBundle">ModelBundle</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="low-level-api">
+<h2>Low-level API<a class="headerlink" href="#low-level-api" title="Link to this heading"></a></h2>
+<p>Thin ctypes wrappers around the C functions, working on raw C
+pointers. They are needed only to interoperate with other low-level code.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="libscientific.model_io.MODEL_FILE_INFO">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.model_io.</span></span><span class="sig-name descname"><span class="pre">MODEL_FILE_INFO</span></span><a class="headerlink" href="#libscientific.model_io.MODEL_FILE_INFO" title="Link to this definition"></a></dt>
+<dd><p>C structure filled by <code class="docutils literal notranslate"><span class="pre">InspectModelFile</span></code> (low-level API, see <a class="reference internal" href="#libscientific.model_io.inspect_model_file" title="libscientific.model_io.inspect_model_file"><code class="xref py py-func docutils literal notranslate"><span class="pre">inspect_model_file()</span></code></a>).</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="libscientific.model_io.MODEL_ENTRY">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.model_io.</span></span><span class="sig-name descname"><span class="pre">MODEL_ENTRY</span></span><a class="headerlink" href="#libscientific.model_io.MODEL_ENTRY" title="Link to this definition"></a></dt>
+<dd><p>C structure of one named model inside a bundle (low-level API).</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="libscientific.model_io.MODEL_BUNDLE">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libscientific.model_io.</span></span><span class="sig-name descname"><span class="pre">MODEL_BUNDLE</span></span><a class="headerlink" href="#libscientific.model_io.MODEL_BUNDLE" title="Link to this definition"></a></dt>
+<dd><p>C structure of a model bundle (low-level API, see <a class="reference internal" href="#libscientific.model_io.ModelBundle" title="libscientific.model_io.ModelBundle"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelBundle</span></code></a>).</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="interpolate.html" class="btn btn-neutral float-left" title="Interpolation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="matrix.html" class="btn btn-neutral float-right" title="Matrix" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2011, Giuseppe Marco Randazzo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
